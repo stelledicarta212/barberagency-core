@@ -1,0 +1,1681 @@
+﻿<section class="ba-wizard" id="baWizardApp" data-theme="dark">
+  <div class="ba-shell">
+    <header class="ba-topbar">
+      <button class="ba-icon-btn" type="button" id="baBackBtn" aria-label="Volver">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </button>
+
+      <div class="ba-progress-track" aria-hidden="true">
+        <div class="ba-progress-fill" id="baProgressFill"></div>
+      </div>
+
+      <div class="ba-topbar-actions">
+        <button class="ba-icon-btn ba-ghost" type="button" id="baResetBtn" aria-label="Reiniciar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+            <path d="M21 3v6h-6"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="ba-body">
+      <aside class="ba-sidebar">
+        <p class="ba-kicker">Onboarding guiado</p>
+        <h2 class="ba-sidebar-title">Crea tu barbería paso a paso</h2>
+        <p class="ba-sidebar-copy">
+          Este wizard arma el payload exacto del onboarding y crea el admin con el correo que escribas Aquí.
+        </p>
+        <div class="ba-live-summary" id="baLiveSummary"></div>
+      </aside>
+
+      <main class="ba-stage">
+        <div class="ba-question-wrap">
+          <p class="ba-step-label" id="baStepLabel">Paso 1</p>
+          <h1 class="ba-question" id="baQuestion">Cargando...</h1>
+          <p class="ba-helper" id="baHelper"></p>
+        </div>
+
+        <div class="ba-response-area" id="baResponseArea"></div>
+        <div class="ba-message" id="baMessage" hidden></div>
+      </main>
+    </div>
+  </div>
+</section>
+<script>
+(() => {
+  const boot = () => {
+    if (window.__BA_WP_ONBOARDING_READY__) return;
+
+    const app = document.getElementById("baWizardApp");
+    if (!app) return;
+
+    window.__BA_WP_ONBOARDING_READY__ = true;
+
+    const API_URL = "https://barberagency-app.gymh5g.easypanel.host/api/onboarding/complete";
+    const LANDING_BUILDER_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/landing_plantilla/";
+    const STORAGE_KEY = "ba_wp_onboarding_v9";
+    const LANDING_SEED_KEY = "ba_landing_seed";
+
+    const DAYS = [
+      { value: "lunes", label: "Lunes" },
+      { value: "martes", label: "Martes" },
+      { value: "miercoles", label: "Miercoles" },
+      { value: "jueves", label: "Jueves" },
+      { value: "viernes", label: "Viernes" },
+      { value: "sabado", label: "Sabado" },
+      { value: "domingo", label: "Domingo" }
+    ];
+
+    const STEPS = [
+      {
+        key: "barberia.nombre",
+        label: "Paso 1",
+        prompt: "Como se llama tu barbería?",
+        helper: "Este nombre se usara como base del negocio y del slug.",
+        type: "text",
+        required: true,
+        placeholder: "Ej: Barbería Central"
+      },
+      {
+        key: "barberia.ciudad",
+        label: "Paso 2",
+        prompt: "En que ciudad esta ubicada?",
+        helper: "Usa el nombre tal como lo quieres mostrar al cliente.",
+        type: "text",
+        required: true,
+        placeholder: "Ej: Bogotá, D.C."
+      },
+      {
+        key: "barberia.direccion",
+        label: "Paso 3",
+        prompt: "Cual es la dirección del local?",
+        helper: "Ayuda a ubicar el negocio desde el primer dia.",
+        type: "text",
+        required: true,
+        placeholder: "Ej: Calle 10 #20-30"
+      },
+      {
+        key: "barberia.telefono",
+        label: "Paso 4",
+        prompt: "Cual es el Teléfono principal?",
+        helper: "Lo usaremos como Teléfono del negocio.",
+        type: "tel",
+        required: true,
+        placeholder: "Ej: 3001234567"
+      },
+      {
+        key: "barberia.slot_min",
+        label: "Paso 5",
+        prompt: "Cada cuantos minutos quieres manejar la agenda?",
+        helper: "Tu API acepta 5, 10, 15, 20 o 30 minutos.",
+        type: "choice",
+        required: true,
+        options: [
+          { label: "5 min", value: 5 },
+          { label: "10 min", value: 10 },
+          { label: "15 min", value: 15 },
+          { label: "20 min", value: 20 },
+          { label: "30 min", value: 30 }
+        ]
+      },
+      {
+        key: "accesos.admin.nombre",
+        label: "Paso 6",
+        prompt: "Como se llama el administrador principal?",
+        helper: "Este usuario principal se creará con los datos que pongas Aquí.",
+        type: "text",
+        required: true,
+        placeholder: "Ej: Carlos Alvis"
+      },
+      {
+        key: "accesos.admin.email",
+        label: "Paso 7",
+        prompt: "Cual sera el email del administrador principal?",
+        helper: "Este correo se creará como acceso principal del negocio.",
+        type: "email",
+        required: true,
+        placeholder: "Ej: admin@correo.com"
+      },
+      {
+        key: "accesos.admin.password",
+        label: "Paso 8",
+        prompt: "Define la password del administrador.",
+        helper: "mínimo 6 caracteres.",
+        type: "password",
+        required: true,
+        placeholder: "Escribe la password"
+      },
+      {
+        key: "servicios",
+        label: "Paso 9",
+        prompt: "Configura los servicios iniciales.",
+        helper: "Cada servicio debe llevar nombre, duracion y precio.",
+        type: "services",
+        required: true
+      },
+      {
+        key: "horarios",
+        label: "Paso 10",
+        prompt: "Define los horarios de atención.",
+        helper: "Debe quedar al menos un dia activo.",
+        type: "hours",
+        required: true
+      },
+      {
+        key: "barberos",
+        label: "Paso 11",
+        prompt: "Quieres crear barberos desde una vez?",
+        helper: "Este paso es opcional. Si agregas barberos, deben quedar completos.",
+        type: "barbers",
+        required: false
+      },
+      {
+        key: "review",
+        label: "Paso final",
+        prompt: "Revisa el resumen y crea la barbería.",
+        helper: "Se enviara el draft exacto que tu endpoint espera.",
+        type: "review",
+        required: true
+      }
+    ];
+    const BARBER_PHOTO_OPTIONS = [
+      "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero1.1.png",
+      "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero2.1.png",
+      "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero3.1.png",
+      "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png"
+    ];
+
+    const progressFill = document.getElementById("baProgressFill");
+    const stepLabel = document.getElementById("baStepLabel");
+    const question = document.getElementById("baQuestion");
+    const helper = document.getElementById("baHelper");
+    const responseArea = document.getElementById("baResponseArea");
+    const liveSummary = document.getElementById("baLiveSummary");
+    const messageBox = document.getElementById("baMessage");
+    const backBtn = document.getElementById("baBackBtn");
+    const resetBtn = document.getElementById("baResetBtn");
+
+    let currentStepIndex = 0;
+    let draft = normalizeDraft(loadInitialDraft());
+    let onboardingCompleted = false;
+    let onboardingResult = null;
+    let lastPayload = null;
+
+    syncThemeFromGlobal();
+
+    function clean(value) {
+      return (value || "").toString().trim();
+    }
+
+    function escapeHtml(value) {
+      return clean(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function slugify(input) {
+      return clean(input)
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-");
+    }
+
+    function isValidEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(value));
+    }
+
+    function normalizeBarberPhoto(value) {
+      const url = clean(value);
+      return BARBER_PHOTO_OPTIONS.includes(url) ? url : BARBER_PHOTO_OPTIONS[0];
+    }
+
+    function getDefaultDraft() {
+      return {
+        barberia: {
+          nombre: "",
+          slug: "",
+          telefono: "",
+          direccion: "",
+          ciudad: "",
+          timezone: "America/Bogotá",
+          slot_min: 15
+        },
+        servicios: [
+          { nombre: "", duracion_min: 30, precio: 0 }
+        ],
+        horarios: DAYS.map((day, index) => ({
+          dia: day.value,
+          activo: index < 6,
+          hora_abre: "08:00",
+          hora_cierra: "19:00"
+        })),
+        barberos: [],
+        accesos: {
+          admin: {
+            nombre: "",
+            email: "",
+            password: ""
+          },
+          barberos: []
+        }
+      };
+    }
+
+    function loadDraft() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function loadLandingSeed() {
+      const parseRaw = (raw) => {
+        if (!raw) return null;
+        try {
+          return JSON.parse(raw);
+        } catch (_) {
+          return null;
+        }
+      };
+
+      try {
+        return (
+          parseRaw(sessionStorage.getItem(LANDING_SEED_KEY)) ||
+          parseRaw(localStorage.getItem(LANDING_SEED_KEY)) ||
+          null
+        );
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function isEditIntent() {
+      try {
+        const params = new URLSearchParams(window.location.search || "");
+        return (
+          params.get("edit") === "1" ||
+          clean(params.get("mode")) === "edit" ||
+          clean(params.get("modo")) === "editar" ||
+          params.get("is_edit") === "1" ||
+          params.get("editing") === "1" ||
+          Number(params.get("barberia_id")) > 0 ||
+          Number(params.get("id_barberia")) > 0 ||
+          Number(params.get("id")) > 0 ||
+          !!clean(params.get("slug")) ||
+          !!clean(params.get("barberia_slug"))
+        );
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function getEditIdentity() {
+      let barberiaId = 0;
+      let slug = "";
+      try {
+        const params = new URLSearchParams(window.location.search || "");
+        barberiaId =
+          Number(params.get("barberia_id")) ||
+          Number(params.get("id_barberia")) ||
+          Number(params.get("id")) ||
+          Number(params.get("barberia")) ||
+          Number(params.get("barberiaId")) ||
+          Number(params.get("business_id")) ||
+          0;
+        slug =
+          clean(params.get("slug")) ||
+          clean(params.get("barberia_slug")) ||
+          clean(params.get("business_slug"));
+      } catch (_) {}
+
+      const seed = loadLandingSeed() || {};
+      const seedBarberia = seed.barberia && typeof seed.barberia === "object" ? seed.barberia : {};
+      const fallbackId =
+        Number(seed.barberia_id) ||
+        Number(seed.id_barberia) ||
+        Number(seed.id) ||
+        Number(seedBarberia.id) ||
+        0;
+      const fallbackSlug =
+        clean(seed.slug) ||
+        clean(seedBarberia.slug);
+
+      return {
+        barberia_id: barberiaId > 0 ? barberiaId : fallbackId,
+        slug: slug || fallbackSlug
+      };
+    }
+
+    function draftFromLandingSeed(seed) {
+      if (!seed || typeof seed !== "object") return null;
+
+      const barberiaSeed = seed.barberia && typeof seed.barberia === "object" ? seed.barberia : {};
+      const serviciosSeed = Array.isArray(seed.servicios) ? seed.servicios : [];
+      const horariosSeed = Array.isArray(seed.horarios) ? seed.horarios : [];
+      const barberosSeed = Array.isArray(seed.barberos) ? seed.barberos : [];
+      const accesosSeed = seed.accesos && typeof seed.accesos === "object" ? seed.accesos : {};
+      const adminSeed = accesosSeed.admin && typeof accesosSeed.admin === "object" ? accesosSeed.admin : {};
+      const accesosBarberosSeed = Array.isArray(accesosSeed.barberos) ? accesosSeed.barberos : [];
+
+      return {
+        barberia: {
+          nombre: clean(seed.nombre || barberiaSeed.nombre),
+          slug: clean(seed.slug || barberiaSeed.slug),
+          telefono: clean(seed.telefono || barberiaSeed.telefono),
+          direccion: clean(seed.direccion || barberiaSeed.direccion),
+          ciudad: clean(seed.ciudad || barberiaSeed.ciudad),
+          timezone: clean(seed.timezone || barberiaSeed.timezone || "America/Bogotá"),
+          slot_min: Number(seed.slot_min || barberiaSeed.slot_min || 15)
+        },
+        servicios: serviciosSeed.map((item) => ({
+          nombre: clean(item && (item.nombre || item.name)),
+          duracion_min: Number(item && (item.duracion_min || item.duration_min || 30)),
+          precio: Math.max(0, Number(item && (item.precio || item.price || 0)))
+        })),
+        horarios: horariosSeed.map((item) => ({
+          dia: clean(item && item.dia).toLowerCase(),
+          activo: Boolean(item && item.activo),
+          hora_abre: clean(item && item.hora_abre),
+          hora_cierra: clean(item && item.hora_cierra)
+        })),
+        barberos: barberosSeed.map((item) => ({
+          nombre: clean(item && (item.nombre || item.name)),
+          activo: item && item.activo !== undefined ? Boolean(item.activo) : true,
+          foto: normalizeBarberPhoto(item && (item.foto || item.foto_url || item.photo))
+        })),
+        accesos: {
+          admin: {
+            nombre: clean(adminSeed.nombre || adminSeed.name),
+            email: clean(adminSeed.email).toLowerCase(),
+            password: clean(adminSeed.password)
+          },
+          barberos: barberosSeed.map((item, index) => {
+            const access = accesosBarberosSeed[index] && typeof accesosBarberosSeed[index] === "object"
+              ? accesosBarberosSeed[index]
+              : {};
+            return {
+              nombre: clean(access.nombre || access.name || item?.nombre || item?.name),
+              email: clean(access.email || item?.email).toLowerCase(),
+              password: clean(access.password || item?.password),
+              foto: normalizeBarberPhoto(access.foto || access.foto_url || item?.foto || item?.foto_url || item?.photo)
+            };
+          })
+        }
+      };
+    }
+
+    function loadInitialDraft() {
+      const editIntent = isEditIntent();
+      if (!editIntent) {
+        // Si no estamos editando una barberia existente, iniciar limpio.
+        // Evita que aparezcan datos de una barberia anterior guardados en seed/draft.
+        try {
+          sessionStorage.removeItem(LANDING_SEED_KEY);
+        } catch (_) {}
+        try {
+          localStorage.removeItem(LANDING_SEED_KEY);
+        } catch (_) {}
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (_) {}
+        return null;
+      }
+
+      const saved = loadDraft();
+      const seed = loadLandingSeed();
+      const fromSeed = draftFromLandingSeed(seed);
+
+      if (!saved && fromSeed) {
+        return fromSeed;
+      }
+
+      if (saved && fromSeed && editIntent) {
+        const savedAdmin = (saved.accesos && saved.accesos.admin) ? saved.accesos.admin : {};
+        const seedAdmin = (fromSeed.accesos && fromSeed.accesos.admin) ? fromSeed.accesos.admin : {};
+        const pickAdminValue = (seedValue, savedValue) => clean(seedValue) ? seedValue : (savedValue || "");
+        const seedAccessBarbers = (fromSeed.accesos && Array.isArray(fromSeed.accesos.barberos))
+          ? fromSeed.accesos.barberos
+          : [];
+        const hasMeaningfulSeedBarberAccess = seedAccessBarbers.some((item) =>
+          clean(item && item.nombre) || clean(item && item.email) || clean(item && item.password)
+        );
+
+        // En modo edición:
+        // 1) usar semilla como base de identidad
+        // 2) pero conservar cambios recientes del draft local (ej: direccion editada)
+        return {
+          ...saved,
+          barberia: {
+            ...(fromSeed.barberia || {}),
+            ...(saved.barberia || {})
+          },
+          servicios: (fromSeed.servicios && fromSeed.servicios.length) ? fromSeed.servicios : (saved.servicios || []),
+          horarios: (fromSeed.horarios && fromSeed.horarios.length) ? fromSeed.horarios : (saved.horarios || []),
+          barberos: (fromSeed.barberos && fromSeed.barberos.length) ? fromSeed.barberos : (saved.barberos || []),
+          accesos: {
+            admin: {
+              ...savedAdmin,
+              ...seedAdmin,
+              nombre: pickAdminValue(seedAdmin.nombre, savedAdmin.nombre),
+              email: pickAdminValue(seedAdmin.email, savedAdmin.email),
+              password: pickAdminValue(seedAdmin.password, savedAdmin.password)
+            },
+            barberos: hasMeaningfulSeedBarberAccess
+              ? seedAccessBarbers
+              : ((saved.accesos && Array.isArray(saved.accesos.barberos)) ? saved.accesos.barberos : [])
+          }
+        };
+      }
+
+      return saved || fromSeed || null;
+    }
+
+    function detectGlobalTheme() {
+      const body = document.body;
+      const html = document.documentElement;
+
+      if (body && body.classList.contains("light-mode")) return "light";
+      if (html && html.classList.contains("light-mode")) return "light";
+      if (body && body.classList.contains("dark-mode")) return "dark";
+      if (html && html.classList.contains("dark-mode")) return "dark";
+      if (body && body.dataset && body.dataset.theme === "light") return "light";
+      if (html && html.dataset && html.dataset.theme === "light") return "light";
+      if (body && body.dataset && body.dataset.theme === "dark") return "dark";
+      if (html && html.dataset && html.dataset.theme === "dark") return "dark";
+
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+
+    function syncThemeFromGlobal() {
+      app.setAttribute("data-theme", detectGlobalTheme());
+    }
+
+    function normalizeDraft(raw) {
+      const base = getDefaultDraft();
+      const source = raw && typeof raw === "object" ? raw : {};
+
+      const horariosRaw = Array.isArray(source.horarios) ? source.horarios : [];
+      const horarios = DAYS.map((day, index) => {
+        const found = horariosRaw.find((item) => clean(item.dia).toLowerCase() === day.value);
+        return {
+          dia: day.value,
+          activo: found ? Boolean(found.activo) : index < 6,
+          hora_abre: clean(found && found.hora_abre) || "08:00",
+          hora_cierra: clean(found && found.hora_cierra) || "19:00"
+        };
+      });
+
+      return {
+        barberia: Object.assign({}, base.barberia, source.barberia || {}),
+        servicios: Array.isArray(source.servicios) && source.servicios.length
+          ? source.servicios.map((item) => ({
+              nombre: clean(item.nombre),
+              duracion_min: Number(item.duracion_min || 30),
+              precio: Number(item.precio || 0)
+            }))
+          : base.servicios,
+        horarios,
+        barberos: Array.isArray(source.barberos) ? source.barberos : [],
+        accesos: {
+          admin: Object.assign({}, base.accesos.admin, source.accesos && source.accesos.admin ? source.accesos.admin : {}),
+          barberos: Array.isArray(source.accesos && source.accesos.barberos) ? source.accesos.barberos : []
+        }
+      };
+    }
+
+    function saveDraft() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(draft));
+      } catch (_) {}
+      renderLiveSummary();
+    }
+
+    function getByPath(obj, path) {
+      return path.split(".").reduce((acc, key) => {
+        if (acc && typeof acc === "object" && key in acc) return acc[key];
+        return "";
+      }, obj);
+    }
+
+    function setByPath(obj, path, value) {
+      const keys = path.split(".");
+      let ref = obj;
+      for (let i = 0; i < keys.length - 1; i += 1) {
+        const key = keys[i];
+        if (!ref[key] || typeof ref[key] !== "object") ref[key] = {};
+        ref = ref[key];
+      }
+      ref[keys[keys.length - 1]] = value;
+    }
+
+    function setFieldValue(path, value) {
+      setByPath(draft, path, value);
+      if (path === "barberia.nombre") {
+        draft.barberia.slug = slugify(value);
+      }
+      if (path === "barberia.direccion") {
+        persistSeedAddress(value);
+      }
+      saveDraft();
+    }
+
+    function persistSeedAddress(value) {
+      const nextAddress = clean(value);
+      if (!nextAddress) return;
+      try {
+        const seed = loadLandingSeed() || {};
+        const seedBarberia = seed.barberia && typeof seed.barberia === "object" ? seed.barberia : {};
+        const nextSeed = {
+          ...seed,
+          direccion: nextAddress,
+          barberia: {
+            ...seedBarberia,
+            direccion: nextAddress
+          }
+        };
+        const raw = JSON.stringify(nextSeed);
+        try {
+          sessionStorage.setItem(LANDING_SEED_KEY, raw);
+        } catch (_) {}
+        try {
+          localStorage.setItem(LANDING_SEED_KEY, raw);
+        } catch (_) {}
+      } catch (_) {}
+    }
+
+    function hideMessage() {
+      messageBox.hidden = true;
+      messageBox.className = "ba-message";
+      messageBox.textContent = "";
+    }
+
+    function showMessage(type, text) {
+      messageBox.hidden = false;
+      messageBox.className = "ba-message is-" + type;
+      messageBox.textContent = text;
+    }
+
+    function resetDraft() {
+      draft = normalizeDraft(null);
+      currentStepIndex = 0;
+      onboardingCompleted = false;
+      onboardingResult = null;
+      hideMessage();
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (_) {}
+      render();
+    }
+
+    function progressPercent() {
+      return ((currentStepIndex + 1) / STEPS.length) * 100;
+    }
+
+    function nextStep() {
+      if (currentStepIndex < STEPS.length - 1) {
+        currentStepIndex += 1;
+        hideMessage();
+        render();
+      }
+    }
+
+    function prevStep() {
+      if (currentStepIndex > 0) {
+        currentStepIndex -= 1;
+        hideMessage();
+        render();
+      }
+    }
+
+    function getBarberRows() {
+      const rows = [];
+      const count = Math.max(
+        Array.isArray(draft.barberos) ? draft.barberos.length : 0,
+        draft.accesos && Array.isArray(draft.accesos.barberos) ? draft.accesos.barberos.length : 0
+      );
+
+      for (let i = 0; i < count; i += 1) {
+        const barber = draft.barberos[i] || {};
+        const access = draft.accesos.barberos[i] || {};
+        rows.push({
+          nombre: clean(barber.nombre) || clean(access.nombre),
+          email: clean(access.email),
+          password: access.password || "",
+          activo: barber.activo !== undefined ? Boolean(barber.activo) : Boolean(access.activo),
+          foto: normalizeBarberPhoto(barber.foto || access.foto)
+        });
+      }
+
+      return rows;
+    }
+
+    function setBarberRows(rows) {
+      draft.barberos = rows.map((row) => ({
+        nombre: clean(row.nombre),
+        activo: Boolean(row.activo),
+        foto: normalizeBarberPhoto(row.foto)
+      }));
+
+      draft.accesos.barberos = rows.map((row) => ({
+        nombre: clean(row.nombre),
+        email: clean(row.email).toLowerCase(),
+        password: clean(row.password),
+        activo: Boolean(row.activo),
+        foto: normalizeBarberPhoto(row.foto)
+      }));
+
+      saveDraft();
+    }
+
+    function validateBarberRows(rows) {
+      const normalized = rows.map((row, index) => ({
+        _index: index + 1,
+        nombre: clean(row.nombre),
+        email: clean(row.email).toLowerCase(),
+        password: clean(row.password),
+        activo: Boolean(row.activo),
+        foto: normalizeBarberPhoto(row.foto)
+      }));
+
+      const filled = normalized.filter((row) => row.nombre || row.email || row.password);
+
+      for (let i = 0; i < filled.length; i += 1) {
+        const row = filled[i];
+
+        if (!row.nombre) return { ok: false, message: "Barbero " + row._index + ": falta el nombre." };
+        if (!row.email) return { ok: false, message: "Barbero " + row._index + ": falta el email." };
+        if (!isValidEmail(row.email)) return { ok: false, message: "Barbero " + row._index + ": el email no es válido." };
+        if (!row.password) return { ok: false, message: "Barbero " + row._index + ": falta la password." };
+        if (row.password.length < 6) return { ok: false, message: "Barbero " + row._index + ": la password debe tener mínimo 6 caracteres." };
+      }
+
+      return {
+        ok: true,
+        rows: filled.map((row) => ({
+          nombre: row.nombre,
+          email: row.email,
+          password: row.password,
+          activo: row.activo,
+          foto: row.foto
+        }))
+      };
+    }
+
+    function renderLiveSummary() {
+      const activeDays = (draft.horarios || []).filter((item) => item.activo).length;
+
+      const entries = [
+        ["Barbería", draft.barberia.nombre],
+        ["Ciudad", draft.barberia.ciudad],
+        ["Teléfono", draft.barberia.telefono],
+        ["Slug", draft.barberia.slug],
+        ["Admin", draft.accesos.admin.email],
+        ["Servicios", String((draft.servicios || []).filter((item) => clean(item.nombre)).length)],
+        ["días activos", String(activeDays)]
+      ].filter((entry) => clean(entry[1]));
+
+      liveSummary.innerHTML = entries.length
+        ? entries.map((entry) => `
+            <article class="ba-summary-item">
+              <small>${escapeHtml(entry[0])}</small>
+              <strong>${escapeHtml(entry[1])}</strong>
+            </article>
+          `).join("")
+        : `
+            <article class="ba-summary-item">
+              <small>Resumen</small>
+              <strong>Tu progreso aparecera Aquí mientras completas el wizard.</strong>
+            </article>
+          `;
+    }
+
+    function renderTextStep(step) {
+      const value = getByPath(draft, step.key) || "";
+      const isPassword = step.type === "password";
+
+      responseArea.innerHTML = `
+        <div class="ba-composer">
+          <div class="ba-input-shell">
+            <button class="ba-plus" type="button" disabled>+</button>
+            <input class="ba-input" id="baAnswerInput" type="${isPassword ? "password" : step.type}" value="${escapeHtml(value)}" placeholder="${escapeHtml(step.placeholder || "")}" />
+            ${isPassword ? '<button class="ba-action-secondary" type="button" id="baTogglePasswordBtn">Mostrar</button>' : (step.required ? '<span></span>' : '<button class="ba-action-secondary" type="button" id="baSkipBtn">Omitir</button>')}
+            <button class="ba-action" type="button" id="baNextBtn">Continuar</button>
+          </div>
+        </div>
+      `;
+
+      const input = document.getElementById("baAnswerInput");
+      const nextBtn = document.getElementById("baNextBtn");
+      const skipBtn = document.getElementById("baSkipBtn");
+      const toggleBtn = document.getElementById("baTogglePasswordBtn");
+
+      nextBtn.addEventListener("click", () => {
+        const answer = clean(input.value);
+
+        if (step.required && !answer) {
+          showMessage("error", "Este campo es obligatorio.");
+          return;
+        }
+
+        if (step.type === "email" && answer && !isValidEmail(answer)) {
+          showMessage("error", "Escribe un email válido.");
+          return;
+        }
+
+        if (step.type === "password" && answer && answer.length < 6) {
+          showMessage("error", "La password debe tener mínimo 6 caracteres.");
+          return;
+        }
+
+        setFieldValue(step.key, step.type === "email" ? answer.toLowerCase() : answer);
+        nextStep();
+      });
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          nextBtn.click();
+        }
+      });
+
+      if (skipBtn) {
+        skipBtn.addEventListener("click", () => {
+          setFieldValue(step.key, "");
+          nextStep();
+        });
+      }
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", () => {
+          const hidden = input.type === "password";
+          input.type = hidden ? "text" : "password";
+          toggleBtn.textContent = hidden ? "Ocultar" : "Mostrar";
+        });
+      }
+
+      setTimeout(() => input.focus(), 60);
+    }
+
+    function renderChoiceStep(step) {
+      const selected = String(getByPath(draft, step.key));
+
+      responseArea.innerHTML = `
+        <div class="ba-composer">
+          <div class="ba-options">
+            ${step.options.map((option) => `
+              <button type="button" class="ba-option ${selected === String(option.value) ? "is-active" : ""}" data-value="${escapeHtml(String(option.value))}">
+                ${escapeHtml(option.label)}
+              </button>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      Array.from(responseArea.querySelectorAll(".ba-option")).forEach((button) => {
+        button.addEventListener("click", () => {
+          setFieldValue(step.key, Number(button.dataset.value));
+          nextStep();
+        });
+      });
+    }
+
+    function renderServicesStep() {
+      const services = Array.isArray(draft.servicios) && draft.servicios.length
+        ? draft.servicios
+        : [{ nombre: "", duracion_min: 30, precio: 0 }];
+
+      responseArea.innerHTML = `
+        <div class="ba-composer">
+          <div class="ba-list" id="baServicesList">
+            ${services.map((service, index) => `
+              <article class="ba-card">
+                <div class="ba-card-head">
+                  <h3 class="ba-card-title">Servicio ${index + 1}</h3>
+                  <button class="ba-action-danger" type="button" data-remove="${index}">Eliminar</button>
+                </div>
+
+                <div class="ba-grid ba-grid-2">
+                  <label class="ba-label">
+                    Nombre
+                    <input class="ba-input" type="text" data-field="nombre" data-index="${index}" value="${escapeHtml(service.nombre || "")}" placeholder="Ej: Corte clásico" />
+                  </label>
+
+                  <label class="ba-label">
+                    Duracion (min)
+                    <select class="ba-select" data-field="duracion_min" data-index="${index}">
+                      ${[5, 10, 15, 20, 30, 45, 60].map((value) => `
+                        <option value="${value}" ${Number(service.duracion_min) === value ? "selected" : ""}>${value} min</option>
+                      `).join("")}
+                    </select>
+                  </label>
+
+                  <label class="ba-label">
+                    Precio
+                    <input class="ba-number" type="number" min="0" step="1000" data-field="precio" data-index="${index}" value="${Number(service.precio || 0)}" />
+                  </label>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+
+          <div class="ba-inline">
+            <button class="ba-action-secondary" type="button" id="baAddServiceBtn">Agregar servicio</button>
+            <button class="ba-action" type="button" id="baContinueServicesBtn">Continuar</button>
+          </div>
+        </div>
+      `;
+
+      const list = document.getElementById("baServicesList");
+
+      Array.from(list.querySelectorAll("[data-field]")).forEach((input) => {
+        input.addEventListener("input", syncServicesFromDom);
+        input.addEventListener("change", syncServicesFromDom);
+      });
+
+      Array.from(list.querySelectorAll("[data-remove]")).forEach((button) => {
+        button.addEventListener("click", () => {
+          const next = getServicesFromDom();
+          next.splice(Number(button.dataset.remove), 1);
+          draft.servicios = next.length ? next : [{ nombre: "", duracion_min: 30, precio: 0 }];
+          saveDraft();
+          render();
+        });
+      });
+
+      document.getElementById("baAddServiceBtn").addEventListener("click", () => {
+        const next = getServicesFromDom();
+        next.push({ nombre: "", duracion_min: 30, precio: 0 });
+        draft.servicios = next;
+        saveDraft();
+        render();
+      });
+
+      document.getElementById("baContinueServicesBtn").addEventListener("click", () => {
+        const rows = getServicesFromDom()
+          .map((item) => ({
+            nombre: clean(item.nombre),
+            duracion_min: Number(item.duracion_min || 0),
+            precio: Math.max(0, Number(item.precio || 0))
+          }))
+          .filter((item) => clean(item.nombre));
+
+        if (!rows.length) {
+          showMessage("error", "Debes crear al menos un servicio.");
+          return;
+        }
+
+        if (rows.some((item) => !item.nombre || item.duracion_min <= 0)) {
+          showMessage("error", "Cada servicio debe tener nombre y duracion valida.");
+          return;
+        }
+
+        draft.servicios = rows;
+        saveDraft();
+        nextStep();
+      });
+
+      function syncServicesFromDom() {
+        draft.servicios = getServicesFromDom();
+        saveDraft();
+      }
+
+      function getServicesFromDom() {
+        return Array.from(document.querySelectorAll("#baServicesList [data-index]"))
+          .reduce((acc, node) => {
+            const index = Number(node.dataset.index);
+            if (!acc[index]) acc[index] = { nombre: "", duracion_min: 30, precio: 0 };
+            if (node.dataset.field === "nombre") acc[index].nombre = node.value;
+            if (node.dataset.field === "duracion_min") acc[index].duracion_min = Number(node.value || 0);
+            if (node.dataset.field === "precio") acc[index].precio = Math.max(0, Number(node.value || 0));
+            return acc;
+          }, [])
+          .filter(Boolean);
+      }
+    }
+
+    function renderHoursStep() {
+      const rows = Array.isArray(draft.horarios) && draft.horarios.length
+        ? draft.horarios
+        : getDefaultDraft().horarios;
+
+      responseArea.innerHTML = `
+        <div class="ba-composer">
+          <div class="ba-grid ba-grid-2" id="baHoursGrid">
+            ${rows.map((row, index) => `
+              <article class="ba-card">
+                <div class="ba-card-head">
+                  <h3 class="ba-card-title">${escapeHtml(DAYS[index].label)}</h3>
+                  <label class="ba-switch">
+                    <input type="checkbox" data-hour-field="activo" data-hour-index="${index}" ${row.activo ? "checked" : ""} />
+                    Activo
+                  </label>
+                </div>
+
+                <div class="ba-grid ba-grid-2">
+                  <label class="ba-label">
+                    Hora abre
+                    <input class="ba-time" type="time" data-hour-field="hora_abre" data-hour-index="${index}" value="${escapeHtml(row.hora_abre || "08:00")}" />
+                  </label>
+
+                  <label class="ba-label">
+                    Hora cierra
+                    <input class="ba-time" type="time" data-hour-field="hora_cierra" data-hour-index="${index}" value="${escapeHtml(row.hora_cierra || "19:00")}" />
+                  </label>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+
+          <div class="ba-inline">
+            <button class="ba-action" type="button" id="baContinueHoursBtn">Continuar</button>
+          </div>
+        </div>
+      `;
+
+      Array.from(document.querySelectorAll("[data-hour-field]")).forEach((input) => {
+        input.addEventListener("input", syncHoursFromDom);
+        input.addEventListener("change", syncHoursFromDom);
+      });
+
+      document.getElementById("baContinueHoursBtn").addEventListener("click", () => {
+        const hours = getHoursFromDom();
+        const active = hours.filter((item) => item.activo);
+
+        if (!active.length) {
+          showMessage("error", "Debes dejar al menos un dia activo.");
+          return;
+        }
+
+        if (active.some((item) => !clean(item.hora_abre) || !clean(item.hora_cierra) || item.hora_cierra <= item.hora_abre)) {
+          showMessage("error", "Revisa los horarios activos. La hora de cierre debe ser mayor.");
+          return;
+        }
+
+        draft.horarios = hours;
+        saveDraft();
+        nextStep();
+      });
+
+      function syncHoursFromDom() {
+        draft.horarios = getHoursFromDom();
+        saveDraft();
+      }
+
+      function getHoursFromDom() {
+        return DAYS.map((day, index) => {
+          const activeInput = document.querySelector('[data-hour-field="activo"][data-hour-index="' + index + '"]');
+          const openInput = document.querySelector('[data-hour-field="hora_abre"][data-hour-index="' + index + '"]');
+          const closeInput = document.querySelector('[data-hour-field="hora_cierra"][data-hour-index="' + index + '"]');
+
+          return {
+            dia: day.value,
+            activo: Boolean(activeInput && activeInput.checked),
+            hora_abre: clean(openInput && openInput.value) || "08:00",
+            hora_cierra: clean(closeInput && closeInput.value) || "19:00"
+          };
+        });
+      }
+    }
+
+    function renderBarbersStep() {
+      const rows = getBarberRows();
+
+      responseArea.innerHTML = `
+        <div class="ba-composer">
+          <div class="ba-list" id="baBarbersList">
+            ${rows.map((row, index) => `
+              <article class="ba-card">
+                <div class="ba-card-head">
+                  <h3 class="ba-card-title">Barbero ${index + 1}</h3>
+                  <div class="ba-inline">
+                    <label class="ba-switch">
+                      <input type="checkbox" data-barber-field="activo" data-barber-index="${index}" ${row.activo ? "checked" : ""} />
+                      Activo
+                    </label>
+                    <button class="ba-action-danger" type="button" data-barber-remove="${index}">Eliminar</button>
+                  </div>
+                </div>
+
+                <div class="ba-grid ba-grid-2">
+                  <label class="ba-label">
+                    Nombre
+                    <input class="ba-input" type="text" data-barber-field="nombre" data-barber-index="${index}" value="${escapeHtml(row.nombre || "")}" placeholder="Ej: York" />
+                  </label>
+
+                  <label class="ba-label">
+                    Email
+                    <input class="ba-input" type="email" data-barber-field="email" data-barber-index="${index}" value="${escapeHtml(row.email || "")}" placeholder="Ej: york@correo.com" />
+                  </label>
+
+                  <label class="ba-label">
+                    Password
+                    <div class="ba-password-row">
+                      <input class="ba-input" type="password" data-barber-field="password" data-barber-index="${index}" value="${escapeHtml(row.password || "")}" placeholder="mínimo 6 caracteres" />
+                      <button class="ba-action-secondary" type="button" data-toggle-pass="${index}">Mostrar</button>
+                    </div>
+                  </label>
+
+                  <label class="ba-label">
+                    Elije tu avatar para tu barbero
+                    <div class="ba-photo-picker">
+                      ${BARBER_PHOTO_OPTIONS.map((photo, photoIndex) => `
+                        <label class="ba-photo-option" style="display:inline-flex;cursor:pointer;margin:0 8px 8px 0;">
+                          <input
+                            type="radio"
+                            name="barber-foto-${index}"
+                            data-barber-field="foto"
+                            data-barber-index="${index}"
+                            value="${escapeHtml(photo)}"
+                            ${normalizeBarberPhoto(row.foto) === photo ? "checked" : ""}
+                            style="display:block;margin:0 auto 6px auto;"
+                          />
+                          <img
+                            src="${escapeHtml(photo)}"
+                            alt="Foto ${photoIndex + 1} del barbero"
+                            loading="lazy"
+                            decoding="async"
+                            style="width:64px;height:64px;object-fit:cover;border-radius:999px;border:2px solid rgba(148,163,184,0.45);"
+                          />
+                        </label>
+                      `).join("")}
+                    </div>
+                  </label>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+
+          <div class="ba-inline">
+            <button class="ba-action-secondary" type="button" id="baAddBarberBtn">Agregar barbero</button>
+            <button class="ba-action-secondary" type="button" id="baSkipBarbersBtn">Continuar sin barberos</button>
+            <button class="ba-action" type="button" id="baContinueBarbersBtn">Continuar</button>
+          </div>
+        </div>
+      `;
+
+      const list = document.getElementById("baBarbersList");
+
+      Array.from(list.querySelectorAll("[data-barber-field]")).forEach((input) => {
+        input.addEventListener("input", syncBarbersFromDom);
+        input.addEventListener("change", syncBarbersFromDom);
+      });
+
+      Array.from(list.querySelectorAll("[data-barber-remove]")).forEach((button) => {
+        button.addEventListener("click", () => {
+          const next = getBarbersFromDom();
+          next.splice(Number(button.dataset.barberRemove), 1);
+          setBarberRows(next);
+          render();
+        });
+      });
+
+      Array.from(list.querySelectorAll("[data-toggle-pass]")).forEach((button) => {
+        button.addEventListener("click", () => {
+          const index = button.dataset.togglePass;
+          const input = document.querySelector('[data-barber-field="password"][data-barber-index="' + index + '"]');
+          if (!input) return;
+          const hidden = input.type === "password";
+          input.type = hidden ? "text" : "password";
+          button.textContent = hidden ? "Ocultar" : "Mostrar";
+        });
+      });
+
+      document.getElementById("baAddBarberBtn").addEventListener("click", () => {
+        const next = getBarbersFromDom();
+        next.push({ nombre: "", email: "", password: "", activo: true, foto: BARBER_PHOTO_OPTIONS[0] });
+        setBarberRows(next);
+        render();
+      });
+
+      document.getElementById("baSkipBarbersBtn").addEventListener("click", () => {
+        setBarberRows([]);
+        nextStep();
+      });
+
+      document.getElementById("baContinueBarbersBtn").addEventListener("click", () => {
+        const validation = validateBarberRows(getBarbersFromDom());
+
+        if (!validation.ok) {
+          showMessage("error", validation.message);
+          return;
+        }
+
+        setBarberRows(validation.rows);
+        nextStep();
+      });
+
+      function syncBarbersFromDom() {
+        setBarberRows(getBarbersFromDom());
+      }
+
+      function getBarbersFromDom() {
+        const rowsFromDom = [];
+        const cards = document.querySelectorAll("#baBarbersList .ba-card");
+
+        cards.forEach((card) => {
+          const nameInput = card.querySelector('[data-barber-field="nombre"]');
+          const emailInput = card.querySelector('[data-barber-field="email"]');
+          const passInput = card.querySelector('[data-barber-field="password"]');
+          const activeInput = card.querySelector('[data-barber-field="activo"]');
+          const photoInput = card.querySelector('[data-barber-field="foto"]:checked') || card.querySelector('[data-barber-field="foto"]');
+
+          rowsFromDom.push({
+            nombre: clean(nameInput && nameInput.value),
+            email: clean(emailInput && emailInput.value),
+            password: clean(passInput && passInput.value),
+            activo: Boolean(activeInput && activeInput.checked),
+            foto: normalizeBarberPhoto(photoInput && photoInput.value)
+          });
+        });
+
+        return rowsFromDom;
+      }
+    }
+
+    function buildReviewCards() {
+      const activeDays = (draft.horarios || [])
+        .filter((item) => item.activo)
+        .map((item) => item.dia + " " + item.hora_abre + "-" + item.hora_cierra);
+
+      const services = (draft.servicios || [])
+        .filter((item) => clean(item.nombre))
+        .map((item) => item.nombre + " | " + item.duracion_min + " min | $" + Number(item.precio || 0).toLocaleString("es-CO"));
+
+      const barbers = getBarberRows()
+        .filter((item) => clean(item.nombre))
+        .map((item) => item.nombre + " | " + item.email);
+
+      return `
+        <div class="ba-review">
+          <article class="ba-review-card">
+            <small>Barbería</small>
+            <strong>${escapeHtml(draft.barberia.nombre)}</strong>
+            <span>${escapeHtml(draft.barberia.ciudad)} | ${escapeHtml(draft.barberia.direccion)}</span>
+            <span>Teléfono: ${escapeHtml(draft.barberia.telefono)}</span>
+            <span>Slug: ${escapeHtml(draft.barberia.slug)}</span>
+            <span>Timezone: ${escapeHtml(draft.barberia.timezone)}</span>
+            <span>Slot: ${escapeHtml(String(draft.barberia.slot_min))} min</span>
+          </article>
+
+          <article class="ba-review-card">
+            <small>Administrador</small>
+            <strong>${escapeHtml(draft.accesos.admin.nombre)}</strong>
+            <span>${escapeHtml(draft.accesos.admin.email)}</span>
+          </article>
+
+          <article class="ba-review-card">
+            <small>Servicios</small>
+            <span>${services.length ? services.map(escapeHtml).join("<br>") : "Sin servicios"}</span>
+          </article>
+
+          <article class="ba-review-card">
+            <small>Horarios activos</small>
+            <span>${activeDays.length ? activeDays.map(escapeHtml).join("<br>") : "Sin horarios"}</span>
+          </article>
+
+          <article class="ba-review-card">
+            <small>Barberos</small>
+            <span>${barbers.length ? barbers.map(escapeHtml).join("<br>") : "No se crearán barberos en este envio"}</span>
+          </article>
+        </div>
+      `;
+    }
+
+    function renderReviewStep() {
+      if (onboardingCompleted) {
+        responseArea.innerHTML = `
+          <div class="ba-composer">
+            ${buildReviewCards()}
+
+            <div class="ba-inline ba-success-actions">
+              <button class="ba-action-secondary" type="button" id="baEditAfterSuccessBtn">
+                Editar
+              </button>
+              <button class="ba-action" type="button" id="baGoLandingBtn">
+                Ir a crear mi web de reservas
+              </button>
+            </div>
+          </div>
+        `;
+
+        const editBtn = document.getElementById("baEditAfterSuccessBtn");
+        const goBtn = document.getElementById("baGoLandingBtn");
+
+        if (editBtn) {
+          editBtn.addEventListener("click", () => {
+            onboardingCompleted = false;
+            hideMessage();
+            currentStepIndex = 0;
+            render();
+          });
+        }
+
+        if (goBtn) {
+          goBtn.addEventListener("click", () => {
+            try {
+              localStorage.removeItem(STORAGE_KEY);
+            } catch (_) {}
+            window.location.href = buildLandingBuilderUrl(lastPayload, onboardingResult);
+          });
+        }
+
+        return;
+      }
+
+      if (isEditIntent()) {
+        responseArea.innerHTML = `
+          <div class="ba-composer">
+            ${buildReviewCards()}
+
+            <div class="ba-inline">
+              <button class="ba-action-secondary" type="button" id="baEditBtn">Volver a editar</button>
+              <button class="ba-action" type="button" id="baContinueTemplateBtn">Seguir a la plantilla</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("baEditBtn").addEventListener("click", () => {
+          currentStepIndex = 0;
+          render();
+        });
+
+        document.getElementById("baContinueTemplateBtn").addEventListener("click", () => {
+          submitDraftAndContinue();
+        });
+        return;
+      }
+
+      responseArea.innerHTML = `
+        <div class="ba-composer">
+          ${buildReviewCards()}
+
+          <div class="ba-inline">
+            <button class="ba-action-secondary" type="button" id="baEditBtn">Volver a editar</button>
+            <button class="ba-action" type="button" id="baSubmitBtn">Crear barbería</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("baEditBtn").addEventListener("click", () => {
+        currentStepIndex = 0;
+        render();
+      });
+
+      document.getElementById("baSubmitBtn").addEventListener("click", submitDraft);
+    }
+
+    function persistLandingSeed(payload, data) {
+      const adminAccess = payload && payload.draft && payload.draft.accesos && payload.draft.accesos.admin
+        ? payload.draft.accesos.admin
+        : {};
+      const barberAccesses = payload && payload.draft && payload.draft.accesos && Array.isArray(payload.draft.accesos.barberos)
+        ? payload.draft.accesos.barberos
+        : [];
+      const barberProfiles = payload && payload.draft && Array.isArray(payload.draft.barberos)
+        ? payload.draft.barberos
+        : [];
+      const inheritedPhotos = barberProfiles
+        .map((item) => normalizeBarberPhoto(item && item.foto))
+        .filter(Boolean);
+      const landingSeed = {
+        source: "onboarding_complete",
+        created_at: new Date().toISOString(),
+        barberia_id: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
+        id_barberia: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
+        id: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
+        slug: (data && data.barberia ? clean(data.barberia.slug) : "") || clean(data && data.slug) || clean(payload?.draft?.barberia?.slug),
+        nombre: clean(payload?.draft?.barberia?.nombre),
+        ciudad: clean(payload?.draft?.barberia?.ciudad),
+        direccion: clean(payload?.draft?.barberia?.direccion),
+        telefono: clean(payload?.draft?.barberia?.telefono),
+        slot_min: Number(payload?.draft?.barberia?.slot_min || 15),
+        barberia: {
+          id: data && data.barberia ? data.barberia.id : null,
+          slug: data && data.barberia ? data.barberia.slug : (payload.draft.barberia.slug || ""),
+          nombre: payload.draft.barberia.nombre || "",
+          ciudad: payload.draft.barberia.ciudad || "",
+          direccion: payload.draft.barberia.direccion || "",
+          telefono: payload.draft.barberia.telefono || "",
+          timezone: payload.draft.barberia.timezone || "America/Bogotá",
+          slot_min: payload.draft.barberia.slot_min || 15
+        },
+        servicios: payload.draft.servicios || [],
+        horarios: payload.draft.horarios || [],
+        barberos: barberProfiles.length ? barberProfiles : barberAccesses,
+        barber_photos: inheritedPhotos.length ? inheritedPhotos : BARBER_PHOTO_OPTIONS.slice(),
+        accesos: {
+          admin: {
+            nombre: clean(adminAccess.nombre),
+            email: clean(adminAccess.email).toLowerCase(),
+            password: clean(adminAccess.password)
+          },
+          barberos: barberAccesses
+        },
+        onboarding_result: data || {}
+      };
+
+      try {
+        sessionStorage.setItem(LANDING_SEED_KEY, JSON.stringify(landingSeed));
+      } catch (_) {
+        try {
+          localStorage.setItem(LANDING_SEED_KEY, JSON.stringify(landingSeed));
+        } catch (__){}
+      }
+    }
+
+    function buildLandingBuilderUrl(payload, data) {
+      try {
+        const url = new URL(LANDING_BUILDER_URL);
+        const barberiaId =
+          Number(data && data.barberia ? data.barberia.id : 0) ||
+          Number(data && data.barberia_id ? data.barberia_id : 0) ||
+          0;
+        const slug =
+          clean(data && data.barberia ? data.barberia.slug : "") ||
+          clean(data && data.slug ? data.slug : "") ||
+          clean(payload && payload.draft && payload.draft.barberia ? payload.draft.barberia.slug : "");
+
+        if (barberiaId > 0) {
+          url.searchParams.set("barberia_id", String(barberiaId));
+        }
+        if (slug) {
+          url.searchParams.set("slug", slug);
+        }
+        url.searchParams.set("edit", "1");
+        url.searchParams.set("modo", "editar");
+        url.searchParams.set("mode", "edit");
+        url.searchParams.set("is_edit", "1");
+        url.searchParams.set("editing", "1");
+
+        return url.toString();
+      } catch (_) {
+        return LANDING_BUILDER_URL;
+      }
+    }
+
+    function buildDraftPayload() {
+      const identity = getEditIdentity();
+      return {
+        barberia_id: Number(identity.barberia_id) || undefined,
+        slug: clean(identity.slug) || undefined,
+        draft: {
+          barberia: {
+            id: Number(identity.barberia_id) || undefined,
+            barberia_id: Number(identity.barberia_id) || undefined,
+            id_barberia: Number(identity.barberia_id) || undefined,
+            nombre: clean(draft.barberia.nombre),
+            slug: clean(identity.slug) || clean(draft.barberia.slug) || slugify(draft.barberia.nombre),
+            telefono: clean(draft.barberia.telefono),
+            direccion: clean(draft.barberia.direccion),
+            ciudad: clean(draft.barberia.ciudad),
+            timezone: clean(draft.barberia.timezone) || "America/Bogotá",
+            slot_min: Number(draft.barberia.slot_min || 15)
+          },
+          servicios: (draft.servicios || [])
+            .filter((item) => clean(item.nombre))
+            .map((item) => ({
+              nombre: clean(item.nombre),
+              duracion_min: Number(item.duracion_min || 0),
+              precio: Math.max(0, Number(item.precio || 0))
+            })),
+          horarios: (draft.horarios || []).map((item) => ({
+            dia: clean(item.dia),
+            activo: Boolean(item.activo),
+            hora_abre: clean(item.hora_abre),
+            hora_cierra: clean(item.hora_cierra)
+          })),
+          barberos: (draft.barberos || [])
+            .filter((item) => clean(item.nombre))
+            .map((item) => ({
+              nombre: clean(item.nombre),
+              activo: Boolean(item.activo),
+              foto: normalizeBarberPhoto(item.foto)
+            })),
+          accesos: {
+            admin: {
+              nombre: clean(draft.accesos.admin.nombre),
+              email: clean(draft.accesos.admin.email).toLowerCase(),
+              password: clean(draft.accesos.admin.password)
+            },
+            barberos: (draft.accesos.barberos || [])
+              .filter((item) => clean(item.nombre))
+              .map((item) => ({
+                nombre: clean(item.nombre),
+                email: clean(item.email).toLowerCase(),
+                password: clean(item.password),
+                activo: Boolean(item.activo),
+                foto: normalizeBarberPhoto(item.foto)
+              }))
+          }
+        }
+      };
+    }
+
+    async function submitDraft() {
+      hideMessage();
+
+      const barberValidation = validateBarberRows(getBarberRows());
+      if (!barberValidation.ok) {
+        showMessage("error", barberValidation.message);
+        return;
+      }
+
+      setBarberRows(barberValidation.rows);
+
+      const payload = buildDraftPayload();
+      lastPayload = payload;
+
+      if (!payload.draft.barberia.nombre) {
+        showMessage("error", "Falta el nombre de la barbería.");
+        return;
+      }
+
+      if (!isValidEmail(payload.draft.accesos.admin.email)) {
+        showMessage("error", "El email del administrador no es válido.");
+        return;
+      }
+
+      if ((payload.draft.accesos.admin.password || "").length < 6) {
+        showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
+        return;
+      }
+
+      if (!payload.draft.servicios.length) {
+        showMessage("error", "Debes crear al menos un servicio.");
+        return;
+      }
+
+      if (!payload.draft.horarios.some((item) => item.activo)) {
+        showMessage("error", "Debes dejar al menos un horario activo.");
+        return;
+      }
+
+      const submitBtn = document.getElementById("baSubmitBtn");
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Creando...";
+      }
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || data.ok === false) {
+          throw new Error(data.message || "No se pudo crear la barbería.");
+        }
+
+        persistLandingSeed(payload, data);
+        onboardingCompleted = true;
+        onboardingResult = data;
+        showMessage("success", data.message || "Barbería creada correctamente.");
+        render();
+      } catch (error) {
+        showMessage(
+          "error",
+          error && error.message
+            ? error.message
+            : "Fallo el envio. Si WordPress y la API viven en dominios diferentes, revisa CORS o usa n8n como puente."
+        );
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Crear barbería";
+        }
+      }
+    }
+
+    async function submitDraftAndContinue() {
+      hideMessage();
+
+      const barberValidation = validateBarberRows(getBarberRows());
+      if (!barberValidation.ok) {
+        showMessage("error", barberValidation.message);
+        return;
+      }
+
+      setBarberRows(barberValidation.rows);
+
+      const payload = buildDraftPayload();
+      lastPayload = payload;
+
+      if (!payload.draft.barberia.nombre) {
+        showMessage("error", "Falta el nombre de la barbería.");
+        return;
+      }
+
+      if (!isValidEmail(payload.draft.accesos.admin.email)) {
+        showMessage("error", "El email del administrador no es válido.");
+        return;
+      }
+
+      if ((payload.draft.accesos.admin.password || "").length < 6) {
+        showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
+        return;
+      }
+
+      if (!payload.draft.servicios.length) {
+        showMessage("error", "Debes crear al menos un servicio.");
+        return;
+      }
+
+      if (!payload.draft.horarios.some((item) => item.activo)) {
+        showMessage("error", "Debes dejar al menos un horario activo.");
+        return;
+      }
+
+      const continueBtn = document.getElementById("baContinueTemplateBtn");
+      if (continueBtn) {
+        continueBtn.disabled = true;
+        continueBtn.textContent = "Guardando...";
+      }
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || data.ok === false) {
+          throw new Error(data.message || "No se pudo actualizar la barbería.");
+        }
+
+        persistLandingSeed(payload, data);
+        window.location.href = buildLandingBuilderUrl(payload, data);
+      } catch (error) {
+        showMessage(
+          "error",
+          error && error.message
+            ? error.message
+            : "No se pudo guardar los cambios antes de abrir la plantilla."
+        );
+      } finally {
+        if (continueBtn) {
+          continueBtn.disabled = false;
+          continueBtn.textContent = "Seguir a la plantilla";
+        }
+      }
+    }
+
+    function render() {
+      syncThemeFromGlobal();
+
+      const step = STEPS[currentStepIndex];
+      progressFill.style.width = progressPercent() + "%";
+      stepLabel.textContent = step.label;
+      question.textContent = step.prompt;
+      helper.textContent = step.helper || "";
+
+      if (step.type === "text" || step.type === "email" || step.type === "tel" || step.type === "password") {
+        renderTextStep(step);
+      } else if (step.type === "choice") {
+        renderChoiceStep(step);
+      } else if (step.type === "services") {
+        renderServicesStep();
+      } else if (step.type === "hours") {
+        renderHoursStep();
+      } else if (step.type === "barbers") {
+        renderBarbersStep();
+      } else if (step.type === "review") {
+        renderReviewStep();
+      }
+
+      backBtn.disabled = currentStepIndex === 0;
+      renderLiveSummary();
+    }
+
+    const themeObserver = new MutationObserver(() => {
+      syncThemeFromGlobal();
+    });
+
+    if (document.body) {
+      themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["class", "data-theme"]
+      });
+    }
+
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "data-theme"]
+    });
+
+    backBtn.addEventListener("click", prevStep);
+    resetBtn.addEventListener("click", resetDraft);
+
+    render();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+</script>
+
+
+
+

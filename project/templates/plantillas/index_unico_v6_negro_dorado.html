@@ -1,0 +1,1401 @@
+<!doctype html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>V6 BlackGold Barber</title>
+  <meta name="description" content="Landing V6 barberia fondo negro y botones dorados." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    #landingRoot {
+      --bg: #f4efe6;
+      --surface: #fff9f1;
+      --text: #15120d;
+      --muted: #635848;
+      --gold: #bd8e3c;
+      --gold-2: #8e6424;
+      --main: var(--gold);
+      --alt: var(--gold);
+      --accent: var(--gold);
+      --main2: var(--gold);
+      --hot: var(--gold);
+      --border: rgba(132, 98, 44, 0.22);
+      --ring: rgba(189, 142, 60, 0.28);
+      --nav: rgba(255, 249, 241, 0.86);
+      --shadow: 0 16px 36px rgba(34, 26, 18, 0.14);
+    }
+
+    #landingRoot[data-theme='dark'] {
+      --bg: #070707;
+      --surface: #121212;
+      --text: #f5ead8;
+      --muted: #b9ab95;
+      --gold: #d4a24c;
+      --gold-2: #9d732d;
+      --main: var(--gold);
+      --alt: var(--gold);
+      --accent: var(--gold);
+      --main2: var(--gold);
+      --hot: var(--gold);
+      --border: rgba(212, 162, 76, 0.26);
+      --ring: rgba(212, 162, 76, 0.26);
+      --nav: rgba(10, 10, 10, 0.86);
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    #landingRoot,
+    #landingRoot * { box-sizing: border-box; }
+
+    #landingRoot {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(212, 162, 76, 0.16), transparent 24%),
+        radial-gradient(circle at 88% 0%, rgba(212, 162, 76, 0.12), transparent 26%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    #landingRoot h1,
+    #landingRoot h2,
+    #landingRoot h3,
+    #landingRoot .brand {
+      font-family: 'Cormorant Garamond', serif;
+      letter-spacing: .4px;
+    }
+
+    .topnav {
+      backdrop-filter: blur(9px);
+      background: var(--nav);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .navbar .nav-link, .navbar .navbar-brand { color: var(--text); }
+
+    .navbar-brand.brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .navbar-brand.brand img {
+      display: block;
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid color-mix(in srgb, var(--gold) 35%, white);
+      box-shadow: 0 8px 18px rgba(157, 115, 45, 0.18);
+    }
+
+    #landingRoot ~ #themeToggle,
+    #landingRoot ~ #themeToggleBtn,
+    #landingRoot ~ [data-theme-toggle],
+    #landingRoot ~ .theme-toggle,
+    #landingRoot ~ .theme-toggle-btn,
+    #landingRoot ~ .theme-toggle-button,
+    #landingRoot ~ [class*='theme-toggle'],
+    #landingRoot ~ [class*='dark-mode-toggle'],
+    #landingRoot ~ #n8n-chat,
+    #landingRoot ~ [id*='n8n-chat'],
+    #landingRoot ~ [class*='n8n-chat'],
+    #landingRoot ~ [class*='chat-widget'],
+    #landingRoot ~ [class*='chat-toggle'],
+    #landingRoot ~ [class*='chat-window'],
+    #landingRoot ~ iframe[src*='n8n'],
+    #landingRoot ~ iframe[title*='chat' i] {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    .btn-gold {
+      border: 0;
+      color: #fff;
+      background: var(--gold);
+      box-shadow: 0 10px 22px rgba(157, 115, 45, 0.36);
+    }
+
+    .btn-gold:hover { color: #fff; filter: brightness(1.06); }
+
+    .btn-ghost {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: transparent;
+    }
+
+    .btn-theme {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: transparent;
+    }
+
+    .btn-theme:hover {
+      background: var(--gold);
+      color: #fff;
+    }
+
+    .hero {
+      width: 100%;
+      height: 500px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 500px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(105deg, rgba(0,0,0,.86), rgba(0,0,0,.42));
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-copy { max-width: 760px; }
+    #landingRoot .hero .hero-title,
+    #landingRoot .hero .hero-subtitle {
+      color: #fff !important;
+    }
+
+    #landingRoot .hero .btn-gold {
+      color: #fff !important;
+    }
+
+    #landingRoot .hero .btn-ghost {
+      border-color: rgba(255,255,255,.28);
+      color: #fff !important;
+      background: rgba(0,0,0,.18);
+    }
+
+    #landingRoot .hero .btn-ghost:hover,
+    #landingRoot .hero .btn-ghost:focus {
+      color: #fff !important;
+      border-color: rgba(255,255,255,.42);
+      background: rgba(255,255,255,.08);
+    }
+
+    #landingRoot .hero .hero-tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: .3rem .75rem;
+      font-size: .82rem;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: #f5ddb3 !important;
+      border: 1px solid rgba(245, 221, 179, 0.35);
+      background: rgba(157, 115, 45, 0.3);
+      font-weight: 700;
+    }
+
+    .hero-points {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    #landingRoot .hero .hero-points span {
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(0,0,0,.35);
+      color: #f3ebde !important;
+      border-radius: 999px;
+      padding: .3rem .65rem;
+      font-size: .85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+    }
+
+    #landingRoot .hero .hero-points i {
+      color: #f5ddb3 !important;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+    }
+
+    .section-soft { background: color-mix(in srgb, var(--surface) 66%, transparent); }
+
+    .service-card, .barber-card { padding: 1.2rem; height: 100%; }
+
+    .icon-chip {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      background: rgba(212, 162, 76, 0.18);
+      font-size: 1.15rem;
+    }
+
+    .price-pill {
+      display: inline-block;
+      padding: .2rem .65rem;
+      border-radius: 999px;
+      background: rgba(212, 162, 76, 0.2);
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .barber-photo {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(212, 162, 76, 0.45);
+    }
+
+    .reserve-form { padding: 1.5rem; }
+
+    .reserve-form .form-control,
+    .reserve-form .form-select {
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 92%, #fff);
+      color: var(--text);
+    }
+
+    .reserve-form .form-control:focus,
+    .reserve-form .form-select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 .2rem var(--ring);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 74%, transparent);
+    }
+
+    .footer-menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .footer-brand-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.75rem;
+      font-size: 1.75rem;
+      text-align: left;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand img {
+      display: block;
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid color-mix(in srgb, var(--gold) 35%, white);
+      box-shadow: 0 10px 22px rgba(157, 115, 45, 0.18);
+    }
+
+    .footer-copy {
+      color: var(--muted);
+    }
+
+    .qr-share-card {
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      box-shadow: var(--shadow);
+    }
+
+    #landingRoot[data-theme='dark'] .qr-share-card {
+      background: rgba(18, 18, 18, 0.94);
+    }
+
+    .qr-share-kicker {
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    .qr-share-text {
+      color: var(--muted);
+    }
+
+    .qr-share-link {
+      display: inline-block;
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .qr-share-link:hover {
+      color: var(--gold);
+    }
+
+    .qr-share-frame {
+      width: min(240px, 100%);
+      aspect-ratio: 1;
+      padding: 14px;
+      border-radius: 1.25rem;
+      background: #fff;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-share-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    @media (max-width: 991px) {
+      .hero, .hero img { height: 500px; }
+      .hero img { object-position: 60% center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="landingRoot" data-theme="light">
+  <nav class="navbar navbar-expand-lg sticky-top topnav">
+    <div class="container">
+      <a class="navbar-brand brand" href="#inicio">BlackGold Barber</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav" aria-controls="menuNav" aria-expanded="false" aria-label="menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="menuNav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+          <li class="nav-item"><a class="nav-link" href="#barberos">Barberos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#mapa">Mapa</a></li>
+          <li class="nav-item"><a class="nav-link" href="#reservas">Reservar</a></li>
+        </ul>
+        <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i> Tema</button>
+      </div>
+    </div>
+  </nav>
+
+  <header id="inicio" class="hero">
+    <img id="heroImage" src="https://images.pexels.com/photos/1570807/pexels-photo-1570807.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Cabecera barbería negro dorado" loading="eager" decoding="async">
+    <div class="container hero-content">
+      <div class="hero-copy">
+        <span class="hero-tag">Exclusividad que si se nota</span>
+        <h1 class="hero-title display-4 mt-3 mb-3">Elegancia oscura con presencia dorada</h1>
+        <p class="hero-subtitle lead mb-4">Diseño premium en negro con botones dorados, listo para captar reservas con una experiencia moderna.</p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="#reservas" class="btn btn-gold btn-lg px-4">Reservar cita</a>
+          <a href="#servicios" class="btn btn-ghost btn-lg px-4">Explorar servicios</a>
+        </div>
+        <div class="hero-points">
+          <span><i class="bi bi-check2-circle"></i> Reserva online en minutos</span>
+          <span><i class="bi bi-check2-circle"></i> Confirmación inmediata</span>
+          <span><i class="bi bi-check2-circle"></i> Ubicación fácil de llegar</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="servicios" class="py-5 section-soft">
+      <div class="container">
+        <div class="text-center mb-4">
+          <h2>Servicios</h2>
+          <p class="text-secondary mb-0">Atención precisa para cada estilo y necesidad.</p>
+        </div>
+        <div class="row g-4" id="servicesGrid"></div>
+      </div>
+    </section>
+
+    <section id="barberos" class="py-5">
+      <div class="container">
+        <div class="text-center mb-4">
+          <h2>Barberos</h2>
+          <p class="text-secondary mb-0">Especialistas en técnica y detalle.</p>
+        </div>
+        <div class="row g-4" id="barbersGrid"></div>
+      </div>
+    </section>
+
+    <section id="mapa" class="py-5 section-soft">
+      <div class="container">
+        <div class="row g-4 align-items-stretch">
+          <div class="col-lg-8">
+            <div class="panel ratio ratio-21x9 overflow-hidden">
+              <iframe id="landingMapFrame" title="Mapa barbería" src="about:blank" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="panel p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <h2 class="h3">Ubicación fácil, experiencia premium</h2>
+                <p class="text-secondary">Encuentraños sin complicaciones y llega a tiempo para disfrutar una atención cómoda, rapida y exclusiva.</p>
+              </div>
+              <a href="#reservas" class="btn btn-gold">Reservar experiencia</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reservas" class="py-5">
+      <div class="container">
+        <div class="row g-4 align-items-stretch">
+          <div class="col-lg-6">
+            <div class="panel p-4 h-100 d-flex flex-column justify-content-center">
+              <h2 class="mb-3">Reserva premium, sin perder tiempo</h2>
+              <p class="text-secondary">Agenda en segundos, elige el servicio perfecto y asegura una atención exclusiva en el horario que prefieras.</p>
+              <div class="d-grid gap-2">
+                <a href="#inicio" class="btn btn-gold">Descubrir la barberia</a>
+                <button id="toMap" class="btn btn-ghost" type="button">Ver Ubicación y llegada</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <form id="reservationForm" class="panel reserve-form needs-validation" novalidate>
+              <h2 class="mb-3">Formulario de reserva</h2>
+              <div class="row g-3">
+                <div class="col-md-6"><label for="documento" class="form-label">Documento</label><input id="documento" name="documento" class="form-control" type="text" required></div>
+                <div class="col-md-6"><label for="nombre" class="form-label">Nombre</label><input id="nombre" name="nombre" class="form-control" type="text" required></div>
+                <div class="col-md-6"><label for="telefono" class="form-label">Teléfono</label><input id="telefono" name="telefono" class="form-control" type="tel" required></div>
+                <div class="col-md-6"><label for="email" class="form-label">Correo</label><input id="email" name="email" class="form-control" type="email" required></div>
+                <div class="col-md-6"><label for="servicio" class="form-label">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
+                <div class="col-md-6"><label for="barbero" class="form-label">Barbero</label><select id="barbero" name="barbero" class="form-select" required></select></div>
+                <div class="col-md-6"><label for="fecha" class="form-label">Fecha</label><input id="fecha" name="fecha" class="form-control" type="date" required></div>
+                <div class="col-md-6"><label for="hora" class="form-label">Hora</label><select id="hora" name="hora" class="form-select" required></select></div>
+                <div class="col-12"><label for="notas" class="form-label">Notas</label><textarea id="notas" name="notas" class="form-control" rows="3" placeholder="Detalle adicional"></textarea></div>
+                <div class="col-12 d-grid"><button type="submit" class="btn btn-gold btn-lg">Confirmar reserva</button></div>
+              </div>
+              <div id="reservationAlert" class="alert mt-3 d-none" role="alert"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="qr-share" class="py-5">
+      <div class="container">
+        <div class="qr-share-card p-4 p-lg-5">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-7">
+              <span class="qr-share-kicker">Comparte tu landing</span>
+              <h2 class="mt-2 mb-3">Escanea y reserva tu cita al instante</h2>
+              <p class="mb-3 qr-share-text">Escanea este código QR y envia a tus clientes directo al flujo de reserva en segundos.</p>
+              <a id="landingQrLink" class="qr-share-link" href="#" target="_blank" rel="noopener">Cargando enlace...</a>
+            </div>
+            <div class="col-lg-5">
+              <div class="qr-share-frame mx-auto">
+                <img id="landingQrImage" alt="código QR de la landing" loading="lazy" decoding="async">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="py-4 text-center">
+    <div class="container">
+      <div class="footer-menu mb-3">
+        <a class="btn btn-theme btn-sm" href="#inicio">Inicio</a>
+        <a class="btn btn-theme btn-sm" href="#servicios">Servicios</a>
+        <a class="btn btn-theme btn-sm" href="#barberos">Barberos</a>
+        <a class="btn btn-theme btn-sm" href="#mapa">Mapa</a>
+        <a class="btn btn-theme btn-sm" href="#reservas">Reservas</a>
+      </div>
+      <div class="footer-brand-wrap">
+        <div class="brand footer-brand">BlackGold Barber</div>
+      </div>
+      <small class="footer-copy d-block mt-3">Reserva fácil, elige tu servicio ideal y vive una experiencia premium con una imagen elegante y bien cuidada.</small>
+    </div>
+  </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script>
+    const services = [
+      { id_servicio: 1, nombre: 'Fade premium', precio: 52000, icono: 'bi-scissors' },
+      { id_servicio: 2, nombre: 'Corte clásico', precio: 44000, icono: 'bi-award' },
+      { id_servicio: 3, nombre: 'Perfilado de barba', precio: 41000, icono: 'bi-bezier2' },
+      { id_servicio: 4, nombre: 'Combo corte + barba', precio: 85000, icono: 'bi-lightning-charge' },
+      { id_servicio: 5, nombre: 'Limpieza facial', precio: 48000, icono: 'bi-droplet-half' },
+      { id_servicio: 6, nombre: 'Diseño freestyle', precio: 60000, icono: 'bi-brush' }
+    ];
+
+    const barbers = [
+      { id_barbero: 701, nombre: 'Mateo G.', especialidad: 'Fades de precisión', experiencia: '9 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero1.1.png' },
+      { id_barbero: 702, nombre: 'Carlos M.', especialidad: 'Barba y navaja', experiencia: '10 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero2.1.png' },
+      { id_barbero: 703, nombre: 'Sebastian L.', especialidad: 'Estilo ejecutivo', experiencia: '7 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero3.1.png' },
+      { id_barbero: 704, nombre: 'Andres C.', especialidad: 'Diseño moderno', experiencia: '8 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png' }
+    ];
+
+    const slots = ['09:00','10:00','11:00','12:00','14:00','15:00','16:00','17:00','18:00'];
+    const ALLOWED_SLOT_MINUTES = [5, 10, 15, 20, 30];
+    const defaultHours = [
+      { dia: 'lunes', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'martes', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'miercoles', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'jueves', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'viernes', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'sabado', activo: true, hora_abre: '09:00', hora_cierra: '19:00' }
+    ];
+    const inheritedHours = [...defaultHours];
+    let inheritedSlotMin = 30;
+
+    const html = document.getElementById('landingRoot');
+    const themeToggle = document.getElementById('themeToggle');
+    const heroImage = document.getElementById('heroImage');
+    const servicesGrid = document.getElementById('servicesGrid');
+    const barbersGrid = document.getElementById('barbersGrid');
+    const serviceSelect = document.getElementById('servicio');
+    const barberSelect = document.getElementById('barbero');
+    const hourSelect = document.getElementById('hora');
+    const dateInput = document.getElementById('fecha');
+    const form = document.getElementById('reservationForm');
+    const alertBox = document.getElementById('reservationAlert');
+    const N8N_RESERVA_WEBHOOK = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/reservas/create';
+    const DEFAULT_PUBLIC_PROFILE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public';
+
+    document.getElementById('toMap').addEventListener('click', () => {
+      document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    const heroFallbacks = [
+      'https://images.pexels.com/photos/1570807/pexels-photo-1570807.jpeg?auto=compress&cs=tinysrgb&w=1920',
+      'https://images.pexels.com/photos/3993306/pexels-photo-3993306.jpeg?auto=compress&cs=tinysrgb&w=1920',
+      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1920&q=80'
+    ];
+    let heroIndex = 0;
+    heroImage.addEventListener('error', () => {
+      heroIndex += 1;
+      if (heroIndex < heroFallbacks.length) heroImage.src = heroFallbacks[heroIndex];
+    });
+
+    dateInput.min = new Date().toISOString().split('T')[0];
+
+    function cop(v) {
+      return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
+    }
+
+    function renderServices() {
+      const totalServices = services.length;
+      servicesGrid.classList.toggle('justify-content-center', totalServices <= 2);
+      const serviceColClass = totalServices <= 2 ? 'col-md-6 col-lg-5' : 'col-md-6 col-lg-4';
+
+      servicesGrid.innerHTML = services.map(s => `
+        <div class="${serviceColClass}">
+          <article class="panel service-card">
+            <div class="icon-chip mb-3"><i class="bi ${s.icono}"></i></div>
+            <h3 class="h5 mb-2">${s.nombre}</h3>
+            <p class="text-secondary mb-2">Servicio premium con acabado profesional.</p>
+            <span class="price-pill">${cop(s.precio)}</span>
+          </article>
+        </div>
+      `).join('');
+    }
+
+    function renderBarbers() {
+      const totalBarbers = barbers.length;
+      barbersGrid.classList.toggle('justify-content-center', totalBarbers <= 2);
+      const barberColClass = totalBarbers <= 2 ? 'col-md-6 col-lg-4' : 'col-md-6 col-lg-3';
+
+      barbersGrid.innerHTML = barbers.map((b, idx) => {
+        const fallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
+        const photo = safeSeedText(b.foto) || fallback;
+        return `
+        <div class="${barberColClass}">
+          <article class="panel barber-card text-center">
+            <img class="barber-photo mb-3" src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';" style="width:96px;height:96px;object-fit:cover;border-radius:999px;" />
+            <h3 class="h6 mb-1">${b.nombre}</h3>
+            <p class="text-secondary mb-1">${b.especialidad}</p>
+            <small class="text-secondary">${b.experiencia}</small>
+          </article>
+        </div>
+      `;
+      }).join('');
+    }
+function normalizeDayLabel(value) {
+      return safeSeedText(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function normalizeSeedHour(item) {
+      if (!item || typeof item !== 'object') return null;
+      const dia = normalizeDayLabel(item.dia || item.day || item.nombre_dia);
+      const hora_abre = safeSeedText(item.hora_abre || item.apertura || item.open || item.open_time);
+      const hora_cierra = safeSeedText(item.hora_cierra || item.cierre || item.close || item.close_time);
+      if (!dia || !hora_abre || !hora_cierra) return null;
+      return { dia, activo: item.activo !== false, hora_abre, hora_cierra };
+    }
+
+    function timeToMinutes(value) {
+      const match = /^(\d{1,2}):(\d{2})$/.exec(safeSeedText(value));
+      if (!match) return NaN;
+      return Number(match[1]) * 60 + Number(match[2]);
+    }
+
+    function minutesToTime(totalMinutes) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+    }
+
+    function getSelectedServiceDuration() {
+      const selectedId = Number(serviceSelect.value);
+      const selectedService = services.find((item) => Number(item.id_servicio) === selectedId);
+      const duration = Number(selectedService?.duracion_min || selectedService?.duration_min || 60);
+      return Number.isFinite(duration) && duration > 0 ? duration : 60;
+    }
+
+    function getDayNameFromDate(dateValue) {
+      const safeDate = safeSeedText(dateValue);
+      if (!safeDate) return '';
+      const date = new Date(`${safeDate}T12:00:00`);
+      if (Number.isNaN(date.getTime())) return '';
+      const labels = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+      return labels[date.getDay()] || '';
+    }
+
+    function normalizeSlotMin(value, fallback = 30) {
+      const parsed = Number(value);
+      return ALLOWED_SLOT_MINUTES.includes(parsed) ? parsed : fallback;
+    }
+
+    function buildHourSlotsForDay(dayName) {
+      const normalizedDay = normalizeDayLabel(dayName);
+      const daySchedule = inheritedHours.find((item) => item.activo && item.dia === normalizedDay) || inheritedHours.find((item) => item.activo);
+      if (!daySchedule) return slots.slice();
+      const openMinutes = timeToMinutes(daySchedule.hora_abre);
+      const closeMinutes = timeToMinutes(daySchedule.hora_cierra);
+      const duration = getSelectedServiceDuration();
+      if (!Number.isFinite(openMinutes) || !Number.isFinite(closeMinutes) || closeMinutes <= openMinutes) {
+        return slots.slice();
+      }
+      const lastStart = Math.max(openMinutes, closeMinutes - duration);
+      const generated = [];
+      const slotStep = normalizeSlotMin(inheritedSlotMin, 30);
+      for (let minutes = openMinutes; minutes <= lastStart; minutes += slotStep) {
+        generated.push(minutesToTime(minutes));
+      }
+      return generated.length ? generated : slots.slice();
+    }
+
+    function fillSelects() {
+      serviceSelect.innerHTML = '<option value="" selected disabled>Selecciona servicio</option>' + services.map(s => `<option value="${s.id_servicio}">${s.nombre} - ${cop(s.precio)}</option>`).join('');
+      barberSelect.innerHTML = '<option value="" selected disabled>Selecciona barbero</option>' + barbers.map(b => `<option value="${b.id_barbero}">${b.nombre}</option>`).join('');
+      const availableSlots = buildHourSlotsForDay(getDayNameFromDate(dateInput.value));
+      hourSelect.innerHTML = '<option value="" selected disabled>Selecciona hora</option>' + availableSlots.map(h => `<option value="${h}">${h}</option>`).join('');
+    }
+
+    function setTheme(theme) {
+      if (!html) return;
+      html.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-bs-theme', theme);
+      document.body.setAttribute('data-theme', theme);
+      document.body.setAttribute('data-bs-theme', theme);
+      document.body.classList.toggle('dark-mode', theme === 'dark');
+      document.body.classList.toggle('light-mode', theme === 'light');
+      localStorage.setItem('blackgold_theme_v6', theme);
+      if (themeToggle) {
+        themeToggle.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i> Tema' : '<i class="bi bi-moon-stars-fill"></i> Tema';
+      }
+    }
+
+    function initTheme() {
+      const saved = localStorage.getItem('blackgold_theme_v6');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(saved || (prefersDark ? 'dark' : 'light'));
+    }
+
+    function showAlert(type, msg) {
+      alertBox.className = `alert alert-${type} mt-3`;
+      alertBox.textContent = msg;
+      alertBox.classList.remove('d-none');
+    }
+
+    function stripInjectedUi() {
+      if (!html) return;
+      const selectors = [
+        '#themeToggleBtn',
+        '[data-theme-toggle]',
+        '.theme-toggle',
+        '.theme-toggle-btn',
+        '.theme-toggle-button',
+        '[class*="theme-toggle"]',
+        '[class*="dark-mode-toggle"]',
+        '#n8n-chat',
+        '[id*="n8n-chat"]',
+        '[class*="n8n-chat"]',
+        '[class*="chat-widget"]',
+        '[class*="chat-toggle"]',
+        '[class*="chat-window"]',
+        'iframe[src*="n8n"]',
+        'iframe[title*="chat" i]'
+      ];
+      document.querySelectorAll(selectors.join(',')).forEach((node) => {
+        if (node?.id === 'themeToggle') return;
+        if (html.contains(node)) return;
+        node.remove();
+      });
+
+      Array.from(document.body.children).forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        if (node === html) return;
+        if (node.id === 'themeToggle') return;
+        if (html.contains(node)) return;
+
+        const style = window.getComputedStyle(node);
+        const text = (node.textContent || '').trim();
+        const marks = `${node.id || ''} ${node.className || ''} ${node.getAttribute('aria-label') || ''} ${node.getAttribute('title') || ''}`.toLowerCase();
+        const isFixed = style.position === 'fixed';
+        const rightAligned = style.right !== 'auto';
+        const bottomAligned = style.bottom !== 'auto';
+        const highZ = Number.parseInt(style.zIndex || '0', 10) >= 999;
+        const looksThemeByMarks = /theme|tema|modo oscuro|dark-mode|theme-toggle/.test(marks);
+        const looksThemeByText = /tema|theme/.test(text.toLowerCase());
+        const isEmojiOnly = /^[\s\u2600-\u27BF\u{1F300}-\u{1FAFF}]+$/u.test(text);
+        const isSmallFloating = node.offsetWidth <= 90 && node.offsetHeight <= 90;
+        const isFloatingThemeButton =
+          isFixed &&
+          (looksThemeByMarks ||
+            looksThemeByText ||
+            (isEmojiOnly && isSmallFloating && (rightAligned || bottomAligned) && highZ));
+        const isFloatingChatLike =
+          isFixed &&
+          (node.id.toLowerCase().includes('chat') ||
+            node.className.toString().toLowerCase().includes('chat'));
+
+        if (isFloatingThemeButton || isFloatingChatLike) {
+          node.remove();
+        }
+      });
+    }
+
+    function buildPayload() {
+      return {
+        clientes_finales: {
+          documento: document.getElementById('documento').value.trim(),
+          nombre_completo: document.getElementById('nombre').value.trim(),
+          telefono: document.getElementById('telefono').value.trim(),
+          email: document.getElementById('email').value.trim()
+        },
+        citas: {
+          id_barberia: getCurrentBarberiaId() || 1,
+          id_servicio: Number(serviceSelect.value),
+          id_barbero: Number(barberSelect.value),
+          fecha: dateInput.value,
+          hora: hourSelect.value,
+          estado: 'confirmada',
+          notas: document.getElementById('notas').value.trim(),
+          created_at: new Date().toISOString()
+        }
+      };
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme');
+        setTheme(current === 'dark' ? 'light' : 'dark');
+      });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        showAlert('danger', 'Completa los campos obligatorios.');
+        return;
+      }
+
+      const payload = buildPayload();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn?.textContent || 'Confirmar reserva';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+      }
+
+      try {
+        const res = await fetch(N8N_RESERVA_WEBHOOK, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.ok === false) {
+          throw new Error(data.message || 'No fue posible guardar la reserva en este momento.');
+        }
+
+        showAlert('success', data.message || 'Reserva registrada correctamente. Gracias por elegirnos.');
+        form.reset();
+        form.classList.remove('was-validated');
+        fillSelects();
+        dateInput.min = new Date().toISOString().split('T')[0];
+      } catch (error) {
+        console.error('Error guardando reserva:', error);
+        showAlert('danger', error.message || 'Error de conexión con el servicio de reservas.');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      }
+    });
+    const DEFAULT_SERVICE_ICONS = ['bi-scissors', 'bi-stars', 'bi-bezier2', 'bi-lightning-charge', 'bi-droplet-half', 'bi-brush'];
+    const DEFAULT_BARBER_PHOTOS = [
+      'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero1.1.png',
+      'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero2.1.png',
+      'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero3.1.png',
+      'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png'
+    ];
+
+    function safeSeedText(v) {
+      return String(v || '').trim();
+    }
+
+    function buildMapsEmbedUrl(value) {
+      const clean = safeSeedText(value);
+      if (!clean) return '';
+      if (/^https?:\/\//i.test(clean)) return clean;
+      return `https://www.google.com/maps?q=${encodeURIComponent(clean)}&output=embed`;
+    }
+
+    const runtimeLandingState = {
+      barberia_id: 0,
+      profile: null,
+      branding: null,
+      inherited: null
+    };
+
+    function getPublicProfileEndpoint() {
+      const params = getLandingUrlParams();
+      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
+        ? `https://quickchart.io/qr?size=320&margin=2&text=`
+        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
+      return safeSeedText(
+        window.BA_PUBLIC_PROFILE_ENDPOINT ||
+        params.get('profile_endpoint') ||
+        params.get('public_profile_endpoint') ||
+        landingSeed?.profile_endpoint ||
+        landingSeed?.public_profile_endpoint ||
+        landingSeed?.barberia?.profile_endpoint ||
+        landingSeed?.barberia?.public_profile_endpoint ||
+        DEFAULT_PUBLIC_PROFILE_ENDPOINT
+      );
+    }
+
+    function getCurrentBarberiaId() {
+      const params = getLandingUrlParams();
+      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
+        ? `https://quickchart.io/qr?size=320&margin=2&text=`
+        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
+      const value =
+        Number(runtimeLandingState.barberia_id) ||
+        Number(runtimeLandingState.profile?.barberia_id) ||
+        Number(runtimeLandingState.profile?.id) ||
+        Number(runtimeLandingState.inherited?.barberia_id) ||
+        Number(runtimeLandingState.inherited?.id_barberia) ||
+        Number(landingSeed?.barberia_id) ||
+        Number(landingSeed?.id_barberia) ||
+        Number(landingSeed?.id) ||
+        Number(landingSeed?.barberia?.id) ||
+        Number(params.get('barberia_id')) ||
+        Number(params.get('id_barberia')) ||
+        Number(window.BA_BARBERIA_ID) ||
+        0;
+      return Number.isInteger(value) && value > 0 ? value : 0;
+    }
+
+    function buildRuntimeBranding(raw = {}) {
+      return {
+        logo_url: safeSeedText(raw.logo_url),
+        cover_url: safeSeedText(raw.cover_url || raw.hero_image_url),
+        hero_image_url: safeSeedText(raw.hero_image_url || raw.cover_url),
+        logo_width: Number(raw.logo_width || 0) || 0,
+        hero_badge: safeSeedText(raw.hero_badge || raw.hero_kicker || raw.kicker),
+        hero_title: safeSeedText(raw.hero_title || raw.title),
+        hero_subtitle: safeSeedText(raw.hero_subtitle || raw.subtitle),
+        cta_label: safeSeedText(raw.cta_label || raw.hero_btn_primary),
+        secondary_cta_label: safeSeedText(raw.secondary_cta_label || raw.team_cta_label || raw.hero_btn_secondary),
+        palette_primary: safeSeedText(raw.palette_primary || raw.color_primary || raw.primary_color),
+        palette_secondary: safeSeedText(raw.palette_secondary || raw.color_secondary || raw.secondary_color),
+        palette_accent: safeSeedText(raw.palette_accent || raw.color_accent || raw.accent_color),
+        palette_text: safeSeedText(raw.palette_text || raw.color_text || raw.text_color),
+        maps_url: buildMapsEmbedUrl(
+          raw.maps_url ||
+          raw.location_map_url ||
+          raw.map_url ||
+          raw.location_address ||
+          raw.direccion
+        ),
+        use_custom_palette: Boolean(
+          safeSeedText(raw.palette_primary || raw.color_primary) ||
+          safeSeedText(raw.palette_secondary || raw.color_secondary) ||
+          safeSeedText(raw.palette_text || raw.color_text)
+        )
+      };
+    }
+
+    function applyPublicLandingBranding(payload = {}) {
+      const profile = payload.profile || payload.barberia || {};
+      const branding = payload.branding || payload.config || {};
+      const publicName = safeSeedText(profile.nombre_publico || profile.nombre || branding.biz_name);
+      const logoUrl = safeSeedText(profile.logo_url || branding.logo_url);
+      const coverUrl = safeSeedText(profile.cover_url || branding.cover_url || branding.hero_image_url);
+      const logoWidth = Number(branding.logo_width || 0) || 0;
+      const kicker = safeSeedText(branding.hero_badge || branding.hero_kicker);
+      const title = safeSeedText(branding.hero_title);
+      const subtitle = safeSeedText(branding.hero_subtitle);
+      const primaryCta = safeSeedText(branding.cta_label || branding.hero_btn_primary);
+      const secondaryCta = safeSeedText(branding.secondary_cta_label || branding.hero_btn_secondary);
+      const mapsUrl = buildMapsEmbedUrl(
+        branding.maps_url ||
+        branding.location_map_url ||
+        profile.maps_url ||
+        profile.location_map_url ||
+        profile.map_url ||
+        profile.location_address
+      );
+      const mapFallback = buildMapsEmbedUrl(
+        profile.maps_url ||
+        profile.location_map_url ||
+        profile.map_url ||
+        profile.location_address ||
+        profile.direccion ||
+        branding.maps_url ||
+        branding.location_map_url
+      );
+      const nextMapsUrl = mapsUrl || mapFallback;
+
+      document.querySelectorAll('.navbar-brand.brand, .navbar-brand, .brand, .footer-brand').forEach((node) => {
+        if (publicName) {
+          const currentLogo = node.querySelector('img[data-ba-live-logo]');
+          if (currentLogo) {
+            Array.from(node.childNodes).forEach((child) => {
+              if (child.nodeType === Node.TEXT_NODE) child.remove();
+            });
+            node.appendChild(document.createTextNode(` ${publicName}`));
+          } else {
+            node.textContent = publicName;
+          }
+        }
+        if (logoUrl) {
+          let img = node.querySelector('img[data-ba-live-logo]');
+          if (!img) {
+            img = document.createElement('img');
+            img.setAttribute('data-ba-live-logo', '1');
+            node.prepend(img);
+          }
+          img.src = logoUrl;
+          img.alt = publicName || 'Logo barbería';
+          if (logoWidth > 0) {
+            img.style.width = `${logoWidth}px`;
+            img.style.height = 'auto';
+          }
+        }
+      });
+
+      const kickerNode = document.querySelector('.text-uppercase.fw-bold.mb-2, .tag, .pill-kicker, .hero-tag');
+      const titleNode = document.querySelector('.hero-title');
+      const subtitleNode = document.querySelector('.hero-subtitle');
+      if (kicker && kickerNode) kickerNode.textContent = kicker;
+      if (title && titleNode) titleNode.textContent = title;
+      if (subtitle && subtitleNode) subtitleNode.textContent = subtitle;
+
+      const heroButtons = document.querySelectorAll('#inicio .btn, header .btn');
+      if (primaryCta && heroButtons[0]) heroButtons[0].textContent = primaryCta;
+      if (secondaryCta && heroButtons[1]) heroButtons[1].textContent = secondaryCta;
+
+      const heroImage = document.getElementById('heroImage');
+      if (coverUrl && heroImage) heroImage.src = coverUrl;
+
+      if (nextMapsUrl) {
+        document.querySelectorAll('#landingMapFrame, iframe[src*="google.com/maps"], iframe[title*="Mapa" i]').forEach((frame) => {
+          frame.src = nextMapsUrl;
+        });
+      }
+
+      if (branding && (branding.use_custom_palette || branding.palette_primary || branding.palette_secondary || branding.palette_text)) {
+        applyBrandingPalette({ ...branding, use_custom_palette: true });
+      }
+    }
+
+    function extractPublicLandingPayload(raw) {
+      const source = raw?.data && typeof raw.data === 'object' ? raw.data : raw;
+      const profile = source?.profile && typeof source.profile === 'object'
+        ? source.profile
+        : source?.barberia && typeof source.barberia === 'object'
+          ? source.barberia
+          : source?.public_profile && typeof source.public_profile === 'object'
+            ? source.public_profile
+            : source && typeof source === 'object'
+              ? source
+              : {};
+      const brandingSource = source?.branding && typeof source.branding === 'object'
+        ? source.branding
+        : source?.config && typeof source.config === 'object'
+          ? source.config
+          : {};
+      const inherited = source?.inherited && typeof source.inherited === 'object' ? source.inherited : {};
+      return {
+        ok: source?.ok !== false,
+        barberia_id:
+          Number(source?.barberia_id) ||
+          Number(profile?.barberia_id) ||
+          Number(profile?.id) ||
+          Number(inherited?.barberia_id) ||
+          0,
+        profile,
+        branding: buildRuntimeBranding(brandingSource),
+        inherited,
+        servicios: Array.isArray(source?.servicios) ? source.servicios : Array.isArray(inherited?.servicios) ? inherited.servicios : [],
+        barberos: Array.isArray(source?.barberos) ? source.barberos : Array.isArray(inherited?.barberos) ? inherited.barberos : [],
+        horarios: Array.isArray(source?.horarios) ? source.horarios : Array.isArray(inherited?.horarios) ? inherited.horarios : [],
+        slot_min: Number(source?.slot_min) || Number(inherited?.slot_min) || 0,
+        public_landing_url: safeSeedText(source?.public_landing_url || profile?.public_landing_url),
+        reservation_url: safeSeedText(source?.reservation_url || source?.url_reservas || profile?.reservation_url || profile?.url_reservas),
+        direccion: safeSeedText(source?.direccion || profile?.direccion || inherited?.direccion || profile?.location_address || inherited?.location_address),
+        location_address: safeSeedText(source?.location_address || profile?.location_address || source?.direccion || profile?.direccion || inherited?.location_address || inherited?.direccion),
+        location_map_url: safeSeedText(source?.location_map_url || profile?.location_map_url || source?.maps_url || profile?.maps_url || source?.map_url || profile?.map_url),
+        qr_url: safeSeedText(source?.qr_url || profile?.qr_url)
+      };
+    }
+
+    async function hydrateLandingFromPublicEndpoint() {
+      const slug = getLandingSlug();
+      const barberiaId = getCurrentBarberiaId();
+      const endpoint = getPublicProfileEndpoint();
+      if ((!slug && !barberiaId) || !endpoint) return;
+
+      try {
+        const identityQuery = slug
+          ? `slug=${encodeURIComponent(slug)}`
+          : `barberia_id=${encodeURIComponent(String(barberiaId))}`;
+        const requestUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${identityQuery}`;
+        const response = await fetch(requestUrl, {
+          method: 'GET',
+          headers: { Accept: 'application/json' }
+        });
+        const json = await response.json().catch(() => ({}));
+        if (!response.ok || json?.ok === false) return;
+
+        const payload = extractPublicLandingPayload(json);
+        if (!payload.ok) return;
+
+        runtimeLandingState.barberia_id = payload.barberia_id;
+        runtimeLandingState.profile = payload.profile || null;
+        runtimeLandingState.branding = payload.branding || null;
+        runtimeLandingState.inherited = payload.inherited || null;
+
+        if (payload.public_landing_url) window.BA_PUBLIC_LANDING_URL = payload.public_landing_url;
+        if (payload.reservation_url) window.BA_RESERVATION_URL = payload.reservation_url;
+        if (payload.qr_url) window.BA_QR_URL = payload.qr_url;
+
+        applyInheritedCollections(payload.servicios, payload.barberos, payload.horarios, payload.slot_min);
+        applyPublicLandingBranding(payload);
+        renderLandingQr();
+      } catch (error) {
+        console.warn('No se pudo hidratar la landing publica por slug:', error);
+      }
+    }
+
+    function getLandingUrlParams() {
+      try {
+        return new URLSearchParams(window.location.search || '');
+      } catch (_) {
+        return new URLSearchParams();
+      }
+    }
+
+    function getLandingSlug() {
+      const params = getLandingUrlParams();
+      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
+        ? `https://quickchart.io/qr?size=320&margin=2&text=`
+        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
+      return safeSeedText(
+        params.get('slug') ||
+        landingSeed?.slug ||
+        landingSeed?.barberia?.slug ||
+        landingSeed?.inherited?.slug
+      );
+    }
+
+    function getLandingSiteBaseUrl() {
+      const params = getLandingUrlParams();
+      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
+        ? `https://quickchart.io/qr?size=320&margin=2&text=`
+        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
+      const explicitBase = safeSeedText(
+        params.get('site_base_url') ||
+        params.get('base_url') ||
+        landingSeed?.site_base_url ||
+        landingSeed?.public_base_url ||
+        landingSeed?.base_url ||
+        landingSeed?.barberia?.site_base_url ||
+        landingSeed?.barberia?.public_base_url ||
+        landingSeed?.barberia?.base_url
+      );
+      const runtimeBase = safeSeedText(window.location?.origin);
+      return (explicitBase || runtimeBase).replace(/\/+$/, '');
+    }
+
+    function getCurrentLandingPublicPath() {
+      const rawPath = safeSeedText(window.location?.pathname || '');
+      if (!rawPath) return '/index_unico';
+      const normalized = rawPath.replace(/\/+$/, '');
+      if (/\.html?$/i.test(normalized)) {
+        const fileNameWithExt = normalized.split('/').pop();
+        return fileNameWithExt ? `/${fileNameWithExt}` : '/index_unico';
+      }
+      return normalized || '/index_unico';
+    }
+
+    function getLandingQrTargetUrl() {
+      const params = getLandingUrlParams();
+      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
+        ? `https://quickchart.io/qr?size=320&margin=2&text=`
+        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
+      const reservationUrl = safeSeedText(
+        window.BA_RESERVATION_URL ||
+        window.BA_PUBLIC_LANDING_URL ||
+        params.get('reservation_url') ||
+        params.get('url_reservas') ||
+        params.get('public_landing_url') ||
+        landingSeed?.reservation_url ||
+        landingSeed?.url_reservas ||
+        landingSeed?.barberia?.reservation_url ||
+        landingSeed?.barberia?.url_reservas ||
+        document.documentElement?.dataset?.publicUrl ||
+        document.body?.dataset?.publicUrl
+      );
+      if (reservationUrl) return reservationUrl;
+      const slug = getLandingSlug();
+      if (slug) {
+        return `${getLandingSiteBaseUrl()}${getCurrentLandingPublicPath()}/?slug=${encodeURIComponent(slug)}#reservas`;
+      }
+      try {
+        const url = new URL(window.location.href);
+        url.hash = '';
+        return url.toString();
+      } catch (_) {
+        return String(window.location.href || '').split('#')[0];
+      }
+    }
+
+                    function renderLandingQr() {
+      const qrImage = document.getElementById('landingQrImage');
+      const qrLink = document.getElementById('landingQrLink');
+      if (!qrImage || !qrLink) return;
+      const targetUrl = getLandingQrTargetUrl();
+      if (!targetUrl) return;
+      const params = getLandingUrlParams();
+      const qrImageUrl = safeSeedText(
+        window.BA_QR_URL ||
+        params.get('qr_url') ||
+        landingSeed?.qr_url ||
+        landingSeed?.barberia?.qr_url
+      ) || `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(targetUrl)}`;
+      qrImage.src = qrImageUrl;
+      qrLink.href = targetUrl;
+      qrLink.textContent = 'Reserva Aquí';
+    }
+
+    function readLandingSeed() {
+      const parseRaw = (raw) => {
+        if (!raw) return null;
+        try {
+          return JSON.parse(raw);
+        } catch (_) {
+          return null;
+        }
+      };
+
+      return parseRaw(sessionStorage.getItem('ba_landing_seed')) ||
+        parseRaw(localStorage.getItem('ba_landing_seed')) ||
+        null;
+    }
+
+    function toSeedNumber(value, fallback) {
+      const normalized = typeof value === 'string' ? value.replace(/[^\d.-]/g, '') : value;
+      const n = Number(normalized);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function normalizeSeedService(item, idx) {
+      if (!item || typeof item !== 'object') return null;
+      const name = safeSeedText(item.nombre || item.nombre_servicio || item.servicio || item.title || item.name);
+      if (!name) return null;
+
+      const iconFallback = DEFAULT_SERVICE_ICONS[idx % DEFAULT_SERVICE_ICONS.length];
+      return {
+        id_servicio: toSeedNumber(item.id_servicio ?? item.id ?? item.servicio_id ?? item.idServicio, idx + 1),
+        nombre: name,
+        precio: Math.max(0, toSeedNumber(item.precio ?? item.precio_base ?? item.valor ?? item.tarifa ?? item.price, 0)),
+        icono: safeSeedText(item.icono || item.icon || iconFallback) || iconFallback,
+        duracion_min: Math.max(15, toSeedNumber(item.duracion_min ?? item.duration_min ?? item.duracion ?? item.duration, 60))
+      };
+    }
+
+    function normalizeSeedBarber(item, idx) {
+      if (!item || typeof item !== 'object') return null;
+      const name = safeSeedText(item.nombre || item.nombre_completo || item.barbero || item.name);
+      if (!name) return null;
+
+      const photoFallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
+      const exp = safeSeedText(item.experiencia || item.anios_experiencia || item.years_experience || item.years);
+      return {
+        id_barbero: toSeedNumber(item.id_barbero ?? item.id ?? item.barbero_id ?? item.idBarbero, idx + 1),
+        nombre: name,
+        especialidad: safeSeedText(item.especialidad || item.especialidades || item.descripcion || item.bio) || 'Barbero profesional',
+        experiencia: exp || 'Experiencia comprobada',
+        foto: safeSeedText(item.foto || item.foto_url || item.avatar_url || item.imagen || item.imagen_url || item.photo) || photoFallback
+      };
+    }
+
+    function applyInheritedCollections(rawServices, rawBarbers, rawHours, rawSlotMin) {
+      const nextServices = Array.isArray(rawServices)
+        ? rawServices.map((item, idx) => normalizeSeedService(item, idx)).filter(Boolean)
+        : [];
+      const nextBarbers = Array.isArray(rawBarbers)
+        ? rawBarbers.map((item, idx) => normalizeSeedBarber(item, idx)).filter(Boolean)
+        : [];
+      const nextHours = Array.isArray(rawHours)
+        ? rawHours.map((item) => normalizeSeedHour(item)).filter(Boolean)
+        : [];
+      const nextSlotMin = normalizeSlotMin(rawSlotMin, inheritedSlotMin);
+
+      if (!nextServices.length && !nextBarbers.length && !nextHours.length && nextSlotMin === inheritedSlotMin) return;
+
+      if (nextServices.length) {
+        services.splice(0, services.length, ...nextServices);
+      }
+
+      if (nextBarbers.length) {
+        barbers.splice(0, barbers.length, ...nextBarbers);
+      }
+
+      if (nextHours.length) {
+        inheritedHours.splice(0, inheritedHours.length, ...nextHours);
+      }
+
+      inheritedSlotMin = nextSlotMin;
+
+      if (typeof renderServices === 'function') renderServices();
+      if (typeof renderBarbers === 'function') renderBarbers();
+      if (typeof fillSelects === 'function') fillSelects();
+      if (typeof populateSelects === 'function') populateSelects();
+    }
+
+    function applyBrandingPalette(payload) {
+      if (!html || !payload || !payload.use_custom_palette) return;
+      const primary = String(payload.palette_primary || payload.primary || '').trim();
+      const secondary = String(payload.palette_secondary || payload.secondary || '').trim();
+      const accent = String(payload.palette_accent || payload.accent || '').trim();
+      const text = String(payload.palette_text || payload.text || '').trim();
+
+      if (primary) {
+        html.style.setProperty('--gold', primary);
+        html.style.setProperty('--gold-2', primary);
+        html.style.setProperty('--main', primary);
+      }
+      if (secondary) {
+        html.style.setProperty('--alt', secondary);
+        html.style.setProperty('--main2', secondary);
+      }
+      if (accent) {
+        html.style.setProperty('--accent', accent);
+        html.style.setProperty('--hot', accent);
+      }
+      if (text) html.style.setProperty('--text', text);
+    }
+
+    const landingSeed = readLandingSeed();
+    applyInheritedCollections(landingSeed?.servicios, landingSeed?.barberos, landingSeed?.horarios, landingSeed?.slot_min || landingSeed?.barberia?.slot_min);
+    applyPublicLandingBranding({ profile: landingSeed?.barberia || landingSeed || {}, branding: landingSeed?.branding || {} });
+    hydrateLandingFromPublicEndpoint();
+
+    window.addEventListener('message', (ev) => {
+      const data = ev?.data || {};
+      if (data?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(data.public_landing_url);
+      if (data?.reservation_url) window.BA_RESERVATION_URL = safeSeedText(data.reservation_url);
+      if (data?.qr_url) window.BA_QR_URL = safeSeedText(data.qr_url);
+      if (data?.source === 'ba-editor') {
+        applyBrandingPalette(data);
+      }
+      if (data.type !== 'BA_BRANDING_UPDATE') return;
+      const payload = data.payload || {};
+      if (payload?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(payload.public_landing_url);
+      if (payload?.reservation_url) window.BA_RESERVATION_URL = safeSeedText(payload.reservation_url);
+      if (payload?.qr_url) window.BA_QR_URL = safeSeedText(payload.qr_url);
+      applyBrandingPalette(payload);
+      applyInheritedCollections(
+        payload.services || payload.inherited_services || payload.servicios,
+        payload.barbers || payload.inherited_barbers || payload.barberos,
+        payload.hours || payload.inherited_hours || payload.horarios,
+        payload.slot_min || payload.barberia?.slot_min
+      );
+      applyPublicLandingBranding({ profile: payload.barberia || payload.profile || {}, branding: payload.branding || payload.config || payload || {} });
+      renderLandingQr();
+    });
+    initTheme();
+    stripInjectedUi();
+    new MutationObserver(() => stripInjectedUi()).observe(document.body, { childList: true, subtree: true });
+    renderServices();
+    renderBarbers();
+    fillSelects();
+    renderLandingQr();
+    dateInput.addEventListener('change', fillSelects);
+    serviceSelect.addEventListener('change', fillSelects);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

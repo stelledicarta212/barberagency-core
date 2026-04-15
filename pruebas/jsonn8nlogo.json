@@ -1,0 +1,191 @@
+{
+  "name": "BarberAgency - Landing Upload v1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "barberagency/landing/upload-live",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "7e7fd70a-8df1-4bbd-9ef4-d8a5ed98c6a1",
+      "name": "Webhook - landing upload",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -416,
+        0
+      ],
+      "webhookId": "941d7ccb-0277-4287-bd90-138443c3b389"
+    },
+    {
+      "parameters": {
+        "jsCode": "const first = $input.first();\nconst binary = first.binary || {};\nconst keys = Object.keys(binary);\nif (!keys.length) throw new Error('No se recibio archivo en multipart/form-data (campo file).');\nconst field = keys[0];\nreturn [{\n  json: {\n    slot: ($json.slot ?? '').toString(),\n    template: ($json.template ?? '').toString(),\n    uploaded_field: field\n  },\n  binary: { upload: binary[field] }\n}];"
+      },
+      "id": "79fbe668-4e8a-4295-8788-97849ecc8157",
+      "name": "Normalizar binary upload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -144,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://barberagency-barberagency.gymh5g.easypanel.host/wp-json/wp/v2/media",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "wordpressApi",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "upload"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f6f345df-caf3-4c30-8b5a-71e430f31df7",
+      "name": "Subir media WP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        128,
+        0
+      ],
+      "credentials": {
+        "wordpressApi": {
+          "id": "ZR3aSWFD4wwrFB2J",
+          "name": "Wordpress account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "url",
+              "value": "={{$json.source_url || $json.guid?.rendered || ''}}"
+            },
+            {
+              "name": "source_url",
+              "value": "={{$json.source_url || ''}}"
+            },
+            {
+              "name": "id",
+              "value": "={{String($json.id || '')}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6e7e2231-5af5-4c8e-9b6a-d8f6adf5efab",
+      "name": "Mapear URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        368,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: !!$json.url, url: $json.url || '', source_url: $json.source_url || '', id: $json.id || '' } }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://barberagency-barberagency.gymh5g.easypanel.host"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "5dcd38c0-65f4-4be0-84cb-51995f369f58",
+      "name": "Respond - upload",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        592,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - landing upload": {
+      "main": [
+        [
+          {
+            "node": "Normalizar binary upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar binary upload": {
+      "main": [
+        [
+          {
+            "node": "Subir media WP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Subir media WP": {
+      "main": [
+        [
+          {
+            "node": "Mapear URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mapear URL": {
+      "main": [
+        [
+          {
+            "node": "Respond - upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "b160cfeb-ceca-4b8e-a15b-81bfa0ab0aea",
+  "meta": {
+    "instanceId": "295b3dba6ce1cad81f849f485429b2ba98270f5448cdae94ca62976a67754d87"
+  },
+  "id": "qVFn42A4NP2VhEPm",
+  "tags": []
+}

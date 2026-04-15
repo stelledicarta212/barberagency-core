@@ -1,0 +1,3802 @@
+﻿
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet"
+ href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=102">
+<style>
+  #ba-editor-v2[data-ui-theme='dark'] {
+    color: #e8edf7;
+    background:
+      radial-gradient(circle at 12% 18%, #1a2740 0%, transparent 32%),
+      radial-gradient(circle at 90% 2%, #2b1f0e 0%, transparent 28%),
+      linear-gradient(180deg, #070b12 0%, #0b1320 45%, #070b12 100%);
+  }
+
+  #ba-editor-v2[data-ui-theme='dark'] .ba-panel,
+  #ba-editor-v2[data-ui-theme='dark'] #ba-left,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-preview,
+  #ba-editor-v2[data-ui-theme='dark'] #ba-right,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-settings-sheet,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-mobile-dock {
+    background: linear-gradient(180deg, #101723, #0c131f) !important;
+    border-color: #273348 !important;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.34) !important;
+  }
+
+  #ba-editor-v2[data-ui-theme='dark'] .ba-panel-head,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-preview-head,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-final-preview-head {
+    background: #0c131f !important;
+    border-color: #273348 !important;
+  }
+
+  #ba-editor-v2[data-ui-theme='dark'] .ba-biz-name,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-biz-slug,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-preview-name,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-section-title,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-field label,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-hint,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-settings-title,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-settings-row label {
+    color: #e8edf7 !important;
+  }
+
+  #ba-editor-v2[data-ui-theme='dark'] .ba-field input,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-field select,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-field textarea,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-settings-input {
+    background: #0c131f !important;
+    color: #e8edf7 !important;
+    border-color: #273348 !important;
+  }
+
+  #ba-editor-v2[data-ui-theme='dark'] .ba-upload {
+    background: rgba(12, 19, 31, 0.88) !important;
+    border-color: #3a4f72 !important;
+  }
+
+  #ba-editor-v2[data-ui-theme='dark'] .ba-btn,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-dock-btn,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-chip,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-final-preview-close,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-settings-close {
+    background: linear-gradient(180deg, #f0bb41, #d79314) !important;
+    color: #20180d !important;
+    border-color: rgba(245, 158, 11, 0.34) !important;
+  }
+
+  #ba-editor-v2[data-ui-theme='dark'] .ba-btn:hover,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-btn:focus,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-dock-btn:hover,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-dock-btn:focus,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-dock-btn.is-active,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-chip:hover {
+    background: linear-gradient(180deg, #1a2740, #233655) !important;
+    border-color: #3a4f72 !important;
+  }
+
+  #ba-editor-v2[data-ui-theme='dark'] .ba-chip.is-active {
+    background: linear-gradient(180deg, #1a2740, #142033) !important;
+    color: #f4f7ff !important;
+    border-color: #3a4f72 !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 10px 24px rgba(0, 0, 0, 0.28) !important;
+  }
+
+  #ba-editor-v2[data-ui-theme='dark'] .ba-btn-art,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-dock-ico,
+  #ba-editor-v2[data-ui-theme='dark'] .ba-palette-reset svg {
+    color: currentColor !important;
+    stroke: currentColor !important;
+  }
+</style>
+<!--
+  Landing Editor V2 - Bloque unico para Elementor (Widget HTML)
+  Copia TODO este archivo y pegalo en un unico widget HTML.
+-->
+
+
+<!-- 
+  =================================
+  INICIO: sección CONTENEDOR PRINCIPAL
+  =================================
+-->
+<main id="ba-editor-v2">
+  <div class="ba-row">
+    <!-- 
+      ===y ==============================
+      INICIO: sección PANEL DE CONTROLES (IZQUIERDA)
+      =================================
+    -->
+    <aside id="ba-left" class="ba-panel">
+      <div class="ba-sheet-handle" id="baSheetHandle" aria-hidden="true">
+        <span></span>
+      </div>
+      <div class="ba-panel-head">
+        <div class="ba-biz-name" id="biz_name_label">Barber Agency</div>
+        <div class="ba-biz-slug">slug: <span id="biz_slug">-</span></div>
+        <div class="ba-btns">
+          <button type="button" class="ba-btn" id="goRegistro" aria-label="Editar registro" title="Editar registro">
+            <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L19.81 7.94l-3.75-3.75L3 17.25z"></path><path d="M14.06 4.19l3.75 3.75"></path></svg>
+            <span class="ba-btn-label">Editar registro</span>
+          </button>
+          <button type="button" class="ba-btn" id="goSelector" aria-label="Cambiar plantilla" title="Cambiar plantilla">
+            <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1.4"></rect><rect x="13" y="3" width="8" height="8" rx="1.4"></rect><rect x="3" y="13" width="8" height="8" rx="1.4"></rect><rect x="13" y="13" width="8" height="8" rx="1.4"></rect></svg>
+            <span class="ba-btn-label">Cambiar plantilla</span>
+          </button>
+          <button type="button" class="ba-btn" id="openFinalPreview" aria-label="Vista previa" title="Vista previa">
+            <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>
+            <span class="ba-btn-label">Vista previa</span>
+          </button>
+          <button type="button" class="ba-btn" id="saveDraft" aria-label="Guardar borrador" title="Guardar borrador">
+            <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h12l2 2v14H5z"></path><path d="M8 4v5h8V4"></path><path d="M8 15h8"></path><path d="M10 18h4"></path></svg>
+            <span class="ba-btn-label">Guardar</span>
+          </button>
+          <button type="button" class="ba-btn" id="publish" aria-label="Publicar" title="Publicar">
+            <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 21 3 13 21 11 13 3 11.5Z"></path><path d="M21 3 11 13"></path></svg>
+            <span class="ba-btn-label">Publicar</span>
+          </button>
+        </div>
+      </div>
+
+      <section class="ba-section" id="ba-section-brand">
+        <p class="ba-section-title">Marca y posicionamiento</p>
+        <div class="ba-grid-2">
+          <div class="ba-field">
+            <label for="biz_name">Nombre</label>
+            <input id="biz_name" placeholder="Barber Agency" />
+          </div>
+          <div class="ba-field">
+            <label for="logo_width">Ancho del logo</label>
+            <input id="logo_width" type="number" min="10" max="260" value="50" />
+          </div>
+        </div>
+
+        <div class="ba-upload" id="up_logo_url">
+          <span class="ba-upload-label">Haz clic o arrastra para subir el logo</span>
+          <img id="img_logo_url" alt="Vista previa del logo" />
+          <input id="in_logo_url" type="file" accept="image/*" />
+        </div>
+
+        <div class="ba-field">
+          <label for="font_pair">Fuentes</label>
+          <select id="font_pair">
+            <option value="dm_plusjakarta">DM Sans + Plus Jakarta Sans</option>
+            <option value="inter_montserrat">Inter + Montserrat</option>
+            <option value="poppins_lora">Poppins + Lora</option>
+            <option value="manrope_playfair">Manrope + Playfair Display</option>
+            <option value="outfit_spacegrotesk">Outfit + Space Grotesk</option>
+          </select>
+        </div>
+
+        <div class="ba-grid-2">
+          <div class="ba-field">
+            <label for="palette_primary">Color primario</label>
+            <input id="palette_primary" type="color" value="#0ea5a4" />
+          </div>
+          <div class="ba-field">
+            <label for="palette_secondary">Color secundario</label>
+            <input id="palette_secondary" type="color" value="#075985" />
+          </div>
+        </div>
+        <div class="ba-palette-actions">
+          <button
+            type="button"
+            id="resetPalette"
+            class="ba-palette-reset"
+            title="Volver a los colores originales de la plantilla"
+            aria-label="Usar colores de plantilla"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 1-2.34-5.66"></path><path d="M20 4v7h-7"></path></svg>
+          </button>
+        </div>
+
+        <input id="palette_accent" type="hidden" value="#f97316" />
+        <input id="palette_text" type="hidden" value="#0f1720" />
+        <input type="hidden" id="logo_url" value="" />
+        <input type="hidden" id="cover_url" value="" />
+      </section>
+
+      <section class="ba-section" id="ba-section-message">
+        <p class="ba-section-title">Mensaje de venta</p>
+        <div class="ba-field">
+          <label for="hero_kicker">Etiqueta superior</label>
+          <input id="hero_kicker" placeholder="Nuevo estilo urbano" />
+        </div>
+        <div class="ba-field">
+          <label for="hero_title">Titulo principal</label>
+          <textarea id="hero_title" rows="2" placeholder="Tu look empieza con una cita bien hecha"></textarea>
+        </div>
+        <div class="ba-field">
+          <label for="hero_subtitle">Descripcion</label>
+          <textarea id="hero_subtitle" rows="2" placeholder="Cortes premium, barberos expertos y reserva en menos de un minuto."></textarea>
+        </div>
+        <div class="ba-grid-2">
+          <div class="ba-field">
+            <label for="hero_btn_primary">Boton principal (texto)</label>
+            <input id="hero_btn_primary" placeholder="Agendar cita" />
+          </div>
+          <div class="ba-field">
+            <label for="hero_btn_secondary">Boton secundario (texto)</label>
+            <input id="hero_btn_secondary" placeholder="Conocer equipo" />
+          </div>
+        </div>
+      </section>
+
+      <section class="ba-section" id="ba-section-seo">
+        <p class="ba-section-title">SEO local</p>
+        <div class="ba-field">
+          <label for="address">dirección</label>
+          <input id="address" placeholder="Calle principal" />
+        </div>
+        <input type="hidden" id="maps_url" value="" />
+        <p class="ba-hint">La dirección mejora tu SEO local y se refleja automáticamente en Google Maps.</p>
+      </section>
+
+      <section class="ba-section" id="ba-section-inherited">
+        <p class="ba-section-title">Datos heredados</p>
+        <p class="ba-hint" id="baSeedMeta">Esperando datos de registrobarberia.</p>
+        <div class="ba-seed-group">
+          <p class="ba-seed-label">Servicios</p>
+          <div class="ba-seed-list" id="baInheritedServices"></div>
+        </div>
+        <div class="ba-seed-group">
+          <p class="ba-seed-label">Barberos</p>
+          <div class="ba-seed-list" id="baInheritedBarbers"></div>
+        </div>
+        <div class="ba-seed-group">
+          <p class="ba-seed-label">Horarios</p>
+          <div class="ba-seed-list" id="baInheritedHours"></div>
+        </div>
+      </section>
+    </aside>
+
+    <!-- 
+      =================================
+      INICIO: sección AREA DE PREVISUALIZACION (DERECHA)
+      =================================
+    -->
+    <section id="ba-right" class="ba-preview">
+      <div class="ba-preview-head">
+        <p class="ba-preview-name" id="templateName"></p>
+        <div class="ba-chips" id="tplChips"></div>
+      </div>
+      <iframe id="preview" title="Preview landing"></iframe>
+    </section>
+  </div>
+
+  <!-- 
+    =================================
+    INICIO: sección NAVEGACION MOVIL (DOCK)
+    =================================
+  -->
+  <nav class="ba-mobile-dock" id="baMobileDock" aria-label="Navegacion movil del editor">
+    <button type="button" class="ba-dock-btn is-active" data-target="ba-left">
+      <svg class="ba-dock-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.2"></rect><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2"></rect><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2"></rect><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2"></rect></svg>
+      <span>Panel</span>
+    </button>
+    <button type="button" class="ba-dock-btn" data-target="ba-section-brand">
+      <svg class="ba-dock-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.2 12 4l8 4.2v7.6L12 20 4 15.8z"></path><path d="M12 4v16"></path></svg>
+      <span>Marca</span>
+    </button>
+    <button type="button" class="ba-dock-btn" data-target="ba-section-message">
+      <svg class="ba-dock-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14v10H10l-5 4z"></path><path d="M9 10h6"></path><path d="M9 13h4"></path></svg>
+      <span>Mensaje</span>
+    </button>
+    <button type="button" class="ba-dock-btn" data-target="ba-section-seo">
+      <svg class="ba-dock-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s6-5.4 6-10a6 6 0 1 0-12 0c0 4.6 6 10 6 10Z"></path><circle cx="12" cy="11" r="2.2"></circle></svg>
+      <span>SEO</span>
+    </button>
+    <button type="button" class="ba-dock-btn" data-action="preview-final">
+      <svg class="ba-dock-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>
+      <span>Preview</span>
+    </button>
+  </nav>
+  <!-- 
+    =================================
+    INICIO: sección PANELES FLOTANTES Y MODALES
+    =================================
+  -->
+  <button type="button" class="ba-mobile-scrim" id="baMobileScrim" aria-label="Cerrar panel"></button>
+  <section class="ba-final-preview" id="baFinalPreview" aria-label="Vista previa final" hidden>
+    <div class="ba-final-preview-head">
+      <button type="button" class="ba-final-preview-close" id="baFinalPreviewClose">Cerrar vista previa</button>
+    </div>
+    <iframe id="baFinalPreviewFrame" title="Vista previa final de la landing"></iframe>
+  </section>
+  <section class="ba-settings-drawer" id="baSettingsDrawer" aria-label="Panel de ajustes">
+    <div class="ba-settings-sheet dynamic-bg">
+      <div class="ba-settings-handle"></div>
+      <p class="ba-settings-title dynamic-text">Ajustes</p>
+      <div class="ba-settings-row">
+        <label for="baDrawerBizName">Nombre barberia</label>
+        <input id="baDrawerBizName" class="ba-settings-input dynamic-text" placeholder="Barber Agency" />
+      </div>
+      <div class="ba-settings-row">
+        <label for="baDrawerAccent">Color de acento</label>
+        <input id="baDrawerAccent" class="ba-settings-color" type="color" value="#d4af37" />
+      </div>
+      <button type="button" id="baDrawerClose" class="ba-settings-close">Cerrar</button>
+    </div>
+  </section>
+</main>
+
+<!-- 
+  =================================
+  INICIO: sección DATOS DE PLANTILLAS (JSON)
+  =================================
+-->
+<script id="ba-templates-json" type="application/json">
+[
+  {"id":"v2","name":"Distrito Urbano","file":"index_unico_v2.html"},
+  {"id":"v3","name":"Impacto Comercial","file":"index_unico_v3_nueva.html"},
+  {"id":"v4","name":"Editorial Elite","file":"index_unico_v4_editorial.html"},
+  {"id":"v5","name":"Prestigio Ejecutivo","file":"index_unico_v5_1_azul_rojo_elegante.html"},
+  {"id":"v6","name":"Noir Dorado","file":"index_unico_v6_negro_dorado.html"},
+  {"id":"v7","name":"Moderna","file":"index_unicov7.html"}
+]
+</script>
+
+<!-- 
+  =================================
+  INICIO: sección LOGICA DE LA APLICACION (JAVASCRIPT)
+  =================================
+-->
+<script>
+(() => {
+  'use strict';
+
+  const root = document.getElementById('ba-editor-v2');
+  if (!root) return;
+
+  const paletteInlineStyles = document.createElement('style');
+  paletteInlineStyles.textContent = `
+    #ba-editor-v2 .ba-palette-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+    #ba-editor-v2 .ba-palette-reset {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border: 1px solid rgba(212, 162, 76, 0.28);
+      border-radius: 12px;
+      background: rgba(18, 18, 18, 0.76);
+      color: #f3eadc;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+    #ba-editor-v2 .ba-palette-reset:hover {
+      transform: translateY(-1px);
+      border-color: rgba(212, 162, 76, 0.58);
+      background: rgba(35, 29, 22, 0.92);
+    }
+    #ba-editor-v2 .ba-palette-reset svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    #ba-editor-v2 #ba-section-inherited {
+      background: linear-gradient(180deg, rgba(16, 23, 35, 0.98), rgba(12, 19, 31, 0.96));
+      border: 1px solid #273348;
+    }
+    #ba-editor-v2 #baSeedMeta {
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #273348;
+      background: rgba(12, 19, 31, 0.92);
+      color: rgba(232, 237, 247, 0.92);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    #ba-editor-v2 .ba-seed-group {
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #273348;
+      background: rgba(12, 19, 31, 0.9);
+    }
+    #ba-editor-v2 .ba-seed-group + .ba-seed-group {
+      margin-top: 10px;
+    }
+    #ba-editor-v2 .ba-seed-label {
+      margin: 0 0 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #e8edf7;
+    }
+    #ba-editor-v2 .ba-seed-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    #ba-editor-v2 .ba-seed-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      border: 1px solid #3a4f72;
+      background: linear-gradient(180deg, rgba(26, 39, 64, 0.96), rgba(16, 23, 35, 0.98));
+      color: #e8edf7;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.2;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 6px 14px rgba(2, 8, 23, 0.26);
+    }
+    #ba-editor-v2 .ba-seed-chip.is-empty {
+      opacity: 0.8;
+      font-style: italic;
+      border-style: dashed;
+    }
+    @media (max-width: 900px) {
+      #ba-editor-v2 #ba-left,
+      #ba-editor-v2 #ba-right,
+      #ba-editor-v2 .ba-panel,
+      #ba-editor-v2 .ba-preview {
+        width: min(98vw, 820px) !important;
+        max-width: min(98vw, 820px) !important;
+      }
+
+      /* Fuerza anclaje a la izquierda para que el crecimiento sea hacia la derecha */
+      #ba-editor-v2 #ba-left,
+      #ba-editor-v2 .ba-panel {
+        left: 0 !important;
+        right: auto !important;
+        margin-left: 0 !important;
+        margin-right: auto !important;
+        transform-origin: left center !important;
+      }
+
+      #ba-editor-v2 #ba-right,
+      #ba-editor-v2 .ba-preview {
+        left: 0 !important;
+        right: auto !important;
+        margin-left: 0 !important;
+        margin-right: auto !important;
+        transform-origin: left center !important;
+      }
+
+      #ba-editor-v2 .ba-btn,
+      #ba-editor-v2 .ba-dock-btn {
+        opacity: 1 !important;
+        background: rgba(20, 20, 20, 0.82) !important;
+        border-color: rgba(212, 162, 76, 0.24) !important;
+        backdrop-filter: blur(8px);
+      }
+
+      #ba-editor-v2 .ba-btn:hover,
+      #ba-editor-v2 .ba-btn:focus,
+      #ba-editor-v2 .ba-dock-btn:hover,
+      #ba-editor-v2 .ba-dock-btn:focus,
+      #ba-editor-v2 .ba-dock-btn.is-active {
+        opacity: 1 !important;
+        background: rgba(31, 27, 22, 0.92) !important;
+      }
+    }
+  `;
+  document.head.appendChild(paletteInlineStyles);
+
+  const STORAGE_TEMPLATE = 'ba_selected_template';
+  const STORAGE_DRAFT = 'ba_editor_draft';
+  const STORAGE_ONBOARDING_DRAFT = 'ba_wp_onboarding_v9';
+  const STORAGE_MOBILE_LOGO_WIDTH_MIGRATION = 'ba_mobile_logo_width_migrated_v1';
+  const STORAGE_LANDING_SEED = 'ba_landing_seed';
+  const STORAGE_BARBERIA_ID = 'ba_barberia_id';
+  const STORAGE_BARBERIA_SLUG = 'ba_barberia_slug';
+  const DEFAULT_SELECTOR_URL = '/landing_plantilla/';
+  const DEFAULT_REGISTRO_URL = 'https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/';
+  const DEFAULT_UPLOAD_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-live';
+  const DEFAULT_UPLOAD_ENDPOINT_V2 = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-v2';
+  const DEFAULT_UPLOAD_ENDPOINT_LEGACY = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload';
+  const DEFAULT_SAVE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/save-v2';
+  const DEFAULT_DRAFT_SAVE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/draft/save';
+  const DEFAULT_DRAFT_GET_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/draft/get';
+  const DEFAULT_PUBLIC_PROFILE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public';
+  const MOBILE_BREAKPOINT = 900;
+  const MOBILE_LOGO_WIDTH_DEFAULT = '20';
+  const DESKTOP_LOGO_WIDTH_DEFAULT = '50';
+
+  const CONFIG = {
+    selectorUrl: String(window.BA_SELECTOR_URL || DEFAULT_SELECTOR_URL).trim(),
+    registroUrl: String(window.BA_REGISTRO_URL || DEFAULT_REGISTRO_URL).trim(),
+    uploadEndpoint: String(window.BA_UPLOAD_ENDPOINT || DEFAULT_UPLOAD_ENDPOINT).trim(),
+    saveEndpoint: String(window.BA_SAVE_ENDPOINT || DEFAULT_SAVE_ENDPOINT).trim(),
+    draftSaveEndpoint: String(window.BA_DRAFT_SAVE_ENDPOINT || DEFAULT_DRAFT_SAVE_ENDPOINT).trim(),
+    draftGetEndpoint: String(window.BA_DRAFT_GET_ENDPOINT || DEFAULT_DRAFT_GET_ENDPOINT).trim(),
+    publicProfileEndpoint: String(window.BA_PUBLIC_PROFILE_ENDPOINT || DEFAULT_PUBLIC_PROFILE_ENDPOINT).trim(),
+    uploadPublicBase: String(window.BA_UPLOAD_PUBLIC_BASE || window.BA_R2_PUBLIC_BASE || '').trim(),
+    forceDirectTemplateUrls: String(window.BA_FORCE_DIRECT_TEMPLATE_URLS || '').trim() === '1'
+  };
+
+  function getUploadEndpointCandidates() {
+    const primary = safeText(CONFIG.uploadEndpoint) || DEFAULT_UPLOAD_ENDPOINT;
+    const defaults = [DEFAULT_UPLOAD_ENDPOINT, DEFAULT_UPLOAD_ENDPOINT_V2, DEFAULT_UPLOAD_ENDPOINT_LEGACY];
+    const candidates = [primary];
+    defaults.forEach((endpoint) => {
+      const clean = safeText(endpoint);
+      if (clean && !candidates.includes(clean)) candidates.push(clean);
+    });
+    return candidates;
+  }
+
+  function buildUploadPublicUrl(uploadResponse, file) {
+    const response = uploadResponse && typeof uploadResponse === 'object' ? uploadResponse : {};
+    const base =
+      safeText(
+        response.public_base_url ||
+        response.publicBaseUrl ||
+        response.base_url ||
+        response.baseUrl ||
+        response.upload_base_url ||
+        response.uploadBaseUrl ||
+        CONFIG.uploadPublicBase
+      ).replace(/\/+$/, '');
+    const key = safeText(response.key || response.object_key || response.objectKey || response.path || response.file_path);
+    const sourceUrl = safeText(
+      response.url ||
+      response.source_url ||
+      response.sourceUrl ||
+      response.location ||
+      response.public_url ||
+      response.publicUrl ||
+      response.file_url ||
+      response.fileUrl
+    );
+
+    if (sourceUrl) return sourceUrl;
+    if (base && key) return `${base}/${key.replace(/^\/+/, '')}`;
+    if (base) {
+      const fileName = safeText(file?.name || response.filename || response.file_name || '');
+      return fileName ? `${base}/${fileName.replace(/^\/+/, '')}` : base;
+    }
+    return safeText(response.file_url || response.fileUrl || response.filename || response.file_name || file?.name || '');
+  }
+
+  // Overrides de rutas públicas para plantillas con slug especial.
+  const TEMPLATE_PUBLIC_PATH_OVERRIDES = {
+    'index_unico_v2': '/index_unico_v2/',
+    'index_unico_v3_nueva': '/index_unico_v3_nueva/',
+    'index_unico_v4_editorial': '/index_unico_v4_editorial/',
+    'index_unico_v5_1_azul_rojo_elegante': '/index_unico_v5_1_azul_rojo_elegante/',
+    'index_unico_v6_negro_dorado': '/index_unico_v6_negro_dorado/',
+    'index_unicov7': '/index_unicov7/'
+  };
+
+  const el = {
+    goRegistro: document.getElementById('goRegistro'),
+    goSelector: document.getElementById('goSelector'),
+    openFinalPreview: document.getElementById('openFinalPreview'),
+    saveDraft: document.getElementById('saveDraft'),
+    publish: document.getElementById('publish'),
+    resetPalette: document.getElementById('resetPalette'),
+    bizName: document.getElementById('biz_name'),
+    logoWidth: document.getElementById('logo_width'),
+    fontPair: document.getElementById('font_pair'),
+    heroKicker: document.getElementById('hero_kicker'),
+    heroTitle: document.getElementById('hero_title'),
+    heroSubtitle: document.getElementById('hero_subtitle'),
+    heroBtnPrimary: document.getElementById('hero_btn_primary'),
+    heroBtnSecondary: document.getElementById('hero_btn_secondary'),
+    palettePrimary: document.getElementById('palette_primary'),
+    paletteSecondary: document.getElementById('palette_secondary'),
+    paletteAccent: document.getElementById('palette_accent'),
+    paletteText: document.getElementById('palette_text'),
+    bizNameLabel: document.getElementById('biz_name_label'),
+    bizSlug: document.getElementById('biz_slug'),
+    logoInput: document.getElementById('in_logo_url'),
+    coverInput: document.getElementById('in_cover_url'),
+    logoWrap: document.getElementById('up_logo_url'),
+    coverWrap: document.getElementById('up_cover_url'),
+    logoImg: document.getElementById('img_logo_url'),
+    coverImg: document.getElementById('img_cover_url'),
+    logoUrl: document.getElementById('logo_url'),
+    coverUrl: document.getElementById('cover_url'),
+    mapsUrl: document.getElementById('maps_url'),
+    address: document.getElementById('address'),
+    seedMeta: document.getElementById('baSeedMeta'),
+    inheritedServices: document.getElementById('baInheritedServices'),
+    inheritedBarbers: document.getElementById('baInheritedBarbers'),
+    inheritedHours: document.getElementById('baInheritedHours'),
+    templateName: document.getElementById('templateName'),
+    chips: document.getElementById('tplChips'),
+    frame: document.getElementById('preview')
+  };
+
+  const mobileDock = document.getElementById('baMobileDock');
+  const mobileScrim = document.getElementById('baMobileScrim');
+  const sheetHandle = document.getElementById('baSheetHandle');
+  const finalPreviewWrap = document.getElementById('baFinalPreview');
+  const finalPreviewFrame = document.getElementById('baFinalPreviewFrame');
+  const finalPreviewClose = document.getElementById('baFinalPreviewClose');
+  const settingsDrawer = document.getElementById('baSettingsDrawer');
+  const drawerBizName = document.getElementById('baDrawerBizName');
+  const drawerAccent = document.getElementById('baDrawerAccent');
+  const drawerClose = document.getElementById('baDrawerClose');
+  const themeDockBtn = document.getElementById('baThemeToggleBtn');
+  const themeDockIcon = document.getElementById('baThemeDockIcon');
+
+  const templates = (() => {
+    try {
+      const raw = document.getElementById('ba-templates-json')?.textContent || '[]';
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch (_) {
+      return [];
+    }
+  })();
+
+  if (!templates.length) return;
+  const byId = Object.fromEntries(templates.map((t) => [String(t.id || ''), t]));
+  const tempBlob = { logo: '', cover: '' };
+  const runtimePreview = { logo: '', cover: '' };
+  const runtimePublishData = { public_landing_url: '', qr_url: '', reservation_url: '' };
+  const paletteByTemplate = {};
+  let paletteTouched = false;
+  const FONT_PRESETS = {
+    dm_plusjakarta: {
+      body: "'DM Sans', 'Plus Jakarta Sans', sans-serif",
+      heading: "'Plus Jakarta Sans', 'DM Sans', sans-serif",
+      href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+    },
+    inter_montserrat: {
+      body: "'Inter', sans-serif",
+      heading: "'Montserrat', 'Inter', sans-serif",
+      href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Montserrat:wght@500;600;700;800&display=swap"
+    },
+    poppins_lora: {
+      body: "'Poppins', sans-serif",
+      heading: "'Lora', serif",
+      href: "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lora:wght@500;600;700&display=swap"
+    },
+    manrope_playfair: {
+      body: "'Manrope', sans-serif",
+      heading: "'Playfair Display', serif",
+      href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Playfair+Display:wght@600;700&display=swap"
+    },
+    outfit_spacegrotesk: {
+      body: "'Outfit', sans-serif",
+      heading: "'Space Grotesk', 'Outfit', sans-serif",
+      href: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap"
+    }
+  };
+  const TEMPLATE_HERO_KICKERS = {
+    v2: 'Tu mejor versión empieza hoy',
+    v3: 'Agenda en 60 segundos',
+    v4: 'Tu imagen decide por ti',
+    v5: 'Reserva hoy, luce impecable',
+    v6: 'Exclusividad que si se nota',
+    v7: 'Nueva propuesta para reservar mejor'
+  };
+  const TEMPLATE_HERO_TITLES = {
+    v2: 'Tu look empieza con una cita bien hecha',
+    v3: 'Un cambio simple que se nota',
+    v4: 'Imagen cuidada desde la primera visita',
+    v5: 'Estilo sobrio con presencia impecable',
+    v6: 'Elegancia premium en cada detalle',
+    v7: 'Landing nueva lista para convertir citas'
+  };
+  const TEMPLATE_HERO_SUBTITLES = {
+    v2: 'Cortes premium, barberos expertos y reserva en menos de un minuto.',
+    v3: 'Una experiencia moderna para reservar fácil y verte mejor.',
+    v4: 'Una propuesta clara, elegante y lista para convertir reservas.',
+    v5: 'Una imagen refinada con una reserva simple y sin friccion.',
+    v6: 'Una experiencia exclusiva con estilo fuerte y reserva inmediata.',
+    v7: 'Diseno actualizado, mensaje claro y reserva en segundos.'
+  };
+  const TEMPLATE_HERO_KICKER_VALUES = Object.values(TEMPLATE_HERO_KICKERS).map((v) => safeText(v).toLowerCase());
+  const TEMPLATE_HERO_TITLE_VALUES = Object.values(TEMPLATE_HERO_TITLES).map((v) => safeText(v).toLowerCase());
+  const TEMPLATE_HERO_SUBTITLE_VALUES = Object.values(TEMPLATE_HERO_SUBTITLES).map((v) => safeText(v).toLowerCase());
+  const TEMPLATE_RESERVE_COPY = {
+    v2: {
+      card: '#reservar .col-lg-5 .block',
+      title: 'Tu cita lista en minutos',
+      text: 'Reserva fácil, elige el servicio ideal y asegura una experiencia cómoda desde el primer paso.',
+      bullets: [
+        'Reserva cuando quieras, sin esperar respuesta',
+        'Encuentra tu servicio y horario en un solo flujo',
+        'Confirma tu cita desde cualquier dispositivo'
+      ]
+    },
+    v3: {
+      card: '#reservas .col-lg-6.order-lg-1 .panel',
+      title: 'Reserva rápido y sal con tu mejor versión',
+      text: 'Elige tu servicio, reserva con tu profesional ideal y asegura tu horario en un proceso simple y cómodo.',
+      primaryBtn: 'Ver estilo de la barbería',
+      secondaryBtn: 'Ver Ubicación y llegar fácil'
+    },
+    v4: {
+      card: '#reservas .col-lg-5 .panel',
+      title: 'Tu cita lista, sin complicaciones',
+      text: 'Reserva con rapidez, elige el servicio que necesitas y asegura un horario cómodo para tu rutina.',
+      primaryBtn: 'Conocer la barbería',
+      secondaryBtn: 'Ver informacion destacada'
+    },
+    v5: {
+      card: '#reservas .col-lg-6 .panel:not(.reserve-box)',
+      title: 'Tu cita lista en menos tiempo',
+      text: 'Elige el servicio que quieres, reserva con tu barbero ideal y asegura un espacio cómodo para verte impecable.',
+      primaryBtn: 'Ver estilo de la barbería',
+      secondaryBtn: 'Ver Ubicación y llegar fácil'
+    },
+    v6: {
+      card: '#reservas .col-lg-6 .panel:not(.reserve-form)',
+      title: 'Reserva premium, sin perder tiempo',
+      text: 'Agenda en segundos, elige el servicio perfecto y asegura una atención exclusiva en el horario que prefieras.',
+      primaryBtn: 'Descubrir la barberia',
+      secondaryBtn: 'Ver Ubicación y llegada'
+    }
+  };
+  const DEFAULT_SERVICE_ICONS = ['bi-scissors', 'bi-stars', 'bi-bezier2', 'bi-lightning-charge', 'bi-droplet-half', 'bi-brush'];
+  const DEFAULT_BARBER_PHOTOS = [
+    './assets/barberos/Barbero1.png',
+    './assets/barberos/Barbero2.png',
+    './assets/barberos/Barbero3.png',
+    './assets/barberos/Barbero4.png'
+  ];
+  const seedLandingData = readLandingSeed();
+  const inheritedCollections = {
+    services: normalizeInheritedServices(seedLandingData?.servicios),
+    barbers: normalizeInheritedBarbers(seedLandingData?.barberos),
+    hours: normalizeInheritedHours(seedLandingData?.horarios)
+  };
+
+  function getSafeStorage(storage, key) {
+    try {
+      return storage?.getItem(key) || '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function setSafeStorage(storage, key, value) {
+    try {
+      storage?.setItem(key, value);
+    } catch (_) {}
+  }
+
+  function hasHttpOrigin() {
+    const origin = safeText(location.origin);
+    return /^https?:\/\//i.test(origin);
+  }
+
+  function getSelectedId() {
+    return (
+      new URLSearchParams(location.search).get('tpl') ||
+      getSafeStorage(localStorage, STORAGE_TEMPLATE) ||
+      templates[0].id
+    );
+  }
+
+  function setSelectedId(id) {
+    const safeId = safeText(id) || templates[0].id;
+    setSafeStorage(localStorage, STORAGE_TEMPLATE, safeId);
+    try {
+      const u = new URL(location.href);
+      u.searchParams.set('tpl', safeId);
+      history.replaceState({}, '', u.toString());
+    } catch (_) {}
+    paletteTouched = !!paletteByTemplate[safeId]?.touched;
+  }
+
+  function fileToUrl(file) {
+    const f = String(file || '').trim();
+    if (!f) return 'about:blank';
+    if (/^https?:\/\//i.test(f)) return f;
+    if (isLocalPreviewRuntime() || CONFIG.forceDirectTemplateUrls) {
+      return fileToDirectUrl(f);
+    }
+    if (f.startsWith('/')) {
+      return hasHttpOrigin() ? location.origin + f : `./${f.replace(/^\/+/, '')}`;
+    }
+    const cleanFile = f.replace(/^\/+/, '').replace(/\/+$/, '');
+    const slug = cleanFile.replace(/\.html?$/i, '');
+    const overridePath = TEMPLATE_PUBLIC_PATH_OVERRIDES[slug];
+    if (overridePath && hasHttpOrigin()) {
+      return `${location.origin}${overridePath}`;
+    }
+    if (/\.html?$/i.test(cleanFile) && hasHttpOrigin()) {
+      return `${location.origin}/${cleanFile}/`;
+    }
+    if (hasHttpOrigin()) {
+      return `${location.origin}/${slug}/`;
+    }
+    return `./${cleanFile}`;
+  }
+
+  function fileToDirectUrl(file) {
+    const f = String(file || '').trim();
+    if (!f) return 'about:blank';
+    if (/^https?:\/\//i.test(f)) return f;
+    if (f.startsWith('/')) {
+      if (hasHttpOrigin()) return location.origin + f;
+      return `./${f.replace(/^\/+/, '')}`;
+    }
+    const clean = f.replace(/^\/+/, '');
+    if (hasHttpOrigin()) {
+      try {
+        return new URL(clean, location.href).toString();
+      } catch (_) {
+        return `${location.origin}/${clean}`;
+      }
+    }
+    return `./${clean}`;
+  }
+
+  function isLocalPreviewRuntime() {
+    const host = safeText(location.hostname).toLowerCase();
+    if (location.protocol === 'file:') return true;
+    if (host === 'localhost' || host === '127.0.0.1' || host === '::1') return true;
+    if (/^10\./.test(host)) return true;
+    if (/^192\.168\./.test(host)) return true;
+    if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(host)) return true;
+    if (/\.local$/.test(host)) return true;
+    return false;
+  }
+
+  function debounce(func, wait) {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  }
+
+  function toSlug(str) {
+    const s = String(str || '').trim().toLowerCase();
+    const a = 'Ã Ã¡Ã¢Ã¤Ã¦Ã£Ã¥ÄÄƒÄ…Ã§Ä‡ÄÄ‘ÄÃ¨Ã©ÃªÃ«Ä“Ä—Ä™Ä›ÄŸÇµá¸§Ã®Ã¯Ã­Ä«Ä¯Ã¬Å‚á¸¿Ã±Å„Ç¹ÅˆÃ´Ã¶Ã²Ã³Å“Ã¸ÅÃµÅ‘á¹•Å•Å™ÃŸÅ›Å¡ÅŸÈ™Å¥È›Ã»Ã¼Ã¹ÃºÅ«Ç˜Å¯Å±Å³áºƒáºÃ¿Ã½Å¾ÅºÅ¼Â·/_,:;';
+    const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------';
+    const p = new RegExp(a.split('').join('|'), 'g');
+    return s.replace(p, c => b.charAt(a.indexOf(c)))
+      .replace(/&/g, '-and-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-')
+      .replace(/^-+/, '')
+      .replace(/-+$/, '');
+  }
+
+  function safeText(s) {
+    return String(s || '').trim();
+  }
+
+  function normalizeSlotMin(value, fallback = 30) {
+    const allowed = [5, 10, 15, 20, 30];
+    const parsed = Number(value);
+    return allowed.includes(parsed) ? parsed : fallback;
+  }
+
+  function getQueryParam(name) {
+    try {
+      return safeText(new URLSearchParams(location.search).get(name));
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function getQueryNumberParam(...keys) {
+    for (const key of keys) {
+      const parsed = Number(getQueryParam(key));
+      if (Number.isFinite(parsed) && parsed > 0) return parsed;
+    }
+    return 0;
+  }
+
+  function isHttpUrl(value) {
+    return /^https?:\/\//i.test(safeText(value));
+  }
+
+  function isMobileViewport() {
+    return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches;
+  }
+
+  function getDefaultLogoWidth() {
+    return isMobileViewport() ? MOBILE_LOGO_WIDTH_DEFAULT : DESKTOP_LOGO_WIDTH_DEFAULT;
+  }
+
+  function buildMapsEmbedUrl(address) {
+    const cleanAddress = safeText(address);
+    return cleanAddress ? `https://www.google.com/maps?q=${encodeURIComponent(cleanAddress)}&output=embed` : '';
+  }
+
+  function isDefaultBizName(value) {
+    const cleanValue = safeText(value).toLowerCase();
+    return !cleanValue || cleanValue === 'barber agency';
+  }
+
+  function isDefaultAddress(value) {
+    const cleanValue = safeText(value).toLowerCase();
+    return !cleanValue || cleanValue === 'calle principal';
+  }
+
+  function readLandingSeed() {
+    try {
+      const sessionSeedRaw = getSafeStorage(sessionStorage, STORAGE_LANDING_SEED);
+      const localSeedRaw = getSafeStorage(localStorage, STORAGE_LANDING_SEED);
+      const rawSeed = sessionSeedRaw || localSeedRaw;
+      if (rawSeed) {
+        const sessionSeed = JSON.parse(rawSeed);
+        const barberia = sessionSeed?.barberia && typeof sessionSeed.barberia === 'object'
+          ? sessionSeed.barberia
+          : {};
+        return {
+          ...sessionSeed,
+          barberia_id: Number(sessionSeed?.barberia_id) || Number(barberia?.id) || Number(barberia?.barberia_id) || 0,
+          id_barberia: Number(sessionSeed?.id_barberia) || Number(barberia?.id) || Number(barberia?.barberia_id) || 0,
+          id: Number(sessionSeed?.id) || Number(barberia?.id) || 0,
+          slug: safeText(sessionSeed?.slug) || safeText(barberia?.slug),
+          nombre: safeText(sessionSeed?.nombre) || safeText(barberia?.nombre),
+          ciudad: safeText(sessionSeed?.ciudad) || safeText(barberia?.ciudad),
+          direccion: safeText(sessionSeed?.direccion) || safeText(barberia?.direccion),
+          telefono: safeText(sessionSeed?.telefono) || safeText(barberia?.telefono),
+          qr_url: safeText(sessionSeed?.qr_url) || safeText(barberia?.qr_url),
+          public_landing_url:
+            safeText(sessionSeed?.public_landing_url) ||
+            safeText(sessionSeed?.landing_url) ||
+            safeText(sessionSeed?.url_publica) ||
+            safeText(sessionSeed?.url_public_landing) ||
+            safeText(barberia?.public_landing_url) ||
+            safeText(barberia?.landing_url) ||
+            safeText(barberia?.url_publica) ||
+            safeText(barberia?.url_public_landing),
+          reservation_url:
+            safeText(sessionSeed?.reservation_url) ||
+            safeText(sessionSeed?.url_reservas) ||
+            safeText(barberia?.reservation_url) ||
+            safeText(barberia?.url_reservas),
+          slot_min: normalizeSlotMin(sessionSeed?.slot_min || barberia?.slot_min, 30),
+          servicios: Array.isArray(sessionSeed?.servicios) ? sessionSeed.servicios : [],
+          barberos: Array.isArray(sessionSeed?.barberos) ? sessionSeed.barberos : [],
+          horarios: Array.isArray(sessionSeed?.horarios) ? sessionSeed.horarios : []
+        };
+      }
+
+      const el = document.getElementById('ba-seed-data');
+      return JSON.parse(el?.textContent || '{}');
+    } catch (_) {
+      return {};
+    }
+  }
+
+  function readOnboardingDraftAddress() {
+    const extractAddress = (parsed) => {
+      if (!parsed || typeof parsed !== 'object') return '';
+      const direct = safeText(parsed?.barberia?.direccion) || safeText(parsed?.direccion);
+      if (direct) return direct;
+      const fromDraft = safeText(parsed?.draft?.barberia?.direccion) || safeText(parsed?.draft?.direccion);
+      if (fromDraft) return fromDraft;
+      return '';
+    };
+
+    try {
+      const localRaw = getSafeStorage(localStorage, STORAGE_ONBOARDING_DRAFT);
+      if (localRaw) {
+        const localParsed = JSON.parse(localRaw);
+        const localAddress = extractAddress(localParsed);
+        if (localAddress) return localAddress;
+      }
+    } catch (_) {
+      // noop
+    }
+
+    try {
+      const sessionRaw = getSafeStorage(sessionStorage, STORAGE_ONBOARDING_DRAFT);
+      if (sessionRaw) {
+        const sessionParsed = JSON.parse(sessionRaw);
+        const sessionAddress = extractAddress(sessionParsed);
+        if (sessionAddress) return sessionAddress;
+      }
+    } catch (_) {
+      // noop
+    }
+
+    return '';
+  }
+
+  function getPreferredAddressValue() {
+    return (
+      readOnboardingDraftAddress() ||
+      safeText(seedLandingData?.direccion) ||
+      safeText(seedLandingData?.barberia?.direccion) ||
+      ''
+    );
+  }
+
+  function enforcePreferredAddress(options = {}) {
+    const force = options?.force === true;
+    const preferred = getPreferredAddressValue();
+    if (!preferred) return;
+    if (!force && safeText(el.address?.value)) return;
+    el.address.value = preferred;
+    el.mapsUrl.value = buildMapsEmbedUrl(preferred);
+    seedLandingData.direccion = preferred;
+    if (seedLandingData?.barberia && typeof seedLandingData.barberia === 'object') {
+      seedLandingData.barberia.direccion = preferred;
+    }
+  }
+
+  function normalizeInheritedServices(items) {
+    const safe = Array.isArray(items) ? items : [];
+    return safe.map((item, i) => ({
+      name: safeText(item?.name || item?.nombre || `Servicio ${i + 1}`),
+      nombre: safeText(item?.nombre || item?.name || `Servicio ${i + 1}`),
+      description: safeText(item?.description || item?.descripcion || 'Trabajo profesional con acabados premium.'),
+      descripcion: safeText(item?.descripcion || item?.description || 'Trabajo profesional con acabados premium.'),
+      icon: safeText(item?.icon || DEFAULT_SERVICE_ICONS[i % DEFAULT_SERVICE_ICONS.length]),
+      duration_min: Number(item?.duration_min || item?.duracion_min || 45),
+      duracion_min: Number(item?.duracion_min || item?.duration_min || 45),
+      price: Math.max(0, Number(item?.price || item?.precio || 0)),
+      precio: Math.max(0, Number(item?.precio || item?.price || 0))
+    })).slice(0, 6);
+  }
+
+  function normalizeInheritedBarbers(items) {
+    const safe = Array.isArray(items) ? items : [];
+    return safe.map((item, i) => ({
+      name: safeText(item?.name || item?.nombre || `Barbero ${i + 1}`),
+      nombre: safeText(item?.nombre || item?.name || `Barbero ${i + 1}`),
+      photo: safeText(item?.photo || item?.foto || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
+      foto: safeText(item?.foto || item?.photo || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length])
+    })).slice(0, 4);
+  }
+
+  function normalizeInheritedHours(items) {
+    const safe = Array.isArray(items) ? items : [];
+    return safe
+      .map((item) => ({
+        dia: safeText(item?.dia),
+        activo: Boolean(item?.activo),
+        hora_abre: safeText(item?.hora_abre),
+        hora_cierra: safeText(item?.hora_cierra)
+      }))
+      .filter((item) => item.dia);
+  }
+
+  function applyInheritedCollectionsFromPayload(payload) {
+    const source = payload && typeof payload === 'object' ? payload : {};
+    const nextServices = normalizeInheritedServices(
+      source?.servicios ||
+      source?.inherited?.servicios ||
+      source?.data?.servicios
+    );
+    const nextBarbers = normalizeInheritedBarbers(
+      source?.barberos ||
+      source?.inherited?.barberos ||
+      source?.data?.barberos
+    );
+    const nextHours = normalizeInheritedHours(
+      source?.horarios ||
+      source?.inherited?.horarios ||
+      source?.data?.horarios
+    );
+
+    if (nextServices.length) {
+      inheritedCollections.services.splice(0, inheritedCollections.services.length, ...nextServices);
+    }
+    if (nextBarbers.length) {
+      inheritedCollections.barbers.splice(0, inheritedCollections.barbers.length, ...nextBarbers);
+    }
+    if (nextHours.length) {
+      inheritedCollections.hours.splice(0, inheritedCollections.hours.length, ...nextHours);
+    }
+
+    renderInheritedSeedSummary();
+  }
+
+  function syncSeedIdentityFromPublicProfile(payload) {
+    const source = payload && typeof payload === 'object' ? payload : {};
+    const profile = source?.profile && typeof source.profile === 'object' ? source.profile : {};
+    const barberia = source?.barberia && typeof source.barberia === 'object' ? source.barberia : {};
+    const dataBarberia = source?.data?.barberia && typeof source.data.barberia === 'object' ? source.data.barberia : {};
+    const merged = { ...dataBarberia, ...barberia, ...profile };
+
+    const nextName =
+      safeText(merged?.nombre) ||
+      safeText(source?.nombre) ||
+      safeText(source?.inherited?.nombre);
+    const nextAddress =
+      safeText(merged?.direccion) ||
+      safeText(merged?.location_address) ||
+      safeText(source?.branding?.location_address) ||
+      safeText(source?.direccion) ||
+      safeText(source?.inherited?.direccion);
+    const nextSlug =
+      safeText(merged?.slug) ||
+      safeText(source?.slug) ||
+      safeText(source?.inherited?.slug);
+    const nextBarberiaId =
+      Number(merged?.barberia_id) ||
+      Number(merged?.id_barberia) ||
+      Number(merged?.id) ||
+      Number(source?.barberia_id) ||
+      Number(source?.id_barberia) ||
+      Number(source?.data?.barberia_id) ||
+      0;
+    const nextMapsUrl =
+      safeText(source?.maps_url) ||
+      safeText(source?.map_url) ||
+      safeText(source?.branding?.location_map_url) ||
+      safeText(merged?.maps_url) ||
+      safeText(merged?.map_url) ||
+      buildMapsEmbedUrl(nextAddress);
+
+    if (!safeText(seedLandingData.nombre) && nextName) seedLandingData.nombre = nextName;
+    if (!safeText(seedLandingData.direccion) && nextAddress) seedLandingData.direccion = nextAddress;
+    if (nextSlug) seedLandingData.slug = nextSlug;
+    if (nextBarberiaId > 0) {
+      seedLandingData.barberia_id = nextBarberiaId;
+      seedLandingData.id_barberia = nextBarberiaId;
+      if (!Number(seedLandingData.id)) seedLandingData.id = nextBarberiaId;
+    }
+    if (!safeText(seedLandingData.maps_url) && nextMapsUrl) seedLandingData.maps_url = nextMapsUrl;
+  }
+
+  async function hydrateInheritedFromPublicProfile() {
+    const endpoint = safeText(CONFIG.publicProfileEndpoint) || DEFAULT_PUBLIC_PROFILE_ENDPOINT;
+    const identity = getSeedIdentity();
+    if (!endpoint) return false;
+    if (!(Number(identity.barberia_id) > 0) && !safeText(identity.slug)) return false;
+
+    try {
+      const query = safeText(identity.slug)
+        ? `slug=${encodeURIComponent(safeText(identity.slug))}`
+        : `barberia_id=${encodeURIComponent(String(Number(identity.barberia_id) || 0))}`;
+      const requestUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${query}`;
+      const response = await fetch(requestUrl, {
+        method: 'GET',
+        headers: { Accept: 'application/json' }
+      });
+      const json = await response.json().catch(() => ({}));
+      if (!response.ok || json?.ok === false) return false;
+
+      applyInheritedCollectionsFromPayload(json);
+      syncSeedIdentityFromPublicProfile(json);
+      persistPublishedIdentityFromResponse(json);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function applySeedDefaults() {
+    const identity = getSeedIdentity();
+    const hasOnboardingContext =
+      Number(seedLandingData?.barberia_id) > 0 ||
+      Number(seedLandingData?.id_barberia) > 0 ||
+      Number(seedLandingData?.id) > 0 ||
+      Number(getQueryParam('barberia_id')) > 0 ||
+      Number(getQueryParam('id_barberia')) > 0 ||
+      !!safeText(seedLandingData?.slug) ||
+      !!safeText(getQueryParam('slug')) ||
+      !!safeText(getQueryParam('barberia_slug'));
+    const seedName = safeText(seedLandingData?.nombre) || safeText(identity.nombre);
+    const seedAddress = safeText(seedLandingData?.direccion) || safeText(identity.direccion);
+    const seedMapsUrl =
+      safeText(seedLandingData?.maps_url) ||
+      safeText(seedLandingData?.map_url) ||
+      buildMapsEmbedUrl(seedAddress);
+
+    const seedLogoUrl =
+      safeText(seedLandingData?.logo_url) ||
+      safeText(seedLandingData?.barberia?.logo_url) ||
+      safeText(seedLandingData?.branding?.logo_url);
+
+    const seedPrimary =
+      safeText(seedLandingData?.palette_primary) ||
+      safeText(seedLandingData?.color_primary) ||
+      safeText(seedLandingData?.barberia?.palette_primary) ||
+      safeText(seedLandingData?.barberia?.color_primary);
+
+    const seedSecondary =
+      safeText(seedLandingData?.palette_secondary) ||
+      safeText(seedLandingData?.color_secondary) ||
+      safeText(seedLandingData?.barberia?.palette_secondary) ||
+      safeText(seedLandingData?.barberia?.color_secondary);
+
+    const seedAccent =
+      safeText(seedLandingData?.palette_accent) ||
+      safeText(seedLandingData?.barberia?.palette_accent);
+
+    const seedTextColor =
+      safeText(seedLandingData?.palette_text) ||
+      safeText(seedLandingData?.barberia?.palette_text);
+
+    if (seedName && isDefaultBizName(el.bizName.value)) {
+      el.bizName.value = seedName;
+    }
+    if (seedAddress && isDefaultAddress(el.address.value)) {
+      el.address.value = seedAddress;
+    }
+    if (seedMapsUrl && !safeText(el.mapsUrl.value)) {
+      el.mapsUrl.value = seedMapsUrl;
+    }
+
+    if (seedLogoUrl && (hasOnboardingContext || !safeText(el.logoUrl.value))) {
+      el.logoUrl.value = seedLogoUrl;
+      el.logoImg.src = seedLogoUrl;
+      el.logoWrap.classList.add('has-image');
+      runtimePreview.logo = seedLogoUrl;
+    }
+
+    if (seedPrimary && (hasOnboardingContext || !safeText(el.palettePrimary.value))) {
+      el.palettePrimary.value = seedPrimary;
+    }
+    if (seedSecondary && (hasOnboardingContext || !safeText(el.paletteSecondary.value))) {
+      el.paletteSecondary.value = seedSecondary;
+    }
+    if (seedAccent && (hasOnboardingContext || !safeText(el.paletteAccent.value))) {
+      el.paletteAccent.value = seedAccent;
+    }
+    if (seedTextColor && (hasOnboardingContext || !safeText(el.paletteText.value))) {
+      el.paletteText.value = seedTextColor;
+    }
+
+    if (seedPrimary || seedSecondary || seedAccent || seedTextColor) {
+      paletteTouched = true;
+      persistPaletteForTemplate(getSelectedId(), true);
+    }
+  }
+
+  function forceSeedIdentityIntoPanel(options = {}) {
+    const force = options?.force === true;
+    const identity = getSeedIdentity();
+    const seedName = safeText(seedLandingData?.nombre) || safeText(identity.nombre);
+    const seedAddress = safeText(seedLandingData?.direccion) || safeText(identity.direccion);
+    const seedMapsUrl =
+      safeText(seedLandingData?.maps_url) ||
+      safeText(seedLandingData?.map_url) ||
+      buildMapsEmbedUrl(seedAddress);
+
+    if (seedName && (force || isDefaultBizName(el.bizName.value))) {
+      el.bizName.value = seedName;
+      el.bizNameLabel.textContent = seedName;
+    }
+    if (seedAddress && (force || isDefaultAddress(el.address.value))) {
+      el.address.value = seedAddress;
+    }
+    if (seedMapsUrl && (force || !safeText(el.mapsUrl.value))) {
+      el.mapsUrl.value = seedMapsUrl;
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function buildSeedChips(items, emptyLabel, formatter) {
+    const safeItems = Array.isArray(items) ? items : [];
+    if (!safeItems.length) {
+      return `<span class="ba-seed-chip is-empty">${escapeHtml(emptyLabel)}</span>`;
+    }
+    return safeItems
+      .map((item, index) => {
+        const label = safeText(typeof formatter === 'function' ? formatter(item, index) : item);
+        return label ? `<span class="ba-seed-chip">${escapeHtml(label)}</span>` : '';
+      })
+      .filter(Boolean)
+      .join('');
+  }
+
+  function formatInheritedHour(item) {
+    const day = safeText(item?.dia);
+    const opens = safeText(item?.hora_abre);
+    const closes = safeText(item?.hora_cierra);
+    if (!day) return '';
+    if (!item?.activo) return `${day}: cerrado`;
+    if (opens && closes) return `${day}: ${opens} - ${closes}`;
+    return day;
+  }
+
+  function renderInheritedSeedSummary() {
+    const identity = getSeedIdentity();
+    const meta = [];
+    if (identity.barberia_id > 0) meta.push(`ID ${identity.barberia_id}`);
+    if (safeText(identity.slug)) meta.push(`slug ${identity.slug}`);
+    if (safeText(seedLandingData?.nombre || identity.nombre)) {
+      meta.push(safeText(seedLandingData?.nombre || identity.nombre));
+    }
+
+    if (el.seedMeta) {
+      el.seedMeta.textContent = meta.length
+        ? `Semilla cargada: ${meta.join(' Â· ')}`
+        : 'No se detecto semilla heredada todavia.';
+    }
+    if (el.inheritedServices) {
+      el.inheritedServices.innerHTML = buildSeedChips(
+        inheritedCollections.services,
+        'Sin servicios heredados',
+        (item) => item?.name
+      );
+    }
+    if (el.inheritedBarbers) {
+      el.inheritedBarbers.innerHTML = buildSeedChips(
+        inheritedCollections.barbers,
+        'Sin barberos heredados',
+        (item) => item?.name
+      );
+    }
+    if (el.inheritedHours) {
+      el.inheritedHours.innerHTML = buildSeedChips(
+        inheritedCollections.hours,
+        'Sin horarios heredados',
+        formatInheritedHour
+      );
+    }
+  }
+  
+  function getFormData() {
+    const biz_name = safeText(el.bizName.value) || 'Barber Agency';
+    const tplId = getSelectedId();
+    const hero_title = safeText(el.heroTitle.value) || TEMPLATE_HERO_TITLES[tplId] || 'Reserva tu cita con estilo';
+    const hero_subtitle = safeText(el.heroSubtitle.value) || TEMPLATE_HERO_SUBTITLES[tplId] || 'Agenda fácil, proyecta mejor imagen y recibe más reservas.';
+    const paletteSecondary = el.paletteSecondary.value;
+    const paletteAccent = paletteTouched ? paletteSecondary : el.paletteAccent.value;
+    const mapsUrl = safeText(el.address.value)
+      ? buildMapsEmbedUrl(el.address.value)
+      : safeText(el.mapsUrl.value);
+    const slotMin = normalizeSlotMin(seedLandingData?.slot_min || seedLandingData?.barberia?.slot_min, 30);
+    return {
+      biz_name,
+      biz_slug: toSlug(biz_name),
+      font_pair: el.fontPair.value,
+      hero_kicker: el.heroKicker.value,
+      hero_title,
+      hero_subtitle,
+      hero_btn_primary: el.heroBtnPrimary.value,
+      hero_btn_secondary: el.heroBtnSecondary.value,
+      palette_primary: el.palettePrimary.value,
+      palette_secondary: paletteSecondary,
+      palette_accent: paletteAccent,
+      palette_text: el.paletteText.value,
+      use_custom_palette: paletteTouched,
+      logo_url: el.logoUrl.value,
+      logo_width: el.logoWidth?.value || '50',
+      cover_url: el.coverUrl.value,
+      address: el.address.value,
+      maps_url: mapsUrl,
+      slot_min: slotMin,
+      servicios: inheritedCollections.services,
+      barberos: inheritedCollections.barbers,
+      horarios: inheritedCollections.hours
+    };
+  }
+
+  function getSeedIdentity() {
+    const queryBarberíaId = getQueryNumberParam(
+      'barberia_id',
+      'id_barberia',
+      'id',
+      'barberia',
+      'barberiaId',
+      'business_id',
+      'ba_barberia_id'
+    );
+    const storedBarberíaId =
+      Number(getSafeStorage(localStorage, STORAGE_BARBERIA_ID)) ||
+      0;
+    const runtimeBarberíaId =
+      Number(window.BA_BARBERIA_ID) ||
+      Number(window.BA_BUSINESS_ID) ||
+      0;
+    const barberiaId =
+      Number(seedLandingData?.barberia_id) ||
+      Number(seedLandingData?.id_barberia) ||
+      Number(seedLandingData?.id) ||
+      queryBarberíaId ||
+      runtimeBarberíaId ||
+      storedBarberíaId ||
+      0;
+
+    const querySlug =
+      getQueryParam('barberia_slug') ||
+      getQueryParam('slug') ||
+      getQueryParam('business_slug') ||
+      getQueryParam('ba_barberia_slug');
+    const storedSlug = getSafeStorage(localStorage, STORAGE_BARBERIA_SLUG);
+    const runtimeSlug =
+      safeText(window.BA_BARBERIA_SLUG) ||
+      safeText(window.BA_BUSINESS_SLUG);
+    const slug =
+      safeText(seedLandingData?.slug) ||
+      querySlug ||
+      runtimeSlug ||
+      storedSlug;
+
+    if (barberiaId > 0) {
+      setSafeStorage(localStorage, STORAGE_BARBERIA_ID, String(barberiaId));
+    }
+    if (slug) {
+      setSafeStorage(localStorage, STORAGE_BARBERIA_SLUG, slug);
+    }
+
+    return {
+      barberia_id: barberiaId > 0 ? barberiaId : 0,
+      slug,
+      nombre: safeText(seedLandingData?.nombre) || safeText(el.bizName.value) || 'Barber Agency',
+      ciudad: safeText(seedLandingData?.ciudad) || '',
+      direccion: safeText(seedLandingData?.direccion) || '',
+      telefono: safeText(seedLandingData?.telefono) || ''
+    };
+  }
+
+  function buildRegistroUrlWithIdentity(baseUrl) {
+    const target = safeText(baseUrl);
+    if (!target) return '';
+    try {
+      const identity = getSeedIdentity();
+      const url = new URL(target, window.location.origin);
+      if (identity.barberia_id > 0) {
+        url.searchParams.set('barberia_id', String(identity.barberia_id));
+        url.searchParams.set('id_barberia', String(identity.barberia_id));
+        url.searchParams.set('id', String(identity.barberia_id));
+        url.searchParams.set('barberia', String(identity.barberia_id));
+        url.searchParams.set('barberiaId', String(identity.barberia_id));
+        url.searchParams.set('business_id', String(identity.barberia_id));
+      }
+      if (safeText(identity.slug)) {
+        url.searchParams.set('slug', safeText(identity.slug));
+        url.searchParams.set('barberia_slug', safeText(identity.slug));
+        url.searchParams.set('business_slug', safeText(identity.slug));
+      }
+      url.searchParams.set('edit', '1');
+      url.searchParams.set('modo', 'editar');
+      url.searchParams.set('mode', 'edit');
+      url.searchParams.set('is_edit', '1');
+      url.searchParams.set('editing', '1');
+      url.searchParams.set('source', 'editor');
+      return url.toString();
+    } catch (_) {
+      return target;
+    }
+  }
+
+  function persistRegistroSeedContext() {
+    try {
+      const identity = getSeedIdentity();
+      const data = getFormData();
+      const existingSeedBarberos = Array.isArray(seedLandingData?.barberos) ? seedLandingData.barberos : [];
+      const existingSeedAccesos = seedLandingData?.accesos && typeof seedLandingData.accesos === 'object'
+        ? seedLandingData.accesos
+        : {};
+      const mergedBarberos = existingSeedBarberos.length
+        ? existingSeedBarberos.map((item, index) => {
+            const fallback = inheritedCollections.barbers[index] || {};
+            return {
+              ...item,
+              nombre: safeText(item?.nombre || item?.name || fallback?.nombre || fallback?.name),
+              name: safeText(item?.name || item?.nombre || fallback?.name || fallback?.nombre),
+              foto: safeText(item?.foto || item?.photo || fallback?.foto || fallback?.photo),
+              photo: safeText(item?.photo || item?.foto || fallback?.photo || fallback?.foto)
+            };
+          })
+        : inheritedCollections.barbers;
+      const seed = {
+        ...seedLandingData,
+        barberia_id: Number(identity.barberia_id) || 0,
+        id_barberia: Number(identity.barberia_id) || 0,
+        id: Number(identity.barberia_id) || 0,
+        slug: safeText(identity.slug) || safeText(data.biz_slug),
+        nombre: safeText(data.biz_name),
+        direccion: safeText(data.address),
+        reservation_url:
+          safeText(runtimePublishData.reservation_url) ||
+          safeText(seedLandingData?.reservation_url) ||
+          safeText(seedLandingData?.url_reservas),
+        qr_url:
+          safeText(runtimePublishData.qr_url) ||
+          safeText(seedLandingData?.qr_url),
+        public_landing_url:
+          safeText(runtimePublishData.public_landing_url) ||
+          safeText(seedLandingData?.public_landing_url) ||
+          safeText(seedLandingData?.landing_url) ||
+          safeText(seedLandingData?.url_publica) ||
+          safeText(seedLandingData?.url_public_landing),
+        edit_mode: true,
+        source: 'editor',
+        servicios: inheritedCollections.services,
+        barberos: mergedBarberos,
+        horarios: inheritedCollections.hours,
+        accesos: {
+          ...existingSeedAccesos,
+          admin: {
+            ...(existingSeedAccesos?.admin || {})
+          },
+          barberos: Array.isArray(existingSeedAccesos?.barberos)
+            ? existingSeedAccesos.barberos
+            : []
+        },
+        branding: {
+          ...(seedLandingData?.branding || {}),
+          logo_url: safeText(data.logo_url),
+          cover_url: safeText(data.cover_url),
+          color_primary: safeText(data.palette_primary),
+          color_secondary: safeText(data.palette_secondary),
+          color_text: safeText(data.palette_text),
+          hero_badge: safeText(data.hero_kicker),
+          hero_title: safeText(data.hero_title),
+          hero_subtitle: safeText(data.hero_subtitle),
+          cta_label: safeText(data.hero_btn_primary),
+          secondary_cta_label: safeText(data.hero_btn_secondary)
+        }
+      };
+
+      const raw = JSON.stringify(seed);
+      setSafeStorage(sessionStorage, STORAGE_LANDING_SEED, raw);
+      setSafeStorage(localStorage, STORAGE_LANDING_SEED, raw);
+      const barberiaIdRaw = String(Number(identity.barberia_id) || 0);
+      const slugRaw = safeText(identity.slug) || safeText(data.biz_slug);
+      const editCtx = JSON.stringify({
+        barberia_id: Number(identity.barberia_id) || 0,
+        id_barberia: Number(identity.barberia_id) || 0,
+        slug: slugRaw,
+        source: 'editor',
+        mode: 'edit'
+      });
+
+      [
+        'barberia_id',
+        'id_barberia',
+        'barberia',
+        'barberiaId',
+        'business_id',
+        'ba_barberia_id'
+      ].forEach((key) => {
+        setSafeStorage(sessionStorage, key, barberiaIdRaw);
+        setSafeStorage(localStorage, key, barberiaIdRaw);
+      });
+      [
+        'slug',
+        'barberia_slug',
+        'business_slug',
+        'ba_barberia_slug'
+      ].forEach((key) => {
+        if (!slugRaw) return;
+        setSafeStorage(sessionStorage, key, slugRaw);
+        setSafeStorage(localStorage, key, slugRaw);
+      });
+      [
+        'ba_registro_edit_context',
+        'registro_edit_context',
+        'barberia_edit_context'
+      ].forEach((key) => {
+        setSafeStorage(sessionStorage, key, editCtx);
+        setSafeStorage(localStorage, key, editCtx);
+      });
+      setSafeStorage(sessionStorage, 'mode', 'edit');
+      setSafeStorage(localStorage, 'mode', 'edit');
+      setSafeStorage(sessionStorage, 'editing', '1');
+      setSafeStorage(localStorage, 'editing', '1');
+    } catch (_) {}
+  }
+
+  function encodeConfigBase64Url(value) {
+    try {
+      const json = JSON.stringify(value || {});
+      return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+    } catch (_) {
+      return '';
+    }
+  }
+
+  function getPublicSiteBase() {
+    const explicitBase = safeText(
+      window.BA_PUBLIC_SITE_BASE ||
+      seedLandingData?.site_base_url ||
+      seedLandingData?.public_base_url ||
+      seedLandingData?.base_url ||
+      seedLandingData?.barberia?.site_base_url ||
+      seedLandingData?.barberia?.public_base_url ||
+      seedLandingData?.barberia?.base_url
+    );
+    return (explicitBase || window.location.origin || '').replace(/\/+$/, '');
+  }
+
+  function getTemplatePublicPath(templateLike) {
+    const fileNameWithExt = safeText(templateLike?.file || templateLike)
+      .replace(/\\/g, '/')
+      .split('/')
+      .pop();
+    const fileName = safeText(fileNameWithExt).replace(/\.html?$/i, '');
+    if (fileName && TEMPLATE_PUBLIC_PATH_OVERRIDES[fileName]) {
+      return TEMPLATE_PUBLIC_PATH_OVERRIDES[fileName];
+    }
+    if (fileNameWithExt && /\.html?$/i.test(fileNameWithExt)) {
+      return `/${fileNameWithExt}/`;
+    }
+    return fileName ? `/${fileName}/` : '/index_unico/';
+  }
+
+  function buildPublishedLandingUrls(payload) {
+    const slug = safeText(payload?.slug || payload?.inherited?.slug);
+    const barberiaId = Number(payload?.barberia_id || payload?.inherited?.barberia_id || 0);
+    const siteBase = getPublicSiteBase();
+    const selectedTpl = byId[getSelectedId()] || templates[0];
+    const templatePublicPath = getTemplatePublicPath(selectedTpl);
+    if ((!slug && !barberiaId) || !siteBase) {
+      return { public_landing_url: '', reservation_url: '', qr_url: '' };
+    }
+    const identityQuery = slug
+      ? `?slug=${encodeURIComponent(slug)}`
+      : `?barberia_id=${encodeURIComponent(String(barberiaId))}`;
+    const public_landing_url = `${siteBase}${templatePublicPath}${identityQuery}`;
+    const qr_url = public_landing_url
+      ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(public_landing_url)}`
+      : '';
+    return { public_landing_url, reservation_url: '', qr_url };
+  }
+
+  function getExpectedPublishedUrl() {
+    const identity = getSeedIdentity();
+    const data = getFormData();
+    const slug = safeText(identity.slug) || safeText(data.biz_slug);
+    const barberiaId = Number(identity.barberia_id) || 0;
+    const siteBase = getPublicSiteBase();
+    const selectedTpl = byId[getSelectedId()] || templates[0];
+    const templatePublicPath = getTemplatePublicPath(selectedTpl);
+    if ((!slug && !barberiaId) || !siteBase) return '';
+    const identityQuery = slug
+      ? `?slug=${encodeURIComponent(slug)}`
+      : `?barberia_id=${encodeURIComponent(String(barberiaId))}`;
+    return `${siteBase}${templatePublicPath}${identityQuery}`;
+  }
+
+  function forceTemplatePathInUrl(rawUrl, templateLike) {
+    const sourceUrl = safeText(rawUrl);
+    if (!sourceUrl) return sourceUrl;
+    const expectedPath = getTemplatePublicPath(templateLike);
+    if (!expectedPath) return sourceUrl;
+    try {
+      const base = getPublicSiteBase() || window.location.origin;
+      const parsed = new URL(sourceUrl, base);
+      parsed.pathname = expectedPath;
+      return parsed.toString();
+    } catch (_) {
+      return sourceUrl;
+    }
+  }
+
+  function getTemplatePathList() {
+    return templates
+      .map((tpl) => getTemplatePublicPath(tpl))
+      .filter(Boolean);
+  }
+
+  function isTemplatePathMismatch(rawUrl, selectedTemplate) {
+    const sourceUrl = safeText(rawUrl);
+    if (!sourceUrl) return false;
+    try {
+      const base = getPublicSiteBase() || window.location.origin;
+      const parsed = new URL(sourceUrl, base);
+      const normalizedPath = parsed.pathname.replace(/\/+$/, '/') || '/';
+      const selectedPath = (getTemplatePublicPath(selectedTemplate) || '').replace(/\/+$/, '/') || '/';
+      if (!selectedPath) return false;
+
+      const knownTemplatePaths = getTemplatePathList().map((p) => p.replace(/\/+$/, '/') || '/');
+      const isKnownTemplatePath = knownTemplatePaths.includes(normalizedPath);
+      if (!isKnownTemplatePath) return false;
+      return normalizedPath !== selectedPath;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function buildSavePayload() {
+    const data = getFormData();
+    const identity = getSeedIdentity();
+    const normalizedAddress = safeText(data.address) || safeText(identity.direccion);
+    const normalizedMapsUrl = safeText(data.maps_url) || buildMapsEmbedUrl(normalizedAddress);
+    const selectedId = getSelectedId();
+    const payload = {
+      barberia_id: identity.barberia_id,
+      slug: identity.slug || data.biz_slug,
+      direccion: normalizedAddress,
+      address: normalizedAddress,
+      ciudad: identity.ciudad || normalizedAddress,
+      maps_url: normalizedMapsUrl,
+      map_url: normalizedMapsUrl,
+      location_map_url: normalizedMapsUrl,
+      location_address: normalizedAddress,
+      template_id: selectedId,
+      template_file: (byId[selectedId] || templates[0]).file,
+      public_template_path: getTemplatePublicPath(byId[selectedId] || templates[0]),
+      inherited: {
+        barberia_id: identity.barberia_id,
+        slug: identity.slug || data.biz_slug,
+        nombre: identity.nombre,
+        ciudad: identity.ciudad || normalizedAddress,
+        direccion: normalizedAddress,
+        maps_url: normalizedMapsUrl,
+        map_url: normalizedMapsUrl,
+        telefono: identity.telefono,
+        slot_min: Number(data.slot_min) || 30,
+        servicios: inheritedCollections.services,
+        barberos: inheritedCollections.barbers,
+        horarios: inheritedCollections.hours
+      },
+      branding: {
+        logo_url: safeText(data.logo_url),
+        cover_url: safeText(data.cover_url),
+        hero_image_url: safeText(data.cover_url),
+        color_primary: safeText(data.palette_primary),
+        color_secondary: safeText(data.palette_secondary),
+        color_background: '',
+        color_surface: '',
+        color_text: safeText(data.palette_text),
+        cta_label: safeText(data.hero_btn_primary),
+        secondary_cta_label: safeText(data.hero_btn_secondary),
+        logo_width: Number(data.logo_width) || 0,
+        font_pair: safeText(data.font_pair),
+        hero_badge: safeText(data.hero_kicker),
+        hero_title: safeText(data.hero_title),
+        hero_subtitle: safeText(data.hero_subtitle),
+        booking_title: 'Reserva tu cita en menos de 1 minuto',
+        booking_subtitle: 'Elige servicio, barbero y horario. Recibe confirmacion inmediata y llega sin esperas.',
+        benefit_1: 'Horarios disponibles en tiempo real',
+        benefit_2: 'atención profesional y puntual',
+        benefit_3: 'Reserva fácil desde celular o computador',
+        footer_note: '',
+        image_secondary_url: '',
+        image_tertiary_url: '',
+        location_city: identity.ciudad,
+        location_address: normalizedAddress,
+        location_phone: identity.telefono,
+        maps_url: normalizedMapsUrl,
+        map_url: normalizedMapsUrl,
+        location_map_url: normalizedMapsUrl,
+        slot_min: Number(data.slot_min) || 30,
+        nav_items: ['Inicio', 'Servicios', 'Barberos', 'Reservar']
+      },
+      profile: {
+        barberia_id: identity.barberia_id,
+        id: identity.barberia_id,
+        slug: identity.slug || data.biz_slug,
+        nombre_publico: identity.nombre,
+        nombre: identity.nombre,
+        ciudad: identity.ciudad || normalizedAddress,
+        direccion: normalizedAddress,
+        telefono: identity.telefono,
+        logo_url: safeText(data.logo_url),
+        cover_url: safeText(data.cover_url),
+        maps_url: normalizedMapsUrl,
+        map_url: normalizedMapsUrl,
+        location_map_url: normalizedMapsUrl,
+        location_address: normalizedAddress,
+        slot_min: Number(data.slot_min) || 30
+      },
+      barberia: {
+        id: identity.barberia_id,
+        barberia_id: identity.barberia_id,
+        slug: identity.slug || data.biz_slug,
+        nombre: identity.nombre,
+        nombre_publico: identity.nombre,
+        ciudad: identity.ciudad || normalizedAddress,
+        direccion: normalizedAddress,
+        telefono: identity.telefono,
+        maps_url: normalizedMapsUrl,
+        map_url: normalizedMapsUrl,
+        location_map_url: normalizedMapsUrl,
+        location_address: normalizedAddress,
+        slot_min: Number(data.slot_min) || 30,
+        logo_url: safeText(data.logo_url),
+        cover_url: safeText(data.cover_url)
+      }
+    };
+
+    return {
+      ...payload,
+      ...buildPublishedLandingUrls(payload)
+    };
+  }
+
+  function ensureIdentityQueryInUrl(rawUrl, identity = {}) {
+    const sourceUrl = safeText(rawUrl);
+    if (!sourceUrl) return sourceUrl;
+    const safeSlug = safeText(identity?.slug);
+    const safeBarberiaId = Number(identity?.barberia_id) || 0;
+    try {
+      const base = getPublicSiteBase() || window.location.origin;
+      const parsed = new URL(sourceUrl, base);
+      if (safeSlug) {
+        parsed.searchParams.set('slug', safeSlug);
+        parsed.searchParams.delete('barberia_id');
+      } else if (safeBarberiaId > 0) {
+        parsed.searchParams.set('barberia_id', String(safeBarberiaId));
+      }
+      return parsed.toString();
+    } catch (_) {
+      return sourceUrl;
+    }
+  }
+
+  function persistPublishedIdentityFromResponse(responsePayload = {}) {
+    const nextBarberiaId =
+      Number(responsePayload?.barberia_id) ||
+      Number(responsePayload?.id_barberia) ||
+      Number(responsePayload?.barberia?.id) ||
+      Number(responsePayload?.data?.barberia_id) ||
+      0;
+    const nextSlug = safeText(
+      responsePayload?.slug ||
+      responsePayload?.barberia?.slug ||
+      responsePayload?.data?.slug
+    );
+
+    if (nextBarberiaId > 0) {
+      setSafeStorage(localStorage, STORAGE_BARBERIA_ID, String(nextBarberiaId));
+      setSafeStorage(sessionStorage, STORAGE_BARBERIA_ID, String(nextBarberiaId));
+      seedLandingData.barberia_id = nextBarberiaId;
+      seedLandingData.id_barberia = nextBarberiaId;
+      seedLandingData.id = Number(seedLandingData.id) || nextBarberiaId;
+      if (seedLandingData?.barberia && typeof seedLandingData.barberia === 'object') {
+        seedLandingData.barberia.id = Number(seedLandingData.barberia.id) || nextBarberiaId;
+      }
+    }
+
+    if (nextSlug) {
+      setSafeStorage(localStorage, STORAGE_BARBERIA_SLUG, nextSlug);
+      setSafeStorage(sessionStorage, STORAGE_BARBERIA_SLUG, nextSlug);
+      seedLandingData.slug = nextSlug;
+      if (seedLandingData?.barberia && typeof seedLandingData.barberia === 'object') {
+        seedLandingData.barberia.slug = nextSlug;
+      }
+    }
+  }
+
+  function getQrContext() {
+    const expectedPublishedUrl = getExpectedPublishedUrl();
+    const publicLandingUrl =
+      safeText(runtimePublishData.public_landing_url) ||
+      expectedPublishedUrl ||
+      safeText(seedLandingData?.public_landing_url) ||
+      safeText(seedLandingData?.landing_url) ||
+      safeText(seedLandingData?.url_publica) ||
+      safeText(seedLandingData?.url_public_landing) ||
+      safeText(seedLandingData?.barberia?.public_landing_url);
+    const qrUrl =
+      safeText(runtimePublishData.qr_url) ||
+      safeText(seedLandingData?.qr_url) ||
+      safeText(seedLandingData?.barberia?.qr_url) ||
+      (publicLandingUrl
+        ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(publicLandingUrl)}`
+        : '');
+    return {
+      public_landing_url: publicLandingUrl,
+      qr_url: qrUrl,
+      reservation_url:
+        safeText(runtimePublishData.reservation_url) ||
+        safeText(seedLandingData?.reservation_url) ||
+        safeText(seedLandingData?.url_reservas) ||
+        safeText(seedLandingData?.barberia?.reservation_url) ||
+        safeText(seedLandingData?.barberia?.url_reservas)
+    };
+  }
+
+  function canAccessFrameUrl(rawUrl) {
+    const target = safeText(rawUrl);
+    if (!target) return false;
+    try {
+      const resolved = new URL(target, window.location.href);
+      return resolved.origin === window.location.origin;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function renderFinalPreviewFromTemplate() {
+    if (!finalPreviewWrap || !finalPreviewFrame) return false;
+    const data = getFormData();
+    const tpl = byId[getSelectedId()] || templates[0];
+    finalPreviewWrap.hidden = false;
+    finalPreviewFrame.src = fileToUrl(tpl.file);
+    finalPreviewFrame.onload = () => {
+      try {
+        syncBrandingRuntime(finalPreviewFrame.contentDocument, data);
+        applyEditorPreviewCleanup(finalPreviewFrame.contentDocument);
+        enforceHeroTextWhite(finalPreviewFrame.contentDocument);
+        syncHeroContent(finalPreviewFrame.contentDocument, data);
+        syncReservationMarketingCopy(finalPreviewFrame.contentDocument);
+        syncV1ContrastFixes(finalPreviewFrame.contentDocument);
+        setTimeout(() => syncV1ContrastFixes(finalPreviewFrame.contentDocument), 120);
+        setTimeout(() => syncV1ContrastFixes(finalPreviewFrame.contentDocument), 400);
+      } catch (_) {}
+      try {
+        finalPreviewFrame.contentWindow.postMessage(buildEditorMessagePayload(data, {
+          isPreview: true,
+          logo: el.logoUrl.value,
+          cover: el.coverUrl.value
+        }), '*');
+        finalPreviewFrame.contentWindow.postMessage({
+          type: 'BA_BRANDING_UPDATE',
+          payload: buildBrandingUpdatePayload(data, { isPreview: true })
+        }, '*');
+      } catch (_) {}
+    };
+    return true;
+  }
+
+  function openPublishedLandingPreview(url) {
+    const publicUrl = safeText(url);
+    if (!publicUrl || !finalPreviewWrap || !finalPreviewFrame) return false;
+    if (!canAccessFrameUrl(publicUrl)) {
+      return renderFinalPreviewFromTemplate();
+    }
+    finalPreviewWrap.hidden = false;
+    finalPreviewWrap.classList.add('is-open');
+    document.body.classList.add('ba-final-preview-open');
+    finalPreviewFrame.src = publicUrl;
+    finalPreviewFrame.onload = () => {
+      try {
+        applyEditorPreviewCleanup(finalPreviewFrame.contentDocument);
+      } catch (_) {}
+    };
+    return true;
+  }
+
+  async function publishLanding() {
+    const endpoint = safeText(CONFIG.saveEndpoint);
+    if (!endpoint) {
+      alert('No hay endpoint de guardado configurado.');
+      return;
+    }
+
+    const data = getFormData();
+    const normalizedAddress = safeText(data.address);
+    if (normalizedAddress) {
+      seedLandingData.direccion = normalizedAddress;
+      if (seedLandingData?.barberia && typeof seedLandingData.barberia === 'object') {
+        seedLandingData.barberia.direccion = normalizedAddress;
+      }
+    }
+    const logoUrl = safeText(data.logo_url);
+    if (logoUrl && !isHttpUrl(logoUrl)) {
+      alert('El logo aun no tiene URL pública valida. Revisa el upload antes de publicar.');
+      return;
+    }
+
+    const coverUrl = safeText(data.cover_url);
+    if (coverUrl && !isHttpUrl(coverUrl)) {
+      alert('La portada aun no tiene URL pública valida. Revisa el upload antes de publicar.');
+      return;
+    }
+
+    const identity = getSeedIdentity();
+    const fallbackSlug = safeText(data.biz_slug);
+    if (!(identity.barberia_id > 0) && !safeText(identity.slug) && !fallbackSlug) {
+      alert('No hay identidad de barberia para publicar. Falta la semilla ba_landing_seed de registrobarberia.');
+      return;
+    }
+
+    el.publish.disabled = true;
+    const originalLabel = el.publish.querySelector('.ba-btn-label')?.textContent || 'Publicar';
+    const labelNode = el.publish.querySelector('.ba-btn-label');
+    if (labelNode) labelNode.textContent = 'públicando...';
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildSavePayload())
+      });
+      const rawText = await response.text().catch(() => '');
+      let json = {};
+      try {
+        json = rawText ? JSON.parse(rawText) : {};
+      } catch (_) {
+        json = {};
+      }
+
+      const explicitFailure =
+        json?.ok === false ||
+        json?.success === false ||
+        /^error$/i.test(safeText(json?.status)) ||
+        /^fail(ed)?$/i.test(safeText(json?.result));
+
+      if (!response.ok || explicitFailure) {
+        throw new Error(json?.message || json?.error || rawText || `HTTP ${response.status}`);
+      }
+
+      const selectedTemplate = byId[getSelectedId()] || templates[0];
+      const identityForUrl = {
+        slug: safeText(identity.slug) || safeText(data.biz_slug),
+        barberia_id: Number(identity.barberia_id) || 0
+      };
+      const expectedPublishedUrl = getExpectedPublishedUrl();
+      const backendPublishedUrl =
+        safeText(json?.public_landing_url) ||
+        safeText(json?.data?.public_landing_url) ||
+        safeText(json?.barberia?.public_landing_url);
+      const backendReservationUrl =
+        safeText(json?.reservation_url) ||
+        safeText(json?.url_reservas) ||
+        safeText(json?.data?.reservation_url) ||
+        safeText(json?.data?.url_reservas) ||
+        safeText(json?.barberia?.reservation_url) ||
+        safeText(json?.barberia?.url_reservas);
+
+      const normalizedPublishedUrl = isTemplatePathMismatch(backendPublishedUrl, selectedTemplate)
+        ? forceTemplatePathInUrl(backendPublishedUrl, selectedTemplate)
+        : backendPublishedUrl;
+      const normalizedReservationUrl = isTemplatePathMismatch(backendReservationUrl, selectedTemplate)
+        ? forceTemplatePathInUrl(backendReservationUrl, selectedTemplate)
+        : backendReservationUrl;
+      const resolvedPublishedUrl = ensureIdentityQueryInUrl(normalizedPublishedUrl, identityForUrl);
+      const resolvedReservationUrl = ensureIdentityQueryInUrl(normalizedReservationUrl, identityForUrl);
+      const fallbackExpectedUrl = ensureIdentityQueryInUrl(expectedPublishedUrl, identityForUrl);
+
+      runtimePublishData.public_landing_url =
+        resolvedPublishedUrl ||
+        fallbackExpectedUrl;
+      runtimePublishData.reservation_url =
+        resolvedReservationUrl ||
+        runtimePublishData.public_landing_url;
+      runtimePublishData.qr_url = runtimePublishData.public_landing_url
+        ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(runtimePublishData.public_landing_url)}`
+        : (
+          safeText(json?.qr_url) ||
+          safeText(json?.data?.qr_url) ||
+          safeText(json?.barberia?.qr_url)
+        );
+
+      // Conserva identidad canonica para que siguientes ediciones actualicen la misma landing.
+      persistPublishedIdentityFromResponse(json);
+      // Mantiene preview del editor en sync con la misma data que quedó persistida en backend.
+      applyInheritedCollectionsFromPayload(json);
+
+      saveDraft();
+      updatePreview();
+      openPublishedLandingPreview(runtimePublishData.public_landing_url);
+      alert(json?.message || json?.detail || 'Landing guardada en BD correctamente.');
+    } catch (error) {
+      console.error('Error públicando landing:', error);
+      alert(`No se pudo publicar: ${error?.message || 'error desconocido'}`);
+    } finally {
+      el.publish.disabled = false;
+      if (labelNode) labelNode.textContent = originalLabel;
+    }
+  }
+
+  function persistPaletteForTemplate(tplId, touched = paletteTouched) {
+    const safeTplId = safeText(tplId || getSelectedId());
+    if (!safeTplId) return;
+    const prev = paletteByTemplate[safeTplId] || {};
+    const customSecondary = safeText(el.paletteSecondary.value);
+    paletteByTemplate[safeTplId] = {
+      ...prev,
+      custom: {
+        primary: safeText(el.palettePrimary.value),
+        secondary: customSecondary,
+        accent: customSecondary,
+        text: safeText(el.paletteText.value)
+      },
+      touched: !!touched
+    };
+  }
+
+  function buildEditorMessagePayload(data, extra = {}) {
+    const qrContext = getQrContext();
+    const payload = {
+      ...extra,
+      source: 'ba-editor',
+      biz_name: data.biz_name,
+      biz_slug: data.biz_slug,
+      font_pair: data.font_pair,
+      hero_kicker: data.hero_kicker,
+      hero_title: data.hero_title,
+      hero_subtitle: data.hero_subtitle,
+      hero_btn_primary: data.hero_btn_primary,
+      hero_btn_secondary: data.hero_btn_secondary,
+      logo_url: data.logo_url,
+      logo_width: data.logo_width,
+      cover_url: data.cover_url,
+      address: data.address,
+      maps_url: data.maps_url,
+      slot_min: data.slot_min,
+      public_landing_url: qrContext.public_landing_url,
+      qr_url: qrContext.qr_url,
+      reservation_url: qrContext.reservation_url,
+      barber_photos: DEFAULT_BARBER_PHOTOS.slice(),
+      force_pool_photos: true,
+      use_custom_palette: data.use_custom_palette,
+      fonts: FONT_PRESETS[data.font_pair] || FONT_PRESETS.dm_plusjakarta,
+      logo: runtimePreview.logo || data.logo_url,
+      cover: runtimePreview.cover || data.cover_url
+    };
+
+    if (data.use_custom_palette) {
+      payload.palette_primary = data.palette_primary;
+      payload.palette_secondary = data.palette_secondary;
+      payload.palette_accent = data.palette_accent;
+      payload.palette_text = data.palette_text;
+    }
+
+    return payload;
+  }
+
+  function buildBrandingUpdatePayload(data, extra = {}) {
+    const qrContext = getQrContext();
+    const payload = {
+      ...extra,
+      biz_name: data.biz_name,
+      biz_slug: data.biz_slug,
+      font_pair: data.font_pair,
+      hero_kicker: data.hero_kicker,
+      hero_title: data.hero_title,
+      hero_subtitle: data.hero_subtitle,
+      hero_btn_primary: data.hero_btn_primary,
+      hero_btn_secondary: data.hero_btn_secondary,
+      logo_url: data.logo_url,
+      logo_width: data.logo_width,
+      cover_url: data.cover_url,
+      address: data.address,
+      maps_url: data.maps_url,
+      slot_min: data.slot_min,
+      public_landing_url: qrContext.public_landing_url,
+      qr_url: qrContext.qr_url,
+      reservation_url: qrContext.reservation_url,
+      barber_photos: DEFAULT_BARBER_PHOTOS.slice(),
+      force_pool_photos: true,
+      use_custom_palette: data.use_custom_palette,
+      logo: runtimePreview.logo || data.logo_url,
+      cover: runtimePreview.cover || data.cover_url,
+      services: inheritedCollections.services,
+      barbers: inheritedCollections.barbers,
+      hours: inheritedCollections.hours
+    };
+
+    if (data.use_custom_palette) {
+      payload.palette_primary = data.palette_primary;
+      payload.palette_secondary = data.palette_secondary;
+      payload.palette_accent = data.palette_accent;
+      payload.palette_text = data.palette_text;
+    }
+
+    return payload;
+  }
+
+  function updatePreview() {
+    const data = getFormData();
+    el.bizNameLabel.textContent = data.biz_name;
+    el.bizSlug.textContent = data.biz_slug;
+    
+    // Auto-ajuste de kicker si estÃ¡ vacÃ­o o es un valor por defecto
+    const currentKicker = safeText(el.heroKicker.value).toLowerCase();
+    if (!currentKicker || TEMPLATE_HERO_KICKER_VALUES.includes(currentKicker)) {
+      const tplId = getSelectedId();
+      if (TEMPLATE_HERO_KICKERS[tplId]) {
+        el.heroKicker.value = TEMPLATE_HERO_KICKERS[tplId];
+        data.hero_kicker = el.heroKicker.value;
+      }
+    }
+    const tplId = getSelectedId();
+    const currentTitle = safeText(el.heroTitle.value).toLowerCase();
+    if (!currentTitle || TEMPLATE_HERO_TITLE_VALUES.includes(currentTitle)) {
+      if (TEMPLATE_HERO_TITLES[tplId]) {
+        el.heroTitle.value = TEMPLATE_HERO_TITLES[tplId];
+        data.hero_title = el.heroTitle.value;
+      }
+    }
+    const currentSubtitle = safeText(el.heroSubtitle.value).toLowerCase();
+    if (!currentSubtitle || TEMPLATE_HERO_SUBTITLE_VALUES.includes(currentSubtitle)) {
+      if (TEMPLATE_HERO_SUBTITLES[tplId]) {
+        el.heroSubtitle.value = TEMPLATE_HERO_SUBTITLES[tplId];
+        data.hero_subtitle = el.heroSubtitle.value;
+      }
+    }
+
+    try {
+      syncBrandingRuntime(el.frame.contentDocument, data);
+      applyEditorPreviewCleanup(el.frame.contentDocument);
+      syncHeroContent(el.frame.contentDocument, data);
+      syncReservationMarketingCopy(el.frame.contentDocument);
+      syncV1ContrastFixes(el.frame.contentDocument);
+      enforceHeroTextWhite(el.frame.contentDocument);
+      setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 120);
+      setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 400);
+    } catch (_) {}
+
+    if (el.frame.contentWindow) {
+      el.frame.contentWindow.postMessage(buildEditorMessagePayload(data), '*');
+      el.frame.contentWindow.postMessage({
+        type: 'BA_BRANDING_UPDATE',
+        payload: buildBrandingUpdatePayload(data)
+      }, '*');
+    }
+  }
+
+  function restoreTemplatePalette() {
+    const tplId = getSelectedId();
+    paletteTouched = false;
+
+    try {
+      if (paletteByTemplate[tplId]) {
+        paletteByTemplate[tplId].touched = false;
+      }
+      updatePaletteFromTemplate(el.frame.contentDocument, { forceDefaults: true });
+    } catch (_) {}
+
+    const defaults = paletteByTemplate[tplId]?.defaults;
+    if (defaults) {
+      if (safeText(defaults.primary)) el.palettePrimary.value = defaults.primary;
+      if (safeText(defaults.secondary)) el.paletteSecondary.value = defaults.secondary;
+      if (safeText(defaults.accent)) el.paletteAccent.value = defaults.accent;
+      if (safeText(defaults.text)) el.paletteText.value = defaults.text;
+    }
+
+    updatePreview();
+    saveDraft();
+  }
+
+  async function saveDraft(options = {}) {
+    const notify = options?.notify === true;
+    try {
+      const data = getFormData();
+      const identity = getSeedIdentity();
+      const draft = {
+        ...data,
+        draft_seed_barberia_id: identity.barberia_id || 0,
+        draft_seed_slug: safeText(identity.slug),
+        runtimePublishData,
+        paletteTouched,
+        paletteByTemplate
+      };
+      setSafeStorage(localStorage, STORAGE_DRAFT, JSON.stringify(draft));
+      let remoteSaved = false;
+      const endpoint = safeText(CONFIG.draftSaveEndpoint) || DEFAULT_DRAFT_SAVE_ENDPOINT;
+      if (endpoint) {
+        try {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(draft)
+          });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status}`);
+          }
+          remoteSaved = true;
+        } catch (remoteError) {
+          console.warn('No se pudo guardar borrador remoto, se conserva local:', remoteError);
+        }
+      }
+      console.log('Borrador guardado');
+      if (notify) {
+        if (remoteSaved) {
+          alert('Borrador guardado correctamente.');
+        } else {
+          alert('Borrador guardado localmente.');
+        }
+      }
+    } catch(e) {
+      console.error('Error guardando borrador:', e);
+      if (notify) {
+        alert(`No se pudo guardar el borrador: ${e?.message || 'error desconocido'}`);
+      }
+    }
+  }
+
+  async function loadDraft() {
+    try {
+      let draft = null;
+      let draftLoaded = false;
+      const identity = getSeedIdentity();
+      const endpoint = safeText(CONFIG.draftGetEndpoint) || DEFAULT_DRAFT_GET_ENDPOINT;
+      const hasIdentity = Number(identity.barberia_id) > 0 || !!safeText(identity.slug);
+
+      if (endpoint && hasIdentity) {
+        try {
+          const query = Number(identity.barberia_id) > 0
+            ? `barberia_id=${encodeURIComponent(String(identity.barberia_id))}`
+            : `slug=${encodeURIComponent(safeText(identity.slug))}`;
+          const res = await fetch(`${endpoint}?${query}`, { method: 'GET' });
+          const json = await res.json().catch(() => ({}));
+          if (res.ok && json?.ok) {
+            const remoteDraft = json?.payload && typeof json.payload === 'object' ? json.payload : json;
+            if (remoteDraft && typeof remoteDraft === 'object') {
+              draft = remoteDraft;
+              draftLoaded = true;
+              setSafeStorage(localStorage, STORAGE_DRAFT, JSON.stringify(remoteDraft));
+            }
+          }
+        } catch (remoteError) {
+          console.warn('No se pudo cargar borrador remoto, se intenta local:', remoteError);
+        }
+      }
+
+      if (!draft) {
+        draft = JSON.parse(getSafeStorage(localStorage, STORAGE_DRAFT) || '{}');
+        if (draft && typeof draft === 'object' && Object.keys(draft).length) {
+          draftLoaded = true;
+        }
+      }
+      if (!draft || typeof draft !== 'object') return false;
+      
+      const {
+        runtimePublishData: draftPublishData,
+        paletteTouched: pt,
+        paletteByTemplate: pbt,
+        draft_seed_barberia_id: draftSeedBarberíaId,
+        draft_seed_slug: draftSeedSlug,
+        ...data
+      } = draft;
+      const cameFromRegistroEdit =
+        getQueryParam('source') === 'editor' ||
+        getQueryParam('edit') === '1' ||
+        getQueryParam('mode') === 'edit' ||
+        getQueryParam('modo') === 'editar' ||
+        getQueryParam('editing') === '1' ||
+        getQueryParam('is_edit') === '1';
+      const seedAddress = safeText(seedLandingData?.direccion);
+      const onboardingDraftAddress = readOnboardingDraftAddress();
+      const preferredEditAddress = onboardingDraftAddress || seedAddress;
+      if (cameFromRegistroEdit && preferredEditAddress) {
+        data.address = preferredEditAddress;
+        data.maps_url = buildMapsEmbedUrl(preferredEditAddress);
+        seedLandingData.direccion = preferredEditAddress;
+      }
+      const incomingIdentity = identity;
+      const hasIncomingSeed =
+        Number(incomingIdentity.barberia_id) > 0 ||
+        !!safeText(incomingIdentity.slug);
+      if (hasIncomingSeed) {
+        const preferredAddress = getPreferredAddressValue();
+        if (preferredAddress) {
+          data.address = preferredAddress;
+          data.maps_url = buildMapsEmbedUrl(preferredAddress);
+          seedLandingData.direccion = preferredAddress;
+          seedLandingData.maps_url = data.maps_url;
+          if (seedLandingData?.barberia && typeof seedLandingData.barberia === 'object') {
+            seedLandingData.barberia.direccion = preferredAddress;
+            seedLandingData.barberia.maps_url = data.maps_url;
+          }
+        }
+      }
+      const hasStoredSeedRef =
+        Number(draftSeedBarberíaId) > 0 ||
+        !!safeText(draftSeedSlug);
+
+      if (hasIncomingSeed && !hasStoredSeedRef) {
+        // Si el borrador no está ligado a esta barbería, no lo usamos para evitar
+        // que una dirección anterior tape la semilla nueva del registro.
+        try {
+          localStorage.removeItem(STORAGE_DRAFT);
+        } catch (_) {}
+        draft = null;
+      }
+
+      if (hasIncomingSeed && hasStoredSeedRef) {
+        const barberiaMismatch =
+          Number(incomingIdentity.barberia_id) > 0 &&
+          Number(draftSeedBarberíaId) > 0 &&
+          Number(incomingIdentity.barberia_id) !== Number(draftSeedBarberíaId);
+        const slugMismatch =
+          safeText(incomingIdentity.slug) &&
+          safeText(draftSeedSlug) &&
+          safeText(incomingIdentity.slug) !== safeText(draftSeedSlug);
+
+        if (barberiaMismatch || slugMismatch) {
+          try {
+            localStorage.removeItem(STORAGE_DRAFT);
+          } catch (_) {}
+          return false;
+        }
+      }
+
+      const fieldAliases = {
+        biz_name: 'bizName',
+        font_pair: 'fontPair',
+        hero_kicker: 'heroKicker',
+        hero_title: 'heroTitle',
+        hero_subtitle: 'heroSubtitle',
+        hero_btn_primary: 'heroBtnPrimary',
+        hero_btn_secondary: 'heroBtnSecondary',
+        palette_primary: 'palettePrimary',
+        palette_secondary: 'paletteSecondary',
+        palette_accent: 'paletteAccent',
+        palette_text: 'paletteText',
+        logo_url: 'logoUrl',
+        logo_width: 'logoWidth',
+        cover_url: 'coverUrl',
+        maps_url: 'mapsUrl'
+      };
+      
+      Object.keys(data).forEach(key => {
+        const targetKey = fieldAliases[key] || key;
+        if (el[targetKey] && typeof data[key] !== 'undefined') {
+          el[targetKey].value = data[key];
+        }
+      });
+
+      applyInheritedCollectionsFromPayload(data);
+
+      if (typeof pt === 'boolean') {
+        paletteTouched = pt;
+      }
+      if (draftPublishData && typeof draftPublishData === 'object') {
+        runtimePublishData.public_landing_url = safeText(draftPublishData.public_landing_url);
+        runtimePublishData.qr_url = safeText(draftPublishData.qr_url);
+        runtimePublishData.reservation_url = safeText(draftPublishData.reservation_url);
+      }
+      if (pbt && typeof pbt === 'object') {
+        Object.assign(paletteByTemplate, pbt);
+      }
+
+      // Migra borradores viejos que seguian usando 120 como ancho inicial del logo.
+      if (safeText(el.logoWidth?.value) === '120') {
+        el.logoWidth.value = '50';
+      }
+      
+      console.log('Borrador cargado');
+      return draftLoaded;
+    } catch(e) {
+      console.error('Error cargando borrador:', e);
+      return false;
+    }
+  }
+  
+  function updatePaletteFromTemplate(doc, options = {}) {
+    try {
+      if (!doc?.documentElement) return;
+      const tplId = getSelectedId();
+      const forceDefaults = !!options.forceDefaults;
+      const paletteState = paletteByTemplate[tplId] || {};
+
+      const colorFromVar = (...vars) => {
+        const targets = [
+          doc.getElementById('landingRoot'),
+          doc.documentElement,
+          doc.body
+        ].filter(Boolean);
+
+        for (const target of targets) {
+          const computed = window.getComputedStyle(target);
+          for (const key of vars) {
+            const value = computed.getPropertyValue(key).trim();
+            if (value) return value;
+          }
+        }
+        return '';
+      };
+
+      const primary = colorFromVar('--c-primary', '--primary', '--main', '--brand');
+      const secondary = colorFromVar('--c-secondary', '--primary-2', '--main2', '--brand-2', '--accent', '--hot');
+      const accent = colorFromVar('--c-accent', '--accent', '--hot', '--primary-2');
+      const text = colorFromVar('--c-text', '--text');
+
+      if (primary) el.palettePrimary.value = primary;
+      if (secondary) el.paletteSecondary.value = secondary;
+      if (accent) el.paletteAccent.value = accent;
+      if (text) el.paletteText.value = text;
+
+      const defaults = { primary, secondary, accent, text };
+      paletteByTemplate[tplId] = {
+        ...paletteState,
+        defaults,
+        touched: !!paletteState.touched,
+        custom: paletteState.custom || null
+      };
+
+      if (forceDefaults || !paletteByTemplate[tplId].touched) {
+        if (safeText(defaults.primary)) el.palettePrimary.value = defaults.primary;
+        if (safeText(defaults.secondary)) el.paletteSecondary.value = defaults.secondary;
+        if (safeText(defaults.accent)) el.paletteAccent.value = defaults.accent;
+        if (safeText(defaults.text)) el.paletteText.value = defaults.text;
+        paletteByTemplate[tplId].touched = false;
+        return;
+      }
+
+      const custom = paletteByTemplate[tplId].custom;
+      if (custom) {
+        if (safeText(custom.primary)) el.palettePrimary.value = custom.primary;
+        if (safeText(custom.secondary)) el.paletteSecondary.value = custom.secondary;
+        if (safeText(custom.accent)) el.paletteAccent.value = custom.accent;
+        if (safeText(custom.text)) el.paletteText.value = custom.text;
+      }
+
+    } catch (e) {
+      console.warn('Could not read palette from template', e);
+    }
+  }
+
+  function enforceHeroTextWhite(doc) {
+    if (!doc?.head) return;
+    let styleEl = doc.getElementById('ba-preview-hero-text-fix');
+    if (!styleEl) {
+      styleEl = doc.createElement('style');
+      styleEl.id = 'ba-preview-hero-text-fix';
+      doc.head.appendChild(styleEl);
+    }
+    styleEl.textContent = `
+      .hero-title,
+      .hero-subtitle,
+      .hero-kicker,
+      .hero-tag,
+      .tag,
+      .pill-kicker,
+      .hero .display-3,
+      .hero .display-4,
+      .hero .lead,
+      .hero .text-uppercase,
+      .hero-copy h1,
+      .hero-copy p,
+      .hero h1,
+      .hero p.lead {
+        color: #fff !important;
+        -webkit-text-fill-color: #fff !important;
+        background: none !important;
+        text-shadow: 0 2px 16px rgba(0, 0, 0, 0.28);
+      }
+    `;
+  }
+
+  function applyEditorPreviewCleanup(doc) {
+    if (!doc?.head) return;
+    let styleEl = doc.getElementById('ba-preview-cleanup-style');
+    if (!styleEl) {
+      styleEl = doc.createElement('style');
+      styleEl.id = 'ba-preview-cleanup-style';
+      doc.head.appendChild(styleEl);
+    }
+
+    styleEl.textContent = `
+      nav.mobile-dock,
+      .mobile-dock,
+      #landingRoot ~ #n8n-chat,
+      #landingRoot ~ [id*="n8n-chat"],
+      #landingRoot ~ [class*="n8n-chat"],
+      #landingRoot ~ [class*="chat-widget"],
+      #landingRoot ~ [class*="chat-toggle"],
+      #landingRoot ~ [class*="chat-window"],
+      #landingRoot ~ .chat-window-wrapper,
+      #landingRoot ~ .chat-window-toggle,
+      #landingRoot ~ #themeToggle,
+      #landingRoot ~ #themeToggleBtn,
+      #landingRoot ~ [data-theme-toggle],
+      #landingRoot ~ [class*="theme-toggle" i],
+      #landingRoot ~ [id*="dark-mode" i],
+      #landingRoot ~ [class*="dark-mode" i],
+      #landingRoot ~ iframe[src*="n8n"],
+      #landingRoot ~ iframe[title*="chat" i],
+      #n8n-chat,
+      #n8n-chat-root,
+      iframe[src*="n8n"],
+      iframe[title*="chat" i],
+      body > button[aria-label*="chat" i],
+      body > button[title*="chat" i],
+      body > [id*="chat" i],
+      body > [class*="chat-widget" i],
+      body > [class*="chat-toggle" i],
+      body > [class*="chat-window" i],
+      body > .chat-window-wrapper,
+      body > .chat-window-toggle,
+      body > button[style*="position: fixed"][style*="z-index: 9999"],
+      body > [class*="n8n-chat" i] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+
+      #landingRoot {
+        min-height: auto !important;
+      }
+
+      body {
+        padding-bottom: 0 !important;
+        margin-bottom: 0 !important;
+      }
+    `;
+
+    const removeInjectedFloatingUi = () => {
+      const selectors = [
+        '#n8n-chat',
+        '#n8n-chat-root',
+        '[id*="n8n-chat"]',
+        '[class*="n8n-chat"]',
+        '[class*="chat-widget"]',
+        '[class*="chat-toggle"]',
+        '[class*="chat-window"]',
+        '.chat-window-wrapper',
+        '.chat-window-toggle',
+        'button[style*="position: fixed"][style*="z-index: 9999"]',
+        'iframe[src*="n8n"]',
+        'iframe[title*="chat" i]'
+      ];
+
+      doc.querySelectorAll(selectors.join(',')).forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        node.remove();
+      });
+
+      Array.from(doc.querySelectorAll('body *')).forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        const style = doc.defaultView?.getComputedStyle(node);
+        if (!style) return;
+        const text = safeText(node.textContent || '').toLowerCase();
+        const marks = `${safeText(node.id)} ${safeText(node.className)} ${safeText(node.getAttribute('aria-label'))} ${safeText(node.getAttribute('title'))}`.toLowerCase();
+        const isFixed = style.position === 'fixed' || style.position === 'sticky';
+        const highZ = Number.parseInt(style.zIndex || '0', 10) >= 999;
+        const rightAligned = style.right !== 'auto';
+        const bottomAligned = style.bottom !== 'auto';
+        const rect = node.getBoundingClientRect();
+        const looksSmallFab = rect.width <= 90 && rect.height <= 90;
+        const rounded = Number.parseFloat(style.borderRadius || '0') >= 20 || /50%|999/.test(style.borderRadius || '');
+        const looksThemeFabByShape = false;
+        const hasEmojiImage = !!node.querySelector?.('img.emoji');
+        const looksLikeEmojiFixedButton =
+          node.tagName === 'BUTTON' &&
+          isFixed &&
+          rightAligned &&
+          highZ &&
+          looksSmallFab &&
+          hasEmojiImage;
+        const looksLikeTheme = /theme-toggle|tema|dark-mode|modo oscuro/.test(marks) || /theme toggle|tema/.test(text);
+        const isOutsideLandingRoot = !node.closest('#landingRoot');
+        const looksLikeThemeOrChat =
+          /chat|n8n/.test(marks) ||
+          /chat/.test(text) ||
+          (looksLikeTheme && isOutsideLandingRoot);
+        const isWidgetLike = ['BUTTON', 'IFRAME', 'DIV', 'ASIDE'].includes(node.tagName);
+        const looksFloatingWidget = isFixed && isWidgetLike && (rightAligned || bottomAligned || looksSmallFab);
+
+        if (looksFloatingWidget && (looksLikeThemeOrChat || looksThemeFabByShape || looksLikeEmojiFixedButton)) {
+          node.remove();
+        }
+      });
+    };
+
+    removeInjectedFloatingUi();
+    setTimeout(removeInjectedFloatingUi, 120);
+    setTimeout(removeInjectedFloatingUi, 450);
+
+    if (!doc.__baCleanupObserver) {
+      const observer = new MutationObserver(() => removeInjectedFloatingUi());
+      observer.observe(doc.body || doc.documentElement, { childList: true, subtree: true });
+      doc.__baCleanupObserver = observer;
+    }
+  }
+
+  function applyHostUiCleanup() {
+    const hostDoc = document;
+    if (!hostDoc?.head) return;
+
+    let styleEl = hostDoc.getElementById('ba-host-preview-cleanup-style');
+    if (!styleEl) {
+      styleEl = hostDoc.createElement('style');
+      styleEl.id = 'ba-host-preview-cleanup-style';
+      hostDoc.head.appendChild(styleEl);
+    }
+
+    styleEl.textContent = `
+      body.ba-final-preview-open #n8n-chat,
+      body.ba-final-preview-open #n8n-chat-root,
+      body.ba-final-preview-open [id*="n8n-chat" i],
+      body.ba-final-preview-open [class*="n8n-chat" i],
+      body.ba-final-preview-open [class*="chat-widget" i],
+      body.ba-final-preview-open [class*="chat-toggle" i],
+      body.ba-final-preview-open [class*="chat-window" i],
+      body.ba-final-preview-open .chat-window-wrapper,
+      body.ba-final-preview-open .chat-window-toggle,
+      body.ba-final-preview-open iframe[src*="n8n"],
+      body.ba-final-preview-open iframe[title*="chat" i],
+      body.ba-final-preview-open #themeToggle,
+      body.ba-final-preview-open #themeToggleBtn,
+      body.ba-final-preview-open [data-theme-toggle],
+      body.ba-final-preview-open [id*="theme-toggle" i],
+      body.ba-final-preview-open [class*="theme-toggle" i],
+      body.ba-final-preview-open [id*="dark-mode" i],
+      body.ba-final-preview-open [class*="dark-mode" i],
+      body.ba-final-preview-open button[style*="position: fixed"][style*="z-index: 9999"] {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+    `;
+
+    const rootEl = root;
+    const removeHostFloatingUi = () => {
+      const selectors = [
+        '#n8n-chat',
+        '#n8n-chat-root',
+        '[id*="n8n-chat" i]',
+        '[class*="n8n-chat" i]',
+        '[class*="chat-widget" i]',
+        '[class*="chat-toggle" i]',
+        '[class*="chat-window" i]',
+        '.chat-window-wrapper',
+        '.chat-window-toggle',
+        'button[style*="position: fixed"][style*="z-index: 9999"]',
+        'iframe[src*="n8n"]',
+        'iframe[title*="chat" i]',
+        '#themeToggle',
+        '#themeToggleBtn',
+        '[data-theme-toggle]',
+        '[id*="theme-toggle" i]',
+        '[class*="theme-toggle" i]',
+        '[id*="dark-mode" i]',
+        '[class*="dark-mode" i]'
+      ];
+
+      const isPreviewOpen = hostDoc.body?.classList.contains('ba-final-preview-open');
+
+      hostDoc.querySelectorAll(selectors.join(',')).forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        if (rootEl?.contains(node)) return;
+
+        if (!isPreviewOpen) {
+          if (node.dataset.baPreviewHidden === '1') {
+            node.style.removeProperty('display');
+            node.style.removeProperty('visibility');
+            node.style.removeProperty('opacity');
+            node.style.removeProperty('pointer-events');
+            delete node.dataset.baPreviewHidden;
+          }
+          return;
+        }
+
+        const marks = `${safeText(node.id)} ${safeText(node.className)} ${safeText(node.getAttribute('aria-label'))} ${safeText(node.getAttribute('title'))}`.toLowerCase();
+        const text = safeText(node.textContent || '').toLowerCase();
+        const style = hostDoc.defaultView?.getComputedStyle(node);
+        const isFixed = style && (style.position === 'fixed' || style.position === 'sticky');
+        const rect = typeof node.getBoundingClientRect === 'function'
+          ? node.getBoundingClientRect()
+          : { width: 0, height: 0 };
+        const highZ = Number.parseInt(style?.zIndex || '0', 10) >= 999;
+        const rightAligned = !!style && style.right !== 'auto';
+        const looksSmallFab = rect.width <= 90 && rect.height <= 90;
+        const hasEmojiImage = !!node.querySelector?.('img.emoji');
+        const looksLikeEmojiFixedButton =
+          node.tagName === 'BUTTON' &&
+          isFixed &&
+          rightAligned &&
+          highZ &&
+          looksSmallFab &&
+          hasEmojiImage;
+        const looksLikeThemeOrChat = /theme|modo oscuro|dark-mode|chat|n8n/.test(marks) || /theme|chat|n8n/.test(text);
+        if (looksLikeThemeOrChat || looksLikeEmojiFixedButton) {
+          node.style.setProperty('display', 'none', 'important');
+          node.style.setProperty('visibility', 'hidden', 'important');
+          node.style.setProperty('opacity', '0', 'important');
+          node.style.setProperty('pointer-events', 'none', 'important');
+          node.dataset.baPreviewHidden = '1';
+        }
+      });
+    };
+
+    removeHostFloatingUi();
+    setTimeout(removeHostFloatingUi, 120);
+    setTimeout(removeHostFloatingUi, 420);
+
+    if (!hostDoc.__baHostCleanupObserver) {
+      const observer = new MutationObserver(() => removeHostFloatingUi());
+      observer.observe(hostDoc.body || hostDoc.documentElement, { childList: true, subtree: true });
+      hostDoc.__baHostCleanupObserver = observer;
+    }
+  }
+
+  function applyFontPreset(doc, preset) {
+    if (!doc?.head || !preset) return;
+
+    let linkEl = doc.getElementById('ba-preview-font-link');
+    if (!linkEl) {
+      linkEl = doc.createElement('link');
+      linkEl.id = 'ba-preview-font-link';
+      linkEl.rel = 'stylesheet';
+      doc.head.appendChild(linkEl);
+    }
+    if (preset.href) {
+      linkEl.href = preset.href;
+    }
+
+    let styleEl = doc.getElementById('ba-preview-font-style');
+    if (!styleEl) {
+      styleEl = doc.createElement('style');
+      styleEl.id = 'ba-preview-font-style';
+      doc.head.appendChild(styleEl);
+    }
+
+    styleEl.textContent = `
+      body,
+      input,
+      select,
+      textarea,
+      button {
+        font-family: ${preset.body} !important;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .brand,
+      .brand-title,
+      .navbar-brand,
+      .hero-title,
+      .section-heading h2 {
+        font-family: ${preset.heading} !important;
+      }
+    `;
+  }
+
+  function applyRuntimePalette(doc, data) {
+    if (!doc?.head || !data) return;
+    if (!data.use_custom_palette) return;
+
+    const primary = safeText(data.palette_primary) || '#0ea5a4';
+    const secondary = safeText(data.palette_secondary) || '#075985';
+    const accent = safeText(data.palette_accent) || secondary;
+    const text = safeText(data.palette_text) || '#0f1720';
+
+    let styleEl = doc.getElementById('ba-preview-runtime-palette');
+    if (!styleEl) {
+      styleEl = doc.createElement('style');
+      styleEl.id = 'ba-preview-runtime-palette';
+      doc.head.appendChild(styleEl);
+    }
+
+    styleEl.textContent = `
+      :root,
+      html,
+      body,
+      #landingRoot {
+        --c-primary: ${primary} !important;
+        --c-secondary: ${secondary} !important;
+        --c-accent: ${accent} !important;
+        --c-text: ${text} !important;
+        --primary: ${primary} !important;
+        --primary-2: ${secondary} !important;
+        --accent: ${secondary} !important;
+        --text: ${text} !important;
+        --brand: ${primary} !important;
+        --brand-2: ${secondary} !important;
+        --main: ${primary} !important;
+        --main2: ${secondary} !important;
+        --hot: ${secondary} !important;
+      }
+    `;
+  }
+
+  function clearRuntimePalette(doc) {
+    if (!doc) return;
+
+    doc.getElementById('ba-preview-runtime-palette')?.remove();
+
+    const styleTargets = [
+      doc.documentElement?.style,
+      doc.body?.style,
+      doc.getElementById('landingRoot')?.style
+    ].filter(Boolean);
+
+    const paletteVars = [
+      '--c-primary',
+      '--c-secondary',
+      '--c-accent',
+      '--c-text',
+      '--primary',
+      '--primary-2',
+      '--accent',
+      '--text',
+      '--brand',
+      '--brand-2',
+      '--main',
+      '--main2',
+      '--hot'
+    ];
+
+    styleTargets.forEach((styleTarget) => {
+      paletteVars.forEach((key) => styleTarget.removeProperty(key));
+    });
+  }
+
+  function syncBrandingRuntime(doc, data) {
+    if (!doc || !data) return;
+
+    const brandName = safeText(data.biz_name);
+    const logoUrl = safeText(runtimePreview.logo || data.logo_url);
+    const coverUrl = safeText(runtimePreview.cover || data.cover_url);
+    const primaryBtn = safeText(data.hero_btn_primary);
+    const secondaryBtn = safeText(data.hero_btn_secondary);
+    const secondaryColor = safeText(data.palette_secondary) || '#075985';
+    const mapUrl = safeText(data.maps_url);
+    const address = safeText(data.address);
+    const minLogoWidth = isMobileViewport() ? 10 : 50;
+    const fallbackLogoWidth = Number(getDefaultLogoWidth()) || 50;
+    const logoWidth = Math.max(minLogoWidth, Math.min(260, Number(data.logo_width) || fallbackLogoWidth));
+    const fontPreset = data.fonts || FONT_PRESETS[data.font_pair] || FONT_PRESETS.dm_plusjakarta;
+    const shouldApplyPalette = !!data.use_custom_palette;
+
+    applyFontPreset(doc, fontPreset);
+    if (shouldApplyPalette) {
+      applyRuntimePalette(doc, data);
+    } else {
+      clearRuntimePalette(doc);
+    }
+
+    const setText = (selector, value, guard) => {
+      if (!value) return;
+      doc.querySelectorAll(selector).forEach((node) => {
+        if (typeof guard === 'function' && !guard(node)) return;
+        node.textContent = value;
+      });
+    };
+
+    setText('.navbar-brand, .brand, .brand-title, .footer-brand, #brandName, #brand-name', brandName);
+    setText('.btn-brand, a[href="#reservas"].btn, a[href="#booking"].btn', primaryBtn, (node) => {
+      return !node.closest('#themeToggle, #themeToggleBtn, [data-theme-toggle], [aria-label*="tema" i], [title*="tema" i]');
+    });
+    setText('.btn-outline-light, a[href="#servicios"].btn, a[href="#barberos"].btn', secondaryBtn, (node) => {
+      return !node.closest('#themeToggle, #themeToggleBtn, [data-theme-toggle], [aria-label*="tema" i], [title*="tema" i]');
+    });
+
+    doc.querySelectorAll('.btn-outline-light, a[href="#servicios"].btn, a[href="#barberos"].btn').forEach((node) => {
+      if (node.closest('#themeToggle, #themeToggleBtn, [data-theme-toggle], [aria-label*="tema" i], [title*="tema" i]')) return;
+      if (shouldApplyPalette) {
+        node.style.background = secondaryColor;
+        node.style.borderColor = secondaryColor;
+        node.style.color = '#ffffff';
+        node.style.webkitTextFillColor = '#ffffff';
+        node.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.18)';
+      } else {
+        node.style.removeProperty('background');
+        node.style.removeProperty('border-color');
+        node.style.removeProperty('color');
+        node.style.removeProperty('-webkit-text-fill-color');
+        node.style.removeProperty('box-shadow');
+      }
+    });
+
+    const logoTargets = doc.querySelectorAll('.navbar-brand, .brand, .brand-title, .footer-brand, #brandName, #brand-name');
+    if (logoUrl) {
+      logoTargets.forEach((node) => {
+        node.style.display = 'inline-flex';
+        node.style.alignItems = 'center';
+        node.style.gap = '10px';
+        let img = node.querySelector('img[data-ba-live-logo], img');
+        if (!img) {
+          img = doc.createElement('img');
+          node.prepend(img);
+        }
+        img.setAttribute('data-ba-live-logo', '1');
+        node.querySelectorAll('img').forEach((extraImg) => {
+          if (extraImg !== img) extraImg.remove();
+        });
+        img.src = logoUrl;
+        img.alt = brandName || 'Logo';
+        img.style.width = `${logoWidth}px`;
+        img.style.maxWidth = `${logoWidth}px`;
+        img.style.height = 'auto';
+        img.style.objectFit = 'contain';
+        img.style.borderRadius = '6px';
+        img.style.flex = '0 0 auto';
+      });
+    }
+
+    if (coverUrl) {
+      doc.querySelectorAll('#heroImage, .hero img, .hero-section img, .lp-hero img').forEach((img) => {
+        if (img.tagName === 'IMG') img.src = coverUrl;
+      });
+      doc.querySelectorAll('.hero, .hero-section, header.hero, #inicio.hero, .hero-section-with-image').forEach((hero) => {
+        hero.style.backgroundImage = `url("${coverUrl.replace(/"/g, '%22')}")`;
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundPosition = 'center';
+      });
+    }
+
+    const badgeIcons = ['bi-scissors', 'bi-person-badge', 'bi-stars'];
+    const heroBadges = doc.querySelectorAll('.hero-badges > *, .split-badges > *');
+    heroBadges.forEach((badge, index) => {
+      badge.innerHTML = `<i class="bi ${badgeIcons[index % badgeIcons.length]}" aria-hidden="true"></i>`;
+      badge.setAttribute('aria-label', `Icono barberia ${index + 1}`);
+      badge.classList.add('ba-icon-only-badge');
+    });
+
+    if (shouldApplyPalette) {
+      const styleTargets = [
+        doc.documentElement?.style,
+        doc.body?.style,
+        doc.getElementById('landingRoot')?.style
+      ].filter(Boolean);
+      const paletteVars = [
+        ['--c-primary', data.palette_primary],
+        ['--c-secondary', data.palette_secondary],
+        ['--c-accent', data.palette_accent],
+        ['--c-text', data.palette_text],
+        ['--primary', data.palette_primary],
+        ['--primary-2', data.palette_secondary],
+        ['--accent', data.palette_secondary],
+        ['--text', data.palette_text],
+        ['--brand', data.palette_primary],
+        ['--brand-2', data.palette_secondary],
+        ['--main', data.palette_primary],
+        ['--main2', data.palette_secondary],
+        ['--hot', data.palette_secondary]
+      ];
+
+      styleTargets.forEach((styleTarget) => {
+        paletteVars.forEach(([key, value]) => {
+          if (safeText(value)) styleTarget.setProperty(key, value);
+        });
+      });
+    }
+
+    let styleEl = doc.getElementById('ba-preview-branding-fix');
+    if (!styleEl && doc.head) {
+      styleEl = doc.createElement('style');
+      styleEl.id = 'ba-preview-branding-fix';
+      doc.head.appendChild(styleEl);
+    }
+    if (styleEl) {
+      styleEl.textContent = `
+        html[data-theme="dark"] .navbar-brand,
+        html[data-theme="dark"] .brand,
+        html[data-theme="dark"] .brand-title,
+        html[data-theme="dark"] .navbar .navbar-brand,
+        html[data-theme="dark"] .navbar .nav-link,
+        html[data-theme="dark"] .navbar-collapse .nav-link,
+        html[data-theme="dark"] .offcanvas .nav-link,
+        html[data-theme="dark"] .collapse .nav-link,
+        html[data-bs-theme="dark"] .navbar-brand,
+        html[data-bs-theme="dark"] .brand,
+        html[data-bs-theme="dark"] .brand-title,
+        html[data-bs-theme="dark"] .navbar .navbar-brand,
+        html[data-bs-theme="dark"] .navbar .nav-link,
+        html[data-bs-theme="dark"] .navbar-collapse .nav-link,
+        html[data-bs-theme="dark"] .offcanvas .nav-link,
+        html[data-bs-theme="dark"] .collapse .nav-link,
+        body.dark-mode .navbar-brand,
+        body.dark-mode .brand,
+        body.dark-mode .brand-title,
+        body.dark-mode .navbar .navbar-brand,
+        body.dark-mode .navbar .nav-link,
+        body.dark-mode .navbar-collapse .nav-link,
+        body.dark-mode .offcanvas .nav-link,
+        body.dark-mode .collapse .nav-link {
+          color: #f8fafc !important;
+          -webkit-text-fill-color: #f8fafc !important;
+        }
+        html[data-theme="dark"] .navbar-collapse,
+        html[data-theme="dark"] .offcanvas,
+        html[data-bs-theme="dark"] .navbar-collapse,
+        html[data-bs-theme="dark"] .offcanvas,
+        body.dark-mode .navbar-collapse,
+        body.dark-mode .offcanvas {
+          color: #f8fafc !important;
+        }
+        html[data-theme="dark"] .navbar-toggler,
+        html[data-bs-theme="dark"] .navbar-toggler,
+        body.dark-mode .navbar-toggler {
+          color: #f8fafc !important;
+          border-color: ${safeText(data.palette_accent) || '#f97316'} !important;
+        }
+        .hero-subtitle,
+        .hero p.lead,
+        .hero-copy p,
+        header.hero p.lead {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+          text-shadow: 0 2px 16px rgba(0, 0, 0, 0.28) !important;
+        }
+        .btn-outline-light,
+        .btn-outline-light:hover,
+        .btn-outline-light:focus,
+        a[href="#servicios"].btn,
+        a[href="#servicios"].btn:hover,
+        a[href="#servicios"].btn:focus {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+        }
+        html[data-theme="dark"] .section-heading p,
+        html[data-bs-theme="dark"] .section-heading p,
+        body.dark-mode .section-heading p {
+          color: #ffffff !important;
+          -webkit-text-fill-color: #ffffff !important;
+        }
+        html[data-theme="dark"] .metric,
+        html[data-theme="dark"] .metric *,
+        html[data-theme="dark"] .panel.metric,
+        html[data-theme="dark"] .panel.metric *,
+        html[data-theme="dark"] .panel:not(.map-block),
+        html[data-theme="dark"] .panel:not(.map-block) h1,
+        html[data-theme="dark"] .panel:not(.map-block) h2,
+        html[data-theme="dark"] .panel:not(.map-block) h3,
+        html[data-theme="dark"] .panel:not(.map-block) h4,
+        html[data-theme="dark"] .panel:not(.map-block) h5,
+        html[data-theme="dark"] .panel:not(.map-block) h6,
+        html[data-theme="dark"] .panel:not(.map-block) p,
+        html[data-theme="dark"] .panel:not(.map-block) span,
+        html[data-theme="dark"] .panel:not(.map-block) small,
+        html[data-theme="dark"] .panel:not(.map-block) li,
+        html[data-theme="dark"] .service-card,
+        html[data-theme="dark"] .service-card *,
+        html[data-theme="dark"] .barber-card,
+        html[data-theme="dark"] .barber-card *,
+        html[data-theme="dark"] .reserve-copy,
+        html[data-theme="dark"] .reserve-copy *,
+        html[data-theme="dark"] .reserve-list,
+        html[data-theme="dark"] .reserve-list *,
+        html[data-theme="dark"] .reservation-card,
+        html[data-theme="dark"] .reservation-card *,
+        html[data-theme="dark"] .reserve-card,
+        html[data-theme="dark"] .reserve-card *,
+        html[data-theme="dark"] .reserve-box,
+        html[data-theme="dark"] .reserve-box *,
+        html[data-theme="dark"] .reserve-form,
+        html[data-theme="dark"] .reserve-form *,
+        html[data-theme="dark"] .form-label,
+        html[data-theme="dark"] label,
+        html[data-bs-theme="dark"] .metric,
+        html[data-bs-theme="dark"] .metric *,
+        html[data-bs-theme="dark"] .panel.metric,
+        html[data-bs-theme="dark"] .panel.metric *,
+        html[data-bs-theme="dark"] .panel:not(.map-block),
+        html[data-bs-theme="dark"] .panel:not(.map-block) h1,
+        html[data-bs-theme="dark"] .panel:not(.map-block) h2,
+        html[data-bs-theme="dark"] .panel:not(.map-block) h3,
+        html[data-bs-theme="dark"] .panel:not(.map-block) h4,
+        html[data-bs-theme="dark"] .panel:not(.map-block) h5,
+        html[data-bs-theme="dark"] .panel:not(.map-block) h6,
+        html[data-bs-theme="dark"] .panel:not(.map-block) p,
+        html[data-bs-theme="dark"] .panel:not(.map-block) span,
+        html[data-bs-theme="dark"] .panel:not(.map-block) small,
+        html[data-bs-theme="dark"] .panel:not(.map-block) li,
+        html[data-bs-theme="dark"] .service-card,
+        html[data-bs-theme="dark"] .service-card *,
+        html[data-bs-theme="dark"] .barber-card,
+        html[data-bs-theme="dark"] .barber-card *,
+        html[data-bs-theme="dark"] .reserve-copy,
+        html[data-bs-theme="dark"] .reserve-copy *,
+        html[data-bs-theme="dark"] .reserve-list,
+        html[data-bs-theme="dark"] .reserve-list *,
+        html[data-bs-theme="dark"] .reservation-card,
+        html[data-bs-theme="dark"] .reservation-card *,
+        html[data-bs-theme="dark"] .reserve-card,
+        html[data-bs-theme="dark"] .reserve-card *,
+        html[data-bs-theme="dark"] .reserve-box,
+        html[data-bs-theme="dark"] .reserve-box *,
+        html[data-bs-theme="dark"] .reserve-form,
+        html[data-bs-theme="dark"] .reserve-form *,
+        html[data-bs-theme="dark"] .form-label,
+        html[data-bs-theme="dark"] label,
+        body.dark-mode .metric,
+        body.dark-mode .metric *,
+        body.dark-mode .panel.metric,
+        body.dark-mode .panel.metric * {
+          color: #f8fafc !important;
+          -webkit-text-fill-color: #f8fafc !important;
+        }
+        body.dark-mode .panel:not(.map-block),
+        body.dark-mode .panel:not(.map-block) h1,
+        body.dark-mode .panel:not(.map-block) h2,
+        body.dark-mode .panel:not(.map-block) h3,
+        body.dark-mode .panel:not(.map-block) h4,
+        body.dark-mode .panel:not(.map-block) h5,
+        body.dark-mode .panel:not(.map-block) h6,
+        body.dark-mode .panel:not(.map-block) p,
+        body.dark-mode .panel:not(.map-block) span,
+        body.dark-mode .panel:not(.map-block) small,
+        body.dark-mode .panel:not(.map-block) li,
+        body.dark-mode .service-card,
+        body.dark-mode .service-card *,
+        body.dark-mode .barber-card,
+        body.dark-mode .barber-card *,
+        body.dark-mode .reserve-copy,
+        body.dark-mode .reserve-copy *,
+        body.dark-mode .reserve-list,
+        body.dark-mode .reserve-list *,
+        body.dark-mode .reservation-card,
+        body.dark-mode .reservation-card *,
+        body.dark-mode .reserve-card,
+        body.dark-mode .reserve-card *,
+        body.dark-mode .reserve-box,
+        body.dark-mode .reserve-box *,
+        body.dark-mode .reserve-form,
+        body.dark-mode .reserve-form *,
+        body.dark-mode .form-label,
+        body.dark-mode label {
+          color: #f8fafc !important;
+          -webkit-text-fill-color: #f8fafc !important;
+        }
+        html[data-theme="dark"] .form-control,
+        html[data-theme="dark"] .form-select,
+        html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+        html[data-theme="dark"] textarea,
+        html[data-theme="dark"] select,
+        html[data-bs-theme="dark"] .form-control,
+        html[data-bs-theme="dark"] .form-select,
+        html[data-bs-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+        html[data-bs-theme="dark"] textarea,
+        html[data-bs-theme="dark"] select,
+        body.dark-mode .form-control,
+        body.dark-mode .form-select,
+        body.dark-mode input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+        body.dark-mode textarea,
+        body.dark-mode select {
+          color: #f8fafc !important;
+          -webkit-text-fill-color: #f8fafc !important;
+          background-color: rgba(15, 23, 42, 0.72) !important;
+          border-color: rgba(248, 250, 252, 0.18) !important;
+        }
+        html[data-theme="dark"] .form-control::placeholder,
+        html[data-theme="dark"] textarea::placeholder,
+        html[data-theme="dark"] input::placeholder,
+        html[data-bs-theme="dark"] .form-control::placeholder,
+        html[data-bs-theme="dark"] textarea::placeholder,
+        html[data-bs-theme="dark"] input::placeholder,
+        body.dark-mode .form-control::placeholder,
+        body.dark-mode textarea::placeholder,
+        body.dark-mode input::placeholder {
+          color: rgba(226, 232, 240, 0.72) !important;
+          -webkit-text-fill-color: rgba(226, 232, 240, 0.72) !important;
+        }
+        .hero-badges span.ba-icon-only-badge,
+        .split-badges span.ba-icon-only-badge,
+        .hero-badges .ba-icon-only-badge,
+        .split-badges .ba-icon-only-badge {
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          min-width: 52px !important;
+          min-height: 44px !important;
+          padding: 0 14px !important;
+          color: #fff !important;
+        }
+        .hero-badges span.ba-icon-only-badge i,
+        .split-badges span.ba-icon-only-badge i,
+        .hero-badges .ba-icon-only-badge i,
+        .split-badges .ba-icon-only-badge i {
+          color: #fff !important;
+          font-size: 1.15rem !important;
+          line-height: 1 !important;
+        }
+      `;
+    }
+
+    if (mapUrl) {
+      doc.querySelectorAll('iframe[src*="google.com/maps"], .lp-map').forEach((frameEl) => {
+        frameEl.src = mapUrl;
+      });
+    } else if (address) {
+      const embed = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+      doc.querySelectorAll('iframe[src*="google.com/maps"], .lp-map').forEach((frameEl) => {
+        frameEl.src = embed;
+      });
+    }
+  }
+
+  function syncHeroContent(doc, data) {
+    if (!doc || !data) return;
+    const titleEl = doc.querySelector('.hero-title, .hero h1, .hero-copy h1, header.hero h1');
+    const subtitleEl = doc.querySelector('.hero-subtitle, .hero p.lead, .hero-copy p, header.hero p.lead');
+    const kickerEl = doc.querySelector('.hero-kicker, .hero-tag, .tag, .pill-kicker, .text-uppercase.fw-bold.mb-2');
+    if (titleEl && safeText(data.hero_title)) titleEl.textContent = data.hero_title;
+    if (subtitleEl && safeText(data.hero_subtitle)) {
+      subtitleEl.textContent = data.hero_subtitle;
+      subtitleEl.style.color = '#ffffff';
+      subtitleEl.style.webkitTextFillColor = '#ffffff';
+      subtitleEl.style.textShadow = '0 2px 16px rgba(0, 0, 0, 0.28)';
+    }
+    if (kickerEl && safeText(data.hero_kicker)) kickerEl.textContent = data.hero_kicker;
+  }
+
+  function syncV1ContrastFixes(doc) {
+    if (!doc) return;
+
+    doc.querySelectorAll('.hero-subtitle, .hero p.lead, .hero-copy p, header.hero p.lead, #inicio p.lead').forEach((node) => {
+      node.style.opacity = '1';
+    });
+
+    doc.querySelectorAll('#servicios .section-heading h2').forEach((node) => {
+      node.textContent = 'Servicios que te hacen ver mejor';
+    });
+
+    doc.querySelectorAll('#barberos .section-heading h2').forEach((node) => {
+      node.textContent = 'Barberos que entienden tu estilo';
+    });
+
+    doc.querySelectorAll('#servicios .section-heading p').forEach((node) => {
+      node.textContent = 'Elige el servicio ideal para tu look, tu rutina y la imagen que quieres proyectar.';
+    });
+
+    doc.querySelectorAll('#barberos .section-heading p').forEach((node) => {
+      node.textContent = 'Conoce al equipo que puede ayudarte a encontrar un estilo cómodo, preciso y bien cuidado.';
+    });
+  }
+
+  function syncReservationMarketingCopy(doc) {
+    if (!doc) return;
+    const selectedId = getSelectedId();
+    const config = TEMPLATE_RESERVE_COPY[selectedId];
+    if (!config) return;
+
+    const card = doc.querySelector(config.card);
+    if (!card) return;
+
+    const titleEl = card.querySelector('h2, h3');
+    const textEl = card.querySelector('p');
+    if (titleEl && config.title) titleEl.textContent = config.title;
+    if (textEl && config.text) textEl.textContent = config.text;
+
+    if (Array.isArray(config.bullets) && config.bullets.length) {
+      const items = card.querySelectorAll('li');
+      items.forEach((item, index) => {
+        const nextText = config.bullets[index];
+        if (!nextText) return;
+        const icon = item.querySelector('i');
+        item.textContent = '';
+        if (icon) item.appendChild(icon);
+        item.appendChild(doc.createTextNode(` ${nextText}`));
+      });
+    }
+
+    const actionButtons = card.querySelectorAll('a.btn, button.btn');
+    if (config.primaryBtn && actionButtons[0]) actionButtons[0].textContent = config.primaryBtn;
+    if (config.secondaryBtn && actionButtons[1]) actionButtons[1].textContent = config.secondaryBtn;
+  }
+
+  async function handleFileUpload(file, target) {
+    if (!file) return;
+    const wrap = target === 'logo' ? el.logoWrap : el.coverWrap;
+    const urlInput = target === 'logo' ? el.logoUrl : el.coverUrl;
+    const img = target === 'logo' ? el.logoImg : el.coverImg;
+    
+    wrap.classList.add('is-loading');
+    const blobUrl = URL.createObjectURL(file);
+    img.src = blobUrl;
+    wrap.classList.add('has-image');
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('biz_slug', toSlug(el.bizName.value || 'barberia'));
+
+    try {
+      const uploadEndpoints = getUploadEndpointCandidates();
+      let lastError = null;
+
+      for (const endpoint of uploadEndpoints) {
+        try {
+          const res = await fetch(endpoint, { method: 'POST', body: formData });
+          if (!res.ok) {
+            const errorBody = await res.text().catch(() => '');
+            const isNotRegistered =
+              res.status === 404 &&
+              /not registered/i.test(errorBody || '');
+            if (isNotRegistered) {
+              lastError = new Error(`Webhook no registrado en ${endpoint}`);
+              continue;
+            }
+            throw new Error(`HTTP error ${res.status}`);
+          }
+          const json = await res.json().catch(() => ({}));
+          const publicUrl = buildUploadPublicUrl(json, file);
+          if (!publicUrl) throw new Error('No URL in response');
+          urlInput.value = publicUrl;
+          runtimePreview[target] = blobUrl;
+          lastError = null;
+          break;
+        } catch (err) {
+          lastError = err;
+        }
+      }
+
+      if (lastError) throw lastError;
+    } catch(e) {
+      console.error('Upload failed:', e);
+      urlInput.value = '';
+      runtimePreview[target] = blobUrl; // fallback to blob
+    } finally {
+      wrap.classList.remove('is-loading');
+      updatePreview();
+    }
+  }
+
+  async function init() {
+    applyHostUiCleanup();
+    await loadDraft();
+    const cameFromRegistroEdit =
+      getQueryParam('source') === 'editor' ||
+      getQueryParam('edit') === '1' ||
+      getQueryParam('mode') === 'edit' ||
+      getQueryParam('modo') === 'editar' ||
+      getQueryParam('editing') === '1' ||
+      getQueryParam('is_edit') === '1';
+    if (cameFromRegistroEdit) {
+      const forcedEditAddress = readOnboardingDraftAddress() || safeText(seedLandingData?.direccion);
+      if (forcedEditAddress) {
+        el.address.value = forcedEditAddress;
+        el.mapsUrl.value = buildMapsEmbedUrl(forcedEditAddress);
+        seedLandingData.direccion = forcedEditAddress;
+      }
+    }
+    // Siempre rehidrata colecciones heredadas desde backend público para evitar
+    // que un borrador viejo vuelva a pisar servicios/barberos/horarios.
+    if (!cameFromRegistroEdit) {
+      await hydrateInheritedFromPublicProfile();
+    }
+    applySeedDefaults();
+    forceSeedIdentityIntoPanel();
+    enforcePreferredAddress();
+    renderInheritedSeedSummary();
+    const hasLocalDraft = !!getSafeStorage(localStorage, STORAGE_DRAFT);
+    const mobileLogoMigrated = getSafeStorage(localStorage, STORAGE_MOBILE_LOGO_WIDTH_MIGRATION) === '1';
+    if (isMobileViewport() && el.logoWidth && ['10', '50'].includes(safeText(el.logoWidth.value))) {
+      el.logoWidth.value = MOBILE_LOGO_WIDTH_DEFAULT;
+    }
+    if (isMobileViewport() && el.logoWidth && !mobileLogoMigrated && safeText(el.logoWidth.value) === DESKTOP_LOGO_WIDTH_DEFAULT) {
+      el.logoWidth.value = MOBILE_LOGO_WIDTH_DEFAULT;
+      setSafeStorage(localStorage, STORAGE_MOBILE_LOGO_WIDTH_MIGRATION, '1');
+    } else if (!hasLocalDraft && el.logoWidth) {
+      el.logoWidth.value = getDefaultLogoWidth();
+    }
+    const selectedId = getSelectedId();
+    const selectedTpl = byId[selectedId] || templates[0];
+    const identity = getSeedIdentity();
+    if (identity.barberia_id > 0) {
+      setSafeStorage(localStorage, STORAGE_BARBERIA_ID, String(identity.barberia_id));
+    }
+    if (safeText(identity.slug)) {
+      setSafeStorage(localStorage, STORAGE_BARBERIA_SLUG, identity.slug);
+    }
+    
+    el.chips.innerHTML = templates.map(t =>
+      `<div class="ba-chip ${t.id === selectedId ? 'is-active' : ''}" data-id="${t.id}">${t.name}</div>`
+    ).join('');
+    
+    el.templateName.textContent = selectedTpl.name;
+    el.frame.src = fileToUrl(selectedTpl.file);
+
+    const debouncedUpdate = debounce(updatePreview, 250);
+    const quickUpdate = debounce(updatePreview, 50);
+
+    root.addEventListener('input', e => {
+      if (e.target.id === 'address') {
+        el.mapsUrl.value = buildMapsEmbedUrl(e.target.value);
+      }
+      if (e.target.id.startsWith('palette_')) {
+        paletteTouched = true;
+        el.paletteAccent.value = el.paletteSecondary.value;
+        const tplId = getSelectedId();
+        persistPaletteForTemplate(tplId, true);
+        quickUpdate();
+      } else {
+        debouncedUpdate();
+      }
+    });
+
+    el.frame.addEventListener('load', () => {
+      try {
+        updatePaletteFromTemplate(el.frame.contentDocument);
+        syncBrandingRuntime(el.frame.contentDocument, getFormData());
+        applyEditorPreviewCleanup(el.frame.contentDocument);
+        enforceHeroTextWhite(el.frame.contentDocument);
+        syncHeroContent(el.frame.contentDocument, getFormData());
+        syncReservationMarketingCopy(el.frame.contentDocument);
+        syncV1ContrastFixes(el.frame.contentDocument);
+        setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 120);
+        setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 400);
+        updatePreview();
+      } catch(e) {
+        console.warn('Cross-origin frame error:', e);
+      }
+    });
+
+    el.chips.addEventListener('click', e => {
+      const chip = e.target.closest('.ba-chip');
+      if (!chip) return;
+      const { id } = chip.dataset;
+      if (id && id !== getSelectedId()) {
+        persistPaletteForTemplate(getSelectedId(), paletteTouched);
+        setSelectedId(id);
+        const newTpl = byId[id];
+        el.frame.src = fileToUrl(newTpl.file);
+        el.templateName.textContent = newTpl.name;
+        document.querySelector('.ba-chip.is-active')?.classList.remove('is-active');
+        chip.classList.add('is-active');
+      }
+    });
+
+    ['logo', 'cover'].forEach(target => {
+      const wrap = target === 'logo' ? el.logoWrap : el.coverWrap;
+      const input = target === 'logo' ? el.logoInput : el.coverInput;
+      if (!wrap || !input) return;
+
+      wrap.addEventListener('click', () => input.click());
+      input.addEventListener('change', () => handleFileUpload(input.files?.[0], target));
+      
+      const events = ['dragenter', 'dragover', 'dragleave', 'drop'];
+      events.forEach(name => wrap.addEventListener(name, e => {
+        e.preventDefault();
+        e.stopPropagation();
+      }));
+
+      ['dragenter', 'dragover'].forEach(name => {
+        wrap.addEventListener(name, () => wrap.classList.add('is-dragover'));
+      });
+      ['dragleave', 'drop'].forEach(name => {
+        wrap.addEventListener(name, () => wrap.classList.remove('is-dragover'));
+      });
+      wrap.addEventListener('drop', e => handleFileUpload(e.dataTransfer?.files?.[0], target));
+    });
+
+    el.goRegistro?.addEventListener('click', () => {
+      persistRegistroSeedContext();
+      const targetUrl = buildRegistroUrlWithIdentity(CONFIG.registroUrl);
+      if (targetUrl) {
+        window.open(targetUrl, '_self');
+        return;
+      }
+      if (document.referrer) {
+        window.location.href = document.referrer;
+        return;
+      }
+      window.history.back();
+    });
+
+    el.goSelector.addEventListener('click', () => {
+      if (CONFIG.selectorUrl) {
+        window.open(CONFIG.selectorUrl, '_self');
+      }
+    });
+
+    el.saveDraft.addEventListener('click', () => saveDraft({ notify: true }));
+    el.publish.addEventListener('click', publishLanding);
+    el.resetPalette?.addEventListener('click', restoreTemplatePalette);
+
+    // Mobile UI Logic
+    if (mobileDock && mobileScrim && sheetHandle) {
+      let sheetState = 'min'; // 'min', 'mid', 'full'
+      let isDragging = false;
+      let startY, startHeight;
+      let collapsedDockKey = '';
+      const leftPanel = root.querySelector('#ba-left');
+      const rightPanel = root.querySelector('#ba-right');
+      const dockButtons = () => Array.from(mobileDock.querySelectorAll('.ba-dock-btn'));
+
+      const enforceMobilePanelAnchor = () => {
+        if (!isMobileViewport()) return;
+        [leftPanel, rightPanel].forEach((panel) => {
+          if (!panel) return;
+          panel.style.left = '0';
+          panel.style.right = 'auto';
+          panel.style.insetInlineStart = '0';
+          panel.style.insetInlineEnd = 'auto';
+          panel.style.marginLeft = '0';
+          panel.style.marginRight = 'auto';
+        });
+      };
+
+      const toggleDockCompact = (key) => {
+        const buttons = dockButtons();
+        if (!buttons.length) return;
+        const nextKey = safeText(key);
+        const shouldExpand = collapsedDockKey && collapsedDockKey === nextKey;
+        if (shouldExpand) {
+          collapsedDockKey = '';
+          buttons.forEach((btn) => {
+            btn.hidden = false;
+            btn.style.display = '';
+          });
+          return;
+        }
+        collapsedDockKey = nextKey;
+        buttons.forEach((btn) => {
+          const btnKey = safeText(btn.dataset.target || btn.dataset.action);
+          const keepVisible = btnKey === nextKey;
+          btn.hidden = !keepVisible;
+          btn.style.display = keepVisible ? '' : 'none';
+        });
+      };
+
+      const setSheetPosition = (pos) => {
+        sheetState = pos;
+        root.classList.toggle('is-left-open', pos !== 'min');
+        root.classList.toggle('is-left-mid', pos === 'mid');
+        root.classList.toggle('is-left-full', pos === 'full');
+        if (leftPanel) {
+          leftPanel.dataset.mobileState = pos;
+        }
+        enforceMobilePanelAnchor();
+      };
+      
+      const handleTouchMove = (e) => {
+        if (!isDragging) return;
+        if (!leftPanel) return;
+        const currentY = e.touches?.[0]?.clientY || e.clientY;
+        const deltaY = currentY - startY;
+        const newHeight = startHeight - deltaY;
+        const maxSheetHeight = window.innerHeight - (el.mobileHeaderOffset || 104) - 24;
+        const finalHeight = Math.max(88, Math.min(newHeight, maxSheetHeight));
+        const openness = finalHeight / maxSheetHeight;
+        if (openness > 0.78) {
+          leftPanel.dataset.dragState = 'full';
+        } else if (openness > 0.28) {
+          leftPanel.dataset.dragState = 'mid';
+        } else {
+          leftPanel.dataset.dragState = 'min';
+        }
+      };
+
+      const handleTouchEnd = (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        root.classList.remove('is-sheet-dragging');
+        if (!leftPanel) return;
+        
+        const dragState = leftPanel.dataset.dragState || 'min';
+        delete leftPanel.dataset.dragState;
+        
+        if (dragState === 'full') {
+          setSheetPosition('full');
+        } else if (dragState === 'mid') {
+          setSheetPosition('mid');
+        } else {
+          setSheetPosition('min');
+        }
+        
+        window.removeEventListener('touchmove', handleTouchMove);
+        window.removeEventListener('touchend', handleTouchEnd);
+        window.removeEventListener('mousemove', handleTouchMove);
+        window.removeEventListener('mouseup', handleTouchEnd);
+      };
+
+      sheetHandle.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        root.classList.add('is-sheet-dragging');
+        startY = e.touches[0].clientY;
+        startHeight = root.querySelector('#ba-left').offsetHeight;
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        window.addEventListener('touchend', handleTouchEnd);
+      });
+
+      sheetHandle.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        root.classList.add('is-sheet-dragging');
+        startY = e.clientY;
+        startHeight = root.querySelector('#ba-left').offsetHeight;
+        window.addEventListener('mousemove', handleTouchMove);
+        window.addEventListener('mouseup', handleTouchEnd);
+      });
+      
+      mobileDock.addEventListener('click', (e) => {
+        const btn = e.target.closest('.ba-dock-btn');
+        if (!btn) return;
+        const { target, action } = btn.dataset;
+        const dockKey = safeText(target || action);
+        
+        document.querySelectorAll('#baMobileDock .ba-dock-btn').forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+
+        if (target) {
+          const targetEl = document.getElementById(target);
+          if(targetEl) {
+             if (target === 'ba-left') {
+                setSheetPosition(sheetState === 'min' ? 'mid' : 'min');
+             } else {
+                setSheetPosition('full');
+                setTimeout(() => targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+             }
+          }
+        }
+        if (action === 'preview-final') {
+          setSheetPosition('min');
+          el.openFinalPreview?.click();
+        }
+        if (action === 'toggle-theme') {
+          themeDockBtn.click();
+        }
+        if (action === 'open-settings') {
+          settingsDrawer.classList.add('is-open');
+        }
+
+        if (dockKey) toggleDockCompact(dockKey);
+      });
+      
+      mobileScrim.addEventListener('click', () => setSheetPosition('min'));
+      window.addEventListener('resize', enforceMobilePanelAnchor);
+      enforceMobilePanelAnchor();
+      setSheetPosition('min');
+    }
+
+    if (finalPreviewWrap && finalPreviewClose && el.openFinalPreview) {
+      const toggleFinalPreview = (force) => {
+        const isOpen = finalPreviewWrap.classList.toggle('is-open', force);
+        document.body.classList.toggle('ba-final-preview-open', isOpen);
+        if (isOpen) {
+          // La vista previa del modal debe reflejar siempre el estado actual del editor.
+          // Evita cargar una URL publicada potencialmente desactualizada.
+          renderFinalPreviewFromTemplate();
+        }
+      };
+      el.openFinalPreview.addEventListener('click', () => toggleFinalPreview(true));
+      finalPreviewClose.addEventListener('click', () => toggleFinalPreview(false));
+    }
+    
+    if (settingsDrawer && drawerClose) {
+      settingsDrawer.addEventListener('click', (e) => {
+        if (e.target === settingsDrawer || e.target === drawerClose) {
+          settingsDrawer.classList.remove('is-open');
+        }
+      });
+      document.getElementById('baOpenSettingsBtn')?.addEventListener('click', () => {
+        drawerBizName.value = el.bizName.value;
+        drawerAccent.value = el.paletteSecondary.value;
+        settingsDrawer.classList.add('is-open');
+      });
+      drawerBizName.addEventListener('input', () => { el.bizName.value = drawerBizName.value; updatePreview(); });
+      drawerAccent.addEventListener('input', () => {
+        el.paletteSecondary.value = drawerAccent.value;
+        el.paletteAccent.value = drawerAccent.value;
+        updatePreview();
+      });
+    }
+
+    if(themeDockBtn && themeDockIcon) {
+        const sunIcon = `<path d="M12 3.2v2.1"></path><path d="m18.2 5.8-1.5 1.5"></path><path d="M20.8 12h-2.1"></path><path d="m18.2 18.2-1.5-1.5"></path><path d="M12 20.8v-2.1"></path><path d="m5.8 18.2 1.5-1.5"></path><path d="M3.2 12h2.1"></path><path d="m5.8 5.8 1.5 1.5"></path><circle cx="12" cy="12" r="3.3"></circle>`;
+        const moonIcon = `<path d="M12 21a9 9 0 1 1 7.8-14.7A7.4 7.4 0 0 0 12 9Z"></path>`;
+        
+        const setTheme = (theme) => {
+            root.dataset.uiTheme = theme;
+            root.setAttribute('data-theme', theme);
+            themeDockIcon.innerHTML = theme === 'light' ? sunIcon : moonIcon;
+            setSafeStorage(localStorage, 'ba-editor-theme', theme);
+        };
+        
+        themeDockBtn.addEventListener('click', () => {
+            const newTheme = root.dataset.uiTheme === 'light' ? 'dark' : 'light';
+            setTheme(newTheme);
+        });
+
+        setTheme(getSafeStorage(localStorage, 'ba-editor-theme') || 'dark');
+    }
+  }
+
+  // Auto-publicar si estamos en un iframe con parametro ?publicar=true
+  try {
+    const params = new URLSearchParams(window.frameElement?.src.split('?')[1]);
+    if (params.get('publicar') === 'true') {
+      const doPublish = () => {
+        if (el.publish.checkVisibility()) {
+           el.publish.click();
+           console.log("Auto-publish triggered");
+        } else {
+           console.log("Publish button not visible yet");
+           setTimeout(doPublish, 200);
+        }
+      };
+      // Esperar a que el DOM este listo y JS inicializado
+      if (document.readyState === "complete") {
+          setTimeout(doPublish, 500);
+      } else {
+          window.addEventListener("load", () => setTimeout(doPublish, 500));
+      }
+    }
+  } catch(e) {
+    // Silently fail if not in an iframe or cannot access src
+  }
+
+  if (document.readyState === "complete") {
+    init().catch((e) => console.error('Init error:', e));
+  } else {
+    window.addEventListener("DOMContentLoaded", () => {
+      init().catch((e) => console.error('Init error:', e));
+    });
+  }
+})();
+</script>
+
+
+

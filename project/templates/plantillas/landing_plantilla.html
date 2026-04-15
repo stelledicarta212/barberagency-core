@@ -1,0 +1,70 @@
+﻿<main id="lp-selector-v2" class="shell">
+  <h1>Elige una plantilla para que tus clientes reserven más</h1>
+  <p class="sub">Selecciona el diseño que mejor represente tu barbería y empieza a recibir citas online en minutos.</p>
+  <section class="cards" id="cards"></section>
+</main>
+
+<script>
+  function syncGlobalTheme() {
+    const body = document.body;
+
+    function readParentLightMode() {
+      try {
+        if (window.parent && window.parent !== window && window.parent.document && window.parent.document.body) {
+          return window.parent.document.body.classList.contains('light-mode');
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function applyThemeFromGlobal() {
+      const parentLight = readParentLightMode();
+      if (parentLight === null) return;
+      body.classList.toggle('light-mode', parentLight);
+    }
+
+    applyThemeFromGlobal();
+
+    const selfObserver = new MutationObserver(applyThemeFromGlobal);
+    selfObserver.observe(body, { attributes: true, attributeFilter: ['class'] });
+
+    try {
+      const parentBody = window.parent && window.parent.document ? window.parent.document.body : null;
+      if (parentBody) {
+        const parentObserver = new MutationObserver(applyThemeFromGlobal);
+        parentObserver.observe(parentBody, { attributes: true, attributeFilter: ['class'] });
+      }
+    } catch (e) {}
+
+    window.addEventListener('storage', applyThemeFromGlobal);
+  }
+
+  syncGlobalTheme();
+
+  const EDITOR_URL = '/landing_editor_v2/';
+  const templates = [
+    {"id":"v2","name":"Impacto Urbano","subtitle":"Diseño moderno para captar atención y generar reservas.","cover":"https://images.pexels.com/photos/3998417/pexels-photo-3998417.jpeg?auto=compress&cs=tinysrgb&w=1920","file":"index_unico_v2.html"},
+    {"id":"v3","name":"Alta Conversión","subtitle":"Enfocada en que el cliente agende sin fricción.","cover":"https://images.pexels.com/photos/3992879/pexels-photo-3992879.jpeg?auto=compress&cs=tinysrgb&w=1920","file":"index_unico_v3_nueva.html"},
+    {"id":"v4","name":"Imagen Premium","subtitle":"Proyecta autoridad y aumenta la confianza al reservar.","cover":"https://images.pexels.com/photos/2076932/pexels-photo-2076932.jpeg?auto=compress&cs=tinysrgb&w=1920","file":"index_unico_v4_editorial.html"},
+    {"id":"v5","name":"Elegancia Comercial","subtitle":"Perfecta para negocios que quieren verse sólidos y vender más.","cover":"https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=1920","file":"index_unico_v5_1_azul_rojo_elegante.html"},
+    {"id":"v6","name":"Lujo Exclusivo","subtitle":"Estética sofisticada para atraer clientes de mayor valor.","cover":"https://images.pexels.com/photos/1570807/pexels-photo-1570807.jpeg?auto=compress&cs=tinysrgb&w=1920","file":"index_unico_v6_negro_dorado.html"},
+    {"id":"v7","name":"Nueva Landing V7","subtitle":"Nueva base para pruebas y expansión comercial.","cover":"https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=1920&q=80","file":"index_unicov7.html"}
+  ];
+
+  const cardsEl = document.getElementById('cards');
+  cardsEl.innerHTML = templates.map(t =>
+    '<a class="card" href="'+EDITOR_URL+'?tpl='+encodeURIComponent(t.id)+'" target="_top" data-id="'+t.id+'">'+
+      '<div class="cover" style="background-image:url(\''+t.cover+'\')"></div>'+
+      '<div class="body"><h3 class="name">'+t.name+'</h3><p class="desc">'+t.subtitle+'</p></div>'+
+    '</a>'
+  ).join('');
+
+  cardsEl.querySelectorAll('a.card').forEach(card => {
+    card.addEventListener('click', () => {
+      const tpl = card.getAttribute('data-id') || 'v2';
+      localStorage.setItem('ba_selected_template', tpl);
+    });
+  });
+</script>
+
+
