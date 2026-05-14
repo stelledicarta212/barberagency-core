@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Cake, Clock3, Gift, MoreHorizontal, RefreshCcw, Scissors, Plus, Search, X } from "lucide-react";
+import { Cake, ChevronLeft, ChevronRight, Clock3, Gift, MoreHorizontal, RefreshCcw, Scissors, Plus, Search, X } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard-shell";
 
 type Client = {
@@ -116,13 +116,54 @@ const CLIENTS: Client[] = [
   }
 ];
 
+const MONTHS = [
+  "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+  "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+];
+const DAYS = ["L", "M", "X", "J", "V", "S", "D"];
+
+function buildCalendar(date: Date) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const firstDayJs = new Date(year, month, 1).getDay();
+  const firstDayMondayIndex = (firstDayJs + 6) % 7;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const cells: Array<{ day: number | null; key: string }> = [];
+  for (let i = 0; i < firstDayMondayIndex; i += 1) cells.push({ day: null, key: `pad-start-${i}` });
+  for (let d = 1; d <= daysInMonth; d += 1) cells.push({ day: d, key: `d-${d}` });
+  while (cells.length % 7 !== 0) cells.push({ day: null, key: `pad-end-${cells.length}` });
+  return cells;
+}
+
 function statusClass(status: Client["status"]): string {
   return status === "Confirmada" ? "is-accepted" : "is-pending";
+}
+
+function initialsFrom(name: string): string {
+  const chunks = String(name || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  if (!chunks.length) return "CL";
+  if (chunks.length === 1) return chunks[0].slice(0, 2).toUpperCase();
+  return `${chunks[0][0] ?? ""}${chunks[1][0] ?? ""}`.toUpperCase();
+}
+
+function phoneToWhatsappUrl(phone: string, clientName: string): string | null {
+  const digits = String(phone || "").replace(/\D+/g, "");
+  if (!digits) return null;
+  const normalized = digits.length <= 10 ? `57${digits}` : digits;
+  const message = encodeURIComponent(`Hola ${clientName}, te escribimos de la barbería.`);
+  return `https://wa.me/${normalized}?text=${message}`;
 }
 
 export default function ClientesPage() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date());
+  const [calendarDay, setCalendarDay] = useState<number | null>(new Date().getDate());
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -131,6 +172,17 @@ export default function ClientesPage() {
   }, [query]);
 
   const selected = CLIENTS.find((c) => c.id === selectedId) ?? null;
+  const calendarCells = useMemo(() => buildCalendar(calendarMonth), [calendarMonth]);
+  const calendarMonthLabel = `${MONTHS[calendarMonth.getMonth()]} ${calendarMonth.getFullYear()}`;
+  const clientsForSelectedDay = useMemo(() => {
+    if (!calendarDay) return [];
+    return CLIENTS.filter((client, index) => ((calendarDay + index) % 3 === 0) || ((calendarDay + index) % 5 === 0));
+  }, [calendarDay]);
+  const occupancyRate = useMemo(() => {
+    const maxDailySlots = 12;
+    const usedSlots = clientsForSelectedDay.length;
+    return Math.min(100, Math.round((usedSlots / maxDailySlots) * 100));
+  }, [clientsForSelectedDay]);
 
   return (
     <DashboardShell>
@@ -167,10 +219,10 @@ export default function ClientesPage() {
                 key={client.id}
                 type="button"
                 className={`ba-client-row ${selected?.id === client.id ? "is-selected" : ""}`}
-                onClick={() => setSelectedId(client.id)}
+                onClick={() => { setSelectedId(client.id); setDetailOpen(true); }}
               >
                 <span className="ba-client-id">
-                  <img src={client.avatar} alt={client.name} loading="lazy" />
+                  <span className="ba-client-initials">{initialsFrom(client.name)}</span>
                   <b>{client.name}</b>
                   <small>{client.email}</small>
                 </span>
@@ -183,17 +235,24 @@ export default function ClientesPage() {
             ))}
           </div>
 
-          {selected ? (
-            <article className="ba-client-card-popup">
+          {selected && detailOpen ? (
+            <>
+            <button
+              type="button"
+              className="ba-client-overlay-backdrop"
+              aria-label="Cerrar detalle"
+              onClick={() => setDetailOpen(false)}
+            />
+            <article className="ba-client-card-popup ba-client-overlay-card">
               <header>
                 <div className="ba-client-popup-user">
-                  <img src={selected.avatar} alt={selected.name} loading="lazy" />
+                  <span className="ba-overlay-initials">{initialsFrom(selected.name)}</span>
                   <div>
                     <strong>{selected.name}</strong>
                     <small>{selected.email}</small>
                   </div>
                 </div>
-                <button type="button" onClick={() => setSelectedId(null)} aria-label="Cerrar ficha">
+                <button type="button" onClick={() => setDetailOpen(false)} aria-label="Cerrar ficha">
                   <X size={12} />
                 </button>
               </header>
@@ -208,6 +267,22 @@ export default function ClientesPage() {
                 <p>
                   <span>Barbers Preferido</span>
                   <strong>{selected.preferredBarber}</strong>
+                </p>
+                <p>
+                  <span>Telefono</span>
+                  <strong>
+                    <a
+                      className="ba-whatsapp-link"
+                      href={phoneToWhatsappUrl(selected.phone, selected.name) ?? "#"}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => {
+                        if (!phoneToWhatsappUrl(selected.phone, selected.name)) e.preventDefault();
+                      }}
+                    >
+                      {selected.phone}
+                    </a>
+                  </strong>
                 </p>
                 <p>
                   <span>Preferencias servicios</span>
@@ -245,60 +320,185 @@ export default function ClientesPage() {
                 <strong>{selected.loyaltyPoints}</strong>
               </footer>
             </article>
+            </>
           ) : null}
         </div>
-
         <aside className="ba-client-right">
-          <article className="ba-card ba-right-widget">
+          <article className="ba-card ba-right-widget ba-client-selected-widget">
             <header className="ba-right-header">
-              <h3>Tasa de Ocupación</h3>
+              <h3>Cliente Seleccionado</h3>
               <MoreHorizontal size={12} />
             </header>
-            <p className="ba-client-kpi">88%</p>
+            {selected ? (
+              <>
+                <div className="ba-client-selected-head">
+                  <span className="ba-client-initials">{initialsFrom(selected.name)}</span>
+                  <div>
+                    <strong>{selected.name}</strong>
+                    <small>{selected.email}</small>
+                  </div>
+                </div>
+                <div className="ba-client-selected-grid">
+                  <p>
+                    <span>Telefono</span>
+                    <strong>
+                      <a
+                        className="ba-whatsapp-link"
+                        href={phoneToWhatsappUrl(selected.phone, selected.name) ?? "#"}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => {
+                          if (!phoneToWhatsappUrl(selected.phone, selected.name)) e.preventDefault();
+                        }}
+                      >
+                        {selected.phone}
+                      </a>
+                    </strong>
+                  </p>
+                  <p><span>Ultima visita</span><strong>{selected.lastVisit}</strong></p>
+                  <p><span>Barbero</span><strong>{selected.preferredBarber}</strong></p>
+                  <p><span>Servicio</span><strong>{selected.preferredService}</strong></p>
+                </div>
+                <div className="ba-client-stamp-track">
+                  {Array.from({ length: selected.stampRequired }, (_, idx) => (
+                    <span key={`side-stamp-${idx}`} className={idx < selected.stampCurrent ? "is-on" : ""}>
+                      <Scissors size={11} />
+                    </span>
+                  ))}
+                </div>
+                <small className="ba-client-stamp-note">
+                  {selected.stampCurrent} / {selected.stampRequired} sellos
+                </small>
+              </>
+            ) : (
+              <p className="ba-client-selected-empty">Elige un cliente para ver su tarjeta aqui.</p>
+            )}
+          </article>
+
+          <article className="ba-card ba-right-widget ba-client-mini-calendar-wrap">
+            <header className="ba-right-header">
+              <h3>Calendario</h3>
+              <MoreHorizontal size={12} />
+            </header>
+            <div className="ba-calendar-nav">
+              <button
+                type="button"
+                aria-label="Mes anterior"
+                onClick={() => {
+                  setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+                  setCalendarDay(null);
+                }}
+              >
+                <ChevronLeft size={12} />
+              </button>
+              <span>{calendarMonthLabel}</span>
+              <button
+                type="button"
+                aria-label="Mes siguiente"
+                onClick={() => {
+                  setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+                  setCalendarDay(null);
+                }}
+              >
+                <ChevronRight size={12} />
+              </button>
+            </div>
+            <div className="ba-mini-calendar">
+              {DAYS.map((day) => (
+                <div key={`client-head-${day}`} className="is-head">{day}</div>
+              ))}
+              {calendarCells.map((cell) => (
+                <button
+                  key={`client-cell-${cell.key}`}
+                  type="button"
+                  className={`is-cell ${cell.day !== null && calendarDay === cell.day ? "is-active" : ""}`}
+                  onClick={() => cell.day !== null && setCalendarDay(cell.day)}
+                  disabled={cell.day === null}
+                >
+                  {cell.day ?? ""}
+                </button>
+              ))}
+            </div>
+          </article>
+
+          <article className="ba-card ba-right-widget ba-client-occupancy-widget">
+            <header className="ba-right-header">
+              <h3>Tasa de Ocupacion</h3>
+              <MoreHorizontal size={12} />
+            </header>
+            <p className="ba-client-kpi">{occupancyRate}%</p>
             <div className="ba-client-progress">
-              <span />
+              <span style={{ width: `${occupancyRate}%` }} />
             </div>
+            <p className="ba-loyal-note">
+              {clientsForSelectedDay.length} clientes del dia / 12 cupos
+            </p>
           </article>
 
-          <article className="ba-card ba-right-widget">
-            <header className="ba-right-header">
-              <h3>Servicios</h3>
-              <MoreHorizontal size={12} />
-            </header>
-            <div className="ba-client-mini-services">
-              <img src="https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=320&auto=format&fit=crop" alt="Servicio 1" />
-              <img src="https://images.unsplash.com/photo-1593702275687-f8b402bfdbdd?w=320&auto=format&fit=crop" alt="Servicio 2" />
-            </div>
-          </article>
+          <div className="ba-client-right-mobile">
+            <article className="ba-card ba-right-widget">
+              <header className="ba-right-header">
+                <h3>Calendario</h3>
+                <MoreHorizontal size={12} />
+              </header>
+              <div className="ba-calendar-nav">
+                <button
+                  type="button"
+                  aria-label="Mes anterior"
+                  onClick={() => {
+                    setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+                    setCalendarDay(null);
+                  }}
+                >
+                  <ChevronLeft size={12} />
+                </button>
+                <span>{calendarMonthLabel}</span>
+                <button
+                  type="button"
+                  aria-label="Mes siguiente"
+                  onClick={() => {
+                    setCalendarMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+                    setCalendarDay(null);
+                  }}
+                >
+                  <ChevronRight size={12} />
+                </button>
+              </div>
+              <div className="ba-mini-calendar">
+                {DAYS.map((day) => (
+                  <div key={`client-mobile-head-${day}`} className="is-head">{day}</div>
+                ))}
+                {calendarCells.map((cell) => (
+                  <button
+                    key={`client-mobile-cell-${cell.key}`}
+                    type="button"
+                    className={`is-cell ${cell.day !== null && calendarDay === cell.day ? "is-active" : ""}`}
+                    onClick={() => cell.day !== null && setCalendarDay(cell.day)}
+                    disabled={cell.day === null}
+                  >
+                    {cell.day ?? ""}
+                  </button>
+                ))}
+              </div>
+            </article>
 
-          <article className="ba-card ba-right-widget">
-            <header className="ba-right-header">
-              <h3>Programa de Lealtad</h3>
-              <MoreHorizontal size={12} />
-            </header>
-            <div className="ba-loyal-icons">
-              <span>✕</span><span>✕</span><span>✕</span><span>✕</span>
-            </div>
-            <p className="ba-loyal-note">Ganancias por incentivdad: <strong>$150</strong></p>
-          </article>
-
-          <article className="ba-card ba-right-widget ba-pos-widget">
-            <header className="ba-right-header">
-              <h3>Caja del Dia</h3>
-              <MoreHorizontal size={12} />
-            </header>
-            <div className="ba-pos-widget-kpis">
-              <p><span>Cortes</span><strong>$280</strong></p>
-              <p><span>Extras</span><strong>$88</strong></p>
-            </div>
-            <ul className="ba-pos-widget-list">
-              <li><span>Tickets cerrados</span><strong>12</strong></li>
-              <li><span>Pendientes</span><strong>2</strong></li>
-              <li><span>Neto hoy</span><strong>$392</strong></li>
-            </ul>
-          </article>
+            <article className="ba-card ba-right-widget">
+              <header className="ba-right-header">
+                <h3>Tasa de Ocupacion</h3>
+                <MoreHorizontal size={12} />
+              </header>
+              <p className="ba-client-kpi">{occupancyRate}%</p>
+              <div className="ba-client-progress">
+                <span style={{ width: `${occupancyRate}%` }} />
+              </div>
+              <p className="ba-loyal-note">
+                {clientsForSelectedDay.length} clientes del dia / 12 cupos
+              </p>
+            </article>
+          </div>
         </aside>
       </section>
     </DashboardShell>
   );
 }
+

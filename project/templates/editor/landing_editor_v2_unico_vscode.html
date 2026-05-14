@@ -3,7 +3,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet"
- href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=102">
+ href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=118">
+
 <style>
   #ba-editor-v2[data-ui-theme='dark'] {
     color: #e8edf7;
@@ -89,6 +90,81 @@
     color: currentColor !important;
     stroke: currentColor !important;
   }
+
+  #baPublishWelcomeOverlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(2, 6, 23, 0.72);
+    backdrop-filter: blur(4px);
+    z-index: 99999;
+  }
+
+  #baPublishWelcomeOverlay.is-open {
+    display: flex;
+  }
+
+  body.ba-publish-welcome-open {
+    overflow: hidden;
+  }
+
+  .ba-publish-welcome-card {
+    width: min(100%, 560px);
+    border-radius: 26px;
+    border: 1px solid #273348;
+    background: linear-gradient(180deg, #060f20, #081427 72%, #0a1a30);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.48);
+    padding: 30px 24px 24px;
+    text-align: center;
+    color: #eef4ff;
+  }
+
+  .ba-publish-welcome-image {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto 18px;
+    background: #fff;
+  }
+
+  .ba-publish-welcome-title {
+    margin: 0 0 8px;
+    font-size: clamp(28px, 4vw, 50px);
+    line-height: 1.1;
+    font-weight: 800;
+    color: #f8fafc;
+  }
+
+  .ba-publish-welcome-copy {
+    margin: 0 0 18px;
+    font-size: clamp(18px, 2.8vw, 36px);
+    line-height: 1.2;
+    font-weight: 700;
+    color: #e2e8f0;
+  }
+
+  .ba-publish-welcome-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .ba-publish-welcome-close {
+    min-width: 120px;
+    border-radius: 12px;
+    border: 1px solid #3a4f72;
+    background: rgba(15, 23, 42, 0.72);
+    color: #e2e8f0;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 12px 16px;
+  }
+
 </style>
 <!--
   Landing Editor V2 - Bloque unico para Elementor (Widget HTML)
@@ -319,6 +395,32 @@
       <button type="button" id="baDrawerClose" class="ba-settings-close">Cerrar</button>
     </div>
   </section>
+  <section class="ba-publish-welcome-overlay" id="baPublishWelcomeOverlay" aria-hidden="true">
+    <div class="ba-publish-welcome-card">
+      <img
+        id="baPublishWelcomeImage"
+        class="ba-publish-welcome-image"
+        src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/02/Sin-titulo-600-x-700-px.png"
+        alt="BarberAgency"
+      />
+      <h2 class="ba-publish-welcome-title" id="baPublishWelcomeTitle">Hola!</h2>
+      <p class="ba-publish-welcome-copy">Gracias, tu landing ya fue creada.</p>
+      <div class="ba-publish-welcome-actions">
+        <button
+          type="button"
+          class="ba-btn"
+          id="openDashboard"
+          aria-label="Ir al dashboard"
+          title="Ir al dashboard"
+          disabled
+        >
+          <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18v16H3z"></path><path d="M3 10h18"></path><path d="M9 10v10"></path></svg>
+          <span class="ba-btn-label">Ir al Dashboard</span>
+        </button>
+        <button type="button" class="ba-publish-welcome-close" id="baPublishWelcomeClose">Cerrar</button>
+      </div>
+    </div>
+  </section>
 </main>
 
 <!-- 
@@ -494,15 +596,17 @@
   const STORAGE_LANDING_SEED = 'ba_landing_seed';
   const STORAGE_BARBERIA_ID = 'ba_barberia_id';
   const STORAGE_BARBERIA_SLUG = 'ba_barberia_slug';
+  const STORAGE_PUBLISH_WELCOME_SEEN = 'ba_publish_welcome_seen';
   const DEFAULT_SELECTOR_URL = '/landing_plantilla/';
   const DEFAULT_REGISTRO_URL = 'https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/';
   const DEFAULT_UPLOAD_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-live';
   const DEFAULT_UPLOAD_ENDPOINT_V2 = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-v2';
   const DEFAULT_UPLOAD_ENDPOINT_LEGACY = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload';
-  const DEFAULT_SAVE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/save-v2';
+  const DEFAULT_SAVE_ENDPOINT = 'https://api.agencia2c.cloud/rpc/ba_publicar_barberia';
   const DEFAULT_DRAFT_SAVE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/draft/save';
   const DEFAULT_DRAFT_GET_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/draft/get';
   const DEFAULT_PUBLIC_PROFILE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public';
+  const DEFAULT_DASHBOARD_URL = 'https://barberagency-app.gymh5g.easypanel.host/barberia';
   const MOBILE_BREAKPOINT = 900;
   const MOBILE_LOGO_WIDTH_DEFAULT = '20';
   const DESKTOP_LOGO_WIDTH_DEFAULT = '50';
@@ -515,6 +619,7 @@
     draftSaveEndpoint: String(window.BA_DRAFT_SAVE_ENDPOINT || DEFAULT_DRAFT_SAVE_ENDPOINT).trim(),
     draftGetEndpoint: String(window.BA_DRAFT_GET_ENDPOINT || DEFAULT_DRAFT_GET_ENDPOINT).trim(),
     publicProfileEndpoint: String(window.BA_PUBLIC_PROFILE_ENDPOINT || DEFAULT_PUBLIC_PROFILE_ENDPOINT).trim(),
+    dashboardUrl: String(window.BA_DASHBOARD_URL || window.APP_PUBLIC_URL || DEFAULT_DASHBOARD_URL).trim(),
     uploadPublicBase: String(window.BA_UPLOAD_PUBLIC_BASE || window.BA_R2_PUBLIC_BASE || '').trim(),
     forceDirectTemplateUrls: String(window.BA_FORCE_DIRECT_TEMPLATE_URLS || '').trim() === '1'
   };
@@ -579,6 +684,7 @@
     openFinalPreview: document.getElementById('openFinalPreview'),
     saveDraft: document.getElementById('saveDraft'),
     publish: document.getElementById('publish'),
+    openDashboard: document.getElementById('openDashboard'),
     resetPalette: document.getElementById('resetPalette'),
     bizName: document.getElementById('biz_name'),
     logoWidth: document.getElementById('logo_width'),
@@ -623,6 +729,9 @@
   const drawerBizName = document.getElementById('baDrawerBizName');
   const drawerAccent = document.getElementById('baDrawerAccent');
   const drawerClose = document.getElementById('baDrawerClose');
+  const publishWelcomeOverlay = document.getElementById('baPublishWelcomeOverlay');
+  const publishWelcomeTitle = document.getElementById('baPublishWelcomeTitle');
+  const publishWelcomeClose = document.getElementById('baPublishWelcomeClose');
   const themeDockBtn = document.getElementById('baThemeToggleBtn');
   const themeDockIcon = document.getElementById('baThemeDockIcon');
 
@@ -869,6 +978,35 @@
     return String(s || '').trim();
   }
 
+  function normalizeRpcJsonbPayload(raw) {
+    if (!raw || typeof raw !== 'object') return {};
+    const source = raw;
+    const first = Object.values(source)[0];
+    if (first && typeof first === 'object' && !Array.isArray(first)) {
+      const candidate = first;
+      if (
+        Object.prototype.hasOwnProperty.call(candidate, 'ok') ||
+        Object.prototype.hasOwnProperty.call(candidate, 'error') ||
+        Object.prototype.hasOwnProperty.call(candidate, 'public_path') ||
+        Object.prototype.hasOwnProperty.call(candidate, 'qr_path')
+      ) {
+        return candidate;
+      }
+    }
+    return source;
+  }
+
+  function inferBarberiaIdFromSlug(slugValue) {
+    const slug = safeText(slugValue).toLowerCase();
+    if (!slug) return 0;
+    const match =
+      slug.match(/(?:^|[-_])barberia[-_]?(\d+)(?:$|[-_])/i) ||
+      slug.match(/(?:^|[-_])id[-_]?(\d+)(?:$|[-_])/i) ||
+      slug.match(/(\d+)$/);
+    const next = Number(match && match[1]);
+    return Number.isFinite(next) && next > 0 ? next : 0;
+  }
+
   function normalizeSlotMin(value, fallback = 30) {
     const allowed = [5, 10, 15, 20, 30];
     const parsed = Number(value);
@@ -1026,9 +1164,10 @@
 
   function normalizeInheritedServices(items) {
     const safe = Array.isArray(items) ? items : [];
-    return safe.map((item, i) => ({
-      name: safeText(item?.name || item?.nombre || `Servicio ${i + 1}`),
-      nombre: safeText(item?.nombre || item?.name || `Servicio ${i + 1}`),
+    return safe
+      .map((item, i) => ({
+      name: safeText(item?.name || item?.nombre),
+      nombre: safeText(item?.nombre || item?.name),
       description: safeText(item?.description || item?.descripcion || 'Trabajo profesional con acabados premium.'),
       descripcion: safeText(item?.descripcion || item?.description || 'Trabajo profesional con acabados premium.'),
       icon: safeText(item?.icon || DEFAULT_SERVICE_ICONS[i % DEFAULT_SERVICE_ICONS.length]),
@@ -1036,17 +1175,21 @@
       duracion_min: Number(item?.duracion_min || item?.duration_min || 45),
       price: Math.max(0, Number(item?.price || item?.precio || 0)),
       precio: Math.max(0, Number(item?.precio || item?.price || 0))
-    })).slice(0, 6);
+    }))
+      .filter((item) => safeText(item.name) || safeText(item.nombre))
+      .slice(0, 6);
   }
 
   function normalizeInheritedBarbers(items) {
     const safe = Array.isArray(items) ? items : [];
     return safe.map((item, i) => ({
-      name: safeText(item?.name || item?.nombre || `Barbero ${i + 1}`),
-      nombre: safeText(item?.nombre || item?.name || `Barbero ${i + 1}`),
+      name: safeText(item?.name || item?.nombre),
+      nombre: safeText(item?.nombre || item?.name),
       photo: safeText(item?.photo || item?.foto || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
       foto: safeText(item?.foto || item?.photo || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length])
-    })).slice(0, 4);
+    }))
+      .filter((item) => safeText(item.name) || safeText(item.nombre))
+      .slice(0, 4);
   }
 
   function normalizeInheritedHours(items) {
@@ -1147,21 +1290,31 @@
     if (!(Number(identity.barberia_id) > 0) && !safeText(identity.slug)) return false;
 
     try {
-      const query = safeText(identity.slug)
-        ? `slug=${encodeURIComponent(safeText(identity.slug))}`
-        : `barberia_id=${encodeURIComponent(String(Number(identity.barberia_id) || 0))}`;
-      const requestUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${query}`;
-      const response = await fetch(requestUrl, {
-        method: 'GET',
-        headers: { Accept: 'application/json' }
-      });
-      const json = await response.json().catch(() => ({}));
-      if (!response.ok || json?.ok === false) return false;
+      const queryParts = [];
+      const safeBarberiaId = Number(identity.barberia_id) || 0;
+      const safeSlug = safeText(identity.slug);
+      if (safeBarberiaId > 0) {
+        queryParts.push(`barberia_id=${encodeURIComponent(String(safeBarberiaId))}`);
+      }
+      if (safeSlug) {
+        queryParts.push(`slug=${encodeURIComponent(safeSlug)}`);
+      }
 
-      applyInheritedCollectionsFromPayload(json);
-      syncSeedIdentityFromPublicProfile(json);
-      persistPublishedIdentityFromResponse(json);
-      return true;
+      for (const query of queryParts) {
+        const requestUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${query}`;
+        const response = await fetch(requestUrl, {
+          method: 'GET',
+          headers: { Accept: 'application/json' }
+        });
+        const json = await response.json().catch(() => ({}));
+        if (!response.ok || json?.ok === false) continue;
+
+        applyInheritedCollectionsFromPayload(json);
+        syncSeedIdentityFromPublicProfile(json);
+        persistPublishedIdentityFromResponse(json);
+        return true;
+      }
+      return false;
     } catch (_) {
       return false;
     }
@@ -1392,15 +1545,6 @@
       Number(window.BA_BARBERIA_ID) ||
       Number(window.BA_BUSINESS_ID) ||
       0;
-    const barberiaId =
-      Number(seedLandingData?.barberia_id) ||
-      Number(seedLandingData?.id_barberia) ||
-      Number(seedLandingData?.id) ||
-      queryBarberíaId ||
-      runtimeBarberíaId ||
-      storedBarberíaId ||
-      0;
-
     const querySlug =
       getQueryParam('barberia_slug') ||
       getQueryParam('slug') ||
@@ -1415,16 +1559,32 @@
       querySlug ||
       runtimeSlug ||
       storedSlug;
+    const hasExplicitQuerySlug = !!safeText(querySlug);
+    const hasExplicitQueryId = queryBarberíaId > 0;
+    const barberiaIdFromSeedOrQuery =
+      Number(seedLandingData?.barberia_id) ||
+      Number(seedLandingData?.id_barberia) ||
+      Number(seedLandingData?.id) ||
+      queryBarberíaId ||
+      runtimeBarberíaId ||
+      0;
+    const barberiaId =
+      barberiaIdFromSeedOrQuery > 0
+        ? barberiaIdFromSeedOrQuery
+        : (hasExplicitQuerySlug && !hasExplicitQueryId ? 0 : storedBarberíaId);
+    // No inferir ID desde slug: puede apuntar a otro tenant (ej: barberia-61)
+    // y romper publish con "barberia_no_encontrada".
+    const effectiveBarberiaId = barberiaId > 0 ? barberiaId : 0;
 
-    if (barberiaId > 0) {
-      setSafeStorage(localStorage, STORAGE_BARBERIA_ID, String(barberiaId));
+    if (effectiveBarberiaId > 0) {
+      setSafeStorage(localStorage, STORAGE_BARBERIA_ID, String(effectiveBarberiaId));
     }
     if (slug) {
       setSafeStorage(localStorage, STORAGE_BARBERIA_SLUG, slug);
     }
 
     return {
-      barberia_id: barberiaId > 0 ? barberiaId : 0,
+      barberia_id: effectiveBarberiaId > 0 ? effectiveBarberiaId : 0,
       slug,
       nombre: safeText(seedLandingData?.nombre) || safeText(el.bizName.value) || 'Barber Agency',
       ciudad: safeText(seedLandingData?.ciudad) || '',
@@ -1462,6 +1622,109 @@
     } catch (_) {
       return target;
     }
+  }
+
+  function resolveDashboardUrl() {
+    const target = safeText(CONFIG.dashboardUrl);
+    if (!target) return '';
+    try {
+      const identity = getSeedIdentity();
+      const url = new URL(target, window.location.origin);
+      if (identity.barberia_id > 0) {
+        url.searchParams.set('barberia_id', String(identity.barberia_id));
+        url.searchParams.set('id_barberia', String(identity.barberia_id));
+      }
+      if (safeText(identity.slug)) {
+        url.searchParams.set('slug', safeText(identity.slug));
+        url.searchParams.set('barberia_slug', safeText(identity.slug));
+      }
+      return url.toString();
+    } catch (_) {
+      return target;
+    }
+  }
+
+  function refreshDashboardButtonState() {
+    if (!el.openDashboard) return;
+    const identity = getSeedIdentity();
+    const hasIdentity = Number(identity.barberia_id) > 0 || !!safeText(identity.slug);
+    const hasTarget = !!safeText(CONFIG.dashboardUrl);
+    const canOpen = hasIdentity && hasTarget;
+    el.openDashboard.disabled = !canOpen;
+    el.openDashboard.title = canOpen
+      ? 'Abrir dashboard de esta barberia'
+      : 'Disponible despues de crear barberia';
+  }
+
+  function getPublishedLandingUrlValue() {
+    return safeText(
+      runtimePublishData.public_landing_url ||
+      seedLandingData?.public_landing_url ||
+      seedLandingData?.landing_url ||
+      seedLandingData?.url_publica ||
+      seedLandingData?.url_public_landing ||
+      seedLandingData?.barberia?.public_landing_url
+    );
+  }
+
+  async function resolveBarberiaIdFromPublicProfile(identity = {}) {
+    const endpoint = safeText(CONFIG.publicProfileEndpoint) || DEFAULT_PUBLIC_PROFILE_ENDPOINT;
+    const safeSlug = safeText(identity?.slug);
+    if (!endpoint || !safeSlug) return 0;
+    try {
+      const requestUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}slug=${encodeURIComponent(safeSlug)}`;
+      const response = await fetch(requestUrl, {
+        method: 'GET',
+        headers: { Accept: 'application/json' }
+      });
+      const json = await response.json().catch(() => ({}));
+      if (!response.ok || json?.ok === false) return 0;
+      const resolvedId =
+        Number(json?.barberia_id) ||
+        Number(json?.id_barberia) ||
+        Number(json?.barberia?.id) ||
+        Number(json?.profile?.barberia_id) ||
+        Number(json?.data?.barberia_id) ||
+        Number(json?.data?.barberia?.id) ||
+        0;
+      if (resolvedId > 0) {
+        persistPublishedIdentityFromResponse({
+          barberia_id: resolvedId,
+          slug: safeSlug
+        });
+      }
+      return resolvedId > 0 ? resolvedId : 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  function getWelcomeDisplayName() {
+    return (
+      safeText(el.bizName?.value) ||
+      safeText(seedLandingData?.nombre) ||
+      'Barber Agency'
+    );
+  }
+
+  function showPublishWelcomeOverlay(options = {}) {
+    if (!publishWelcomeOverlay) return;
+    const force = options?.force === true;
+    const hasPublishedUrl = !!getPublishedLandingUrlValue();
+    if (!force && !hasPublishedUrl) return;
+    const displayName = getWelcomeDisplayName();
+    if (publishWelcomeTitle) publishWelcomeTitle.textContent = `Hola, ${displayName}!`;
+    publishWelcomeOverlay.classList.add('is-open');
+    publishWelcomeOverlay.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('ba-publish-welcome-open');
+  }
+
+  function closePublishWelcomeOverlay(markAsSeen = true) {
+    if (!publishWelcomeOverlay) return;
+    publishWelcomeOverlay.classList.remove('is-open');
+    publishWelcomeOverlay.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('ba-publish-welcome-open');
+    if (markAsSeen) setSafeStorage(localStorage, STORAGE_PUBLISH_WELCOME_SEEN, '1');
   }
 
   function persistRegistroSeedContext() {
@@ -1620,6 +1883,19 @@
     return fileName ? `/${fileName}/` : '/index_unico/';
   }
 
+  function withReservationHash(rawUrl) {
+    const sourceUrl = safeText(rawUrl);
+    if (!sourceUrl) return '';
+    try {
+      const parsed = new URL(sourceUrl, window.location.origin);
+      parsed.hash = 'reservas';
+      return parsed.toString();
+    } catch (_) {
+      const clean = sourceUrl.replace(/#.*$/, '').replace(/\?$/, '');
+      return `${clean}#reservas`;
+    }
+  }
+
   function buildPublishedLandingUrls(payload) {
     const slug = safeText(payload?.slug || payload?.inherited?.slug);
     const barberiaId = Number(payload?.barberia_id || payload?.inherited?.barberia_id || 0);
@@ -1629,29 +1905,73 @@
     if ((!slug && !barberiaId) || !siteBase) {
       return { public_landing_url: '', reservation_url: '', qr_url: '' };
     }
-    const identityQuery = slug
-      ? `?slug=${encodeURIComponent(slug)}`
-      : `?barberia_id=${encodeURIComponent(String(barberiaId))}`;
+    const identityQuery = barberiaId > 0 && slug
+      ? `?barberia_id=${encodeURIComponent(String(barberiaId))}&slug=${encodeURIComponent(slug)}`
+      : (barberiaId > 0
+        ? `?barberia_id=${encodeURIComponent(String(barberiaId))}`
+        : `?slug=${encodeURIComponent(slug)}`);
     const public_landing_url = `${siteBase}${templatePublicPath}${identityQuery}`;
-    const qr_url = public_landing_url
-      ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(public_landing_url)}`
+    const reservation_url = withReservationHash(public_landing_url);
+    const qr_url = reservation_url
+      ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(reservation_url)}`
       : '';
-    return { public_landing_url, reservation_url: '', qr_url };
+    return { public_landing_url, reservation_url, qr_url };
+  }
+
+  function buildCanonicalUrlsForEditor(options = {}) {
+    const selectedTemplate = options?.template || byId[getSelectedId()] || templates[0];
+    const identity = options?.identity || getSeedIdentity();
+    const fallbackSlug = safeText(options?.fallbackSlug);
+    const slug = safeText(identity?.slug) || fallbackSlug;
+    const barberiaId = Number(identity?.barberia_id) || 0;
+    const siteBase = getPublicSiteBase();
+    const templatePublicPath = getTemplatePublicPath(selectedTemplate);
+    if ((!slug && !barberiaId) || !siteBase) {
+      return { public_landing_url: '', reservation_url: '', qr_url: '' };
+    }
+    const identityQuery = barberiaId > 0 && slug
+      ? `?barberia_id=${encodeURIComponent(String(barberiaId))}&slug=${encodeURIComponent(slug)}`
+      : (barberiaId > 0
+        ? `?barberia_id=${encodeURIComponent(String(barberiaId))}`
+        : `?slug=${encodeURIComponent(slug)}`);
+    const public_landing_url = `${siteBase}${templatePublicPath}${identityQuery}`;
+    const reservation_url = withReservationHash(public_landing_url);
+    const qr_url = reservation_url
+      ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(reservation_url)}`
+      : '';
+    return { public_landing_url, reservation_url, qr_url };
   }
 
   function getExpectedPublishedUrl() {
-    const identity = getSeedIdentity();
     const data = getFormData();
-    const slug = safeText(identity.slug) || safeText(data.biz_slug);
-    const barberiaId = Number(identity.barberia_id) || 0;
-    const siteBase = getPublicSiteBase();
-    const selectedTpl = byId[getSelectedId()] || templates[0];
-    const templatePublicPath = getTemplatePublicPath(selectedTpl);
-    if ((!slug && !barberiaId) || !siteBase) return '';
-    const identityQuery = slug
-      ? `?slug=${encodeURIComponent(slug)}`
-      : `?barberia_id=${encodeURIComponent(String(barberiaId))}`;
-    return `${siteBase}${templatePublicPath}${identityQuery}`;
+    return buildCanonicalUrlsForEditor({ fallbackSlug: safeText(data.biz_slug) }).public_landing_url;
+  }
+
+  function buildCurrentEditorUrl() {
+    try {
+      const selectedId = getSelectedId();
+      const identity = getSeedIdentity();
+      const data = getFormData();
+      const safeSlug = safeText(identity.slug) || safeText(data.biz_slug);
+      const safeBarberiaId = Number(identity.barberia_id) || 0;
+      const url = new URL(window.location.href);
+
+      if (selectedId) {
+        url.searchParams.set('tpl', selectedId);
+      }
+      if (safeSlug) {
+        url.searchParams.set('slug', safeSlug);
+        url.searchParams.set('barberia_slug', safeSlug);
+      } else if (safeBarberiaId > 0) {
+        url.searchParams.set('barberia_id', String(safeBarberiaId));
+        url.searchParams.set('id_barberia', String(safeBarberiaId));
+      }
+      url.searchParams.set('edit', '1');
+      url.searchParams.set('mode', 'edit');
+      return url.toString();
+    } catch (_) {
+      return safeText(window.location.href);
+    }
   }
 
   function forceTemplatePathInUrl(rawUrl, templateLike) {
@@ -1700,6 +2020,7 @@
     const normalizedAddress = safeText(data.address) || safeText(identity.direccion);
     const normalizedMapsUrl = safeText(data.maps_url) || buildMapsEmbedUrl(normalizedAddress);
     const selectedId = getSelectedId();
+    const selectedTemplate = byId[selectedId] || templates[0];
     const payload = {
       barberia_id: identity.barberia_id,
       slug: identity.slug || data.biz_slug,
@@ -1711,8 +2032,8 @@
       location_map_url: normalizedMapsUrl,
       location_address: normalizedAddress,
       template_id: selectedId,
-      template_file: (byId[selectedId] || templates[0]).file,
-      public_template_path: getTemplatePublicPath(byId[selectedId] || templates[0]),
+      template_file: selectedTemplate.file,
+      public_template_path: getTemplatePublicPath(selectedTemplate),
       inherited: {
         barberia_id: identity.barberia_id,
         slug: identity.slug || data.biz_slug,
@@ -1796,9 +2117,30 @@
       }
     };
 
+    const publishedUrls = buildPublishedLandingUrls(payload);
+    const landingPublish = {
+      barberia_id: identity.barberia_id,
+      slug: identity.slug || data.biz_slug,
+      template_id: selectedId,
+      template_name: safeText(selectedTemplate?.name),
+      editor_url: buildCurrentEditorUrl(),
+      public_landing_url: safeText(publishedUrls.public_landing_url),
+      qr_url: safeText(publishedUrls.qr_url),
+      landing_status: 'published',
+      theme_mode: safeText(root?.dataset?.uiTheme) || 'dark',
+      palette_primary: safeText(data.palette_primary),
+      palette_secondary: safeText(data.palette_secondary),
+      color_text: safeText(data.palette_text),
+      logo_url: safeText(data.logo_url),
+      cover_url: safeText(data.cover_url),
+      hero_title: safeText(data.hero_title),
+      hero_subtitle: safeText(data.hero_subtitle)
+    };
+
     return {
       ...payload,
-      ...buildPublishedLandingUrls(payload)
+      ...publishedUrls,
+      landing_publish: landingPublish
     };
   }
 
@@ -1810,11 +2152,13 @@
     try {
       const base = getPublicSiteBase() || window.location.origin;
       const parsed = new URL(sourceUrl, base);
-      if (safeSlug) {
-        parsed.searchParams.set('slug', safeSlug);
-        parsed.searchParams.delete('barberia_id');
-      } else if (safeBarberiaId > 0) {
+      if (safeBarberiaId > 0) {
         parsed.searchParams.set('barberia_id', String(safeBarberiaId));
+        if (safeSlug) {
+          parsed.searchParams.set('slug', safeSlug);
+        }
+      } else if (safeSlug) {
+        parsed.searchParams.set('slug', safeSlug);
       }
       return parsed.toString();
     } catch (_) {
@@ -1857,31 +2201,46 @@
   }
 
   function getQrContext() {
-    const expectedPublishedUrl = getExpectedPublishedUrl();
+    const data = getFormData();
+    const selectedTemplate = byId[getSelectedId()] || templates[0];
+    const canonicalUrls = buildCanonicalUrlsForEditor({
+      template: selectedTemplate,
+      fallbackSlug: safeText(data.biz_slug)
+    });
     const publicLandingUrl =
+      safeText(canonicalUrls.public_landing_url) ||
       safeText(runtimePublishData.public_landing_url) ||
-      expectedPublishedUrl ||
       safeText(seedLandingData?.public_landing_url) ||
       safeText(seedLandingData?.landing_url) ||
       safeText(seedLandingData?.url_publica) ||
       safeText(seedLandingData?.url_public_landing) ||
       safeText(seedLandingData?.barberia?.public_landing_url);
-    const qrUrl =
+    const normalizedPublicLandingUrl = isTemplatePathMismatch(publicLandingUrl, selectedTemplate)
+      ? forceTemplatePathInUrl(publicLandingUrl, selectedTemplate)
+      : publicLandingUrl;
+
+    const rawReservationUrl =
+      safeText(canonicalUrls.reservation_url) ||
+      safeText(runtimePublishData.reservation_url) ||
+      safeText(seedLandingData?.reservation_url) ||
+      safeText(seedLandingData?.url_reservas) ||
+      safeText(seedLandingData?.barberia?.reservation_url) ||
+      safeText(seedLandingData?.barberia?.url_reservas) ||
+      withReservationHash(normalizedPublicLandingUrl);
+    const normalizedReservationUrl = isTemplatePathMismatch(rawReservationUrl, selectedTemplate)
+      ? forceTemplatePathInUrl(rawReservationUrl, selectedTemplate)
+      : rawReservationUrl;
+    const reservationUrl = normalizedReservationUrl || withReservationHash(normalizedPublicLandingUrl);
+    const finalQrUrl =
       safeText(runtimePublishData.qr_url) ||
-      safeText(seedLandingData?.qr_url) ||
-      safeText(seedLandingData?.barberia?.qr_url) ||
-      (publicLandingUrl
-        ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(publicLandingUrl)}`
-        : '');
+      safeText(canonicalUrls.qr_url) ||
+      (reservationUrl
+      ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(reservationUrl)}`
+      : '');
     return {
-      public_landing_url: publicLandingUrl,
-      qr_url: qrUrl,
-      reservation_url:
-        safeText(runtimePublishData.reservation_url) ||
-        safeText(seedLandingData?.reservation_url) ||
-        safeText(seedLandingData?.url_reservas) ||
-        safeText(seedLandingData?.barberia?.reservation_url) ||
-        safeText(seedLandingData?.barberia?.url_reservas)
+      public_landing_url: normalizedPublicLandingUrl,
+      qr_url: finalQrUrl,
+      reservation_url: reservationUrl
     };
   }
 
@@ -1974,9 +2333,12 @@
     }
 
     const identity = getSeedIdentity();
-    const fallbackSlug = safeText(data.biz_slug);
-    if (!(identity.barberia_id > 0) && !safeText(identity.slug) && !fallbackSlug) {
-      alert('No hay identidad de barberia para publicar. Falta la semilla ba_landing_seed de registrobarberia.');
+    let barberiaId = Number(identity.barberia_id) || 0;
+    if (!(barberiaId > 0) && safeText(identity.slug)) {
+      barberiaId = await resolveBarberiaIdFromPublicProfile(identity);
+    }
+    if (!(barberiaId > 0)) {
+      alert('No hay barberia_id para publicar. Debes abrir el editor con identidad válida.');
       return;
     }
 
@@ -1986,80 +2348,95 @@
     if (labelNode) labelNode.textContent = 'públicando...';
 
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildSavePayload())
-      });
-      const rawText = await response.text().catch(() => '');
-      let json = {};
-      try {
-        json = rawText ? JSON.parse(rawText) : {};
-      } catch (_) {
-        json = {};
-      }
-
-      const explicitFailure =
-        json?.ok === false ||
-        json?.success === false ||
-        /^error$/i.test(safeText(json?.status)) ||
-        /^fail(ed)?$/i.test(safeText(json?.result));
-
-      if (!response.ok || explicitFailure) {
-        throw new Error(json?.message || json?.error || rawText || `HTTP ${response.status}`);
-      }
-
-      const selectedTemplate = byId[getSelectedId()] || templates[0];
-      const identityForUrl = {
-        slug: safeText(identity.slug) || safeText(data.biz_slug),
-        barberia_id: Number(identity.barberia_id) || 0
+      const runPublishRpc = async (idToPublish) => {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ p_barberia_id: idToPublish })
+        });
+        const rawText = await response.text().catch(() => '');
+        let json = {};
+        try {
+          json = rawText ? JSON.parse(rawText) : {};
+        } catch (_) {
+          json = {};
+        }
+        const rpcPayload = normalizeRpcJsonbPayload(json);
+        const explicitFailure =
+          rpcPayload?.ok === false ||
+          rpcPayload?.success === false ||
+          /^error$/i.test(safeText(rpcPayload?.status)) ||
+          /^fail(ed)?$/i.test(safeText(rpcPayload?.result));
+        return { response, rawText, rpcPayload, explicitFailure };
       };
-      const expectedPublishedUrl = getExpectedPublishedUrl();
-      const backendPublishedUrl =
-        safeText(json?.public_landing_url) ||
-        safeText(json?.data?.public_landing_url) ||
-        safeText(json?.barberia?.public_landing_url);
-      const backendReservationUrl =
-        safeText(json?.reservation_url) ||
-        safeText(json?.url_reservas) ||
-        safeText(json?.data?.reservation_url) ||
-        safeText(json?.data?.url_reservas) ||
-        safeText(json?.barberia?.reservation_url) ||
-        safeText(json?.barberia?.url_reservas);
 
-      const normalizedPublishedUrl = isTemplatePathMismatch(backendPublishedUrl, selectedTemplate)
-        ? forceTemplatePathInUrl(backendPublishedUrl, selectedTemplate)
-        : backendPublishedUrl;
-      const normalizedReservationUrl = isTemplatePathMismatch(backendReservationUrl, selectedTemplate)
-        ? forceTemplatePathInUrl(backendReservationUrl, selectedTemplate)
-        : backendReservationUrl;
-      const resolvedPublishedUrl = ensureIdentityQueryInUrl(normalizedPublishedUrl, identityForUrl);
-      const resolvedReservationUrl = ensureIdentityQueryInUrl(normalizedReservationUrl, identityForUrl);
-      const fallbackExpectedUrl = ensureIdentityQueryInUrl(expectedPublishedUrl, identityForUrl);
+      let publishResult = await runPublishRpc(barberiaId);
+      const firstErrorMessage = safeText(
+        publishResult?.rpcPayload?.message ||
+        publishResult?.rpcPayload?.error ||
+        publishResult?.rawText
+      ).toLowerCase();
+      const shouldRetryWithResolvedIdentity =
+        (!publishResult.response.ok || publishResult.explicitFailure) &&
+        /barberia_no_encontrada|barberia no encontrada/.test(firstErrorMessage) &&
+        !!safeText(identity.slug);
 
-      runtimePublishData.public_landing_url =
-        resolvedPublishedUrl ||
-        fallbackExpectedUrl;
-      runtimePublishData.reservation_url =
-        resolvedReservationUrl ||
-        runtimePublishData.public_landing_url;
-      runtimePublishData.qr_url = runtimePublishData.public_landing_url
-        ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(runtimePublishData.public_landing_url)}`
-        : (
-          safeText(json?.qr_url) ||
-          safeText(json?.data?.qr_url) ||
-          safeText(json?.barberia?.qr_url)
+      if (shouldRetryWithResolvedIdentity) {
+        const resolvedId = await resolveBarberiaIdFromPublicProfile(identity);
+        if (resolvedId > 0 && resolvedId !== barberiaId) {
+          barberiaId = resolvedId;
+          publishResult = await runPublishRpc(barberiaId);
+        }
+      }
+
+      if (!publishResult.response.ok || publishResult.explicitFailure) {
+        throw new Error(
+          publishResult?.rpcPayload?.message ||
+          publishResult?.rpcPayload?.error ||
+          publishResult?.rawText ||
+          `HTTP ${publishResult?.response?.status || 500}`
         );
+      }
 
-      // Conserva identidad canonica para que siguientes ediciones actualicen la misma landing.
-      persistPublishedIdentityFromResponse(json);
-      // Mantiene preview del editor en sync con la misma data que quedó persistida en backend.
-      applyInheritedCollectionsFromPayload(json);
+      const rpcPayload = publishResult.rpcPayload;
+
+      const publicPath = safeText(rpcPayload?.public_path);
+      const qrPath = safeText(rpcPayload?.qr_path);
+      const qrCode = safeText(rpcPayload?.qr_code);
+      const publishedSlug = safeText(rpcPayload?.slug);
+      const publishedBarberiaId = Number(rpcPayload?.barberia_id) || barberiaId;
+      if (!publicPath || !qrPath) {
+        throw new Error('La RPC no devolvió public_path/qr_path.');
+      }
+
+      const siteBase = getPublicSiteBase();
+      const normalizedBase = safeText(siteBase).replace(/\/+$/, '');
+      if (!normalizedBase) {
+        throw new Error('No se pudo resolver BASE_URL para construir URL pública.');
+      }
+      const publicUrl = `${normalizedBase}${publicPath.startsWith('/') ? publicPath : `/${publicPath}`}`;
+      const qrTargetUrl = `${normalizedBase}${qrPath.startsWith('/') ? qrPath : `/${qrPath}`}`;
+      const qrImageUrl = `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(qrTargetUrl)}`;
+
+      persistPublishedIdentityFromResponse({
+        barberia_id: publishedBarberiaId,
+        slug: publishedSlug
+      });
+
+      runtimePublishData.public_landing_url = publicUrl;
+      runtimePublishData.reservation_url = withReservationHash(publicUrl);
+      runtimePublishData.qr_url = qrImageUrl;
+      if (qrCode) {
+        seedLandingData.qr_url = qrTargetUrl;
+      }
+      refreshDashboardButtonState();
+      setSafeStorage(localStorage, STORAGE_PUBLISH_WELCOME_SEEN, '0');
+      showPublishWelcomeOverlay({ force: true });
 
       saveDraft();
       updatePreview();
       openPublishedLandingPreview(runtimePublishData.public_landing_url);
-      alert(json?.message || json?.detail || 'Landing guardada en BD correctamente.');
+      alert('Landing publicada con BD como fuente de verdad.');
     } catch (error) {
       console.error('Error públicando landing:', error);
       alert(`No se pudo publicar: ${error?.message || 'error desconocido'}`);
@@ -3451,6 +3828,7 @@
     if (safeText(identity.slug)) {
       setSafeStorage(localStorage, STORAGE_BARBERIA_SLUG, identity.slug);
     }
+    refreshDashboardButtonState();
     
     el.chips.innerHTML = templates.map(t =>
       `<div class="ba-chip ${t.id === selectedId ? 'is-active' : ''}" data-id="${t.id}">${t.name}</div>`
@@ -3550,6 +3928,17 @@
       if (CONFIG.selectorUrl) {
         window.open(CONFIG.selectorUrl, '_self');
       }
+    });
+
+    el.openDashboard?.addEventListener('click', () => {
+      refreshDashboardButtonState();
+      if (el.openDashboard.disabled) return;
+      const targetUrl = resolveDashboardUrl();
+      if (!targetUrl) {
+        alert('No hay URL de dashboard configurada.');
+        return;
+      }
+      window.open(targetUrl, '_self');
     });
 
     el.saveDraft.addEventListener('click', () => saveDraft({ notify: true }));
@@ -3744,6 +4133,18 @@
       });
     }
 
+    if (publishWelcomeOverlay) {
+      publishWelcomeOverlay.addEventListener('click', (e) => {
+        if (e.target === publishWelcomeOverlay || e.target === publishWelcomeClose) {
+          closePublishWelcomeOverlay(true);
+        }
+      });
+      const shouldShowWelcome =
+        getSafeStorage(localStorage, STORAGE_PUBLISH_WELCOME_SEEN) !== '1' &&
+        !!getPublishedLandingUrlValue();
+      if (shouldShowWelcome) showPublishWelcomeOverlay({ force: true });
+    }
+
     if(themeDockBtn && themeDockIcon) {
         const sunIcon = `<path d="M12 3.2v2.1"></path><path d="m18.2 5.8-1.5 1.5"></path><path d="M20.8 12h-2.1"></path><path d="m18.2 18.2-1.5-1.5"></path><path d="M12 20.8v-2.1"></path><path d="m5.8 18.2 1.5-1.5"></path><path d="M3.2 12h2.1"></path><path d="m5.8 5.8 1.5 1.5"></path><circle cx="12" cy="12" r="3.3"></circle>`;
         const moonIcon = `<path d="M12 21a9 9 0 1 1 7.8-14.7A7.4 7.4 0 0 0 12 9Z"></path>`;
@@ -3797,6 +4198,3 @@
   }
 })();
 </script>
-
-
-

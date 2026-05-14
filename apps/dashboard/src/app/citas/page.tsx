@@ -1,16 +1,22 @@
-"use client";
+﻿"use client";
 
-import { useMemo, useState } from "react";
-import { Cake, ChevronLeft, ChevronRight, Clock3, Eye, Gift, MoreHorizontal, Plus, RefreshCcw, Scissors, Send, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Cake, CalendarDays, ChevronLeft, ChevronRight, Clock3, Eye, Gift, MoreHorizontal, Pencil, Plus, RefreshCcw, Scissors, Send, Trash2, X } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard-shell";
+import { useDashboard } from "@/store/dashboard-context";
 
 type RequestStatus = "Pendiente" | "Enviada" | "Aceptada";
 
 type RequestItem = {
   id: string;
   client: string;
+  phone?: string;
   service: string;
   date: string;
+  hour?: string;
+  barber?: string;
+  description?: string;
+  total?: number;
   status: RequestStatus;
   avatar: string;
   stampCurrent: number;
@@ -25,10 +31,23 @@ type CreatedAppointment = {
   ticketId: string;
   client: string;
   date: string;
+  barber: string;
+  hour: string;
   items: Array<{ name: string; price: number }>;
   subtotal: number;
   tax: number;
   total: number;
+};
+
+type ServiceOption = {
+  id: string;
+  name: string;
+  price: number;
+};
+
+type BarberOption = {
+  id: string;
+  name: string;
 };
 
 const INITIAL_REQUESTS: RequestItem[] = [
@@ -81,6 +100,9 @@ const MONTHS = [
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
 ];
 const DAYS = ["L", "M", "X", "J", "V", "S", "D"];
+const RESERVATIONS_STORAGE_KEY = "ba_dashboard_reservas";
+const BARBER_OFF_DAYS_STORAGE_KEY = "ba_barberos_descansos";
+const BARBER_MANUAL_AVAILABILITY_STORAGE_KEY = "ba_barberos_manual_availability";
 
 function statusClass(status: RequestStatus): string {
   if (status === "Pendiente") return "is-pending";
@@ -106,11 +128,41 @@ function toCurrency(value: number): string {
   return `$${value.toFixed(2)}`;
 }
 
-function parseServices(raw: string): string[] {
-  return raw
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+function textValue(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function numberValue(value: unknown): number {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function mapServiceOptions(services: Array<Record<string, unknown>>): ServiceOption[] {
+  const mapped = services.map((item, index) => {
+    const name = textValue(item.nombre ?? item.name) || `Servicio ${index + 1}`;
+    const id = textValue(item.id) || `srv-${index + 1}`;
+    const price = Math.max(0, numberValue(item.precio ?? item.price));
+    return { id, name, price };
+  });
+  return mapped.length
+    ? mapped
+    : [
+        { id: "default-1", name: "Corte de Pelo", price: 15 },
+        { id: "default-2", name: "Barba", price: 6 }
+      ];
+}
+
+function mapBarberOptions(barbers: Array<Record<string, unknown>>): BarberOption[] {
+  const mapped = barbers.map((item, index) => ({
+    id: textValue(item.id) || `barber-${index + 1}`,
+    name: textValue(item.nombre ?? item.name) || `Barbero ${index + 1}`
+  }));
+  return mapped.length
+    ? mapped
+    : [
+        { id: "barber-default-1", name: "Alex M." },
+        { id: "barber-default-2", name: "James R." }
+      ];
 }
 
 function formatDate(day: number, month: number, year: number): string {
@@ -119,29 +171,93 @@ function formatDate(day: number, month: number, year: number): string {
   return `${dd}/${mm}/${year}`;
 }
 
+function initialsFromName(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "CL";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+}
+
+function hourToMinutes(value?: string): number {
+  const raw = String(value || "").trim();
+  const [h, m] = raw.split(":");
+  const hh = Number(h);
+  const mm = Number(m);
+  if (!Number.isFinite(hh) || !Number.isFinite(mm)) return -1;
+  return hh * 60 + mm;
+}
+
+function phoneToWhatsappUrl(phone: string, clientName: string): string | null {
+  const digits = String(phone || "").replace(/\D+/g, "");
+  if (!digits) return null;
+  const normalized = digits.length <= 10 ? `57${digits}` : digits;
+  const message = encodeURIComponent(`Hola ${clientName}, te escribimos de la barbería por tu cita.`);
+  return `https://wa.me/${normalized}?text=${message}`;
+}
+
 export default function CitasPage() {
-  const [requests, setRequests] = useState<RequestItem[]>(INITIAL_REQUESTS);
+  const { merged } = useDashboard();
+  const [requests, setRequests] = useState<RequestItem[]>(() => {
+    if (typeof window === "undefined") return INITIAL_REQUESTS;
+    try {
+      const raw = window.localStorage.getItem(RESERVATIONS_STORAGE_KEY);
+      if (!raw) return INITIAL_REQUESTS;
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) && parsed.length ? (parsed as RequestItem[]) : INITIAL_REQUESTS;
+    } catch {
+      return INITIAL_REQUESTS;
+    }
+  });
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(true);
+  const [isDayPickerOpen, setIsDayPickerOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(() => new Date());
   const [selectedDay, setSelectedDay] = useState<number | null>(new Date().getDate());
+  const [reserveMonth, setReserveMonth] = useState(() => new Date());
+  const [reserveDay, setReserveDay] = useState<number | null>(new Date().getDate());
   const [form, setForm] = useState({
     cliente: "camilo rodriguez",
-    servicios: "Corte de Pelo, Barba",
+    telefono: "",
+    barbero: "",
+    hora: "10:00",
     descripcion: "Descripcion de cita de lado..."
   });
+  const serviceOptions = useMemo(() => mapServiceOptions(merged.services), [merged.services]);
+  const barberOptions = useMemo(() => mapBarberOptions(merged.barbers), [merged.barbers]);
+  const hourOptions = useMemo(
+    () => ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "14:00", "15:00", "16:00", "17:00"],
+    []
+  );
+  const [selectedServiceIds, setSelectedServiceIds] = useState<string[]>([]);
   const [created, setCreated] = useState<CreatedAppointment | null>(null);
+  const [editingRequestId, setEditingRequestId] = useState<string | null>(null);
+  const [barberOffDays, setBarberOffDays] = useState<Record<string, number[]>>({});
+  const [barberManualAvailability, setBarberManualAvailability] = useState<Record<string, boolean | undefined>>({});
+  const [agendaBarberFilter, setAgendaBarberFilter] = useState<string>("global");
+  const [nowTime, setNowTime] = useState(() =>
+    new Intl.DateTimeFormat("es-CO", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date())
+  );
+  const formRef = useRef<HTMLElement | null>(null);
 
   const selected = requests.find((req) => req.id === selectedId) ?? null;
   const calendarCells = useMemo(() => buildCalendar(currentMonth), [currentMonth]);
   const monthLabel = `${MONTHS[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+  const reserveCalendarCells = useMemo(() => buildCalendar(reserveMonth), [reserveMonth]);
+  const reserveMonthLabel = `${MONTHS[reserveMonth.getMonth()]} ${reserveMonth.getFullYear()}`;
+  const selectedDateString = selectedDay
+    ? formatDate(selectedDay, currentMonth.getMonth(), currentMonth.getFullYear())
+    : null;
+  const reserveDateString = reserveDay
+    ? formatDate(reserveDay, reserveMonth.getMonth(), reserveMonth.getFullYear())
+    : null;
 
-  const serviceList = useMemo(() => parseServices(form.servicios), [form.servicios]);
   const computedItems = useMemo(() => {
-    const fallback = ["Servicio"];
-    const names = serviceList.length ? serviceList : fallback;
-    return names.map((name, idx) => ({ name, price: idx === 0 ? 15 : 6 }));
-  }, [serviceList]);
+    const selectedMap = new Set(selectedServiceIds);
+    const picked = serviceOptions.filter((service) => selectedMap.has(service.id));
+    if (!picked.length) return [{ name: "Sin servicio seleccionado", price: 0 }];
+    return picked.map((service) => ({ name: service.name, price: service.price }));
+  }, [serviceOptions, selectedServiceIds]);
   const subtotal = useMemo(() => computedItems.reduce((acc, item) => acc + item.price, 0), [computedItems]);
   const tax = useMemo(() => Number((subtotal * 0.13).toFixed(2)), [subtotal]);
   const total = useMemo(() => Number((subtotal + tax).toFixed(2)), [subtotal, tax]);
@@ -149,7 +265,9 @@ export default function CitasPage() {
   const activeSummary = created ?? {
     ticketId: "1234",
     client: form.cliente || "cliente",
-    date: selectedDay ? formatDate(selectedDay, currentMonth.getMonth(), currentMonth.getFullYear()) : "Sin fecha",
+    date: reserveDateString ?? "Sin fecha",
+    barber: form.barbero || barberOptions[0]?.name || "Sin barbero",
+    hour: form.hora || "Sin hora",
     items: computedItems,
     subtotal,
     tax,
@@ -159,25 +277,44 @@ export default function CitasPage() {
   const prevMonth = () => {
     setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
     setSelectedDay(null);
+    setIsDayPickerOpen(false);
   };
+
+  const availableBarberOptions = useMemo(() => {
+    return barberOptions.filter((barber) => {
+      const manualFlag = barberManualAvailability[barber.id];
+      if (manualFlag === false) return false;
+      if (!reserveDay) return manualFlag !== false;
+      if (manualFlag === true) return true;
+      const restDays = barberOffDays[barber.id] ?? [];
+      return !restDays.includes(reserveDay);
+    });
+  }, [barberOptions, barberOffDays, barberManualAvailability, reserveDay]);
 
   const nextMonth = () => {
     setCurrentMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
     setSelectedDay(null);
+    setIsDayPickerOpen(false);
   };
 
   const handleCreateCita = () => {
-    if (!selectedDay) return;
-    const date = formatDate(selectedDay, currentMonth.getMonth(), currentMonth.getFullYear());
+    if (!reserveDateString) return;
+    const date = reserveDateString;
     const firstService = computedItems[0]?.name ?? "Servicio";
-    const id = `R-${String(requests.length + 1).padStart(2, "0")}`;
+    const isEditing = Boolean(editingRequestId);
+    const id = editingRequestId ?? `R-${String(requests.length + 1).padStart(2, "0")}`;
     const ticketId = String(1234 + requests.length);
 
     const newRequest: RequestItem = {
       id,
       client: form.cliente || "Cliente",
-      service: firstService,
+      phone: form.telefono || "",
+      service: computedItems.map((item) => item.name).join(", ") || firstService,
       date,
+      barber: form.barbero || barberOptions[0]?.name || "Sin barbero",
+      hour: form.hora || "Sin hora",
+      description: form.descripcion || "",
+      total,
       status: "Enviada",
       avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop",
       stampCurrent: 1,
@@ -188,18 +325,242 @@ export default function CitasPage() {
       offPeakBenefit: "Promo segun horario"
     };
 
-    setRequests((prev) => [newRequest, ...prev]);
+    setRequests((prev) => {
+      if (isEditing) {
+        return prev.map((req) => (req.id === id ? { ...req, ...newRequest } : req));
+      }
+      return [newRequest, ...prev];
+    });
     setSelectedId(id);
     setCreated({
       ticketId,
       client: form.cliente || "Cliente",
       date,
+      barber: form.barbero || barberOptions[0]?.name || "Sin barbero",
+      hour: form.hora || "Sin hora",
       items: computedItems,
       subtotal,
       tax,
       total
     });
+    setEditingRequestId(null);
   };
+  const handleEditRequest = (req: RequestItem) => {
+    setEditingRequestId(req.id);
+    setIsCreateOpen(true);
+    setForm((prev) => ({
+      ...prev,
+      cliente: req.client,
+      telefono: req.phone ?? prev.telefono,
+      barbero: req.barber ?? prev.barbero,
+      hora: req.hour ?? prev.hora,
+      descripcion: req.description ?? prev.descripcion
+    }));
+
+    const targetServices = req.service
+      .split(",")
+      .map((name) => name.trim().toLowerCase())
+      .filter(Boolean);
+    const matchedIds = serviceOptions
+      .filter((srv) => targetServices.some((target) => srv.name.toLowerCase().includes(target) || target.includes(srv.name.toLowerCase())))
+      .map((srv) => srv.id);
+    if (matchedIds.length) {
+      setSelectedServiceIds(matchedIds);
+    } else {
+      const fallback = serviceOptions.find((srv) => req.service.toLowerCase().includes(srv.name.toLowerCase()));
+      setSelectedServiceIds(fallback ? [fallback.id] : []);
+    }
+
+    const [d, m, y] = req.date.split("/");
+    const day = Number(d);
+    const month = Number(m) - 1;
+    const year = Number(y);
+    if (Number.isFinite(day) && Number.isFinite(month) && Number.isFinite(year)) {
+      setReserveMonth(new Date(year, month, 1));
+      setReserveDay(day);
+      setCurrentMonth(new Date(year, month, 1));
+      setSelectedDay(day);
+    }
+    setTimeout(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  };
+
+  const handleDeleteRequest = (id: string) => {
+    setRequests((prev) => prev.filter((req) => req.id !== id));
+    setSelectedId((prev) => (prev === id ? null : prev));
+    setEditingRequestId((prev) => (prev === id ? null : prev));
+    setDetailOpen((prev) => (selectedId === id ? false : prev));
+  };
+
+  const handleOpenDetail = (id: string) => {
+    setSelectedId(id);
+    setDetailOpen(true);
+  };
+
+  const toggleService = (serviceId: string) => {
+    setSelectedServiceIds((prev) =>
+      prev.includes(serviceId) ? prev.filter((id) => id !== serviceId) : [...prev, serviceId]
+    );
+  };
+  const prevReserveMonth = () => {
+    setReserveMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    setReserveDay(null);
+  };
+  const nextReserveMonth = () => {
+    setReserveMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    setReserveDay(null);
+  };
+  const filteredRequests = selectedDateString
+    ? requests.filter((req) => req.date === selectedDateString)
+    : requests;
+  const boardDateString = selectedDateString ?? formatDate(new Date().getDate(), currentMonth.getMonth(), currentMonth.getFullYear());
+  const [boardDayPart, boardMonthPart, boardYearPart] = boardDateString.split("/");
+  const agendaDayNumber = Number(boardDayPart);
+  const agendaMonthNumber = Number(boardMonthPart);
+  const agendaYearNumber = Number(boardYearPart);
+  const agendaBarberStatus = useMemo(() => {
+    const map = new Map<string, boolean>();
+    for (const barber of barberOptions) {
+      const manualFlag = barberManualAvailability[barber.id];
+      const offDays = barberOffDays[barber.id] ?? [];
+      const isRestDay = offDays.includes(agendaDayNumber);
+      const isSameMonthAsBoard =
+        Number.isFinite(agendaMonthNumber) &&
+        Number.isFinite(agendaYearNumber) &&
+        agendaMonthNumber === currentMonth.getMonth() + 1 &&
+        agendaYearNumber === currentMonth.getFullYear();
+      const autoActive = isSameMonthAsBoard ? !isRestDay : true;
+      const isActive = manualFlag === undefined ? autoActive : manualFlag;
+      map.set(barber.name, isActive);
+    }
+    return map;
+  }, [
+    barberOptions,
+    barberManualAvailability,
+    barberOffDays,
+    agendaDayNumber,
+    agendaMonthNumber,
+    agendaYearNumber,
+    currentMonth
+  ]);
+  const agendaHours = useMemo(() => {
+    const slots: string[] = [];
+    for (let h = 9; h <= 19; h += 1) {
+      slots.push(`${String(h).padStart(2, "0")}:00`);
+      if (h !== 19) slots.push(`${String(h).padStart(2, "0")}:30`);
+    }
+    return slots;
+  }, []);
+  const dayRequests = useMemo(
+    () =>
+      requests
+        .filter((req) => req.date === boardDateString)
+        .sort(
+        (a, b) => hourToMinutes(a.hour ?? form.hora) - hourToMinutes(b.hour ?? form.hora)
+      ),
+    [requests, boardDateString, form.hora]
+  );
+  const visibleDayRequests = useMemo(() => {
+    if (agendaBarberFilter === "global") return dayRequests;
+    return dayRequests.filter((req) => (req.barber ?? "").trim() === agendaBarberFilter);
+  }, [dayRequests, agendaBarberFilter]);
+
+  const daysWithAppointments = useMemo(() => {
+    const set = new Set<number>();
+    const mm = String(currentMonth.getMonth() + 1).padStart(2, "0");
+    const yyyy = String(currentMonth.getFullYear());
+    for (const req of requests) {
+      const [d, m, y] = req.date.split("/");
+      if (m === mm && y === yyyy) {
+        const dayNum = Number(d);
+        if (Number.isFinite(dayNum)) set.add(dayNum);
+      }
+    }
+    return set;
+  }, [requests, currentMonth]);
+  const occupancyRate = useMemo(() => {
+    const reserved = visibleDayRequests.length;
+    const totalSlots = agendaHours.length;
+    if (!totalSlots) return 0;
+    return Math.min(100, Math.round((reserved / totalSlots) * 100));
+  }, [visibleDayRequests, agendaHours]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNowTime(
+        new Intl.DateTimeFormat("es-CO", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        }).format(new Date())
+      );
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const loadManualAvailability = () => {
+      try {
+        const raw = window.localStorage.getItem(BARBER_MANUAL_AVAILABILITY_STORAGE_KEY);
+        if (!raw) {
+          setBarberManualAvailability({});
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        setBarberManualAvailability(
+          parsed && typeof parsed === "object" ? (parsed as Record<string, boolean | undefined>) : {}
+        );
+      } catch {
+        setBarberManualAvailability({});
+      }
+    };
+    loadManualAvailability();
+    window.addEventListener("storage", loadManualAvailability);
+    window.addEventListener("ba-barberos-manual-availability-updated", loadManualAvailability as EventListener);
+    return () => {
+      window.removeEventListener("storage", loadManualAvailability);
+      window.removeEventListener("ba-barberos-manual-availability-updated", loadManualAvailability as EventListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(RESERVATIONS_STORAGE_KEY, JSON.stringify(requests));
+    window.dispatchEvent(new CustomEvent("ba-reservas-updated"));
+  }, [requests]);
+
+  useEffect(() => {
+    const loadBarberOffDays = () => {
+      try {
+        const raw = window.localStorage.getItem(BARBER_OFF_DAYS_STORAGE_KEY);
+        if (!raw) {
+          setBarberOffDays({});
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        setBarberOffDays(parsed && typeof parsed === "object" ? (parsed as Record<string, number[]>) : {});
+      } catch {
+        setBarberOffDays({});
+      }
+    };
+    loadBarberOffDays();
+    window.addEventListener("storage", loadBarberOffDays);
+    window.addEventListener("ba-barberos-descanso-updated", loadBarberOffDays as EventListener);
+    return () => {
+      window.removeEventListener("storage", loadBarberOffDays);
+      window.removeEventListener("ba-barberos-descanso-updated", loadBarberOffDays as EventListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!form.barbero) return;
+    const stillAvailable = availableBarberOptions.some((barber) => barber.name === form.barbero);
+    if (!stillAvailable) {
+      setForm((prev) => ({ ...prev, barbero: "" }));
+    }
+  }, [availableBarberOptions, form.barbero]);
 
   return (
     <DashboardShell>
@@ -213,37 +574,182 @@ export default function CitasPage() {
             </button>
           </header>
 
-          <nav className="ba-citas-tabs">
-            <button type="button" className="is-active">Week</button>
-            <button type="button">Nueva de Citas</button>
-            <button type="button">Servicios</button>
-          </nav>
+          <section className="ba-citas-live-grid">
+            <article className="ba-card ba-citas-live-card">
+              <header>
+                <h3>Reloj del Sistema</h3>
+              </header>
+              <p className="ba-citas-live-time">{nowTime}</p>
+              <small>Hora local del dispositivo</small>
+            </article>
+            <article className="ba-card ba-citas-live-card">
+              <header>
+                <h3>Tasa de Ocupacion</h3>
+              </header>
+              <p className="ba-citas-live-rate">{occupancyRate}%</p>
+              <div className="ba-client-progress">
+                <span style={{ width: `${occupancyRate}%` }} />
+              </div>
+              <small>{visibleDayRequests.length} reservas del dia / {agendaHours.length} turnos</small>
+            </article>
+          </section>
 
           <article className="ba-card ba-citas-calendar-inline">
             <header className="ba-card-title">
-              <h2>Calendario de Citas</h2>
+              <h2>Calendario/Reserva de Citas</h2>
               <button type="button" aria-label="Opciones"><MoreHorizontal size={12} /></button>
             </header>
-            <div className="ba-calendar-nav">
-              <button type="button" aria-label="Mes anterior" onClick={prevMonth}><ChevronLeft size={12} /></button>
-              <span>{monthLabel}</span>
-              <button type="button" aria-label="Mes siguiente" onClick={nextMonth}><ChevronRight size={12} /></button>
+            <div className="ba-citas-board-desktop">
+              <div className="ba-citas-board-top">
+                <button type="button" aria-label="Mes anterior" onClick={prevMonth}><ChevronLeft size={12} /></button>
+                <div className="ba-citas-board-top-center">
+                  <span>{monthLabel}</span>
+                  <select
+                    className="ba-citas-board-barber-filter"
+                    value={agendaBarberFilter}
+                    onChange={(e) => setAgendaBarberFilter(e.target.value)}
+                    aria-label="Filtrar agenda por barbero"
+                  >
+                    <option value="global">Citas hoy</option>
+                    {barberOptions.map((barber) => (
+                      <option key={`agenda-filter-${barber.id}`} value={barber.name}>
+                        {`Citas ${barber.name}`}
+                      </option>
+                    ))}
+                  </select>
+                  <em
+                    className={`ba-agenda-status-chip ${
+                      agendaBarberFilter === "global"
+                        ? "is-global"
+                        : agendaBarberStatus.get(agendaBarberFilter)
+                          ? "is-active"
+                          : "is-inactive"
+                    }`}
+                  >
+                    {agendaBarberFilter === "global"
+                      ? "Global"
+                      : agendaBarberStatus.get(agendaBarberFilter)
+                        ? "Activo"
+                        : "Inactivo"}
+                  </em>
+                  <div className="ba-citas-board-day-picker">
+                    <button
+                      type="button"
+                      className="ba-citas-board-day-trigger"
+                      onClick={() => setIsDayPickerOpen((prev) => !prev)}
+                      aria-label="Seleccionar dia"
+                    >
+                      <CalendarDays size={12} />
+                      <span>{selectedDay ? String(selectedDay).padStart(2, "0") : "--"}</span>
+                    </button>
+                    {isDayPickerOpen && (
+                      <div className="ba-citas-board-day-popover">
+                        <div className="ba-citas-board-day-week-head">
+                          {DAYS.map((day) => (
+                            <span key={`picker-head-${day}`}>{day}</span>
+                          ))}
+                        </div>
+                        <div className="ba-citas-board-day-grid">
+                          {calendarCells.map((cell) => (
+                            <button
+                              key={`board-day-${cell.key}`}
+                              type="button"
+                              disabled={cell.day === null}
+                              className={`ba-citas-board-day ${selectedDay === cell.day ? "is-active" : ""} ${cell.day !== null && daysWithAppointments.has(cell.day) ? "is-marked" : ""}`}
+                              onClick={() => {
+                                if (cell.day === null) return;
+                                setSelectedDay(cell.day);
+                                setIsDayPickerOpen(false);
+                              }}
+                            >
+                              {cell.day ?? ""}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <button type="button" aria-label="Mes siguiente" onClick={nextMonth}><ChevronRight size={12} /></button>
+              </div>
+              <div className="ba-citas-board-grid">
+                <div className="ba-citas-board-head">Hora</div>
+                <div className="ba-citas-board-head">Turnos</div>
+                <div className="ba-citas-board-head">Detalle</div>
+                {agendaHours.map((hour) => {
+                  const reqsAtHour = visibleDayRequests.filter((req) => (req.hour ?? "") === hour);
+                  const reqAtHour = reqsAtHour[0] ?? null;
+                  const barberSummary = reqsAtHour
+                    .map((req) => (req.barber ?? "").trim())
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .join(", ");
+                  const hasMoreBarbers = reqsAtHour.length > 2;
+                  return (
+                    <div key={`row-${hour}`} className="ba-citas-board-row">
+                      <div className="ba-citas-board-time">{hour}</div>
+                      <button
+                        type="button"
+                        className={`ba-citas-board-slot ${reqAtHour ? "is-booked" : "is-empty"}`}
+                        onClick={() => {
+                          if (reqAtHour) {
+                            handleOpenDetail(reqAtHour.id);
+                            return;
+                          }
+                          setForm((prev) => ({ ...prev, hora: hour }));
+                          setIsCreateOpen(true);
+                        }}
+                      >
+                        {reqAtHour ? (
+                          <>
+                            <strong>{reqAtHour.client}{reqsAtHour.length > 1 ? ` +${reqsAtHour.length - 1}` : ""}</strong>
+                            <small>
+                              {reqsAtHour.length > 1
+                                ? `${reqsAtHour.length} reservas · ${barberSummary}${hasMoreBarbers ? "..." : ""}`
+                                : reqAtHour.service}
+                            </small>
+                          </>
+                        ) : (
+                          <small>Disponible</small>
+                        )}
+                      </button>
+                      <div className={`ba-citas-board-state ${reqAtHour ? statusClass(reqAtHour.status) : ""}`}>
+                        {reqAtHour ? (reqsAtHour.length > 1 ? `${reqsAtHour.length} citas` : reqAtHour.status) : "-"}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className="ba-mini-calendar">
-              {DAYS.map((day) => (
-                <div key={`head-${day}`} className="is-head">{day}</div>
-              ))}
-              {calendarCells.map((cell) => (
-                <button
-                  key={cell.key}
-                  type="button"
-                  className={`is-cell ${cell.day !== null && selectedDay === cell.day ? "is-active" : ""}`}
-                  onClick={() => cell.day !== null && setSelectedDay(cell.day)}
-                  disabled={cell.day === null}
-                >
-                  {cell.day ?? ""}
-                </button>
-              ))}
+
+            <div className="ba-citas-board-mobile">
+              <div className="ba-calendar-nav">
+                <button type="button" aria-label="Mes anterior" onClick={prevMonth}><ChevronLeft size={12} /></button>
+                <span>{monthLabel}</span>
+                <button type="button" aria-label="Mes siguiente" onClick={nextMonth}><ChevronRight size={12} /></button>
+              </div>
+              <div className="ba-mini-calendar">
+                {DAYS.map((day) => (
+                  <div key={`head-${day}`} className="is-head">{day}</div>
+                ))}
+                {calendarCells.map((cell) => (
+                  <button
+                    key={cell.key}
+                    type="button"
+                    className={`is-cell ${
+                      cell.day !== null && selectedDay === cell.day
+                        ? "is-active"
+                        : cell.day !== null && daysWithAppointments.has(cell.day)
+                          ? "is-marked"
+                          : ""
+                    }`}
+                    onClick={() => cell.day !== null && setSelectedDay(cell.day)}
+                    disabled={cell.day === null}
+                  >
+                    {cell.day ?? ""}
+                  </button>
+                ))}
+              </div>
             </div>
           </article>
 
@@ -258,52 +764,90 @@ export default function CitasPage() {
                 <span>Cliente</span>
                 <span>Servicio</span>
                 <span>Fecha</span>
+                <span>Hora</span>
+                <span>Barbero</span>
                 <span>Estado</span>
                 <span>Acciones</span>
               </div>
 
-              {requests.map((req) => (
+              {filteredRequests.map((req) => (
                 <div
                   className={`ba-citas-row ba-citas-row-selectable ${selected?.id === req.id ? "is-selected" : ""}`}
                   key={req.id}
-                  onClick={() => setSelectedId(req.id)}
+                  onClick={() => handleOpenDetail(req.id)}
                 >
                   <span className="ba-citas-client">
-                    <img src={req.avatar} alt={req.client} loading="lazy" />
-                    {req.client}
+                    <span className="ba-citas-initials" aria-hidden="true">{initialsFromName(req.client)}</span>
+                    <span data-label="Cliente">{req.client}</span>
                   </span>
-                  <span>{req.service}</span>
-                  <span>{req.date}</span>
-                  <span>
+                  <span data-label="Servicio">{req.service}</span>
+                  <span data-label="Fecha">{req.date}</span>
+                  <span data-label="Hora">{(req.hour ?? form.hora) || "Sin hora"}</span>
+                  <span data-label="Barbero">{(req.barber ?? form.barbero) || "Sin barbero"}</span>
+                  <span data-label="Estado">
                     <em className={`ba-status-chip ${statusClass(req.status)}`}>{req.status}</em>
                   </span>
-                  <span className="ba-citas-actions">
-                    <button type="button"><Eye size={11} />Ver</button>
-                    <button type="button"><Send size={11} />Enviar</button>
+                  <span className="ba-citas-actions" data-label="Acciones">
+                    <button type="button" className="is-gold-action" onClick={(e) => { e.stopPropagation(); handleOpenDetail(req.id); }}><Eye size={11} />Ver</button>
+                    <button type="button" className="is-gold-action" onClick={(e) => { e.stopPropagation(); handleEditRequest(req); }}><Pencil size={11} />Editar</button>
+                    <button type="button" className="is-gold-action" onClick={(e) => { e.stopPropagation(); handleDeleteRequest(req.id); }}><Trash2 size={11} />Borrar</button>
+                    <button type="button" className="is-gold-action"><Send size={11} />Enviar</button>
                   </span>
                 </div>
               ))}
             </div>
           </article>
 
-          {selected ? (
-            <article className="ba-overlay-card">
+          {selected && detailOpen ? (
+            <>
+            <button
+              type="button"
+              className="ba-citas-overlay-backdrop"
+              aria-label="Cerrar detalle"
+              onClick={() => setDetailOpen(false)}
+            />
+            <article className="ba-overlay-card ba-citas-overlay-card">
               <header className="ba-overlay-head">
                 <div className="ba-overlay-user">
-                  <img src={selected.avatar} alt={selected.client} loading="lazy" />
+                  <span className="ba-overlay-initials" aria-hidden="true">{initialsFromName(selected.client)}</span>
                   <div>
                     <strong>{selected.client}</strong>
                     <small>{selected.service}</small>
                   </div>
                 </div>
-                <button type="button" onClick={() => setSelectedId(null)} aria-label="Cerrar ficha">
+                <button type="button" onClick={() => setDetailOpen(false)} aria-label="Cerrar ficha">
                   <X size={12} />
                 </button>
               </header>
               <div className="ba-overlay-grid">
+                <p><span>Cliente</span><strong>{selected.client}</strong></p>
+                <p>
+                  <span>Telefono</span>
+                  {selected.phone ? (
+                    <strong>
+                      <a
+                        className="ba-whatsapp-link"
+                        href={phoneToWhatsappUrl(selected.phone, selected.client) ?? "#"}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => {
+                          if (!phoneToWhatsappUrl(selected.phone ?? "", selected.client)) e.preventDefault();
+                        }}
+                      >
+                        {selected.phone}
+                      </a>
+                    </strong>
+                  ) : (
+                    <strong>Sin telefono</strong>
+                  )}
+                </p>
                 <p><span>Fecha</span><strong>{selected.date}</strong></p>
+                <p><span>Hora</span><strong>{selected.hour ?? "Sin hora"}</strong></p>
+                <p><span>Barbero</span><strong>{selected.barber ?? "Sin barbero"}</strong></p>
                 <p><span>Estado</span><strong>{selected.status}</strong></p>
                 <p><span>Servicio</span><strong>{selected.service}</strong></p>
+                <p><span>Descripcion</span><strong>{selected.description || "Sin descripcion"}</strong></p>
+                <p><span>Total</span><strong>{toCurrency(selected.total ?? 0)}</strong></p>
               </div>
               <section className="ba-client-loyalty-card">
                 <header>
@@ -321,23 +865,25 @@ export default function CitasPage() {
                 </small>
                 <ul>
                   <li><Cake size={11} /><span>{selected.birthdayBenefit}</span></li>
-                  <li><RefreshCcw size={11} /><span>{selected.inactiveDays} dias sin visita � {selected.reactivationBenefit}</span></li>
+                  <li><RefreshCcw size={11} /><span>{selected.inactiveDays} dias sin visita Â· {selected.reactivationBenefit}</span></li>
                   <li><Clock3 size={11} /><span>{selected.offPeakBenefit}</span></li>
                 </ul>
               </section>
               <footer className="ba-overlay-actions">
+                <button type="button" className="ba-btn-ghost" onClick={() => handleDeleteRequest(selected.id)}>Borrar</button>
                 <button type="button" className="ba-btn-ghost">Ver</button>
                 <button type="button" className="ba-card-gold">Enviar</button>
               </footer>
             </article>
+            </>
           ) : null}
         </div>
 
         <aside className="ba-citas-right">
           {isCreateOpen ? (
-            <article className="ba-card ba-cita-form">
+            <article className="ba-card ba-cita-form" ref={formRef}>
               <header className="ba-right-header">
-                <h3>Crear Nueva Cita</h3>
+                <h3>{editingRequestId ? `Editar Cita ${editingRequestId}` : "Crear Nueva Cita"}</h3>
                 <button type="button" aria-label="Opciones"><MoreHorizontal size={12} /></button>
               </header>
 
@@ -348,12 +894,31 @@ export default function CitasPage() {
                 onChange={(e) => setForm((prev) => ({ ...prev, cliente: e.target.value }))}
               />
 
-              <label>Seleccion de Servicios</label>
+              <label>Telefono</label>
               <input
                 className="ba-mini-field"
-                value={form.servicios}
-                onChange={(e) => setForm((prev) => ({ ...prev, servicios: e.target.value }))}
+                value={form.telefono}
+                onChange={(e) => setForm((prev) => ({ ...prev, telefono: e.target.value }))}
+                placeholder="3001234567"
               />
+
+              <label>Seleccion de Servicios</label>
+              <div className="ba-cita-services-picker">
+                {serviceOptions.map((service) => {
+                  const isSelected = selectedServiceIds.includes(service.id);
+                  return (
+                    <button
+                      key={service.id}
+                      type="button"
+                      className={`ba-cita-service-option ${isSelected ? "is-selected" : ""}`}
+                      onClick={() => toggleService(service.id)}
+                    >
+                      <span>{service.name}</span>
+                      <strong>{toCurrency(service.price)}</strong>
+                    </button>
+                  );
+                })}
+              </div>
 
               <label>Descripcion</label>
               <textarea
@@ -363,9 +928,60 @@ export default function CitasPage() {
                 placeholder="Descripcion de cita de lado..."
               />
 
+              <label>Calendario de Reserva</label>
+              <div className="ba-cita-reserve-calendar">
+                <div className="ba-calendar-nav">
+                  <button type="button" aria-label="Mes anterior reserva" onClick={prevReserveMonth}><ChevronLeft size={12} /></button>
+                  <span>{reserveMonthLabel}</span>
+                  <button type="button" aria-label="Mes siguiente reserva" onClick={nextReserveMonth}><ChevronRight size={12} /></button>
+                </div>
+                <div className="ba-mini-calendar">
+                  {DAYS.map((day) => (
+                    <div key={`reserve-head-${day}`} className="is-head">{day}</div>
+                  ))}
+                  {reserveCalendarCells.map((cell) => (
+                    <button
+                      key={`reserve-${cell.key}`}
+                      type="button"
+                      className={`is-cell ${cell.day !== null && reserveDay === cell.day ? "is-active" : ""}`}
+                      onClick={() => cell.day !== null && setReserveDay(cell.day)}
+                      disabled={cell.day === null}
+                    >
+                      {cell.day ?? ""}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <label>Barbero</label>
+              <select
+                className="ba-mini-field"
+                value={form.barbero}
+                onChange={(e) => setForm((prev) => ({ ...prev, barbero: e.target.value }))}
+              >
+                <option value="">Selecciona barbero</option>
+                {availableBarberOptions.map((barber) => (
+                  <option key={barber.id} value={barber.name}>{barber.name}</option>
+                ))}
+              </select>
+              {reserveDay && availableBarberOptions.length === 0 ? (
+                <small className="ba-loyal-note">No hay barberos disponibles para ese día (descanso).</small>
+              ) : null}
+
+              <label>Hora</label>
+              <select
+                className="ba-mini-field"
+                value={form.hora}
+                onChange={(e) => setForm((prev) => ({ ...prev, hora: e.target.value }))}
+              >
+                {hourOptions.map((hour) => (
+                  <option key={hour} value={hour}>{hour}</option>
+                ))}
+              </select>
+
               <div className="ba-mini-total">
-                <small>Fecha seleccionada</small>
-                <strong>{selectedDay ? formatDate(selectedDay, currentMonth.getMonth(), currentMonth.getFullYear()) : "Sin fecha"}</strong>
+                <small>Dia seleccionado</small>
+                <strong>{reserveDateString ?? "Sin fecha"}</strong>
               </div>
 
               <div className="ba-mini-total">
@@ -373,7 +989,9 @@ export default function CitasPage() {
                 <strong>{toCurrency(total)}</strong>
               </div>
 
-              <button type="button" className="ba-card-gold" onClick={handleCreateCita} disabled={!selectedDay}>Enviar Cita</button>
+              <button type="button" className="ba-card-gold" onClick={handleCreateCita} disabled={!reserveDateString || !selectedServiceIds.length}>
+                {editingRequestId ? "Guardar cambios" : "Enviar Cita"}
+              </button>
             </article>
           ) : (
             <article className="ba-card ba-cita-form">
@@ -391,6 +1009,8 @@ export default function CitasPage() {
             </header>
 
             <ul>
+              <li><span>Barbero</span><span>{activeSummary.barber}</span></li>
+              <li><span>Hora</span><span>{activeSummary.hour}</span></li>
               {activeSummary.items.map((item, idx) => (
                 <li key={`${item.name}-${idx}`}><span>{item.name}</span><span>{toCurrency(item.price)}</span></li>
               ))}
@@ -410,3 +1030,5 @@ export default function CitasPage() {
     </DashboardShell>
   );
 }
+
+

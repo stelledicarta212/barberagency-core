@@ -1,0 +1,306 @@
+﻿{
+    "settings":  {
+                     "executionOrder":  "v1"
+                 },
+    "name":  "chatwoot_conex",
+    "connections":  {
+                        "OpenRouter Chat Model":  {
+                                                      "ai_languageModel":  [
+                                                                               [
+                                                                                   {
+                                                                                       "node":  "AI Agent",
+                                                                                       "type":  "ai_languageModel",
+                                                                                       "index":  0
+                                                                                   }
+                                                                               ]
+                                                                           ]
+                                                  },
+                        "Simple Memory":  {
+                                              "ai_memory":  [
+                                                                [
+                                                                    {
+                                                                        "node":  "AI Agent",
+                                                                        "type":  "ai_memory",
+                                                                        "index":  0
+                                                                    }
+                                                                ]
+                                                            ]
+                                          },
+                        "Datos":  {
+                                      "main":  [
+                                                   [
+                                                       {
+                                                           "node":  "AI Agent",
+                                                           "type":  "main",
+                                                           "index":  0
+                                                       }
+                                                   ]
+                                               ]
+                                  },
+                        "AI Agent":  {
+                                         "main":  [
+                                                      [
+                                                          {
+                                                              "node":  "HTTP Request",
+                                                              "type":  "main",
+                                                              "index":  0
+                                                          }
+                                                      ]
+                                                  ]
+                                     },
+                        "Input":  {
+                                      "main":  [
+                                                   [
+                                                       {
+                                                           "node":  "If",
+                                                           "type":  "main",
+                                                           "index":  0
+                                                       }
+                                                   ]
+                                               ]
+                                  },
+                        "If":  {
+                                   "main":  [
+                                                [
+                                                    {
+                                                        "node":  "Normalizar Entrada",
+                                                        "type":  "main",
+                                                        "index":  0
+                                                    }
+                                                ],
+                                                [
+                                                    {
+                                                        "node":  "No Operation, do nothing",
+                                                        "type":  "main",
+                                                        "index":  0
+                                                    }
+                                                ]
+                                            ]
+                               },
+                        "Normalizar Entrada":  {
+                                                   "main":  [
+                                                                {
+                                                                    "node":  "Datos",
+                                                                    "type":  "main",
+                                                                    "index":  0
+                                                                }
+                                                            ]
+                                               }
+                    },
+    "nodes":  [
+                  {
+                      "parameters":  {
+                                         "promptType":  "define",
+                                         "text":  "=Eres un asistente multimodal para WhatsApp en Chatwoot.\n\nDatos de entrada:\n- Modalidad: {{ $(\"Normalizar Entrada\").item.json.modality }}\n- Texto del usuario: {{ $(\"Normalizar Entrada\").item.json.content }}\n- URL media: {{ $(\"Normalizar Entrada\").item.json.media_url }}\n- MIME media: {{ $(\"Normalizar Entrada\").item.json.media_mime }}\n- Telefono: {{ $(\"Normalizar Entrada\").item.json.phone_number }}\n\nReglas:\n1) Si modalidad es text, responde normal y concreto.\n2) Si modalidad es image, intenta analizar la imagen si el modelo lo soporta; si no, pide una descripcion breve para ayudar mejor.\n3) Si modalidad es audio o video, indica que lo recibiste y responde con una ayuda util basada en el texto/caption; si falta contexto, pide una aclaracion corta.\n4) Responde siempre en espanol.",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.agent",
+                      "typeVersion":  3.1,
+                      "position":  [
+                                       368,
+                                       -96
+                                   ],
+                      "id":  "bc3c45ba-3eb4-4f65-b00f-52ff22a158b2",
+                      "name":  "AI Agent"
+                  },
+                  {
+                      "parameters":  {
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+                      "typeVersion":  1,
+                      "position":  [
+                                       240,
+                                       128
+                                   ],
+                      "id":  "ff9454b0-3637-468f-8d02-555de49299d2",
+                      "name":  "OpenRouter Chat Model",
+                      "credentials":  {
+                                          "openRouterApi":  {
+                                                                "id":  "GGIYelYz4pEX8CrX",
+                                                                "name":  "OpenRouter account"
+                                                            }
+                                      }
+                  },
+                  {
+                      "parameters":  {
+                                         "sessionIdType":  "customKey",
+                                         "sessionKey":  "={{ $(\"Normalizar Entrada\").item.json.conversation_id || $(\"Normalizar Entrada\").item.json.phone_number }}"
+                                     },
+                      "type":  "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+                      "typeVersion":  1.3,
+                      "position":  [
+                                       368,
+                                       112
+                                   ],
+                      "id":  "a0562285-b9e3-4d4f-905e-72abe87ccb79",
+                      "name":  "Simple Memory"
+                  },
+                  {
+                      "parameters":  {
+                                         "assignments":  {
+                                                             "assignments":  [
+                                                                                 {
+                                                                                     "id":  "74819ee7-41ce-45b6-8aab-8905322a53bd",
+                                                                                     "name":  "url_chatwoot",
+                                                                                     "value":  "https://chatwoottest.agencia2c.cloud/",
+                                                                                     "type":  "string"
+                                                                                 },
+                                                                                 {
+                                                                                     "id":  "90304917-be3c-4cf2-bc06-5e7b62d71af4",
+                                                                                     "name":  "api_access_token",
+                                                                                     "value":  "tuEQNSFcJCSuhd6Rb3wejWYr",
+                                                                                     "type":  "string"
+                                                                                 }
+                                                                             ]
+                                                         },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.set",
+                      "typeVersion":  3.4,
+                      "position":  [
+                                       64,
+                                       -32
+                                   ],
+                      "id":  "ddc2854a-7bef-4064-a9d8-46689164bbc5",
+                      "name":  "Datos"
+                  },
+                  {
+                      "parameters":  {
+                                         "method":  "POST",
+                                         "url":  "={{ $(\"Datos\").item.json.url_chatwoot + \"api/v1/accounts/1/conversations/\" + $(\"Normalizar Entrada\").item.json.conversation_id + \"/messages\" }}",
+                                         "sendHeaders":  true,
+                                         "headerParameters":  {
+                                                                  "parameters":  [
+                                                                                     {
+                                                                                         "name":  "api_access_token",
+                                                                                         "value":  "={{ $(\u0027Datos\u0027).item.json.api_access_token }}"
+                                                                                     }
+                                                                                 ]
+                                                              },
+                                         "sendBody":  true,
+                                         "bodyParameters":  {
+                                                                "parameters":  [
+                                                                                   {
+                                                                                       "name":  "content",
+                                                                                       "value":  "={{ $(\u0027AI Agent\u0027).item.json.output }}"
+                                                                                   },
+                                                                                   {
+                                                                                       "name":  "message_type",
+                                                                                       "value":  "outgoing"
+                                                                                   },
+                                                                                   {
+                                                                                       "name":  "private",
+                                                                                       "value":  "false"
+                                                                                   }
+                                                                               ]
+                                                            },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.httpRequest",
+                      "typeVersion":  4.4,
+                      "position":  [
+                                       720,
+                                       -96
+                                   ],
+                      "id":  "9a2a87cc-c2cd-4b96-b5e6-ebe6c1fb6188",
+                      "name":  "HTTP Request"
+                  },
+                  {
+                      "parameters":  {
+                                         "httpMethod":  "POST",
+                                         "path":  "3419d9cc-c94c-4efc-8bf3-489bcc4bf4d3",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.webhook",
+                      "typeVersion":  2.1,
+                      "position":  [
+                                       -352,
+                                       -32
+                                   ],
+                      "id":  "0e6cf34a-d3bd-49fa-aec6-67b2cc66d2f6",
+                      "name":  "Input",
+                      "webhookId":  "3419d9cc-c94c-4efc-8bf3-489bcc4bf4d3"
+                  },
+                  {
+                      "parameters":  {
+                                         "conditions":  {
+                                                            "options":  {
+                                                                            "version":  3,
+                                                                            "typeValidation":  "strict",
+                                                                            "leftValue":  "",
+                                                                            "caseSensitive":  true
+                                                                        },
+                                                            "conditions":  [
+                                                                               {
+                                                                                   "operator":  {
+                                                                                                    "operation":  "equals",
+                                                                                                    "type":  "string"
+                                                                                                },
+                                                                                   "rightValue":  "message_created",
+                                                                                   "id":  "f12c7cd3-cb61-4b6f-9d17-0216ef3594d3",
+                                                                                   "leftValue":  "={{ $json.body.event }}"
+                                                                               },
+                                                                               {
+                                                                                   "operator":  {
+                                                                                                    "operation":  "equals",
+                                                                                                    "type":  "string"
+                                                                                                },
+                                                                                   "rightValue":  "incoming",
+                                                                                   "id":  "818291bc-1db2-4696-8e12-fd5c5fc71964",
+                                                                                   "leftValue":  "={{ $json.body.message_type }}"
+                                                                               }
+                                                                           ],
+                                                            "combinator":  "and"
+                                                        },
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "type":  "n8n-nodes-base.if",
+                      "typeVersion":  2.3,
+                      "position":  [
+                                       -144,
+                                       -32
+                                   ],
+                      "id":  "82c65e81-d62d-49cc-a92b-bb91349a1daf",
+                      "name":  "If"
+                  },
+                  {
+                      "parameters":  {
+
+                                     },
+                      "type":  "n8n-nodes-base.noOp",
+                      "typeVersion":  1,
+                      "position":  [
+                                       -80,
+                                       144
+                                   ],
+                      "id":  "9934003d-8fcc-4f2e-9a6f-159c8508d6e2",
+                      "name":  "No Operation, do nothing"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const body = $json.body || {};\nconst msg0 = (body.conversation \u0026\u0026 Array.isArray(body.conversation.messages) \u0026\u0026 body.conversation.messages.length)\n  ? body.conversation.messages[0]\n  : {};\n\nconst attachments = body.attachments || msg0.attachments || [];\nconst first = attachments[0] || {};\n\nconst mime = (first.file_type || first.content_type || \u0027\u0027).toLowerCase();\nconst contentType = (body.content_type || \u0027\u0027).toLowerCase();\n\nlet modality = \u0027text\u0027;\nif (attachments.length \u003e 0) {\n  if (mime.startsWith(\u0027image/\u0027)) modality = \u0027image\u0027;\n  else if (mime.startsWith(\u0027audio/\u0027)) modality = \u0027audio\u0027;\n  else if (mime.startsWith(\u0027video/\u0027)) modality = \u0027video\u0027;\n  else modality = \u0027file\u0027;\n} else if (contentType \u0026\u0026 contentType !== \u0027text\u0027) {\n  modality = contentType;\n}\n\nconst mediaUrl = first.data_url || first.thumb_url || first.url || null;\n\nreturn [{\n  json: {\n    event: body.event || null,\n    message_type: body.message_type || null,\n    content_type: body.content_type || null,\n    content: body.content || \u0027\u0027,\n    conversation_id: msg0.conversation_id || (body.conversation \u0026\u0026 body.conversation.id) || null,\n    phone_number: (msg0.sender \u0026\u0026 msg0.sender.phone_number) || (body.sender \u0026\u0026 body.sender.phone_number) || null,\n    modality,\n    media_url: mediaUrl,\n    media_mime: mime,\n    attachments_count: attachments.length,\n    attachments,\n  }\n}];"
+                                     },
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       -8,
+                                       -32
+                                   ],
+                      "id":  "bc5ae75b-0eaa-4200-95da-a811e768f692",
+                      "name":  "Normalizar Entrada"
+                  }
+              ]
+}

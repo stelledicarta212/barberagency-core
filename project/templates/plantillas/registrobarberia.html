@@ -54,7 +54,22 @@
 
     window.__BA_WP_ONBOARDING_READY__ = true;
 
-    const API_URL = "https://barberagency-app.gymh5g.easypanel.host/api/onboarding/complete";
+    const DEFAULT_ONBOARDING_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/registro-barberia";
+    const DEFAULT_ONBOARDING_ENDPOINT_ALT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/onboarding/complete";
+    const DEFAULT_ONBOARDING_ENDPOINT_LEGACY = "https://barberagency-app.gymh5g.easypanel.host/api/onboarding/complete";
+    const DEFAULT_POSTGREST_BASE = "https://api.agencia2c.cloud";
+    const DEFAULT_CANONICAL_SYNC_RPC = "ba_sync_registro_collections";
+    const API_URL =
+      (window.BA_ONBOARDING_ENDPOINT && String(window.BA_ONBOARDING_ENDPOINT).trim()) ||
+      DEFAULT_ONBOARDING_ENDPOINT;
+    const POSTGREST_BASE =
+      (window.BA_POSTGREST_URL && String(window.BA_POSTGREST_URL).trim()) ||
+      DEFAULT_POSTGREST_BASE;
+    const ALLOW_LOCAL_SEED_FALLBACK =
+      String(window.BA_ALLOW_LOCAL_SEED_FALLBACK || "").trim() === "1";
+    const CANONICAL_SYNC_RPC =
+      (window.BA_CANONICAL_SYNC_RPC && String(window.BA_CANONICAL_SYNC_RPC).trim()) ||
+      DEFAULT_CANONICAL_SYNC_RPC;
     const LANDING_BUILDER_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/landing_plantilla/";
     const STORAGE_KEY = "ba_wp_onboarding_v9";
     const LANDING_SEED_KEY = "ba_landing_seed";
@@ -1462,6 +1477,176 @@
       };
     }
 
+    function getOnboardingEndpointCandidates() {
+      const candidateList = [
+        clean(window.BA_ONBOARDING_ENDPOINT),
+        clean(API_URL),
+        DEFAULT_ONBOARDING_ENDPOINT,
+        DEFAULT_ONBOARDING_ENDPOINT_ALT,
+        DEFAULT_ONBOARDING_ENDPOINT_LEGACY
+      ].filter(Boolean);
+      return Array.from(new Set(candidateList));
+    }
+
+    function getCreatedBarberiaId(data) {
+      return (
+        Number(data?.barberia?.id) ||
+        Number(data?.barberia_id) ||
+        Number(data?.id_barberia) ||
+        Number(data?.id) ||
+        0
+      );
+    }
+
+    function normalizeServiceDraftRows(rows) {
+      const list = Array.isArray(rows) ? rows : [];
+      return list
+        .map((item) => ({
+          nombre: clean(item?.nombre || item?.name),
+          duracion_min: Number(item?.duracion_min || item?.duration_min || 30),
+          precio: Math.max(0, Number(item?.precio || item?.price || 0)),
+          activo: true
+        }))
+        .filter((item) => item.nombre)
+        .map((item) => ({
+          ...item,
+          duracion_min: Number.isFinite(item.duracion_min) && item.duracion_min > 0 ? item.duracion_min : 30
+        }));
+    }
+
+    function normalizeBarberDraftRows(rows) {
+      const list = Array.isArray(rows) ? rows : [];
+      return list
+        .map((item) => ({
+          nombre: clean(item?.nombre || item?.name),
+          activo: true
+        }))
+        .filter((item) => item.nombre);
+    }
+
+    async function postgrestFetch(path, options = {}) {
+      const base = clean(POSTGREST_BASE).replace(/\/+$/, "");
+      if (!base) throw new Error("No hay POSTGREST base configurado.");
+      const url = `${base}${path.startsWith("/") ? path : `/${path}`}`;
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        const body = await response.text().catch(() => "");
+        throw new Error(body || `HTTP ${response.status} en ${url}`);
+      }
+      return response;
+    }
+
+    async function syncCanonicalCatalogs(data, payload) {
+      const barberiaId = getCreatedBarberiaId(data);
+      if (!(barberiaId > 0)) {
+        throw new Error("No se obtuvo barberia_id real para sincronizar servicios/barberos.");
+      }
+      const servicios = normalizeServiceDraftRows(payload?.draft?.servicios).map((item) => ({
+        nombre: item.nombre,
+        duracion_min: Number(item.duracion_min || 30),
+        precio: Math.max(0, Number(item.precio || 0))
+      }));
+      const barberos = normalizeBarberDraftRows(payload?.draft?.barberos).map((item) => ({
+        nombre: item.nombre
+      }));
+
+      const rpcName = clean(CANONICAL_SYNC_RPC);
+      if (!rpcName) {
+        throw new Error("No hay RPC configurada para sincronizar servicios y barberos.");
+      }
+
+      const response = await postgrestFetch(`/rpc/${rpcName}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          p_barberia_id: barberiaId,
+          p_servicios: servicios,
+          p_barberos: barberos
+        })
+      });
+      const rpcData = await response.json().catch(() => ({}));
+      if (rpcData && typeof rpcData === "object" && rpcData.ok === false) {
+        if (clean(rpcData.error) === "barberia_no_encontrada") {
+          throw new Error("No se pudieron guardar servicios y barberos: barberia_no_encontrada.");
+        }
+        throw new Error(
+          clean(rpcData.error || rpcData.message) ||
+          "No se pudieron guardar servicios y barberos en la base de datos. Revisa permisos o RPC."
+        );
+      }
+
+      // Compatibilidad: si la RPC retorna objeto con ok=true lo validamos;
+      // si retorna vacío/null (funciones SQL void), tomamos HTTP 2xx como éxito.
+      if (rpcData && typeof rpcData === "object" && Object.prototype.hasOwnProperty.call(rpcData, "ok") && rpcData.ok !== true) {
+        throw new Error("No se pudieron guardar servicios y barberos en la base de datos. Revisa permisos o RPC.");
+      }
+    }
+
+    function isPostgrestPermissionError(error) {
+      const message = clean(error?.message).toLowerCase();
+      return (
+        /permission denied/.test(message) ||
+        /"code"\s*:\s*"42501"/.test(message) ||
+        /\b42501\b/.test(message)
+      );
+    }
+
+    async function postOnboardingPayload(payload) {
+      const endpoints = getOnboardingEndpointCandidates();
+      let lastError = null;
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json().catch(() => ({}));
+          const backendMessage = clean(data?.message || data?.error || "");
+          const webhookNotRegistered = /not registered/i.test(backendMessage);
+
+          if (!response.ok || data.ok === false) {
+            const shouldTryNextEndpoint =
+              response.status >= 500 ||
+              response.status === 404 ||
+              webhookNotRegistered;
+
+            lastError = new Error(backendMessage || `HTTP ${response.status} en ${endpoint}`);
+            if (shouldTryNextEndpoint) {
+              continue;
+            }
+            throw lastError;
+          }
+
+          return { response, data, endpoint };
+        } catch (error) {
+          const isNetworkFetchError =
+            error instanceof TypeError ||
+            /failed to fetch|networkerror|load failed/i.test(clean(error?.message));
+
+          if (isNetworkFetchError) {
+            const origin = clean(window.location.origin) || "origen-desconocido";
+            const endpointList = endpoints.join(" | ");
+            lastError = new Error(
+              `No se pudo conectar al webhook desde ${origin}. ` +
+              `Posible CORS/dominio o bloqueo de red. Endpoints probados: ${endpointList}`
+            );
+          } else {
+            lastError = error;
+          }
+        }
+      }
+
+      throw (lastError || new Error("No se pudo conectar con ningun endpoint de onboarding."));
+    }
+
     async function submitDraft() {
       hideMessage();
 
@@ -1508,19 +1693,8 @@
       }
 
       try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok || data.ok === false) {
-          throw new Error(data.message || "No se pudo crear la barbería.");
-        }
+        const { data } = await postOnboardingPayload(payload);
+        await syncCanonicalCatalogs(data, payload);
 
         persistLandingSeed(payload, data);
         onboardingCompleted = true;
@@ -1532,7 +1706,7 @@
           "error",
           error && error.message
             ? error.message
-            : "Fallo el envio. Si WordPress y la API viven en dominios diferentes, revisa CORS o usa n8n como puente."
+            : "No se pudieron guardar servicios y barberos en la base de datos. Revisa permisos o RPC."
         );
       } finally {
         if (submitBtn) {
@@ -1588,28 +1762,33 @@
       }
 
       try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok || data.ok === false) {
-          throw new Error(data.message || "No se pudo actualizar la barbería.");
-        }
+        const { data } = await postOnboardingPayload(payload);
+        await syncCanonicalCatalogs(data, payload);
 
         persistLandingSeed(payload, data);
         window.location.href = buildLandingBuilderUrl(payload, data);
       } catch (error) {
+        // Fallback visual SOLO temporal y bajo flag explicito.
+        if (ALLOW_LOCAL_SEED_FALLBACK && isEditIntent() && isPostgrestPermissionError(error)) {
+          const identity = getEditIdentity();
+          const fallbackData = {
+            barberia_id: Number(identity.barberia_id) || 0,
+            slug: clean(identity.slug) || clean(payload?.draft?.barberia?.slug),
+            barberia: {
+              id: Number(identity.barberia_id) || 0,
+              slug: clean(identity.slug) || clean(payload?.draft?.barberia?.slug)
+            },
+            message: "Continuando en modo edición con semilla local."
+          };
+          persistLandingSeed(payload, fallbackData);
+          window.location.href = buildLandingBuilderUrl(payload, fallbackData);
+          return;
+        }
         showMessage(
           "error",
           error && error.message
             ? error.message
-            : "No se pudo guardar los cambios antes de abrir la plantilla."
+            : "No se pudieron guardar servicios y barberos en la base de datos. Revisa permisos o RPC."
         );
       } finally {
         if (continueBtn) {

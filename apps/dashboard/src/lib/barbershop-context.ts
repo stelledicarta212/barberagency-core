@@ -78,6 +78,12 @@ export function getBarbershopContext(): BarbershopIdentity {
 }
 
 export function resolveBarbershopIdentity(): BarbershopIdentity {
+  // Temporal: forzar foco del dashboard en barberia-58 (id 101).
+  return {
+    id: "101",
+    slug: "barberia-58"
+  };
+
   const fromUrl = resolveIdentityFromUrl();
   if (fromUrl.id || fromUrl.slug) return fromUrl;
 
