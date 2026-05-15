@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet"
- href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=118">
+ href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=125">
 
 <style>
   #ba-editor-v2[data-ui-theme='dark'] {
@@ -602,7 +602,8 @@
   const DEFAULT_UPLOAD_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-live';
   const DEFAULT_UPLOAD_ENDPOINT_V2 = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-v2';
   const DEFAULT_UPLOAD_ENDPOINT_LEGACY = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload';
-  const DEFAULT_SAVE_ENDPOINT = 'https://api.agencia2c.cloud/rpc/ba_publicar_barberia';
+  const DEFAULT_SAVE_ENDPOINT = 'https://api.agencia2c.cloud/rpc/ba_publicar_landing_completa';
+  const DEFAULT_PUBLIC_LANDING_RPC_ENDPOINT = 'https://api.agencia2c.cloud/rpc/ba_get_landing_publica';
   const DEFAULT_DRAFT_SAVE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/draft/save';
   const DEFAULT_DRAFT_GET_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/draft/get';
   const DEFAULT_PUBLIC_PROFILE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public';
@@ -619,6 +620,7 @@
     draftSaveEndpoint: String(window.BA_DRAFT_SAVE_ENDPOINT || DEFAULT_DRAFT_SAVE_ENDPOINT).trim(),
     draftGetEndpoint: String(window.BA_DRAFT_GET_ENDPOINT || DEFAULT_DRAFT_GET_ENDPOINT).trim(),
     publicProfileEndpoint: String(window.BA_PUBLIC_PROFILE_ENDPOINT || DEFAULT_PUBLIC_PROFILE_ENDPOINT).trim(),
+    publicLandingRpcEndpoint: String(window.BA_PUBLIC_LANDING_RPC_ENDPOINT || DEFAULT_PUBLIC_LANDING_RPC_ENDPOINT).trim(),
     dashboardUrl: String(window.BA_DASHBOARD_URL || window.APP_PUBLIC_URL || DEFAULT_DASHBOARD_URL).trim(),
     uploadPublicBase: String(window.BA_UPLOAD_PUBLIC_BASE || window.BA_R2_PUBLIC_BASE || '').trim(),
     forceDirectTemplateUrls: String(window.BA_FORCE_DIRECT_TEMPLATE_URLS || '').trim() === '1'
@@ -963,7 +965,7 @@
 
   function toSlug(str) {
     const s = String(str || '').trim().toLowerCase();
-    const a = 'Ã Ã¡Ã¢Ã¤Ã¦Ã£Ã¥ÄÄƒÄ…Ã§Ä‡ÄÄ‘ÄÃ¨Ã©ÃªÃ«Ä“Ä—Ä™Ä›ÄŸÇµá¸§Ã®Ã¯Ã­Ä«Ä¯Ã¬Å‚á¸¿Ã±Å„Ç¹ÅˆÃ´Ã¶Ã²Ã³Å“Ã¸ÅÃµÅ‘á¹•Å•Å™ÃŸÅ›Å¡ÅŸÈ™Å¥È›Ã»Ã¼Ã¹ÃºÅ«Ç˜Å¯Å±Å³áºƒáºÃ¿Ã½Å¾ÅºÅ¼Â·/_,:;';
+    const a = 'àáâäæãåāăąćčďđèéêëēėęěĝǵḧîïíīįìłḿñńǹňôöòóœøōõőṕŕřßśšşșťțûüùúūǘůűųẃẍÿýžźż·/_,:;';
     const b = 'aaaaaaaaaacccddeeeeeeeegghiiiiiilmnnnnoooooooooprrsssssttuuuuuuuuuwxyyzzz------';
     const p = new RegExp(a.split('').join('|'), 'g');
     return s.replace(p, c => b.charAt(a.indexOf(c)))
@@ -1166,6 +1168,7 @@
     const safe = Array.isArray(items) ? items : [];
     return safe
       .map((item, i) => ({
+      id: Number(item?.id) || null,
       name: safeText(item?.name || item?.nombre),
       nombre: safeText(item?.nombre || item?.name),
       description: safeText(item?.description || item?.descripcion || 'Trabajo profesional con acabados premium.'),
@@ -1176,31 +1179,37 @@
       price: Math.max(0, Number(item?.price || item?.precio || 0)),
       precio: Math.max(0, Number(item?.precio || item?.price || 0))
     }))
-      .filter((item) => safeText(item.name) || safeText(item.nombre))
-      .slice(0, 6);
+      .filter((item) => safeText(item.name) || safeText(item.nombre));
   }
 
   function normalizeInheritedBarbers(items) {
     const safe = Array.isArray(items) ? items : [];
     return safe.map((item, i) => ({
+      id: Number(item?.id) || null,
       name: safeText(item?.name || item?.nombre),
       nombre: safeText(item?.nombre || item?.name),
       photo: safeText(item?.photo || item?.foto || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
       foto: safeText(item?.foto || item?.photo || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length])
     }))
-      .filter((item) => safeText(item.name) || safeText(item.nombre))
-      .slice(0, 4);
+      .filter((item) => safeText(item.name) || safeText(item.nombre));
   }
 
   function normalizeInheritedHours(items) {
     const safe = Array.isArray(items) ? items : [];
     return safe
-      .map((item) => ({
-        dia: safeText(item?.dia),
+      .map((item) => {
+        const diaSemana = Number.isInteger(Number(item?.dia_semana))
+          ? Number(item.dia_semana)
+          : null;
+        const dayLabels = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+        return {
+        dia_semana: diaSemana,
+        dia: safeText(item?.dia) || (diaSemana !== null ? dayLabels[diaSemana] : ''),
         activo: Boolean(item?.activo),
         hora_abre: safeText(item?.hora_abre),
         hora_cierra: safeText(item?.hora_cierra)
-      }))
+      };
+      })
       .filter((item) => item.dia);
   }
 
@@ -1233,6 +1242,36 @@
     }
 
     renderInheritedSeedSummary();
+  }
+
+  async function refreshCanonicalCollectionsBeforePublish(identity) {
+    const endpoint = safeText(CONFIG.publicLandingRpcEndpoint) || DEFAULT_PUBLIC_LANDING_RPC_ENDPOINT;
+    const slug = safeText(identity?.slug);
+    if (!endpoint || !slug) return false;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_slug: slug })
+      });
+      const rawText = await response.text().catch(() => '');
+      let json = {};
+      try {
+        json = rawText ? JSON.parse(rawText) : {};
+      } catch (_) {
+        json = {};
+      }
+      const rpcPayload = normalizeRpcJsonbPayload(json);
+      if (!response.ok || !rpcPayload || rpcPayload?.ok === false) return false;
+
+      applyInheritedCollectionsFromPayload(rpcPayload);
+      syncSeedIdentityFromPublicProfile(rpcPayload);
+      persistRegistroSeedContext();
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   function syncSeedIdentityFromPublicProfile(payload) {
@@ -1896,21 +1935,35 @@
     }
   }
 
+  function enforceSlugOnlyWhenPresent(rawUrl) {
+    const source = safeText(rawUrl);
+    if (!source) return '';
+    try {
+      const parsed = new URL(source, window.location.origin);
+      const slug = safeText(parsed.searchParams.get('slug'));
+      if (slug) {
+        parsed.searchParams.delete('barberia_id');
+      }
+      return parsed.toString();
+    } catch (_) {
+      return source.replace(/([?&])barberia_id=[^&#]*(&?)/gi, (m, p1, p2) => {
+        if (p1 === '?' && p2) return '?';
+        if (p1 === '&' && p2) return '&';
+        return '';
+      }).replace('?&', '?').replace(/[?&]$/, '');
+    }
+  }
+
   function buildPublishedLandingUrls(payload) {
     const slug = safeText(payload?.slug || payload?.inherited?.slug);
     const barberiaId = Number(payload?.barberia_id || payload?.inherited?.barberia_id || 0);
     const siteBase = getPublicSiteBase();
-    const selectedTpl = byId[getSelectedId()] || templates[0];
-    const templatePublicPath = getTemplatePublicPath(selectedTpl);
     if ((!slug && !barberiaId) || !siteBase) {
       return { public_landing_url: '', reservation_url: '', qr_url: '' };
     }
-    const identityQuery = barberiaId > 0 && slug
-      ? `?barberia_id=${encodeURIComponent(String(barberiaId))}&slug=${encodeURIComponent(slug)}`
-      : (barberiaId > 0
-        ? `?barberia_id=${encodeURIComponent(String(barberiaId))}`
-        : `?slug=${encodeURIComponent(slug)}`);
-    const public_landing_url = `${siteBase}${templatePublicPath}${identityQuery}`;
+    const public_landing_url = slug
+      ? `${siteBase}/b/${encodeURIComponent(slug)}`
+      : `${siteBase}/b?id=${encodeURIComponent(String(barberiaId))}`;
     const reservation_url = withReservationHash(public_landing_url);
     const qr_url = reservation_url
       ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(reservation_url)}`
@@ -1919,22 +1972,17 @@
   }
 
   function buildCanonicalUrlsForEditor(options = {}) {
-    const selectedTemplate = options?.template || byId[getSelectedId()] || templates[0];
     const identity = options?.identity || getSeedIdentity();
     const fallbackSlug = safeText(options?.fallbackSlug);
     const slug = safeText(identity?.slug) || fallbackSlug;
     const barberiaId = Number(identity?.barberia_id) || 0;
     const siteBase = getPublicSiteBase();
-    const templatePublicPath = getTemplatePublicPath(selectedTemplate);
     if ((!slug && !barberiaId) || !siteBase) {
       return { public_landing_url: '', reservation_url: '', qr_url: '' };
     }
-    const identityQuery = barberiaId > 0 && slug
-      ? `?barberia_id=${encodeURIComponent(String(barberiaId))}&slug=${encodeURIComponent(slug)}`
-      : (barberiaId > 0
-        ? `?barberia_id=${encodeURIComponent(String(barberiaId))}`
-        : `?slug=${encodeURIComponent(slug)}`);
-    const public_landing_url = `${siteBase}${templatePublicPath}${identityQuery}`;
+    const public_landing_url = slug
+      ? `${siteBase}/b/${encodeURIComponent(slug)}`
+      : `${siteBase}/b?id=${encodeURIComponent(String(barberiaId))}`;
     const reservation_url = withReservationHash(public_landing_url);
     const qr_url = reservation_url
       ? `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(reservation_url)}`
@@ -1960,6 +2008,42 @@
         url.searchParams.set('tpl', selectedId);
       }
       if (safeSlug) {
+        url.searchParams.delete('barberia_id');
+        url.searchParams.delete('id_barberia');
+        url.searchParams.delete('id');
+        url.searchParams.delete('barberia');
+        url.searchParams.delete('barberiaId');
+        url.searchParams.delete('business_id');
+        url.searchParams.set('slug', safeSlug);
+        url.searchParams.set('barberia_slug', safeSlug);
+      } else if (safeBarberiaId > 0) {
+        url.searchParams.set('barberia_id', String(safeBarberiaId));
+        url.searchParams.set('id_barberia', String(safeBarberiaId));
+        url.searchParams.delete('slug');
+        url.searchParams.delete('barberia_slug');
+        url.searchParams.delete('business_slug');
+        url.searchParams.delete('ba_barberia_slug');
+      }
+      url.searchParams.set('edit', '1');
+      url.searchParams.set('mode', 'edit');
+      return url.toString();
+    } catch (_) {
+      return safeText(window.location.href);
+    }
+  }
+
+  function syncEditorIdentityInCurrentUrl(identity = {}) {
+    try {
+      const safeSlug = safeText(identity.slug);
+      const safeBarberiaId = Number(identity.barberia_id) || 0;
+      const url = new URL(window.location.href);
+
+      const idKeys = ['barberia_id', 'id_barberia', 'id', 'barberia', 'barberiaId', 'business_id', 'ba_barberia_id'];
+      const slugKeys = ['slug', 'barberia_slug', 'business_slug', 'ba_barberia_slug'];
+      idKeys.forEach((k) => url.searchParams.delete(k));
+      slugKeys.forEach((k) => url.searchParams.delete(k));
+
+      if (safeSlug) {
         url.searchParams.set('slug', safeSlug);
         url.searchParams.set('barberia_slug', safeSlug);
       } else if (safeBarberiaId > 0) {
@@ -1968,10 +2052,8 @@
       }
       url.searchParams.set('edit', '1');
       url.searchParams.set('mode', 'edit');
-      return url.toString();
-    } catch (_) {
-      return safeText(window.location.href);
-    }
+      history.replaceState({}, '', url.toString());
+    } catch (_) {}
   }
 
   function forceTemplatePathInUrl(rawUrl, templateLike) {
@@ -2023,6 +2105,7 @@
     const selectedTemplate = byId[selectedId] || templates[0];
     const payload = {
       barberia_id: identity.barberia_id,
+      site_base_url: getPublicSiteBase(),
       slug: identity.slug || data.biz_slug,
       direccion: normalizedAddress,
       address: normalizedAddress,
@@ -2142,6 +2225,34 @@
       ...publishedUrls,
       landing_publish: landingPublish
     };
+  }
+
+  function applyPublishIdentity(payload, barberiaId) {
+    const nextPayload = { ...payload, barberia_id: barberiaId };
+    if (nextPayload?.inherited && typeof nextPayload.inherited === 'object') {
+      nextPayload.inherited = { ...nextPayload.inherited, barberia_id: barberiaId };
+    }
+    if (nextPayload?.profile && typeof nextPayload.profile === 'object') {
+      nextPayload.profile = {
+        ...nextPayload.profile,
+        barberia_id: barberiaId,
+        id: barberiaId
+      };
+    }
+    if (nextPayload?.barberia && typeof nextPayload.barberia === 'object') {
+      nextPayload.barberia = {
+        ...nextPayload.barberia,
+        barberia_id: barberiaId,
+        id: barberiaId
+      };
+    }
+    if (nextPayload?.landing_publish && typeof nextPayload.landing_publish === 'object') {
+      nextPayload.landing_publish = {
+        ...nextPayload.landing_publish,
+        barberia_id: barberiaId
+      };
+    }
+    return nextPayload;
   }
 
   function ensureIdentityQueryInUrl(rawUrl, identity = {}) {
@@ -2342,6 +2453,11 @@
       return;
     }
 
+    await refreshCanonicalCollectionsBeforePublish({
+      ...identity,
+      barberia_id: barberiaId
+    });
+
     el.publish.disabled = true;
     const originalLabel = el.publish.querySelector('.ba-btn-label')?.textContent || 'Publicar';
     const labelNode = el.publish.querySelector('.ba-btn-label');
@@ -2349,10 +2465,11 @@
 
     try {
       const runPublishRpc = async (idToPublish) => {
+        const publishPayload = applyPublishIdentity(buildSavePayload(), idToPublish);
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ p_barberia_id: idToPublish })
+          body: JSON.stringify({ p_payload: publishPayload })
         });
         const rawText = await response.text().catch(() => '');
         let json = {};
@@ -2400,25 +2517,53 @@
 
       const rpcPayload = publishResult.rpcPayload;
 
-      const publicPath = safeText(rpcPayload?.public_path);
-      const qrPath = safeText(rpcPayload?.qr_path);
       const qrCode = safeText(rpcPayload?.qr_code);
       const publishedSlug = safeText(rpcPayload?.slug);
       const publishedBarberiaId = Number(rpcPayload?.barberia_id) || barberiaId;
-      if (!publicPath || !qrPath) {
-        throw new Error('La RPC no devolvió public_path/qr_path.');
+      if (!publishedSlug && !publishedBarberiaId) {
+        throw new Error('La RPC no devolvió identidad publicada (slug/barberia_id).');
       }
 
-      const siteBase = getPublicSiteBase();
-      const normalizedBase = safeText(siteBase).replace(/\/+$/, '');
-      if (!normalizedBase) {
-        throw new Error('No se pudo resolver BASE_URL para construir URL pública.');
+      const backendPublicUrl = safeText(
+        rpcPayload?.public_landing_url ||
+        rpcPayload?.landing_url ||
+        rpcPayload?.url_publica ||
+        rpcPayload?.public_url ||
+        rpcPayload?.public_path
+      );
+      const backendQrUrl = safeText(
+        rpcPayload?.qr_url ||
+        rpcPayload?.qr_image_url ||
+        rpcPayload?.qr_path
+      );
+
+      const builtUrls = buildPublishedLandingUrls({
+        slug: publishedSlug,
+        barberia_id: publishedBarberiaId
+      });
+      const toAbsoluteUrl = (rawValue) => {
+        const value = safeText(rawValue);
+        if (!value) return '';
+        if (/^https?:\/\//i.test(value)) return value;
+        const base = getPublicSiteBase() || window.location.origin;
+        if (!base) return value;
+        return `${base.replace(/\/+$/, '')}/${value.replace(/^\/+/, '')}`;
+      };
+
+      const publicUrl = toAbsoluteUrl(backendPublicUrl) || safeText(builtUrls?.public_landing_url);
+      if (!publicUrl) {
+        throw new Error('No se pudo construir la URL pública de la landing.');
       }
-      const publicUrl = `${normalizedBase}${publicPath.startsWith('/') ? publicPath : `/${publicPath}`}`;
-      const qrTargetUrl = `${normalizedBase}${qrPath.startsWith('/') ? qrPath : `/${qrPath}`}`;
-      const qrImageUrl = `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(qrTargetUrl)}`;
+      const qrTargetUrl = publicUrl;
+      const qrImageUrl =
+        toAbsoluteUrl(backendQrUrl) ||
+        `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(qrTargetUrl)}`;
 
       persistPublishedIdentityFromResponse({
+        barberia_id: publishedBarberiaId,
+        slug: publishedSlug
+      });
+      syncEditorIdentityInCurrentUrl({
         barberia_id: publishedBarberiaId,
         slug: publishedSlug
       });
@@ -2549,7 +2694,7 @@
     el.bizNameLabel.textContent = data.biz_name;
     el.bizSlug.textContent = data.biz_slug;
     
-    // Auto-ajuste de kicker si estÃ¡ vacÃ­o o es un valor por defecto
+    // Auto-ajuste de kicker si está vacío o es un valor por defecto
     const currentKicker = safeText(el.heroKicker.value).toLowerCase();
     if (!currentKicker || TEMPLATE_HERO_KICKER_VALUES.includes(currentKicker)) {
       const tplId = getSelectedId();

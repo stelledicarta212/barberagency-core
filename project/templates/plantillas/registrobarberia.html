@@ -59,6 +59,7 @@
     const DEFAULT_ONBOARDING_ENDPOINT_LEGACY = "https://barberagency-app.gymh5g.easypanel.host/api/onboarding/complete";
     const DEFAULT_POSTGREST_BASE = "https://api.agencia2c.cloud";
     const DEFAULT_CANONICAL_SYNC_RPC = "ba_sync_registro_collections";
+    const DEFAULT_CANONICAL_HOURS_SYNC_RPC = "ba_sync_registro_horarios";
     const API_URL =
       (window.BA_ONBOARDING_ENDPOINT && String(window.BA_ONBOARDING_ENDPOINT).trim()) ||
       DEFAULT_ONBOARDING_ENDPOINT;
@@ -70,6 +71,9 @@
     const CANONICAL_SYNC_RPC =
       (window.BA_CANONICAL_SYNC_RPC && String(window.BA_CANONICAL_SYNC_RPC).trim()) ||
       DEFAULT_CANONICAL_SYNC_RPC;
+    const CANONICAL_HOURS_SYNC_RPC =
+      (window.BA_CANONICAL_HOURS_SYNC_RPC && String(window.BA_CANONICAL_HOURS_SYNC_RPC).trim()) ||
+      DEFAULT_CANONICAL_HOURS_SYNC_RPC;
     const LANDING_BUILDER_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/landing_plantilla/";
     const STORAGE_KEY = "ba_wp_onboarding_v9";
     const LANDING_SEED_KEY = "ba_landing_seed";
@@ -1477,6 +1481,49 @@
       };
     }
 
+    function buildOnboardingRequestPayload(payload) {
+      const draftPayload = payload && payload.draft ? payload.draft : {};
+      const barberia = draftPayload.barberia || {};
+      const servicios = Array.isArray(draftPayload.servicios) ? draftPayload.servicios : [];
+      const horarios = Array.isArray(draftPayload.horarios) ? draftPayload.horarios : [];
+      const barberos = Array.isArray(draftPayload.barberos) ? draftPayload.barberos : [];
+      const accesos = draftPayload.accesos || {};
+      const admin = accesos.admin || {};
+      const barberosAcceso = Array.isArray(accesos.barberos) ? accesos.barberos : [];
+
+      // Compatibilidad: enviamos estructura moderna (draft) y espejo plano.
+      // Algunos workflows legacy de n8n leen campos en raiz.
+      return {
+        ...payload,
+        barberia: {
+          ...barberia,
+          nombre: clean(barberia.nombre),
+          slug: clean(barberia.slug),
+          telefono: clean(barberia.telefono),
+          direccion: clean(barberia.direccion),
+          ciudad: clean(barberia.ciudad),
+          timezone: clean(barberia.timezone) || "America/Bogota",
+          slot_min: Number(barberia.slot_min || 15)
+        },
+        nombre: clean(barberia.nombre),
+        slug: clean(barberia.slug),
+        telefono: clean(barberia.telefono),
+        direccion: clean(barberia.direccion),
+        ciudad: clean(barberia.ciudad),
+        timezone: clean(barberia.timezone) || "America/Bogota",
+        slot_min: Number(barberia.slot_min || 15),
+        servicios,
+        horarios,
+        barberos,
+        admin,
+        accesos: {
+          ...accesos,
+          admin,
+          barberos: barberosAcceso
+        }
+      };
+    }
+
     function getOnboardingEndpointCandidates() {
       const candidateList = [
         clean(window.BA_ONBOARDING_ENDPOINT),
@@ -1488,14 +1535,27 @@
       return Array.from(new Set(candidateList));
     }
 
+    function toPositiveInt(value) {
+      const num = Number(value);
+      return Number.isFinite(num) && num > 0 ? Math.trunc(num) : 0;
+    }
+
     function getCreatedBarberiaId(data) {
-      return (
-        Number(data?.barberia?.id) ||
-        Number(data?.barberia_id) ||
-        Number(data?.id_barberia) ||
-        Number(data?.id) ||
-        0
-      );
+      const candidates = [
+        data?.barberia?.id,
+        data?.barberia_id,
+        data?.id_barberia,
+        data?.barberia?.barberia_id,
+        data?.result?.barberia_id,
+        data?.result?.barberia?.id,
+        data?.payload?.barberia_id,
+        data?.seed?.barberia_id,
+        data?.seed?.barberia?.id,
+        data?.id
+      ]
+        .map((value) => toPositiveInt(value))
+        .filter(Boolean);
+      return candidates[0] || 0;
     }
 
     function normalizeServiceDraftRows(rows) {
@@ -1524,6 +1584,36 @@
         .filter((item) => item.nombre);
     }
 
+    function normalizeHoursDraftRows(rows) {
+      const list = Array.isArray(rows) ? rows : [];
+      const dayToIndex = {
+        domingo: 0,
+        lunes: 1,
+        martes: 2,
+        miercoles: 3,
+        jueves: 4,
+        viernes: 5,
+        sabado: 6
+      };
+
+      return list
+        .map((item) => {
+          const dia = clean(item?.dia || "").toLowerCase();
+          return {
+            dia_semana: dayToIndex[dia],
+            activo: Boolean(item?.activo),
+            hora_abre: clean(item?.hora_abre),
+            hora_cierra: clean(item?.hora_cierra)
+          };
+        })
+        .filter((item) => Number.isInteger(item.dia_semana))
+        .map((item) => ({
+          ...item,
+          hora_abre: item.hora_abre || "09:00",
+          hora_cierra: item.hora_cierra || "18:00"
+        }));
+    }
+
     async function postgrestFetch(path, options = {}) {
       const base = clean(POSTGREST_BASE).replace(/\/+$/, "");
       if (!base) throw new Error("No hay POSTGREST base configurado.");
@@ -1549,6 +1639,7 @@
       const barberos = normalizeBarberDraftRows(payload?.draft?.barberos).map((item) => ({
         nombre: item.nombre
       }));
+      const horarios = normalizeHoursDraftRows(payload?.draft?.horarios);
 
       const rpcName = clean(CANONICAL_SYNC_RPC);
       if (!rpcName) {
@@ -1583,6 +1674,72 @@
       if (rpcData && typeof rpcData === "object" && Object.prototype.hasOwnProperty.call(rpcData, "ok") && rpcData.ok !== true) {
         throw new Error("No se pudieron guardar servicios y barberos en la base de datos. Revisa permisos o RPC.");
       }
+
+      await assertCanonicalPersistence(barberiaId, servicios, barberos);
+      await syncCanonicalHours(barberiaId, horarios);
+    }
+
+    async function syncCanonicalHours(barberiaId, horarios) {
+      const activeHours = Array.isArray(horarios) ? horarios.filter((item) => item.activo) : [];
+      if (!activeHours.length) return;
+
+      const rpcName = clean(CANONICAL_HOURS_SYNC_RPC);
+      if (!rpcName) {
+        throw new Error("No hay RPC configurada para sincronizar horarios.");
+      }
+
+      const response = await postgrestFetch(`/rpc/${rpcName}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          p_barberia_id: barberiaId,
+          p_horarios: activeHours
+        })
+      });
+
+      const rpcData = await response.json().catch(() => ({}));
+      if (rpcData && typeof rpcData === "object" && rpcData.ok === false) {
+        throw new Error(
+          clean(rpcData.error || rpcData.message) ||
+          "No se pudieron guardar horarios en la base de datos."
+        );
+      }
+    }
+
+    async function fetchActiveCount(table, barberiaId) {
+      const encodedId = encodeURIComponent(`eq.${barberiaId}`);
+      const response = await postgrestFetch(`/${table}?barberia_id=${encodedId}&activo=eq.true&select=id`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        }
+      });
+      const rows = await response.json().catch(() => []);
+      return Array.isArray(rows) ? rows.length : 0;
+    }
+
+    async function assertCanonicalPersistence(barberiaId, servicios, barberos) {
+      const expectedServices = Array.isArray(servicios) ? servicios.length : 0;
+      const expectedBarbers = Array.isArray(barberos) ? barberos.length : 0;
+
+      const serviceCount = await fetchActiveCount("servicios", barberiaId);
+      if (expectedServices > 0 && serviceCount <= 0) {
+        throw new Error(
+          `Persistencia incompleta: servicios activos en BD = 0 para barberia_id=${barberiaId}.`
+        );
+      }
+
+      if (expectedBarbers > 0) {
+        const barberCount = await fetchActiveCount("barberos", barberiaId);
+        if (barberCount <= 0) {
+          throw new Error(
+            `Persistencia incompleta: barberos activos en BD = 0 para barberia_id=${barberiaId}.`
+          );
+        }
+      }
     }
 
     function isPostgrestPermissionError(error) {
@@ -1597,6 +1754,7 @@
     async function postOnboardingPayload(payload) {
       const endpoints = getOnboardingEndpointCandidates();
       let lastError = null;
+      const requestPayload = buildOnboardingRequestPayload(payload);
 
       for (const endpoint of endpoints) {
         try {
@@ -1605,7 +1763,7 @@
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(requestPayload)
           });
 
           const data = await response.json().catch(() => ({}));

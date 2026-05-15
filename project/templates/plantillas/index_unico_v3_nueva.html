@@ -893,7 +893,12 @@ function normalizeDayLabel(value) {
       const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
         ? `https://quickchart.io/qr?size=320&margin=2&text=`
         : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
+      const queryId =
+        Number(params.get('barberia_id')) ||
+        Number(params.get('id_barberia')) ||
+        0;
       const value =
+        queryId ||
         Number(runtimeLandingState.barberia_id) ||
         Number(runtimeLandingState.profile?.barberia_id) ||
         Number(runtimeLandingState.profile?.id) ||
@@ -903,8 +908,6 @@ function normalizeDayLabel(value) {
         Number(landingSeed?.id_barberia) ||
         Number(landingSeed?.id) ||
         Number(landingSeed?.barberia?.id) ||
-        Number(params.get('barberia_id')) ||
-        Number(params.get('id_barberia')) ||
         Number(window.BA_BARBERIA_ID) ||
         0;
       return Number.isInteger(value) && value > 0 ? value : 0;
@@ -1123,10 +1126,11 @@ function normalizeDayLabel(value) {
     function getLandingSlug() {
       const params = getLandingUrlParams();
       const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
-        ? `https://quickchart.io/qr?size=320&margin=2&text=`
+        ? `https://quickchart.io/qr?size=320&margin=2&text=` 
         : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
+      const querySlug = safeSeedText(params.get('slug') || params.get('barberia_slug') || params.get('business_slug'));
+      if (querySlug) return querySlug;
       return safeSeedText(
-        params.get('slug') ||
         landingSeed?.slug ||
         landingSeed?.barberia?.slug ||
         landingSeed?.inherited?.slug
@@ -1184,7 +1188,7 @@ function normalizeDayLabel(value) {
       if (reservationUrl) return reservationUrl;
       const slug = getLandingSlug();
       if (slug) {
-        return `${getLandingSiteBaseUrl()}${getCurrentLandingPublicPath()}/?slug=${encodeURIComponent(slug)}#reservas`;
+        return `${getLandingSiteBaseUrl()}/b/${encodeURIComponent(slug)}#reservas`;
       }
       try {
         const url = new URL(window.location.href);
@@ -1211,9 +1215,16 @@ function normalizeDayLabel(value) {
       qrImage.src = qrImageUrl;
       qrLink.href = targetUrl;
       qrLink.textContent = 'Reserva Aquí';
+      document.querySelectorAll('a[href="#reservas"], a[href$="#reservas"]').forEach((link) => {
+        link.href = targetUrl;
+      });
     }
 
     function readLandingSeed() {
+      if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || ''))) {
+        return null;
+      }
+
       const parseRaw = (raw) => {
         if (!raw) return null;
         try {
@@ -1353,6 +1364,10 @@ function normalizeDayLabel(value) {
   </script>
 </body>
 </html>
+
+
+
+
 
 
 

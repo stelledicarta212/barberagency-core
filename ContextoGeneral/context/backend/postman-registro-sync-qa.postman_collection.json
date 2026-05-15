@@ -1,0 +1,168 @@
+{
+  "info": {
+    "_postman_id": "b3a7f2e8-6f5d-4fb6-a8f8-4baf65f08f22",
+    "name": "BarberAgency - Registro Sync QA",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1) Onboarding - Registro Barberia",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{ONBOARDING_URL}}",
+          "host": ["{{ONBOARDING_URL}}"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"draft\": {\n    \"barberia\": {\n      \"nombre\": \"Barberia QA 117\",\n      \"slug\": \"barberia-qa-117\",\n      \"telefono\": \"3001234567\",\n      \"direccion\": \"Calle QA #117\",\n      \"ciudad\": \"Bogota\",\n      \"timezone\": \"America/Bogota\",\n      \"slot_min\": 15\n    },\n    \"servicios\": [\n      { \"nombre\": \"barba\", \"duracion_min\": 30, \"precio\": 10000 },\n      { \"nombre\": \"afeitado\", \"duracion_min\": 30, \"precio\": 12000 },\n      { \"nombre\": \"corte\", \"duracion_min\": 45, \"precio\": 20000 }\n    ],\n    \"barberos\": [\n      { \"nombre\": \"barber61\" },\n      { \"nombre\": \"berber61\" }\n    ],\n    \"horarios\": [\n      { \"dia\": \"lunes\", \"activo\": true, \"hora_abre\": \"08:00\", \"hora_cierra\": \"18:00\" }\n    ],\n    \"accesos\": {\n      \"admin\": {\n        \"nombre\": \"Admin QA\",\n        \"email\": \"admin.qa117@example.com\",\n        \"password\": \"Qa123456\"\n      },\n      \"barberos\": []\n    }\n  }\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 2xx', function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+              "let json = {}; try { json = pm.response.json(); } catch(e) {}",
+              "const id = (json?.barberia?.id || json?.barberia_id || json?.id_barberia || json?.id || 0);",
+              "if (id > 0) { pm.collectionVariables.set('BARBERIA_ID', String(id)); }",
+              "pm.test('barberia_id disponible', function () { pm.expect(Number(pm.collectionVariables.get('BARBERIA_ID') || 0)).to.be.above(0); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2) RPC - ba_sync_registro_collections",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "apikey", "value": "{{SUPABASE_KEY}}" },
+          { "key": "Authorization", "value": "Bearer {{SUPABASE_KEY}}" }
+        ],
+        "url": {
+          "raw": "{{POSTGREST_BASE}}/rpc/ba_sync_registro_collections",
+          "host": ["{{POSTGREST_BASE}}"],
+          "path": ["rpc", "ba_sync_registro_collections"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"p_barberia_id\": {{BARBERIA_ID}},\n  \"p_servicios\": [\n    { \"nombre\": \"barba\", \"duracion_min\": 30, \"precio\": 10000 },\n    { \"nombre\": \"afeitado\", \"duracion_min\": 30, \"precio\": 12000 },\n    { \"nombre\": \"corte\", \"duracion_min\": 45, \"precio\": 20000 }\n  ],\n  \"p_barberos\": [\n    { \"nombre\": \"barber61\" },\n    { \"nombre\": \"berber61\" }\n  ]\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 2xx', function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+              "let json = null; try { json = pm.response.json(); } catch(e) {}",
+              "if (json && typeof json === 'object' && Object.prototype.hasOwnProperty.call(json, 'ok')) {",
+              "  pm.test('RPC ok=true', function () { pm.expect(json.ok).to.eql(true); });",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3) Verificar servicios activos",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "apikey", "value": "{{SUPABASE_KEY}}" },
+          { "key": "Authorization", "value": "Bearer {{SUPABASE_KEY}}" }
+        ],
+        "url": {
+          "raw": "{{POSTGREST_BASE}}/servicios?barberia_id=eq.{{BARBERIA_ID}}&activo=eq.true&select=id,barberia_id,nombre,duracion_min,precio,activo",
+          "host": ["{{POSTGREST_BASE}}"],
+          "path": ["servicios"],
+          "query": [
+            { "key": "barberia_id", "value": "eq.{{BARBERIA_ID}}" },
+            { "key": "activo", "value": "eq.true" },
+            { "key": "select", "value": "id,barberia_id,nombre,duracion_min,precio,activo" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+              "const rows = pm.response.json();",
+              "pm.test('Servicios > 0', function () { pm.expect(Array.isArray(rows) ? rows.length : 0).to.be.above(0); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4) Verificar barberos activos",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "apikey", "value": "{{SUPABASE_KEY}}" },
+          { "key": "Authorization", "value": "Bearer {{SUPABASE_KEY}}" }
+        ],
+        "url": {
+          "raw": "{{POSTGREST_BASE}}/barberos?barberia_id=eq.{{BARBERIA_ID}}&activo=eq.true&select=id,barberia_id,nombre,activo",
+          "host": ["{{POSTGREST_BASE}}"],
+          "path": ["barberos"],
+          "query": [
+            { "key": "barberia_id", "value": "eq.{{BARBERIA_ID}}" },
+            { "key": "activo", "value": "eq.true" },
+            { "key": "select", "value": "id,barberia_id,nombre,activo" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () { pm.expect(pm.response.code).to.eql(200); });",
+              "const rows = pm.response.json();",
+              "pm.test('Barberos > 0', function () { pm.expect(Array.isArray(rows) ? rows.length : 0).to.be.above(0); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5) Probar publicacion",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "apikey", "value": "{{SUPABASE_KEY}}" },
+          { "key": "Authorization", "value": "Bearer {{SUPABASE_KEY}}" }
+        ],
+        "url": {
+          "raw": "{{POSTGREST_BASE}}/rpc/ba_publicar_barberia",
+          "host": ["{{POSTGREST_BASE}}"],
+          "path": ["rpc", "ba_publicar_barberia"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"p_barberia_id\": {{BARBERIA_ID}}\n}"
+        }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "ONBOARDING_URL", "value": "https://barberagency-n8n.gymh5g.easypanel.host/webhook/registro-barberia" },
+    { "key": "POSTGREST_BASE", "value": "https://api.agencia2c.cloud" },
+    { "key": "SUPABASE_KEY", "value": "" },
+    { "key": "BARBERIA_ID", "value": "117" }
+  ]
+}

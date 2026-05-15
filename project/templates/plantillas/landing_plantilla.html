@@ -52,8 +52,39 @@
   ];
 
   const cardsEl = document.getElementById('cards');
+  const currentParams = new URLSearchParams(window.location.search || '');
+
+  function buildEditorHref(templateId) {
+    const params = new URLSearchParams(currentParams);
+    params.set('tpl', templateId);
+
+    const slug =
+      params.get('slug') ||
+      params.get('barberia_slug') ||
+      params.get('business_slug') ||
+      '';
+
+    if (slug) {
+      params.set('slug', slug);
+      params.set('barberia_slug', slug);
+    }
+
+    if (
+      params.get('edit') === '1' ||
+      params.get('modo') === 'editar' ||
+      params.get('mode') === 'edit' ||
+      params.get('is_edit') === '1' ||
+      params.get('editing') === '1'
+    ) {
+      params.set('edit', '1');
+      params.set('mode', 'edit');
+    }
+
+    return EDITOR_URL + '?' + params.toString();
+  }
+
   cardsEl.innerHTML = templates.map(t =>
-    '<a class="card" href="'+EDITOR_URL+'?tpl='+encodeURIComponent(t.id)+'" target="_top" data-id="'+t.id+'">'+
+    '<a class="card" href="'+buildEditorHref(t.id)+'" target="_top" data-id="'+t.id+'">'+
       '<div class="cover" style="background-image:url(\''+t.cover+'\')"></div>'+
       '<div class="body"><h3 class="name">'+t.name+'</h3><p class="desc">'+t.subtitle+'</p></div>'+
     '</a>'
