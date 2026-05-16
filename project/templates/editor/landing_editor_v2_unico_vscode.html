@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet"
- href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=125">
+ href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=126">
 
 <style>
   #ba-editor-v2[data-ui-theme='dark'] {
@@ -406,6 +406,17 @@
       <h2 class="ba-publish-welcome-title" id="baPublishWelcomeTitle">Hola!</h2>
       <p class="ba-publish-welcome-copy">Gracias, tu landing ya fue creada.</p>
       <div class="ba-publish-welcome-actions">
+        <a
+          id="btn-ver-landing"
+          href="#"
+          target="_blank"
+          class="ba-btn"
+          aria-label="Ver landing publicada"
+          title="Ver landing publicada"
+        >
+          <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"></path></svg>
+          <span class="ba-btn-label">Ver landing publicada</span>
+        </a>
         <button
           type="button"
           class="ba-btn"
@@ -734,6 +745,7 @@
   const publishWelcomeOverlay = document.getElementById('baPublishWelcomeOverlay');
   const publishWelcomeTitle = document.getElementById('baPublishWelcomeTitle');
   const publishWelcomeClose = document.getElementById('baPublishWelcomeClose');
+  const publishWelcomeLandingBtn = document.getElementById('btn-ver-landing');
   const themeDockBtn = document.getElementById('baThemeToggleBtn');
   const themeDockIcon = document.getElementById('baThemeDockIcon');
 
@@ -752,6 +764,7 @@
   const tempBlob = { logo: '', cover: '' };
   const runtimePreview = { logo: '', cover: '' };
   const runtimePublishData = { public_landing_url: '', qr_url: '', reservation_url: '' };
+  const currentPublishResult = { public_landing_url: '', qr_url: '', reservation_url: '' };
   const paletteByTemplate = {};
   let paletteTouched = false;
   const FONT_PRESETS = {
@@ -1696,14 +1709,23 @@
   }
 
   function getPublishedLandingUrlValue() {
-    return safeText(
-      runtimePublishData.public_landing_url ||
-      seedLandingData?.public_landing_url ||
-      seedLandingData?.landing_url ||
-      seedLandingData?.url_publica ||
-      seedLandingData?.url_public_landing ||
-      seedLandingData?.barberia?.public_landing_url
-    );
+    return safeText(currentPublishResult.public_landing_url);
+  }
+
+  function refreshPublishedLandingButton() {
+    if (!publishWelcomeLandingBtn) return;
+    const publishedUrl = getPublishedLandingUrlValue();
+    if (publishedUrl) {
+      publishWelcomeLandingBtn.href = publishedUrl;
+      publishWelcomeLandingBtn.target = '_blank';
+      publishWelcomeLandingBtn.rel = 'noopener';
+      publishWelcomeLandingBtn.removeAttribute('aria-disabled');
+      publishWelcomeLandingBtn.title = 'Ver landing publicada';
+      return;
+    }
+    publishWelcomeLandingBtn.href = '#';
+    publishWelcomeLandingBtn.setAttribute('aria-disabled', 'true');
+    publishWelcomeLandingBtn.title = 'Publica primero para ver la landing';
   }
 
   async function resolveBarberiaIdFromPublicProfile(identity = {}) {
@@ -1753,6 +1775,7 @@
     if (!force && !hasPublishedUrl) return;
     const displayName = getWelcomeDisplayName();
     if (publishWelcomeTitle) publishWelcomeTitle.textContent = `Hola, ${displayName}!`;
+    refreshPublishedLandingButton();
     publishWelcomeOverlay.classList.add('is-open');
     publishWelcomeOverlay.setAttribute('aria-hidden', 'false');
     document.body.classList.add('ba-publish-welcome-open');
@@ -2532,10 +2555,6 @@
         rpcPayload?.qr_path
       );
 
-      const builtUrls = buildPublishedLandingUrls({
-        slug: publishedSlug,
-        barberia_id: publishedBarberiaId
-      });
       const toAbsoluteUrl = (rawValue) => {
         const value = safeText(rawValue);
         if (!value) return '';
@@ -2545,9 +2564,9 @@
         return `${base.replace(/\/+$/, '')}/${value.replace(/^\/+/, '')}`;
       };
 
-      const publicUrl = toAbsoluteUrl(backendPublicUrl) || safeText(builtUrls?.public_landing_url);
+      const publicUrl = toAbsoluteUrl(backendPublicUrl);
       if (!publicUrl) {
-        throw new Error('No se pudo construir la URL pública de la landing.');
+        throw new Error('La RPC no devolvio public_landing_url confirmada para esta publicacion.');
       }
       const qrTargetUrl = publicUrl;
       const qrImageUrl =
@@ -2566,19 +2585,19 @@
       runtimePublishData.public_landing_url = publicUrl;
       runtimePublishData.reservation_url = withReservationHash(publicUrl);
       runtimePublishData.qr_url = qrImageUrl;
+      currentPublishResult.public_landing_url = publicUrl;
+      currentPublishResult.reservation_url = withReservationHash(publicUrl);
+      currentPublishResult.qr_url = qrImageUrl;
       if (qrCode) {
         seedLandingData.qr_url = qrTargetUrl;
       }
       refreshDashboardButtonState();
+      refreshPublishedLandingButton();
       setSafeStorage(localStorage, STORAGE_PUBLISH_WELCOME_SEEN, '0');
       showPublishWelcomeOverlay({ force: true });
 
       saveDraft();
       updatePreview();
-      alert('Landing publicada con BD como fuente de verdad.');
-      // Salir a la URL canonica real evita que la vista previa embebida quede
-      // atrapada en una resolucion de WordPress distinta a la ruta publica.
-      window.location.assign(runtimePublishData.public_landing_url);
     } catch (error) {
       console.error('Error públicando landing:', error);
       alert(`No se pudo publicar: ${error?.message || 'error desconocido'}`);
@@ -4276,9 +4295,16 @@
     }
 
     if (publishWelcomeOverlay) {
+      refreshPublishedLandingButton();
       publishWelcomeOverlay.addEventListener('click', (e) => {
         if (e.target === publishWelcomeOverlay || e.target === publishWelcomeClose) {
           closePublishWelcomeOverlay(true);
+        }
+      });
+      publishWelcomeLandingBtn?.addEventListener('click', (e) => {
+        if (!getPublishedLandingUrlValue()) {
+          e.preventDefault();
+          alert('Todavía no hay una URL pública disponible.');
         }
       });
       const shouldShowWelcome =

@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: BarberAgency Public Router v4.1
+ * Plugin Name: BarberAgency Public Router v5
  * Description: Resuelve landings publicas canonicas en /b/{slug} usando la fuente publica publicada.
- * Version: 0.4.1
+ * Version: 0.5.0
  * Author: BarberAgency
  */
 
@@ -17,7 +17,8 @@ final class BarberAgency_Public_Router {
     public static function init(): void {
         add_action('init', [self::class, 'register_rewrite_rule']);
         add_filter('query_vars', [self::class, 'register_query_var']);
-        add_action('template_redirect', [self::class, 'maybe_render_public_landing']);
+        add_filter('redirect_canonical', [self::class, 'disable_canonical_redirect_for_public_landing'], 10, 2);
+        add_action('template_redirect', [self::class, 'maybe_render_public_landing'], 0);
     }
 
     public static function activate(): void {
@@ -40,6 +41,14 @@ final class BarberAgency_Public_Router {
     public static function register_query_var(array $vars): array {
         $vars[] = self::QUERY_VAR;
         return $vars;
+    }
+
+    public static function disable_canonical_redirect_for_public_landing($redirect_url, string $requested_url) {
+        if (self::get_requested_slug() !== '') {
+            return false;
+        }
+
+        return $redirect_url;
     }
 
     public static function maybe_render_public_landing(): void {
