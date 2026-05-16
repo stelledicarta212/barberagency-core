@@ -1295,6 +1295,12 @@ reservationForm.addEventListener('submit', async (event) => {
     }
 
     async function hydrateLandingFromPublicEndpoint() {
+      if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || '')) &&
+          window.BA_LANDING_ROUTE_CONTEXT &&
+          typeof window.BA_LANDING_ROUTE_CONTEXT === 'object') {
+        renderLandingQr();
+        return;
+      }
       const slug = getLandingSlug();
       const barberiaId = getCurrentBarberiaId();
       const endpoint = getPublicProfileEndpoint();
@@ -1347,6 +1353,8 @@ reservationForm.addEventListener('submit', async (event) => {
         : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       const querySlug = safeSeedText(params.get('slug') || params.get('barberia_slug') || params.get('business_slug'));
       if (querySlug) return querySlug;
+      const pathMatch = String(window.location?.pathname || '').match(/^\/b\/([^/]+)\/?$/i);
+      if (pathMatch?.[1]) return safeSeedText(decodeURIComponent(pathMatch[1]));
       return safeSeedText(
         landingSeed?.slug ||
         landingSeed?.barberia?.slug ||
@@ -1439,7 +1447,9 @@ reservationForm.addEventListener('submit', async (event) => {
 
     function readLandingSeed() {
       if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || ''))) {
-        return null;
+        return window.BA_LANDING_ROUTE_CONTEXT && typeof window.BA_LANDING_ROUTE_CONTEXT === 'object'
+          ? window.BA_LANDING_ROUTE_CONTEXT
+          : null;
       }
 
       const parseRaw = (raw) => {

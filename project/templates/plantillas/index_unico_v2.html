@@ -1113,6 +1113,12 @@
     }
 
     async function hydrateLandingFromPublicEndpoint() {
+      if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || '')) &&
+          window.BA_LANDING_ROUTE_CONTEXT &&
+          typeof window.BA_LANDING_ROUTE_CONTEXT === 'object') {
+        renderLandingQr();
+        return;
+      }
       const slug = getLandingSlug();
       const barberiaId = getCurrentBarberiaId();
       const endpoint = getPublicProfileEndpoint();
@@ -1162,6 +1168,8 @@
         : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       const querySlug = safeSeedText(params.get('slug') || params.get('barberia_slug') || params.get('business_slug'));
       if (querySlug) return querySlug;
+      const pathMatch = String(window.location?.pathname || '').match(/^\/b\/([^/]+)\/?$/i);
+      if (pathMatch?.[1]) return safeSeedText(decodeURIComponent(pathMatch[1]));
       return safeSeedText(
         landingSeed?.slug ||
         landingSeed?.barberia?.slug ||
@@ -1254,7 +1262,9 @@
 
     function readLandingSeed() {
       if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || ''))) {
-        return null;
+        return window.BA_LANDING_ROUTE_CONTEXT && typeof window.BA_LANDING_ROUTE_CONTEXT === 'object'
+          ? window.BA_LANDING_ROUTE_CONTEXT
+          : null;
       }
 
       const parseRaw = (raw) => {
@@ -1269,6 +1279,25 @@
       return parseRaw(sessionStorage.getItem('ba_landing_seed')) ||
         parseRaw(localStorage.getItem('ba_landing_seed')) ||
         null;
+    }
+
+    function hydrateCanonicalRouteContextIfReady() {
+      if (!/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || ''))) return false;
+      const routeContext = window.BA_LANDING_ROUTE_CONTEXT;
+      if (!routeContext || typeof routeContext !== 'object') return false;
+
+      applyInheritedCollections(
+        routeContext.servicios,
+        routeContext.barberos,
+        routeContext.horarios,
+        routeContext.slot_min || routeContext.barberia?.slot_min
+      );
+      applyPublicLandingBranding({
+        profile: routeContext.barberia || routeContext,
+        branding: routeContext.branding || {}
+      });
+      renderLandingQr();
+      return true;
     }
 
     function toSeedNumber(value, fallback) {
@@ -1342,10 +1371,38 @@
       if (typeof populateSelects === 'function') populateSelects();
     }
 
+    function applyBrandingPalette(payload) {
+      if (!html || !payload || !payload.use_custom_palette) return;
+      const primary = safeSeedText(payload.palette_primary || payload.primary);
+      const secondary = safeSeedText(payload.palette_secondary || payload.secondary);
+      const accent = safeSeedText(payload.palette_accent || payload.accent);
+      const text = safeSeedText(payload.palette_text || payload.text);
+
+      if (primary) {
+        html.style.setProperty('--blue', primary);
+        html.style.setProperty('--blue-2', primary);
+        html.style.setProperty('--main', primary);
+      }
+      if (secondary) {
+        html.style.setProperty('--red', secondary);
+        html.style.setProperty('--red-2', secondary);
+        html.style.setProperty('--alt', secondary);
+        html.style.setProperty('--main2', secondary);
+      }
+      if (accent) {
+        html.style.setProperty('--accent', accent);
+        html.style.setProperty('--hot', accent);
+      }
+      if (text) html.style.setProperty('--text', text);
+    }
+
     const landingSeed = readLandingSeed();
     applyInheritedCollections(landingSeed?.servicios, landingSeed?.barberos, landingSeed?.horarios, landingSeed?.slot_min || landingSeed?.barberia?.slot_min);
     applyPublicLandingBranding({ profile: landingSeed?.barberia || landingSeed || {}, branding: landingSeed?.branding || {} });
     hydrateLandingFromPublicEndpoint();
+    if (!hydrateCanonicalRouteContextIfReady()) {
+      window.addEventListener('load', () => hydrateCanonicalRouteContextIfReady(), { once: true });
+    }
 
     window.addEventListener('message', (ev) => {
       const data = ev?.data || {};

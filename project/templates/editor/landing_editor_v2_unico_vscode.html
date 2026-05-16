@@ -2453,11 +2453,6 @@
       return;
     }
 
-    await refreshCanonicalCollectionsBeforePublish({
-      ...identity,
-      barberia_id: barberiaId
-    });
-
     el.publish.disabled = true;
     const originalLabel = el.publish.querySelector('.ba-btn-label')?.textContent || 'Publicar';
     const labelNode = el.publish.querySelector('.ba-btn-label');
@@ -2580,8 +2575,10 @@
 
       saveDraft();
       updatePreview();
-      openPublishedLandingPreview(runtimePublishData.public_landing_url);
       alert('Landing publicada con BD como fuente de verdad.');
+      // Salir a la URL canonica real evita que la vista previa embebida quede
+      // atrapada en una resolucion de WordPress distinta a la ruta publica.
+      window.location.assign(runtimePublishData.public_landing_url);
     } catch (error) {
       console.error('Error públicando landing:', error);
       alert(`No se pudo publicar: ${error?.message || 'error desconocido'}`);

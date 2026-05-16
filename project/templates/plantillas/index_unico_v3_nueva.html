@@ -978,7 +978,14 @@ function normalizeDayLabel(value) {
     function applyPublicLandingBranding(payload = {}) {
       const profile = payload.profile || payload.barberia || {};
       const branding = payload.branding || payload.config || {};
-      const publicName = safeSeedText(profile.nombre_publico || profile.nombre || branding.biz_name);
+      const publicName = safeSeedText(
+        payload?.perfil_publico?.nombre_publico ||
+        payload?.nombre_publico ||
+        payload?.barberia?.nombre_publico ||
+        profile.nombre_publico ||
+        profile.nombre ||
+        branding.biz_name
+      );
       const logoUrl = safeSeedText(profile.logo_url || branding.logo_url);
       const coverUrl = safeSeedText(profile.cover_url || branding.cover_url || branding.hero_image_url);
       const logoWidth = Number(branding.logo_width || 0) || 0;
@@ -1078,6 +1085,12 @@ function normalizeDayLabel(value) {
     }
 
     async function hydrateLandingFromPublicEndpoint() {
+      if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || '')) &&
+          window.BA_LANDING_ROUTE_CONTEXT &&
+          typeof window.BA_LANDING_ROUTE_CONTEXT === 'object') {
+        renderLandingQr();
+        return;
+      }
       const slug = getLandingSlug();
       const barberiaId = getCurrentBarberiaId();
       const endpoint = getPublicProfileEndpoint();
@@ -1130,6 +1143,8 @@ function normalizeDayLabel(value) {
         : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       const querySlug = safeSeedText(params.get('slug') || params.get('barberia_slug') || params.get('business_slug'));
       if (querySlug) return querySlug;
+      const pathMatch = String(window.location?.pathname || '').match(/^\/b\/([^/]+)\/?$/i);
+      if (pathMatch?.[1]) return safeSeedText(decodeURIComponent(pathMatch[1]));
       return safeSeedText(
         landingSeed?.slug ||
         landingSeed?.barberia?.slug ||
@@ -1222,7 +1237,9 @@ function normalizeDayLabel(value) {
 
     function readLandingSeed() {
       if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || ''))) {
-        return null;
+        return window.BA_LANDING_ROUTE_CONTEXT && typeof window.BA_LANDING_ROUTE_CONTEXT === 'object'
+          ? window.BA_LANDING_ROUTE_CONTEXT
+          : null;
       }
 
       const parseRaw = (raw) => {
@@ -1237,6 +1254,25 @@ function normalizeDayLabel(value) {
       return parseRaw(sessionStorage.getItem('ba_landing_seed')) ||
         parseRaw(localStorage.getItem('ba_landing_seed')) ||
         null;
+    }
+
+    function hydrateCanonicalRouteContextIfReady() {
+      if (!/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || ''))) return false;
+      const routeContext = window.BA_LANDING_ROUTE_CONTEXT;
+      if (!routeContext || typeof routeContext !== 'object') return false;
+
+      applyInheritedCollections(
+        routeContext.servicios,
+        routeContext.barberos,
+        routeContext.horarios,
+        routeContext.slot_min || routeContext.barberia?.slot_min
+      );
+      applyPublicLandingBranding({
+        profile: routeContext.barberia || routeContext,
+        branding: routeContext.branding || {}
+      });
+      renderLandingQr();
+      return true;
     }
 
     function toSeedNumber(value, fallback) {
@@ -1328,6 +1364,9 @@ function normalizeDayLabel(value) {
     applyInheritedCollections(landingSeed?.servicios, landingSeed?.barberos, landingSeed?.horarios, landingSeed?.slot_min || landingSeed?.barberia?.slot_min);
     applyPublicLandingBranding({ profile: landingSeed?.barberia || landingSeed || {}, branding: landingSeed?.branding || {} });
     hydrateLandingFromPublicEndpoint();
+    if (!hydrateCanonicalRouteContextIfReady()) {
+      window.addEventListener('load', () => hydrateCanonicalRouteContextIfReady(), { once: true });
+    }
 
     window.addEventListener('message', (ev) => {
       const data = ev?.data || {};
