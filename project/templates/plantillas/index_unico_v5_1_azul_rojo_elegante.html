@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8" />
@@ -69,18 +69,46 @@
     #landingRoot h3,
     #landingRoot .brand { font-family: 'Rajdhani', sans-serif; letter-spacing: .5px; }
 
+    /* --- NUEVA BARRA DE NAVEGACIÓN FLOTANTE PREMIUM CON EFECTO VIDRIO --- */
     .topnav {
-      backdrop-filter: blur(9px);
-      background: var(--nav);
-      border-bottom: 1px solid var(--border);
+      position: fixed !important;
+      top: 15px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      margin: 0 !important;
+      width: 92% !important;
+      max-width: 1200px !important;
+      border-radius: 30px !important;
+      background: rgba(255, 255, 255, 0.45) !important;
+      backdrop-filter: blur(16px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      box-shadow: 0 12px 32px rgba(31, 38, 135, 0.08) !important;
+      z-index: 1040 !important;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      padding: 10px 24px !important;
     }
 
-    .navbar .nav-link, .navbar .navbar-brand { color: var(--text); }
+    #landingRoot[data-theme='dark'] .topnav {
+      background: rgba(26, 30, 42, 0.55) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .navbar .navbar-brand { color: #000000 !important; }
+    #landingRoot[data-theme='dark'] .navbar .navbar-brand { color: var(--text) !important; }
 
     .navbar-brand.brand {
       display: inline-flex;
       align-items: center;
       gap: 0.75rem;
+      font-weight: 700 !important;
+      color: #000000 !important;
+      font-size: 1.35rem !important;
+      transition: all 0.3s ease !important;
+    }
+    #landingRoot[data-theme='dark'] .navbar-brand.brand {
+      color: var(--text) !important;
     }
 
     .navbar-brand.brand img {
@@ -91,6 +119,72 @@
       border-radius: 10px;
       border: 2px solid color-mix(in srgb, var(--blue) 35%, white);
       box-shadow: 0 8px 18px rgba(39, 71, 143, 0.18);
+    }
+
+    .navbar-nav .nav-link {
+      color: #000000 !important;
+      font-weight: 600 !important;
+      font-size: 0.92rem !important;
+      padding: 6px 16px !important;
+      border-radius: 99px !important;
+      transition: all 0.3s ease !important;
+    }
+    #landingRoot[data-theme='dark'] .navbar-nav .nav-link {
+      color: var(--text) !important;
+    }
+
+    .navbar-nav .nav-link:hover {
+      background: rgba(39, 71, 143, 0.08) !important;
+      color: var(--blue) !important;
+    }
+
+    #landingRoot[data-theme='dark'] .navbar-nav .nav-link:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+      color: var(--blue) !important;
+    }
+
+    /* --- BOTÓN HAMBURGUESA ANIMADO EN CSS --- */
+    .custom-toggler {
+      border: none !important;
+      background: transparent !important;
+      padding: 6px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      width: 24px !important;
+      height: 18px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .custom-toggler:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .custom-toggler .toggler-bar {
+      display: block !important;
+      width: 100% !important;
+      height: 2px !important;
+      background-color: #000000 !important;
+      border-radius: 4px !important;
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease !important;
+    }
+    #landingRoot[data-theme='dark'] .custom-toggler .toggler-bar {
+      background-color: var(--text) !important;
+    }
+
+    .custom-toggler:not(.collapsed) .top-bar {
+      transform: translateY(8px) rotate(45deg) !important;
+    }
+
+    .custom-toggler:not(.collapsed) .middle-bar {
+      opacity: 0 !important;
+      transform: scaleX(0) !important;
+    }
+
+    .custom-toggler:not(.collapsed) .bottom-bar {
+      transform: translateY(-8px) rotate(-45deg) !important;
     }
 
     #landingRoot ~ #themeToggle,
@@ -227,7 +321,17 @@
     .section-soft { background: color-mix(in srgb, var(--surface) 68%, transparent); }
 
     .service-card, .barber-card { padding: 1.2rem; height: 100%; }
-    .service-visual { display: none; }
+    .service-visual {
+      display: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .service-visual img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
     .service-badge { display: none; }
     .service-copy { padding: 0; }
     .service-meta {
@@ -240,7 +344,6 @@
       gap: .35rem;
     }
 
-    .mobile-reserve,
     .mobile-slot-strip,
     .mobile-dock {
       display: none;
@@ -455,67 +558,125 @@
       .container { padding-left: 18px; padding-right: 18px; }
 
       .topnav {
-        margin: 10px 12px 0;
-        border-radius: 18px;
-        border: 1px solid var(--mobile-border);
-        background: rgba(11, 15, 24, 0.78);
-        box-shadow: 0 16px 28px rgba(0, 0, 0, 0.35);
+        position: fixed !important;
+        top: 12px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        width: calc(100% - 24px) !important;
+        border-radius: 20px !important;
+        background: rgba(255, 255, 255, 0.7) !important;
+        backdrop-filter: blur(16px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+        border: 1px solid rgba(15, 23, 32, 0.12) !important;
+        box-shadow: 0 12px 30px rgba(15, 23, 32, 0.08) !important;
+        padding: 8px 16px !important;
+      }
+
+      .topnav:has(.navbar-collapse.show) {
+        border-radius: 24px !important;
+        background: rgba(255, 255, 255, 0.94) !important;
+        backdrop-filter: blur(20px) !important;
+      }
+
+      #landingRoot[data-theme='dark'] .topnav {
+        background: rgba(11, 15, 24, 0.75) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      #landingRoot[data-theme='dark'] .topnav:has(.navbar-collapse.show) {
+        background: rgba(11, 15, 24, 0.94) !important;
       }
 
       .topnav .container {
-        padding: 10px 12px;
+        padding: 4px 0 !important;
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
       .navbar-brand.brand {
-        color: #f6f8ff;
+        color: #000000 !important;
         font-size: 1.55rem;
         letter-spacing: .02em;
       }
 
+      #landingRoot[data-theme='dark'] .navbar-brand.brand {
+        color: #ffffff !important;
+      }
+
+      .navbar-brand.brand img {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 8px !important;
+      }
+
       .navbar-toggler {
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(15, 23, 32, 0.15);
         border-radius: 10px;
         padding: .35rem .5rem;
       }
 
-      .navbar-toggler:focus { box-shadow: none; }
-      .navbar-toggler-icon { filter: invert(1) brightness(2); }
+      #landingRoot[data-theme='dark'] .navbar-toggler {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
 
-      .mobile-reserve {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin-left: auto;
-        min-height: 42px;
-        padding: .52rem .92rem;
-        border-radius: 11px;
-        border: 1px solid rgba(255, 234, 158, 0.3);
-        font-size: .78rem;
-        font-weight: 800;
-        letter-spacing: .14em;
-        text-transform: uppercase;
-        color: var(--mobile-gold-ink);
-        background: var(--mobile-gold);
-        text-decoration: none;
+      .navbar-toggler:focus { box-shadow: none; }
+      .navbar-toggler-icon { filter: none; }
+      #landingRoot[data-theme='dark'] .navbar-toggler-icon { filter: invert(1) brightness(2); }
+
+      .custom-toggler .toggler-bar {
+        background-color: #000000 !important;
+      }
+
+      #landingRoot[data-theme='dark'] .custom-toggler .toggler-bar {
+        background-color: #ffffff !important;
       }
 
       #menuNav {
-        margin-top: .75rem;
-        border: 1px solid var(--mobile-border);
-        border-radius: 14px;
-        padding: .55rem .72rem;
-        background: rgba(9, 13, 22, 0.82);
+        margin-top: 0.75rem !important;
+        border: none !important;
+        background: transparent !important;
+        padding: 0.5rem 0 !important;
+        box-shadow: none !important;
       }
 
-      #menuNav .nav-link { color: #d6dff8; }
+      #menuNav .nav-link {
+        color: #000000 !important;
+        padding: 10px 18px !important;
+        margin: 4px 0 !important;
+        display: block !important;
+        border-radius: 12px !important;
+      }
+      #menuNav .nav-link:hover {
+        color: var(--blue) !important;
+        background: rgba(0, 0, 0, 0.05) !important;
+      }
+
+      #landingRoot[data-theme='dark'] #menuNav .nav-link {
+        color: #e8eeff !important;
+        padding: 10px 18px !important;
+        margin: 4px 0 !important;
+        display: block !important;
+        border-radius: 12px !important;
+      }
+      #landingRoot[data-theme='dark'] #menuNav .nav-link:hover {
+        color: var(--blue) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+      }
+
       #menuNav #themeToggle {
         margin-top: .45rem;
         width: 100%;
-        color: #e8eeff;
-        border-color: rgba(255, 255, 255, 0.22);
+        color: #000000 !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+        background: transparent !important;
+      }
+
+      #landingRoot[data-theme='dark'] #menuNav #themeToggle {
+        color: #e8eeff !important;
+        border-color: rgba(255, 255, 255, 0.22) !important;
       }
 
       .hero {
@@ -723,9 +884,8 @@
       .service-visual {
         display: block;
         height: 194px;
-        background-size: cover;
-        background-position: center;
         position: relative;
+        overflow: hidden;
       }
 
       .service-visual::after {
@@ -864,17 +1024,17 @@
   <div id="landingRoot" data-theme="light">
   <nav class="navbar navbar-expand-lg sticky-top topnav">
     <div class="container">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav" aria-controls="menuNav" aria-expanded="false" aria-label="menu">
-        <span class="navbar-toggler-icon"></span>
+      <a class="navbar-brand brand order-lg-0 ms-lg-0" href="#inicio">BlueRed Barber</a>
+      <button class="navbar-toggler custom-toggler collapsed ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav" aria-controls="menuNav" aria-expanded="false" aria-label="menu">
+        <span class="toggler-bar top-bar"></span>
+        <span class="toggler-bar middle-bar"></span>
+        <span class="toggler-bar bottom-bar"></span>
       </button>
-      <a class="navbar-brand brand order-lg-0 ms-2 ms-lg-0" href="#inicio">BlueRed Barber</a>
-      <a href="#reservas" class="mobile-reserve d-lg-none">Reserve</a>
       <div class="collapse navbar-collapse" id="menuNav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
           <li class="nav-item"><a class="nav-link" href="#barberos">Barberos</a></li>
           <li class="nav-item"><a class="nav-link" href="#mapa">Mapa</a></li>
-          <li class="nav-item"><a class="nav-link" href="#reservas">Reservar</a></li>
         </ul>
         <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i> Tema</button>
       </div>
@@ -989,7 +1149,7 @@
                 <div class="col-md-6"><label class="form-label" for="documento">Documento</label><input id="documento" name="documento" class="form-control" type="text" required></div>
                 <div class="col-md-6"><label class="form-label" for="nombre">Nombre</label><input id="nombre" name="nombre" class="form-control" type="text" required></div>
                 <div class="col-md-6"><label class="form-label" for="telefono">Teléfono</label><input id="telefono" name="telefono" class="form-control" type="tel" required></div>
-                <div class="col-md-6"><label class="form-label" for="email">Correo</label><input id="email" name="email" class="form-control" type="email" required></div>
+                <div class="col-md-6"><label class="form-label" for="email">Correo opcional</label><input id="email" name="email" class="form-control" type="email"></div>
                 <div class="col-md-6"><label class="form-label" for="servicio">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
                 <div class="col-md-6"><label class="form-label" for="barbero">Barbero</label><select id="barbero" name="barbero" class="form-select" required></select></div>
                 <div class="col-md-6"><label class="form-label" for="fecha">Fecha</label><input id="fecha" name="fecha" class="form-control" type="date" required></div>
@@ -1128,10 +1288,14 @@
       servicesGrid.classList.toggle('justify-content-center', totalServices <= 2);
       const serviceColClass = totalServices <= 2 ? 'col-md-6 col-lg-5' : 'col-md-6 col-lg-4';
 
-      servicesGrid.innerHTML = services.map((s, idx) => `
+      servicesGrid.innerHTML = services.map((s, idx) => {
+        const fallback = SERVICE_COVERS[idx % SERVICE_COVERS.length];
+        const image = safeSeedText(s.imagen_url || s.image_url) || fallback;
+        return `
         <div class="${serviceColClass}">
           <article class="panel service-card">
-            <div class="service-visual" style="background-image: url('${SERVICE_COVERS[idx % SERVICE_COVERS.length]}');">
+            <div class="service-visual" style="display:block;height:194px;position:relative;overflow:hidden;">
+              <img src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';">
               <span class="service-badge"><i class="bi ${s.icono}"></i></span>
             </div>
             <div class="service-copy">
@@ -1145,7 +1309,8 @@
             </div>
           </article>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function renderBarbers() {
@@ -1244,11 +1409,28 @@ function normalizeDayLabel(value) {
     }
 
     function fillSelects() {
+      const selectedServiceValue = serviceSelect.value;
+      const selectedBarberValue = barberSelect.value;
+      const selectedHourValue = hourSelect.value;
+
       serviceSelect.innerHTML = '<option value="" selected disabled>Selecciona servicio</option>' + services.map(s => `<option value="${s.id_servicio}">${s.nombre} - ${cop(s.precio)}</option>`).join('');
       barberSelect.innerHTML = '<option value="" selected disabled>Selecciona barbero</option>' + barbers.map(b => `<option value="${b.id_barbero}">${b.nombre}</option>`).join('');
+
+      if (selectedServiceValue && services.some((s) => String(s.id_servicio) === String(selectedServiceValue))) {
+        serviceSelect.value = selectedServiceValue;
+      }
+
+      if (selectedBarberValue && barbers.some((b) => String(b.id_barbero) === String(selectedBarberValue))) {
+        barberSelect.value = selectedBarberValue;
+      }
+
       const selectedDay = getDayNameFromDate(dateInput.value);
       const availableSlots = buildHourSlotsForDay(selectedDay);
       hourSelect.innerHTML = '<option value="" selected disabled>Selecciona hora</option>' + availableSlots.map(h => `<option value="${h}">${h}</option>`).join('');
+
+      if (selectedHourValue && availableSlots.includes(selectedHourValue)) {
+        hourSelect.value = selectedHourValue;
+      }
     }
 
     function setTheme(theme) {
@@ -1337,10 +1519,12 @@ function normalizeDayLabel(value) {
     }
 
     function buildPayload() {
+      const nombre = document.getElementById('nombre').value.trim();
+
       return {
         clientes_finales: {
-          documento: document.getElementById('documento').value.trim(),
-          nombre_completo: document.getElementById('nombre').value.trim(),
+          documento: null,
+          nombre_completo: nombre,
           telefono: document.getElementById('telefono').value.trim(),
           email: document.getElementById('email').value.trim()
         },
@@ -1815,6 +1999,7 @@ function normalizeDayLabel(value) {
         nombre: name,
         precio: Math.max(0, toSeedNumber(item.precio ?? item.precio_base ?? item.valor ?? item.tarifa ?? item.price, 0)),
         icono: safeSeedText(item.icono || item.icon || iconFallback) || iconFallback,
+        imagen_url: safeSeedText(item.imagen_url || item.image_url || item.foto_url || item.foto || item.imagen || item.image || item.cover_url || item.photo),
         duracion_min: Math.max(15, toSeedNumber(item.duracion_min ?? item.duration_min ?? item.duracion ?? item.duration, 60))
       };
     }
@@ -1931,6 +2116,17 @@ function normalizeDayLabel(value) {
     renderLandingQr();
     dateInput.addEventListener('change', fillSelects);
     serviceSelect.addEventListener('change', fillSelects);
+
+    // Auto-collapse mobile navbar after link click
+    document.querySelectorAll('#menuNav .nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        const menuNav = document.getElementById('menuNav');
+        if (menuNav && menuNav.classList.contains('show')) {
+          const bsCollapse = bootstrap.Collapse.getInstance(menuNav) || new bootstrap.Collapse(menuNav);
+          bsCollapse.hide();
+        }
+      });
+    });
   </script>
 </body>
 </html>
