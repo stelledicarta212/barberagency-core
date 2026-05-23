@@ -3,67 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Distrito Barber - Landing V2</title>
-  <meta name="description" content="Landing moderna de barbería con reservas, mapa, servicios y barberos." />
+  <title>V5.1 BlueRed Barber Elegante</title>
+  <meta name="description" content="Landing V5.1 barbería azul profundo y rojo elegante en archivo unico." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     #landingRoot {
-      --bg: #eef3f9;
+      --bg: #f2f4f8;
       --surface: #ffffff;
-      --text: #0f1720;
-      --muted: #556273;
-      --primary: #0ea5a4;
-      --primary-2: #075985;
-      --accent: #f97316;
-      --nav: rgba(255, 255, 255, 0.84);
-      --card-border: rgba(12, 68, 97, 0.12);
-      --ring: rgba(14, 165, 164, 0.25);
-      --shadow: 0 18px 38px rgba(14, 35, 53, 0.14);
+      --text: #171b25;
+      --muted: #666f81;
+      --blue: #27478f;
+      --blue-2: #1a2f63;
+      --red: #9b3a44;
+      --red-2: #6e2a31;
+      --main: var(--blue);
+      --alt: var(--red);
+      --accent: var(--red);
+      --main2: var(--red);
+      --hot: var(--red);
+      --border: rgba(34, 42, 66, 0.14);
+      --ring: rgba(39, 71, 143, 0.24);
+      --nav: rgba(255, 255, 255, 0.86);
+      --shadow: 0 16px 36px rgba(22, 25, 36, 0.13);
     }
 
     #landingRoot[data-theme='dark'] {
-      --bg: #09121c;
-      --surface: #111f2d;
-      --text: #eaf2fb;
-      --muted: #a6b7c8;
-      --primary: #22d3ee;
-      --primary-2: #38bdf8;
-      --accent: #fb923c;
-      --nav: rgba(8, 18, 28, 0.84);
-      --card-border: rgba(80, 164, 206, 0.2);
-      --ring: rgba(34, 211, 238, 0.25);
-      --shadow: 0 18px 38px rgba(0, 0, 0, 0.35);
+      --bg: #11131a;
+      --surface: #1a1e2a;
+      --text: #edeaf2;
+      --muted: #b2adc0;
+      --blue: #6d86c3;
+      --blue-2: #46598a;
+      --red: #c5747d;
+      --red-2: #8d4e55;
+      --main: var(--blue);
+      --alt: var(--red);
+      --accent: var(--red);
+      --main2: var(--red);
+      --hot: var(--red);
+      --border: rgba(167, 159, 184, 0.24);
+      --ring: rgba(109, 134, 195, 0.28);
+      --nav: rgba(10, 19, 38, 0.84);
+      --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
     }
 
     #landingRoot,
     #landingRoot * { box-sizing: border-box; }
 
     #landingRoot {
-      font-family: 'Public Sans', sans-serif;
+      font-family: 'Manrope', sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at 5% 10%, rgba(14, 165, 164, 0.18), transparent 32%),
-        radial-gradient(circle at 92% 0%, rgba(249, 115, 22, 0.14), transparent 30%),
+        radial-gradient(circle at 0% 0%, rgba(39,71,143,0.18), transparent 25%),
+        radial-gradient(circle at 100% 0%, rgba(155,58,68,0.14), transparent 30%),
         var(--bg);
       min-height: 100vh;
     }
 
-    #landingRoot h1, #landingRoot h2, #landingRoot h3, #landingRoot .brand {
-      font-family: 'Oswald', sans-serif;
-      letter-spacing: 0.5px;
-    }
+    #landingRoot h1,
+    #landingRoot h2,
+    #landingRoot h3,
+    #landingRoot .brand { font-family: 'Rajdhani', sans-serif; letter-spacing: .5px; }
 
     /* --- NUEVA BARRA DE NAVEGACIÓN FLOTANTE PREMIUM CON EFECTO VIDRIO --- */
     .topnav {
-      position: fixed !important;
+      position: sticky !important;
       top: 15px !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-      margin: 0 !important;
+      margin: 15px auto !important;
       width: 92% !important;
       max-width: 1200px !important;
       border-radius: 30px !important;
@@ -83,20 +93,16 @@
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25) !important;
     }
 
-    .navbar .navbar-brand { color: #000000 !important; }
-    #landingRoot[data-theme='dark'] .navbar .navbar-brand { color: var(--text) !important; }
+    .navbar .navbar-brand { color: var(--text) !important; }
 
     .navbar-brand.brand {
       display: inline-flex;
       align-items: center;
       gap: 0.75rem;
       font-weight: 700 !important;
-      color: #000000 !important;
+      color: var(--text) !important;
       font-size: 1.35rem !important;
       transition: all 0.3s ease !important;
-    }
-    #landingRoot[data-theme='dark'] .navbar-brand.brand {
-      color: var(--text) !important;
     }
 
     .navbar-brand.brand img {
@@ -105,30 +111,27 @@
       height: 52px;
       object-fit: cover;
       border-radius: 10px;
-      border: 2px solid color-mix(in srgb, var(--primary) 35%, white);
-      box-shadow: 0 8px 18px rgba(7, 89, 133, 0.18);
+      border: 2px solid color-mix(in srgb, var(--blue) 35%, white);
+      box-shadow: 0 8px 18px rgba(39, 71, 143, 0.18);
     }
 
     .navbar-nav .nav-link {
-      color: #000000 !important;
+      color: var(--text) !important;
       font-weight: 600 !important;
       font-size: 0.92rem !important;
       padding: 6px 16px !important;
       border-radius: 99px !important;
       transition: all 0.3s ease !important;
     }
-    #landingRoot[data-theme='dark'] .navbar-nav .nav-link {
-      color: var(--text) !important;
-    }
 
     .navbar-nav .nav-link:hover {
-      background: rgba(14, 165, 164, 0.08) !important;
-      color: var(--primary) !important;
+      background: rgba(39, 71, 143, 0.08) !important;
+      color: var(--blue) !important;
     }
 
     #landingRoot[data-theme='dark'] .navbar-nav .nav-link:hover {
       background: rgba(255, 255, 255, 0.08) !important;
-      color: var(--primary) !important;
+      color: var(--blue) !important;
     }
 
     /* --- BOTÓN HAMBURGUESA ANIMADO EN CSS --- */
@@ -154,12 +157,9 @@
       display: block !important;
       width: 100% !important;
       height: 2px !important;
-      background-color: #000000 !important;
+      background-color: var(--text) !important;
       border-radius: 4px !important;
       transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease !important;
-    }
-    #landingRoot[data-theme='dark'] .custom-toggler .toggler-bar {
-      background-color: var(--text) !important;
     }
 
     .custom-toggler:not(.collapsed) .top-bar {
@@ -197,13 +197,36 @@
       pointer-events: none !important;
     }
 
-    .btn-theme {
-      border: 1px solid var(--card-border);
+    .btn-blue {
+      border: 0;
+      color: #fff;
+      background: var(--blue);
+      box-shadow: 0 12px 24px rgba(39, 71, 143, 0.34);
+    }
+
+    .btn-red {
+      border: 0;
+      color: #fff;
+      background: var(--red);
+      box-shadow: 0 12px 24px rgba(155, 58, 68, 0.32);
+    }
+
+    .btn-blue:hover, .btn-red:hover { color: #fff; filter: brightness(1.06); }
+
+    .btn-ghost {
+      border: 1px solid var(--border);
       color: var(--text);
+      background: transparent;
+    }
+
+    .btn-theme {
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: transparent;
     }
 
     .btn-theme:hover {
-      background: var(--primary);
+      background: var(--blue);
       color: #fff;
     }
 
@@ -214,7 +237,7 @@
       overflow: hidden;
     }
 
-    .hero-img {
+    .hero img {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -223,14 +246,14 @@
       object-position: center;
     }
 
-    .hero::before {
+    .hero::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(115deg, rgba(2, 10, 22, 0.85), rgba(3, 13, 27, 0.42));
+      background: linear-gradient(102deg, rgba(5, 14, 34, 0.86), rgba(12, 22, 48, 0.36));
     }
 
-    .hero .content {
+    .hero-content {
       position: relative;
       z-index: 2;
       height: 100%;
@@ -238,91 +261,121 @@
       align-items: center;
     }
 
+    .hero-copy { max-width: 780px; }
     .hero-title,
     .hero-subtitle {
-      color: #ffffff !important;
-    }
-
-    .btn-main {
-      background: var(--primary);
       color: #fff;
-      border: 0;
-      box-shadow: 0 10px 20px rgba(5, 82, 119, 0.35);
     }
 
-    .btn-main:hover { color: #fff; filter: brightness(1.07); }
+    .hero-tag {
+      display: inline-block;
+      padding: .3rem .7rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      font-weight: 700;
+      font-size: .82rem;
+      color: #d9e7ff;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(39,71,143,0.3);
+    }
 
-    .block {
+    .split-badges {
+      margin-top: 1.1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem;
+    }
+
+    .split-badges span {
+      font-size: .86rem;
+      border-radius: 999px;
+      padding: .3rem .65rem;
+      color: #e8efff;
+      border: 1px solid rgba(255,255,255,0.24);
+      background: rgba(11,19,39,0.45);
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+    }
+
+    .panel {
       background: var(--surface);
-      border: 1px solid var(--card-border);
+      border: 1px solid var(--border);
       border-radius: 1rem;
       box-shadow: var(--shadow);
     }
 
-    .section-muted { background: rgba(255, 255, 255, 0.35); }
+    .section-soft { background: color-mix(in srgb, var(--surface) 68%, transparent); }
 
-    #landingRoot[data-theme='dark'] .section-muted { background: rgba(7, 19, 31, 0.35); }
-
-    .reserve-card { padding: 1.5rem; }
-
-    .form-control, .form-select {
-      border: 1px solid var(--card-border);
-      background: color-mix(in srgb, var(--surface) 90%, #fff);
-      color: var(--text);
+    .service-card, .barber-card { padding: 1.2rem; height: 100%; }
+    .service-visual { display: none; }
+    .service-badge { display: none; }
+    .service-copy { padding: 0; }
+    .service-meta {
+      color: var(--muted);
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .02em;
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
     }
 
-    .form-control:focus, .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 .2rem var(--ring);
+    .mobile-reserve,
+    .mobile-slot-strip,
+    .mobile-dock {
+      display: none;
     }
 
-    .service-item, .barber-item {
-      padding: 1.2rem;
-      height: 100%;
-      transition: transform .25s ease;
-    }
-
-    .service-item:hover, .barber-item:hover { transform: translateY(-5px); }
-
-    .icon-dot {
+    .icon-pill {
       width: 44px;
       height: 44px;
       border-radius: 50%;
       display: grid;
       place-items: center;
+      color: var(--blue);
+      background: rgba(39, 71, 143, 0.2);
       font-size: 1.2rem;
-      color: var(--primary-2);
-      background: rgba(14, 165, 164, 0.16);
     }
+
+    .price-pill {
+      display: inline-block;
+      padding: .2rem .65rem;
+      border-radius: 999px;
+      background: rgba(155, 58, 68, 0.16);
+      color: var(--red-2);
+      font-weight: 700;
+    }
+
+    #landingRoot[data-theme='dark'] .price-pill { color: #ff9dab; }
 
     .barber-photo {
-      width: 110px !important;
-      height: 110px !important;
-      min-width: 110px;
-      min-height: 110px;
-      display: block;
-      margin-inline: auto;
-      border-radius: 999px !important;
-      object-fit: cover !important;
-      object-position: center top !important;
-      border: 3px solid rgba(14, 165, 164, 0.35) !important;
-      background: #d9e4f0;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(39, 71, 143, 0.45);
     }
 
-    .pill {
-      display: inline-block;
-      font-weight: 700;
-      border-radius: 100%;
-      padding: .2rem .65rem;
-      background: rgba(249, 115, 22, 0.15);
-      color: #c15b10;
+    .reserve-box { padding: 1.5rem; }
+
+    .reserve-box .form-control,
+    .reserve-box .form-select {
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 92%, #fff);
+      color: var(--text);
     }
 
-    #landingRoot[data-theme='dark'] .pill { color: #fcb377; }
+    .reserve-box .form-control:focus,
+    .reserve-box .form-select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 .2rem var(--ring);
+    }
 
     footer {
-      border-top: 1px solid var(--card-border);
-      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      border-top: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 75%, transparent);
     }
 
     .footer-menu {
@@ -330,65 +383,6 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 0.75rem;
-    }
-
-    .footer-copy {
-      color: var(--muted);
-    }
-
-    .qr-share-card {
-      border: 1px solid var(--border);
-      border-radius: 1.5rem;
-      background: color-mix(in srgb, var(--surface) 88%, transparent);
-      box-shadow: var(--shadow);
-    }
-
-    #landingRoot[data-theme='dark'] .qr-share-card {
-      background: rgba(26, 30, 42, 0.92);
-    }
-
-    .qr-share-kicker {
-      display: inline-block;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      font-size: 0.78rem;
-      font-weight: 800;
-      color: var(--main);
-    }
-
-    .qr-share-text {
-      color: var(--muted);
-    }
-
-    .qr-share-link {
-      display: inline-block;
-      color: var(--text);
-      font-weight: 700;
-      text-decoration: none;
-      word-break: break-all;
-    }
-
-    .qr-share-link:hover {
-      color: var(--main);
-    }
-
-    .qr-share-frame {
-      width: min(240px, 100%);
-      aspect-ratio: 1;
-      padding: 14px;
-      border-radius: 1.25rem;
-      background: #fff;
-      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .qr-share-frame img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
     }
 
     .footer-brand-wrap {
@@ -416,54 +410,150 @@
       height: 64px;
       object-fit: cover;
       border-radius: 10px;
-      border: 2px solid color-mix(in srgb, var(--primary) 35%, white);
-      box-shadow: 0 10px 22px rgba(7, 89, 133, 0.18);
+      border: 2px solid color-mix(in srgb, var(--blue) 35%, white);
+      box-shadow: 0 10px 22px rgba(39, 71, 143, 0.18);
     }
 
-    @media (max-width: 575px) {
-      .footer-brand-wrap {
-        flex-direction: column;
-      }
+    .footer-copy {
+      color: var(--muted);
+    }
 
-      .footer-brand {
-        justify-content: center;
-        text-align: center;
-      }
+    .qr-share-card {
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      box-shadow: var(--shadow);
+    }
+
+    #landingRoot[data-theme='dark'] .qr-share-card {
+      background: rgba(26, 30, 42, 0.92);
+    }
+
+    .qr-share-kicker {
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--blue);
+    }
+
+    .qr-share-text {
+      color: var(--muted);
+    }
+
+    .qr-share-link {
+      display: inline-block;
+      color: var(--text);
+      font-weight: 700;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .qr-share-link:hover {
+      color: var(--blue);
+    }
+
+    .qr-share-frame {
+      width: min(240px, 100%);
+      aspect-ratio: 1;
+      padding: 14px;
+      border-radius: 1.25rem;
+      background: #fff;
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-share-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
 
     @media (max-width: 991px) {
-      .hero { height: 500px; background-position: 60% center; }
+      :root {
+        --mobile-bg: #07090f;
+        --mobile-card: #121722;
+        --mobile-card-2: #181d2a;
+        --mobile-ink: #edf1ff;
+        --mobile-muted: #9aa6c1;
+        --mobile-gold: #e9c54d;
+        --mobile-gold-ink: #1f1608;
+        --mobile-border: rgba(255, 255, 255, 0.09);
+      }
+
+      body {
+        position: relative;
+        background:
+          radial-gradient(circle at 6% -5%, rgba(61, 110, 206, 0.24), transparent 42%),
+          radial-gradient(circle at 88% 14%, rgba(201, 82, 92, 0.26), transparent 36%),
+          var(--mobile-bg);
+        color: var(--mobile-ink);
+        padding-bottom: 96px;
+      }
+
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        border-radius: 999px;
+        pointer-events: none;
+        z-index: 0;
+        filter: blur(0);
+      }
+
+      body::before {
+        width: 300px;
+        height: 300px;
+        right: -120px;
+        top: 24%;
+        background: radial-gradient(circle, rgba(18, 114, 255, 0.26), transparent 64%);
+        animation: mobileOrbA 8s ease-in-out infinite;
+      }
+
+      body::after {
+        width: 260px;
+        height: 260px;
+        left: -110px;
+        top: 65%;
+        background: radial-gradient(circle, rgba(233, 197, 77, 0.2), transparent 66%);
+        animation: mobileOrbB 8s ease-in-out infinite;
+      }
+
+      @keyframes mobileOrbA {
+        0%, 100% { transform: translateY(0); opacity: .6; }
+        50% { transform: translateY(-16px); opacity: 1; }
+      }
+
+      @keyframes mobileOrbB {
+        0%, 100% { transform: translateY(0); opacity: .5; }
+        50% { transform: translateY(18px); opacity: .95; }
+      }
+
+      main, header, nav, footer { position: relative; z-index: 1; }
+      .container { padding-left: 18px; padding-right: 18px; }
 
       .topnav {
-        position: fixed !important;
+        position: sticky !important;
         top: 12px !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
-        margin: 0 !important;
+        margin: 12px auto !important;
         width: calc(100% - 24px) !important;
         border-radius: 20px !important;
-        background: rgba(255, 255, 255, 0.7) !important;
+        background: rgba(11, 15, 24, 0.75) !important;
         backdrop-filter: blur(16px) saturate(180%) !important;
         -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-        border: 1px solid rgba(15, 23, 32, 0.12) !important;
-        box-shadow: 0 12px 30px rgba(15, 23, 32, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
         padding: 8px 16px !important;
       }
 
       .topnav:has(.navbar-collapse.show) {
         border-radius: 24px !important;
-        background: rgba(255, 255, 255, 0.94) !important;
-        backdrop-filter: blur(20px) !important;
-      }
-
-      #landingRoot[data-theme='dark'] .topnav {
-        background: rgba(11, 15, 24, 0.75) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
-      }
-
-      #landingRoot[data-theme='dark'] .topnav:has(.navbar-collapse.show) {
         background: rgba(11, 15, 24, 0.94) !important;
+        backdrop-filter: blur(20px) !important;
       }
 
       .topnav .container {
@@ -474,41 +564,40 @@
       }
 
       .navbar-brand.brand {
-        color: #000000 !important;
+        color: #f6f8ff !important;
         font-size: 1.55rem;
         letter-spacing: .02em;
       }
 
-      #landingRoot[data-theme='dark'] .navbar-brand.brand {
-        color: #ffffff !important;
-      }
-
-      .navbar-brand.brand img {
-        width: 42px !important;
-        height: 42px !important;
-        border-radius: 8px !important;
-      }
-
       .navbar-toggler {
-        border: 1px solid rgba(15, 23, 32, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 10px;
         padding: .35rem .5rem;
       }
 
-      #landingRoot[data-theme='dark'] .navbar-toggler {
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-
       .navbar-toggler:focus { box-shadow: none; }
-      .navbar-toggler-icon { filter: none; }
-      #landingRoot[data-theme='dark'] .navbar-toggler-icon { filter: invert(1) brightness(2); }
+      .navbar-toggler-icon { filter: invert(1) brightness(2); }
 
       .custom-toggler .toggler-bar {
-        background-color: #000000 !important;
+        background-color: #f6f8ff !important;
       }
 
-      #landingRoot[data-theme='dark'] .custom-toggler .toggler-bar {
-        background-color: #ffffff !important;
+      .mobile-reserve {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+        min-height: 42px;
+        padding: .52rem .92rem;
+        border-radius: 11px;
+        border: 1px solid rgba(255, 234, 158, 0.3);
+        font-size: .78rem;
+        font-weight: 800;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--mobile-gold-ink);
+        background: var(--mobile-gold);
+        text-decoration: none;
       }
 
       #menuNav {
@@ -519,42 +608,521 @@
         box-shadow: none !important;
       }
 
-      #menuNav .nav-link {
-        color: #000000 !important;
-        padding: 10px 18px !important;
-        margin: 4px 0 !important;
-        display: block !important;
-        border-radius: 12px !important;
-      }
+      #menuNav .nav-link { color: #d6dff8 !important; }
       #menuNav .nav-link:hover {
-        color: var(--primary) !important;
-        background: rgba(0, 0, 0, 0.05) !important;
-      }
-
-      #landingRoot[data-theme='dark'] #menuNav .nav-link {
-        color: #e8eeff !important;
-        padding: 10px 18px !important;
-        margin: 4px 0 !important;
-        display: block !important;
-        border-radius: 12px !important;
-      }
-      #landingRoot[data-theme='dark'] #menuNav .nav-link:hover {
-        color: var(--primary) !important;
+        color: var(--mobile-gold) !important;
         background: rgba(255, 255, 255, 0.08) !important;
       }
-
       #menuNav #themeToggle {
         margin-top: .45rem;
         width: 100%;
-        color: #000000 !important;
-        border-color: rgba(0, 0, 0, 0.15) !important;
+        color: #e8eeff !important;
+        border-color: rgba(255, 255, 255, 0.22) !important;
         background: transparent !important;
       }
 
-      #landingRoot[data-theme='dark'] #menuNav #themeToggle {
-        color: #e8eeff !important;
-        border-color: rgba(255, 255, 255, 0.22) !important;
+      .hero {
+        width: auto;
+        min-height: 0;
+        height: auto;
+        margin: 14px 12px 0;
+        border: 1px solid var(--mobile-border);
+        border-radius: 26px;
+        box-shadow: 0 24px 46px rgba(0, 0, 0, 0.45);
       }
+
+      .hero img {
+        min-height: 520px;
+        height: 100%;
+        object-position: center;
+      }
+
+      .hero::after {
+        background: linear-gradient(166deg, rgba(6, 9, 16, 0.36), rgba(6, 9, 16, 0.92) 70%);
+      }
+
+      .hero-content {
+        min-height: 520px;
+        align-items: flex-end;
+        padding: 28px 0 24px;
+      }
+
+      .hero-copy {
+        max-width: 100%;
+        padding: 0 4px;
+      }
+
+      .hero-tag {
+        font-size: .74rem;
+        letter-spacing: .12em;
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.36);
+      }
+
+      .hero-title {
+        font-size: clamp(2rem, 8.8vw, 2.85rem);
+        line-height: .96;
+        max-width: 12ch;
+        margin-bottom: .9rem;
+        letter-spacing: 0;
+        background: none;
+        -webkit-background-clip: initial;
+        background-clip: initial;
+        color: #fff !important;
+      }
+
+      .hero-subtitle {
+        color: #fff !important;
+        font-size: 1.02rem;
+        line-height: 1.42;
+        max-width: 26ch;
+        margin-bottom: 1.1rem !important;
+      }
+
+      .hero .d-flex {
+        display: grid !important;
+        grid-template-columns: 1fr;
+        gap: .7rem !important;
+      }
+
+      .hero .btn {
+        width: 100%;
+        border-radius: 13px;
+        font-weight: 800;
+        font-size: .84rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        padding: .94rem 1rem;
+      }
+
+      .hero .btn-blue {
+        color: var(--mobile-gold-ink);
+        background: var(--mobile-gold);
+        box-shadow: 0 14px 30px rgba(233, 197, 77, 0.32);
+      }
+
+      .hero .btn-red {
+        color: #f0f4ff;
+        background: rgba(255, 255, 255, 0.09);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        box-shadow: none;
+      }
+
+      .split-badges { display: none; }
+
+      .mobile-slot-strip {
+        display: block;
+        padding: 1.7rem 0 .2rem;
+      }
+
+      .slot-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: .75rem;
+      }
+
+      .slot-head h2 {
+        margin: 0;
+        font-size: 1.28rem;
+        text-transform: uppercase;
+      }
+
+      .slot-head span {
+        color: #f7a8ae;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+      }
+
+      .slot-track {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        scrollbar-width: thin;
+      }
+
+      .slot-card {
+        flex: 0 0 170px;
+        border-radius: 18px;
+        border: 1px solid var(--mobile-border);
+        padding: .8rem .85rem;
+        background: linear-gradient(150deg, var(--mobile-card-2), var(--mobile-card));
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
+      }
+
+      .slot-card strong {
+        display: block;
+        font-size: 1.95rem;
+        line-height: .9;
+        color: #f5f8ff;
+      }
+
+      .slot-card small {
+        display: block;
+        color: var(--mobile-muted);
+        letter-spacing: .08em;
+      }
+
+      .slot-card span {
+        display: inline-block;
+        margin-top: .28rem;
+        font-size: .72rem;
+        font-weight: 700;
+        color: #ffe07a;
+      }
+
+      main section {
+        padding-top: 2rem !important;
+        padding-bottom: 1.1rem !important;
+      }
+
+      section .text-center {
+        text-align: left !important;
+        margin-bottom: 1rem !important;
+      }
+
+      section .text-secondary {
+        color: var(--mobile-muted) !important;
+      }
+
+      .section-soft { background: transparent; }
+
+      #servicesGrid,
+      #barbersGrid {
+        --bs-gutter-x: 0;
+        --bs-gutter-y: 0;
+        margin: 0;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 13px;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        padding-bottom: .35rem;
+      }
+
+      #servicesGrid > [class*='col-'],
+      #barbersGrid > [class*='col-'] {
+        flex: 0 0 86%;
+        max-width: 86%;
+        padding: 0;
+        scroll-snap-align: start;
+      }
+
+      .service-card,
+      .barber-card {
+        border-radius: 24px;
+        border: 1px solid var(--mobile-border);
+        background: linear-gradient(160deg, var(--mobile-card-2), var(--mobile-card));
+        overflow: hidden;
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.3);
+      }
+
+      .service-card {
+        padding: 0 0 1rem;
+      }
+
+      .service-visual {
+        display: block;
+        height: 194px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+      }
+
+      .service-visual::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(8, 11, 20, 0.05), rgba(8, 11, 20, 0.75));
+      }
+
+      .service-badge {
+        display: inline-grid;
+        place-items: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        color: #fbe9b3;
+        background: rgba(0, 0, 0, 0.46);
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        z-index: 1;
+        font-size: 1.05rem;
+      }
+
+      .service-copy {
+        padding: .95rem 1rem .25rem;
+      }
+
+      .service-icon-desktop { display: none !important; }
+      .service-card .h5 { color: #f4f7ff; }
+
+      .price-pill {
+        background: rgba(233, 197, 77, 0.2);
+        color: #f6da7f;
+        font-size: .88rem;
+      }
+
+      .barber-card {
+        text-align: left !important;
+        padding: 0 0 .95rem;
+      }
+
+      .barber-photo {
+        width: 100%;
+        height: 204px;
+        border-radius: 0;
+        border: 0;
+        margin: 0 0 .85rem !important;
+      }
+
+      .barber-card h3,
+      .barber-card p,
+      .barber-card small {
+        padding: 0 1rem;
+      }
+
+      .barber-card h3 { color: #f4f7ff; }
+      .barber-card p, .barber-card small { color: var(--mobile-muted) !important; }
+
+      #mapa .panel,
+      #reservas .panel {
+        border-radius: 22px;
+        border-color: var(--mobile-border);
+        background: linear-gradient(160deg, var(--mobile-card-2), var(--mobile-card));
+      }
+
+      #mapa iframe { filter: grayscale(.16) contrast(1.05); }
+
+      .reserve-box {
+        padding: 1rem;
+      }
+
+      .reserve-box .form-control,
+      .reserve-box .form-select {
+        color: #eaf0ff;
+        border-color: rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .reserve-box .form-label {
+        color: #d6def8;
+      }
+
+      footer {
+        border-top-color: var(--mobile-border);
+        background: transparent;
+        padding-bottom: 6.6rem !important;
+      }
+
+      .mobile-dock {
+        display: flex;
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 10px;
+        z-index: 1200;
+        border-radius: 20px;
+        border: 1px solid var(--mobile-border);
+        background: rgba(10, 14, 22, 0.86);
+        backdrop-filter: blur(11px);
+        padding: 8px 9px;
+        gap: 8px;
+        box-shadow: 0 16px 28px rgba(0, 0, 0, 0.38);
+      }
+
+      .mobile-dock a {
+        flex: 1;
+        border-radius: 12px;
+        text-decoration: none;
+        color: #c5cfe9;
+        font-size: .65rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        min-height: 54px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .mobile-dock a i {
+        font-size: 1rem;
+        line-height: 1;
+      }
+
+      .mobile-dock a.is-active {
+        background: rgba(233, 197, 77, 0.16);
+        color: #f7dc84;
+      }
+    }
+
+    /* --- TARJETA DE CONFIRMACIÓN DE RESERVA PREMIUM --- */
+    .success-card-header {
+      margin-bottom: 1.5rem;
+    }
+    
+    .success-icon-wrap {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(40, 167, 69, 0.15);
+      color: #28a745;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 1rem;
+      border: 2px solid rgba(40, 167, 69, 0.3);
+      box-shadow: 0 10px 20px rgba(40, 167, 69, 0.15);
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    
+    .success-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      color: var(--text);
+      font-size: 1.75rem;
+    }
+    
+    #landingRoot[data-theme='dark'] .success-title {
+      color: #fff;
+    }
+    
+    .success-details {
+      background: rgba(39, 71, 143, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+    
+    #landingRoot[data-theme='dark'] .success-details {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: var(--mobile-border);
+    }
+    
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .detail-value {
+      font-weight: 700;
+      color: var(--text);
+      font-size: 0.95rem;
+      text-align: right;
+    }
+    
+    #landingRoot[data-theme='dark'] .detail-value {
+      color: #fff;
+    }
+
+    @media (max-width: 991px) {
+      .success-title {
+        color: #fff !important;
+      }
+      .success-details {
+        background: rgba(255, 255, 255, 0.04) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+      }
+      .detail-value {
+        color: #f6f8ff !important;
+      }
+      .detail-label {
+        color: var(--mobile-muted) !important;
+      }
+      #successCard.panel {
+        border-radius: 22px !important;
+        border-color: var(--mobile-border) !important;
+        background: linear-gradient(160deg, var(--mobile-card-2), var(--mobile-card)) !important;
+      }
+    }
+
+    /* --- PREMIUM ANIMATION & CENTERING FOR DYNAMIC SUCCESS CARD --- */
+    .success-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(10, 14, 22, 0.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 2500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 20px;
+    }
+    
+    .success-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .success-overlay #successCard {
+      width: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      transform: scale(0.9) translateY(40px);
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--surface);
+    }
+    
+    #landingRoot[data-theme='light'] .success-overlay {
+      background: rgba(23, 27, 37, 0.35);
+    }
+    
+    #landingRoot[data-theme='light'] .success-overlay #successCard {
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 24px 60px rgba(23, 27, 37, 0.15);
+    }
+    
+    .success-overlay.show #successCard {
+      transform: scale(1) translateY(0);
+    }
+
+    .success-icon-wrap {
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s both;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -562,148 +1130,145 @@
   <div id="landingRoot" data-theme="light">
   <nav class="navbar navbar-expand-lg sticky-top topnav">
     <div class="container">
-      <a class="navbar-brand brand order-lg-0 ms-lg-0" href="#inicio">Distrito Barber</a>
-      <button class="navbar-toggler custom-toggler collapsed ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav" aria-controls="menuNav" aria-expanded="false" aria-label="menu">
+      <button class="navbar-toggler custom-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav" aria-controls="menuNav" aria-expanded="false" aria-label="menu">
         <span class="toggler-bar top-bar"></span>
         <span class="toggler-bar middle-bar"></span>
         <span class="toggler-bar bottom-bar"></span>
       </button>
+      <a class="navbar-brand brand order-lg-0 ms-2 ms-lg-0" href="#inicio">BlueRed Barber</a>
+      <a href="#reservas" class="mobile-reserve d-lg-none">Reserve</a>
       <div class="collapse navbar-collapse" id="menuNav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
           <li class="nav-item"><a class="nav-link" href="#barberos">Barberos</a></li>
           <li class="nav-item"><a class="nav-link" href="#mapa">Mapa</a></li>
+          <li class="nav-item"><a class="nav-link" href="#reservas">Reservar</a></li>
         </ul>
         <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i> Tema</button>
       </div>
     </div>
   </nav>
 
-  <header class="hero" id="inicio">
-    <img
-      id="heroImage"
-      class="hero-img"
-      src="https://images.pexels.com/photos/3998417/pexels-photo-3998417.jpeg?auto=compress&cs=tinysrgb&w=1920"
-      alt="Interior moderno de barberia"
-      loading="eager"
-      decoding="async"
-    >
-    <div class="container content">
-      <div class="col-lg-8">
-        <p class="text-uppercase fw-bold mb-2" style="color:#7dd3fc; letter-spacing:1.5px;">Tu mejor versión empieza hoy</p>
-        <h1 class="hero-title display-3 mb-3">Tu look empieza con una cita bien hecha</h1>
-        <p class="hero-subtitle lead mb-4">Cortes premium, barberos expertos y reserva en menos de un minuto.</p>
-        <div class="d-flex gap-2 flex-wrap">
-          <a href="#reservar" class="btn btn-main btn-lg px-4">Agendar cita</a>
-          <a href="#barberos" class="btn btn-outline-light btn-lg px-4">Conocer equipo</a>
+  <header id="inicio" class="hero">
+    <img id="heroImage" src="https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Cabecera barbería azul profundo y rojo elegante" loading="eager" decoding="async">
+    <div class="container hero-content">
+      <div class="hero-copy">
+        <span class="hero-tag">Reserva hoy, luce impecable</span>
+        <h1 class="hero-title display-4 mt-3 mb-3">Estilo sobrio en azul profundo y rojo elegante</h1>
+        <p class="hero-subtitle lead mb-4">Una propuesta más refinada, con contraste suave y enfoque premium para conversi?n de reservas.</p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="#reservas" class="btn btn-blue btn-lg px-4">Reservar ahora</a>
+          <a href="#servicios" class="btn btn-red btn-lg px-4">Ver servicios</a>
+        </div>
+        <div class="split-badges">
+          <span><i class="bi bi-check2-circle"></i> 1 solo formulario</span>
+          <span><i class="bi bi-check2-circle"></i> Dise?o responsive</span>
+          <span><i class="bi bi-check2-circle"></i> Tema claro y oscuro</span>
         </div>
       </div>
     </div>
   </header>
 
+  <section class="mobile-slot-strip" aria-label="Disponibilidad r?pida">
+    <div class="container">
+      <div class="slot-head">
+        <h2>Disponibilidad VIP</h2>
+        <span>Hoy</span>
+      </div>
+      <div class="slot-track">
+        <article class="slot-card">
+          <small>Corte máster</small>
+          <strong>14:30</strong>
+          <span>Ultimo lugar</span>
+        </article>
+        <article class="slot-card">
+          <small>Barba real</small>
+          <strong>16:00</strong>
+          <span>Ocupado</span>
+        </article>
+        <article class="slot-card">
+          <small>Integral</small>
+          <strong>17:20</strong>
+          <span>Reservable</span>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <main>
-    <section id="reservar" class="py-5">
-      <div class="container">
-        <div class="row g-4 align-items-stretch">
-          <div class="col-lg-7 order-lg-2">
-            <form id="reservationForm" class="block reserve-card needs-validation" novalidate>
-              <h2 class="mb-3">Reserva tu turno</h2>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label" for="documento">Documento</label>
-                  <input class="form-control" type="text" id="documento" name="documento" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="nombre">Nombre</label>
-                  <input class="form-control" type="text" id="nombre" name="nombre" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="telefono">Teléfono</label>
-                  <input class="form-control" type="tel" id="telefono" name="telefono" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="email">Correo</label>
-                  <input class="form-control" type="email" id="email" name="email" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="servicio">Servicio</label>
-                  <select class="form-select" id="servicio" name="servicio" required></select>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="barbero">Barbero</label>
-                  <select class="form-select" id="barbero" name="barbero" required></select>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="fecha">Fecha</label>
-                  <input class="form-control" type="date" id="fecha" name="fecha" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="hora">Hora</label>
-                  <select class="form-select" id="hora" name="hora" required></select>
-                </div>
-                <div class="col-12">
-                  <label class="form-label" for="notas">Notas</label>
-                  <textarea class="form-control" id="notas" name="notas" rows="3" placeholder="Detalle extra de tu corte"></textarea>
-                </div>
-                <div class="col-12 d-grid">
-                  <button class="btn btn-main btn-lg" type="submit">Confirmar reserva</button>
-                </div>
-              </div>
-              <div id="reservationAlert" class="alert mt-3 d-none" role="alert"></div>
-            </form>
-          </div>
-          <div class="col-lg-5 order-lg-1">
-            <div class="block p-4 h-100 d-flex flex-column justify-content-center">
-              <h2 class="mb-3">Tu cita lista en minutos</h2>
-              <p class="text-secondary mb-3">Reserva fácil, elige el servicio ideal y asegura una experiencia cómoda desde el primer paso.</p>
-              <ul class="list-unstyled m-0">
-                <li class="mb-2"><i class="bi bi-check2-circle" style="color:var(--primary);"></i> Reserva cuando quieras, sin esperar respuesta</li>
-                <li class="mb-2"><i class="bi bi-check2-circle" style="color:var(--primary);"></i> Encuentra tu servicio y horario en un solo flujo</li>
-                <li><i class="bi bi-check2-circle" style="color:var(--primary);"></i> Confirma tu cita desde cualquier dispositivo</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="barberos" class="py-5 section-muted">
-      <div class="container">
-        <div class="text-center mb-4">
-          <h2>Nuestros Barberos</h2>
-          <p class="text-secondary mb-0">Artistas del detalle y el estilo.</p>
-        </div>
-        <div class="row g-4" id="barbersGrid"></div>
-      </div>
-    </section>
-
-    <section id="servicios" class="py-5">
+    <section id="servicios" class="py-5 section-soft">
       <div class="container">
         <div class="text-center mb-4">
           <h2>Servicios</h2>
-          <p class="text-secondary mb-0">Paquetes y cortes para cada estilo.</p>
+          <p class="text-secondary mb-0">Cortes y paquetes para todos los estilos.</p>
         </div>
         <div class="row g-4" id="servicesGrid"></div>
       </div>
     </section>
 
-    <section id="mapa" class="py-5 section-muted">
+    <section id="barberos" class="py-5">
+      <div class="container">
+        <div class="text-center mb-4">
+          <h2>Barberos</h2>
+          <p class="text-secondary mb-0">Equipo experto en precisión y tendencia.</p>
+        </div>
+        <div class="row g-4" id="barbersGrid"></div>
+      </div>
+    </section>
+
+    <section id="mapa" class="py-5 section-soft">
       <div class="container">
         <div class="row g-4 align-items-stretch">
           <div class="col-lg-8">
-            <div class="ratio ratio-21x9 block overflow-hidden">
+            <div class="panel ratio ratio-21x9 overflow-hidden">
               <iframe id="landingMapFrame" title="Mapa barbería" src="about:blank" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
           </div>
           <div class="col-lg-4">
-            <div class="block p-4 h-100">
-              <h2 class="mb-3">Mapa y accesos</h2>
-              <p class="text-secondary">Estamos en zona central para llegar rápido desde cualquier punto de la ciudad.</p>
+            <div class="panel p-4 h-100 d-flex flex-column justify-content-between">
+              <div>
+                <h2 class="h3">Llegar También debe ser fácil</h2>
+                <p class="text-secondary">Nuestra Ubicación te permite encontrar la barberia rápido para que tu experiencia sea c?moda de principio a fin.</p>
+              </div>
+              <a href="#reservas" class="btn btn-blue">Quiero reservar ahora</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reservas" class="py-5">
+      <div class="container">
+        <div class="row g-4 align-items-stretch">
+          <div class="col-lg-6 transition-column" id="leftInfoColumn">
+            <div class="panel p-4 h-100 d-flex flex-column justify-content-center">
+              <h2 class="mb-3">Tu cita lista en menos tiempo</h2>
+              <p class="text-secondary">Elige el servicio que quieres, reserva con tu barbero ideal y asegura un espacio cómodo para verte impecable.</p>
               <div class="d-grid gap-2">
-                <a class="btn btn-main" href="#reservar">Reservar ahora</a>
-                <a class="btn btn-theme" href="#inicio">Volver arriba</a>
+                <a href="#inicio" class="btn btn-red">Ver estilo de la barbería</a>
+                <button id="toMap" class="btn btn-ghost" type="button">Ver Ubicación y llegar fácil</button>
               </div>
             </div>
+          </div>
+          <div class="col-lg-6 transition-column" id="rightFormColumn">
+            <form id="reservationForm" class="panel reserve-box needs-validation" novalidate>
+              <h2 class="mb-3">Formulario de reserva</h2>
+              <div class="row g-3">
+                <div class="col-md-6"><label class="form-label" for="documento">Documento</label><input id="documento" name="documento" class="form-control" type="text" required></div>
+                <div class="col-md-6"><label class="form-label" for="nombre">Nombre</label><input id="nombre" name="nombre" class="form-control" type="text" required></div>
+                <div class="col-md-6"><label class="form-label" for="telefono">Teléfono</label><input id="telefono" name="telefono" class="form-control" type="tel" required></div>
+                <div class="col-md-6"><label class="form-label" for="email">Correo</label><input id="email" name="email" class="form-control" type="email" required></div>
+                <div class="col-md-6"><label class="form-label" for="servicio">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
+                <div class="col-md-6"><label class="form-label" for="barbero">Barbero</label><select id="barbero" name="barbero" class="form-select" required></select></div>
+                <div class="col-md-6"><label class="form-label" for="fecha">Fecha</label><input id="fecha" name="fecha" class="form-control" type="date" required></div>
+                <div class="col-md-6"><label class="form-label" for="hora">Hora</label><select id="hora" name="hora" class="form-select" required></select></div>
+                <div class="col-12"><label class="form-label" for="notas">Notas</label><textarea id="notas" name="notas" class="form-control" rows="3" placeholder="Detalle de preferencia"></textarea></div>
+                <div class="col-12 d-grid"><button type="submit" class="btn btn-blue btn-lg">Confirmar reserva</button></div>
+              </div>
+              <div id="reservationAlert" class="alert mt-3 d-none" role="alert"></div>
+            </form>
+
+            <!-- La tarjeta de confirmación se ha movido al centro de la pantalla (successOverlay) -->
           </div>
         </div>
       </div>
@@ -733,53 +1298,109 @@
   <footer class="py-4 text-center">
     <div class="container">
       <div class="footer-menu mb-3">
-        <a class="btn btn-theme" href="#inicio">Inicio</a>
-        <a class="btn btn-theme" href="#reservar">Reservar</a>
-        <a class="btn btn-theme" href="#barberos">Barberos</a>
-        <a class="btn btn-theme" href="#servicios">Servicios</a>
-        <a class="btn btn-theme" href="#mapa">Ubicación</a>
+        <a class="btn btn-theme btn-sm" href="#inicio">Inicio</a>
+        <a class="btn btn-theme btn-sm" href="#servicios">Servicios</a>
+        <a class="btn btn-theme btn-sm" href="#barberos">Barberos</a>
+        <a class="btn btn-theme btn-sm" href="#mapa">Mapa</a>
+        <a class="btn btn-theme btn-sm" href="#reservas">Reservas</a>
       </div>
       <div class="footer-brand-wrap">
-        <div class="brand footer-brand">Distrito Barber</div>
+        <div class="brand footer-brand">BlueRed Barber</div>
       </div>
-      <small class="footer-copy d-block mt-3">Reserva rápido, explora servicios y vuelve a cualquier sección en un clic.</small>
+      <small class="footer-copy d-block mt-3">Reserva fácil, elige tu servicio ideal y visita una barbería pensada para proyectar una imagen impecable.</small>
     </div>
   </footer>
+
+  <nav class="mobile-dock" aria-label="Accesos rápidos">
+    <a href="#servicios" class="is-active"><i class="bi bi-stars"></i><span>Servicios</span></a>
+    <a href="#barberos"><i class="bi bi-person-badge"></i><span>Barbers</span></a>
+    <a href="#mapa"><i class="bi bi-geo-alt"></i><span>Map</span></a>
+    <a href="#reservas"><i class="bi bi-calendar-check"></i><span>Book</span></a>
+  </nav>
+
+  <!-- OVERLAY DE CONFIRMACIÓN PREMIUM EN EL CENTRO -->
+  <div id="successOverlay" class="success-overlay d-none">
+    <div id="successCard" class="panel reserve-box text-center">
+      <div class="success-card-header">
+        <div class="success-icon-wrap">
+          <i class="bi bi-check-circle-fill"></i>
+        </div>
+        <h3 class="success-title">¡Reserva Confirmada!</h3>
+        <p class="text-secondary small">Tu espacio ha sido asegurado con éxito. ¡Te esperamos!</p>
+      </div>
+      
+      <div class="success-details">
+        <div class="detail-item">
+          <span class="detail-label"><i class="bi bi-person-fill"></i> Cliente</span>
+          <span id="successClient" class="detail-value">-</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label"><i class="bi bi-scissors"></i> Servicio</span>
+          <span id="successService" class="detail-value">-</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label"><i class="bi bi-person-badge"></i> Barbero</span>
+          <span id="successBarber" class="detail-value">-</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label"><i class="bi bi-calendar-event"></i> Fecha</span>
+          <span id="successDate" class="detail-value">-</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label"><i class="bi bi-clock"></i> Hora</span>
+          <span id="successTime" class="detail-value">-</span>
+        </div>
+      </div>
+      
+      <div class="d-grid gap-2">
+        <button id="successBtnReset" type="button" class="btn btn-blue btn-lg">Nueva Reserva</button>
+      </div>
+    </div>
+  </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script>
     const services = [
-      { id_servicio: 1, nombre: 'Crop + textura', precio: 42000, icono: 'bi-scissors' },
-      { id_servicio: 2, nombre: 'Mid fade', precio: 47000, icono: 'bi-stars' },
-      { id_servicio: 3, nombre: 'Beard ritual', precio: 36000, icono: 'bi-magic' },
-      { id_servicio: 4, nombre: 'Corte + barba + cejas', precio: 76000, icono: 'bi-lightning-charge' },
-      { id_servicio: 5, nombre: 'Color parcial', precio: 65000, icono: 'bi-palette' },
-      { id_servicio: 6, nombre: 'Limpieza facial pro', precio: 46000, icono: 'bi-droplet-half' }
+      { id_servicio: 1, nombre: 'Corte fade', precio: 47000, icono: 'bi-scissors' },
+      { id_servicio: 2, nombre: 'Corte clásico', precio: 41000, icono: 'bi-award' },
+      { id_servicio: 3, nombre: 'Barba premium', precio: 39000, icono: 'bi-bezier2' },
+      { id_servicio: 4, nombre: 'Combo corte + barba', precio: 78000, icono: 'bi-lightning-charge' },
+      { id_servicio: 5, nombre: 'Limpieza facial', precio: 44000, icono: 'bi-droplet-half' },
+      { id_servicio: 6, nombre: 'Dise?o freestyle', precio: 56000, icono: 'bi-brush' }
     ];
 
     const barbers = [
-      { id_barbero: 201, nombre: 'Mateo Cruz', especialidad: 'Cortes urbaños', experiencia: '7 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero1.1.png' },
-      { id_barbero: 202, nombre: 'Juan Correa', especialidad: 'Navaja y barba', experiencia: '9 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero2.1.png' },
-      { id_barbero: 203, nombre: 'Diego Herrera', especialidad: 'Estilo ejecutivo', experiencia: '5 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero3.1.png' },
-      { id_barbero: 204, nombre: 'Emilio Rios', especialidad: 'Disenos personalizados', experiencia: '6 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png' }
+      { id_barbero: 601, nombre: 'Sergio R.', especialidad: 'Fades extremos', experiencia: '8 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero1.1.png' },
+      { id_barbero: 602, nombre: 'Miguel C.', especialidad: 'Barba y navaja', experiencia: '9 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero2.1.png' },
+      { id_barbero: 603, nombre: 'Andres P.', especialidad: 'Corte ejecutivo', experiencia: '6 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero3.1.png' },
+      { id_barbero: 604, nombre: 'Juan V.', especialidad: 'Dise?o urbano', experiencia: '7 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png' }
     ];
 
-    const slots = ['08:30', '09:30', '10:30', '11:30', '13:30', '14:30', '15:30', '16:30', '17:30'];
+    const slots = ['09:00','10:00','11:00','12:00','14:00','15:00','16:00','17:00','18:00'];
     const ALLOWED_SLOT_MINUTES = [5, 10, 15, 20, 30];
     const defaultHours = [
-      { dia: 'lunes', activo: true, hora_abre: '08:30', hora_cierra: '18:30' },
-      { dia: 'martes', activo: true, hora_abre: '08:30', hora_cierra: '18:30' },
-      { dia: 'miercoles', activo: true, hora_abre: '08:30', hora_cierra: '18:30' },
-      { dia: 'jueves', activo: true, hora_abre: '08:30', hora_cierra: '18:30' },
-      { dia: 'viernes', activo: true, hora_abre: '08:30', hora_cierra: '18:30' },
-      { dia: 'sabado', activo: true, hora_abre: '08:30', hora_cierra: '18:30' }
+      { dia: 'lunes', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'martes', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'miercoles', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'jueves', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'viernes', activo: true, hora_abre: '09:00', hora_cierra: '19:00' },
+      { dia: 'sabado', activo: true, hora_abre: '09:00', hora_cierra: '19:00' }
     ];
     const inheritedHours = [...defaultHours];
     let inheritedSlotMin = 30;
+    const SERVICE_COVERS = [
+      'https://images.unsplash.com/photo-1622288432450-277d0fef5ed6?auto=format&fit=crop&w=900&q=80',
+      'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80',
+      'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=900&q=80',
+      'https://images.unsplash.com/photo-1593702275687-f8b402bf9ea4?auto=format&fit=crop&w=900&q=80',
+      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=900&q=80',
+      'https://images.unsplash.com/photo-1512690459411-b0fd220c798f?auto=format&fit=crop&w=900&q=80'
+    ];
 
     const html = document.getElementById('landingRoot');
     const themeToggle = document.getElementById('themeToggle');
+    const heroImage = document.getElementById('heroImage');
     const servicesGrid = document.getElementById('servicesGrid');
     const barbersGrid = document.getElementById('barbersGrid');
     const serviceSelect = document.getElementById('servicio');
@@ -790,25 +1411,26 @@
     const alertBox = document.getElementById('reservationAlert');
     const N8N_RESERVA_WEBHOOK = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/reservas/create';
     const DEFAULT_PUBLIC_PROFILE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public';
-    const heroImage = document.getElementById('heroImage');
 
-    dateInput.min = new Date().toISOString().split('T')[0];
+    document.getElementById('toMap').addEventListener('click', () => {
+      document.getElementById('mapa').scrollIntoView({ behavior: 'smooth' });
+    });
 
     const heroFallbacks = [
-      'https://images.pexels.com/photos/3998417/pexels-photo-3998417.jpeg?auto=compress&cs=tinysrgb&w=1920',
+      'https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=1920',
       'https://images.pexels.com/photos/1319461/pexels-photo-1319461.jpeg?auto=compress&cs=tinysrgb&w=1920',
       'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1920&q=80'
     ];
     let heroIndex = 0;
     heroImage.addEventListener('error', () => {
       heroIndex += 1;
-      if (heroIndex < heroFallbacks.length) {
-        heroImage.src = heroFallbacks[heroIndex];
-      }
+      if (heroIndex < heroFallbacks.length) heroImage.src = heroFallbacks[heroIndex];
     });
 
-    function cop(value) {
-      return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(value);
+    dateInput.min = new Date().toISOString().split('T')[0];
+
+    function cop(v) {
+      return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
     }
 
     function renderServices() {
@@ -816,39 +1438,24 @@
       servicesGrid.classList.toggle('justify-content-center', totalServices <= 2);
       const serviceColClass = totalServices <= 2 ? 'col-md-6 col-lg-5' : 'col-md-6 col-lg-4';
 
-      servicesGrid.innerHTML = services.map(s => `
+      servicesGrid.innerHTML = services.map((s, idx) => `
         <div class="${serviceColClass}">
-          <article class="block service-item">
-            <div class="icon-dot mb-3"><i class="bi ${s.icono}"></i></div>
-            <h3 class="h5">${s.nombre}</h3>
-            <p class="text-secondary mb-2">Trabajo preciso, asesoria y acabado premium.</p>
-            <span class="pill">${cop(s.precio)}</span>
+          <article class="panel service-card">
+            <div class="service-visual" style="background-image: url('${SERVICE_COVERS[idx % SERVICE_COVERS.length]}');">
+              <span class="service-badge"><i class="bi ${s.icono}"></i></span>
+            </div>
+            <div class="service-copy">
+              <div class="icon-pill mb-3 service-icon-desktop"><i class="bi ${s.icono}"></i></div>
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                <h3 class="h5 mb-0">${s.nombre}</h3>
+                <span class="price-pill">${cop(s.precio)}</span>
+              </div>
+              <p class="text-secondary mb-2">Trabajo profesional con acabados premium.</p>
+              <small class="service-meta"><i class="bi bi-clock-history"></i> 45 min aprox.</small>
+            </div>
           </article>
         </div>
       `).join('');
-    }
-
-    function getRuntimeBarberPhotoPool() {
-      const params = getLandingUrlParams();
-      const fromParams = params.getAll('barber_photo');
-      const fromWindow = Array.isArray(window.BA_BARBER_PHOTOS) ? window.BA_BARBER_PHOTOS : [];
-      const fromSeed = Array.isArray(landingSeed?.barber_photos) ? landingSeed.barber_photos : [];
-      const fromBranding = Array.isArray(landingSeed?.branding?.barber_photos) ? landingSeed.branding.barber_photos : [];
-      const pool = [...fromWindow, ...fromSeed, ...fromBranding, ...fromParams]
-        .map((item) => safeSeedText(item))
-        .filter(Boolean);
-      return pool.length ? pool : DEFAULT_BARBER_PHOTOS;
-    }
-
-    function resolveBarberPhoto(preferred, idx) {
-      if (window.BA_FORCE_POOL_PHOTOS === true) {
-        const poolForced = getRuntimeBarberPhotoPool();
-        return poolForced[idx % poolForced.length] || DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
-      }
-      const direct = safeSeedText(preferred);
-      if (direct) return direct;
-      const pool = getRuntimeBarberPhotoPool();
-      return pool[idx % pool.length] || DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
     }
 
     function renderBarbers() {
@@ -857,13 +1464,13 @@
       const barberColClass = totalBarbers <= 2 ? 'col-md-6 col-lg-4' : 'col-md-6 col-lg-3';
 
       barbersGrid.innerHTML = barbers.map((b, idx) => {
-        const photo = resolveBarberPhoto(b.foto, idx);
         const fallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
+        const photo = safeSeedText(b.foto) || fallback;
         return `
         <div class="${barberColClass}">
-          <article class="block barber-item text-center">
-            <img class="barber-photo mb-3" src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';">
-            <h3 class="h5 mb-1">${b.nombre}</h3>
+          <article class="panel barber-card text-center">
+            <img class="barber-photo mb-3" src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';" style="width:96px;height:96px;object-fit:cover;border-radius:999px;" />
+            <h3 class="h6 mb-1">${b.nombre}</h3>
             <p class="text-secondary mb-1">${b.especialidad}</p>
             <small class="text-secondary">${b.experiencia}</small>
           </article>
@@ -871,24 +1478,31 @@
       `;
       }).join('');
     }
-
     function normalizeDayLabel(value) {
-      return safeSeedText(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return safeSeedText(value)
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '');
     }
 
     function normalizeSeedHour(item) {
       if (!item || typeof item !== 'object') return null;
       const dia = normalizeDayLabel(item.dia || item.day || item.nombre_dia);
-      const hora_abre = safeSeedText(item.hora_abre || item.apertura || item.open || item.open_time);
-      const hora_cierra = safeSeedText(item.hora_cierra || item.cierre || item.close || item.close_time);
-      if (!dia || !hora_abre || !hora_cierra) return null;
-      return { dia, activo: item.activo !== false, hora_abre, hora_cierra };
+      const horaAbre = safeSeedText(item.hora_abre || item.apertura || item.open || item.open_time);
+      const horaCierra = safeSeedText(item.hora_cierra || item.cierre || item.close || item.close_time);
+      if (!dia || !horaAbre || !horaCierra) return null;
+      return {
+        dia,
+        activo: item.activo !== false,
+        hora_abre: horaAbre,
+        hora_cierra: horaCierra
+      };
     }
 
     function timeToMinutes(value) {
       const match = /^(\d{1,2}):(\d{2})$/.exec(safeSeedText(value));
       if (!match) return NaN;
-      return Number(match[1]) * 60 + Number(match[2]);
+      return (Number(match[1]) * 60) + Number(match[2]);
     }
 
     function minutesToTime(totalMinutes) {
@@ -922,12 +1536,14 @@
       const normalizedDay = normalizeDayLabel(dayName);
       const daySchedule = inheritedHours.find((item) => item.activo && item.dia === normalizedDay) || inheritedHours.find((item) => item.activo);
       if (!daySchedule) return slots.slice();
+
       const openMinutes = timeToMinutes(daySchedule.hora_abre);
       const closeMinutes = timeToMinutes(daySchedule.hora_cierra);
       const duration = getSelectedServiceDuration();
       if (!Number.isFinite(openMinutes) || !Number.isFinite(closeMinutes) || closeMinutes <= openMinutes) {
         return slots.slice();
       }
+
       const lastStart = Math.max(openMinutes, closeMinutes - duration);
       const generated = [];
       const slotStep = normalizeSlotMin(inheritedSlotMin, 30);
@@ -937,11 +1553,30 @@
       return generated.length ? generated : slots.slice();
     }
 
+    function populateServicesAndBarbers() {
+      const currentService = serviceSelect.value;
+      const currentBarber = barberSelect.value;
+
+      serviceSelect.innerHTML = '<option value="" selected disabled>Selecciona servicio</option>' + services.map(s => `<option value="${s.id_servicio}">${s.nombre} - ${cop(s.precio)}</option>`).join('');
+      barberSelect.innerHTML = '<option value="" selected disabled>Selecciona barbero</option>' + barbers.map(b => `<option value="${b.id_barbero}">${b.nombre}</option>`).join('');
+      
+      if (currentService) serviceSelect.value = currentService;
+      if (currentBarber) barberSelect.value = currentBarber;
+    }
+
+    function updateHourSlots() {
+      const selectedDay = getDayNameFromDate(dateInput.value);
+      const availableSlots = buildHourSlotsForDay(selectedDay);
+      const currentHour = hourSelect.value;
+      hourSelect.innerHTML = '<option value="" selected disabled>Selecciona hora</option>' + availableSlots.map(h => `<option value="${h}">${h}</option>`).join('');
+      if (availableSlots.includes(currentHour)) {
+        hourSelect.value = currentHour;
+      }
+    }
+
     function fillSelects() {
-      serviceSelect.innerHTML = '<option value="" selected disabled>Elige servicio</option>' + services.map(s => `<option value="${s.id_servicio}">${s.nombre} - ${cop(s.precio)}</option>`).join('');
-      barberSelect.innerHTML = '<option value="" selected disabled>Elige barbero</option>' + barbers.map(b => `<option value="${b.id_barbero}">${b.nombre}</option>`).join('');
-      const availableSlots = buildHourSlotsForDay(getDayNameFromDate(dateInput.value));
-      hourSelect.innerHTML = '<option value="" selected disabled>Elige hora</option>' + availableSlots.map(h => `<option value="${h}">${h}</option>`).join('');
+      populateServicesAndBarbers();
+      updateHourSlots();
     }
 
     function setTheme(theme) {
@@ -953,18 +1588,22 @@
       document.body.setAttribute('data-bs-theme', theme);
       document.body.classList.toggle('dark-mode', theme === 'dark');
       document.body.classList.toggle('light-mode', theme === 'light');
-      localStorage.setItem('barber_theme_v2', theme);
+      localStorage.setItem('bluered_theme_v51', theme);
       if (themeToggle) {
-        themeToggle.innerHTML = theme === 'dark'
-          ? '<i class="bi bi-sun-fill"></i> Tema'
-          : '<i class="bi bi-moon-stars-fill"></i> Tema';
+        themeToggle.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i> Tema' : '<i class="bi bi-moon-stars-fill"></i> Tema';
       }
     }
 
     function initTheme() {
-      const saved = localStorage.getItem('barber_theme_v2');
-      const autoDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setTheme(saved || (autoDark ? 'dark' : 'light'));
+      const saved = localStorage.getItem('bluered_theme_v51');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(saved || (prefersDark ? 'dark' : 'light'));
+    }
+
+    function showAlert(type, msg) {
+      alertBox.className = `alert alert-${type} mt-3`;
+      alertBox.textContent = msg;
+      alertBox.classList.remove('d-none');
     }
 
     function stripInjectedUi() {
@@ -975,16 +1614,16 @@
         '.theme-toggle',
         '.theme-toggle-btn',
         '.theme-toggle-button',
-        "[class*='theme-toggle']",
-        "[class*='dark-mode-toggle']",
+        '[class*="theme-toggle"]',
+        '[class*="dark-mode-toggle"]',
         '#n8n-chat',
-        "[id*='n8n-chat']",
-        "[class*='n8n-chat']",
-        "[class*='chat-widget']",
-        "[class*='chat-toggle']",
-        "[class*='chat-window']",
-        "iframe[src*='n8n']",
-        "iframe[title*='chat' i]"
+        '[id*="n8n-chat"]',
+        '[class*="n8n-chat"]',
+        '[class*="chat-widget"]',
+        '[class*="chat-toggle"]',
+        '[class*="chat-window"]',
+        'iframe[src*="n8n"]',
+        'iframe[title*="chat" i]'
       ];
       document.querySelectorAll(selectors.join(',')).forEach((node) => {
         if (node?.id === 'themeToggle') return;
@@ -1025,12 +1664,6 @@
       });
     }
 
-    function showMessage(type, msg) {
-      alertBox.className = `alert alert-${type} mt-3`;
-      alertBox.textContent = msg;
-      alertBox.classList.remove('d-none');
-    }
-
     function buildPayload() {
       return {
         clientes_finales: {
@@ -1063,17 +1696,15 @@
       e.preventDefault();
       if (!form.checkValidity()) {
         form.classList.add('was-validated');
-        showMessage('danger', 'Completa todos los campos obligatorios.');
+        showAlert('danger', 'Completa los campos obligatorios.');
         return;
       }
 
       const payload = buildPayload();
       const submitBtn = form.querySelector('button[type="submit"]');
-      const originalText = submitBtn?.textContent || 'Confirmar reserva';
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Enviando...';
-      }
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
 
       try {
         const res = await fetch(N8N_RESERVA_WEBHOOK, {
@@ -1087,19 +1718,44 @@
           throw new Error(data.message || 'No fue posible guardar la reserva en este momento.');
         }
 
-        showMessage('success', data.message || 'Reserva creada correctamente. Te esperamos en tu cita.');
+        // Populate and display success confirmation card dynamically
+        const serviceObj = services.find(s => s.id_servicio == payload.citas.id_servicio);
+        const barberObj = barbers.find(b => b.id_barbero == payload.citas.id_barbero);
+        
+        document.getElementById('successClient').textContent = payload.clientes_finales.nombre_completo;
+        document.getElementById('successService').textContent = serviceObj ? `${serviceObj.nombre} (${cop(serviceObj.precio)})` : 'Servicio Especial';
+        document.getElementById('successBarber').textContent = barberObj ? barberObj.nombre : 'Barbero Especial';
+        
+        let formattedDate = payload.citas.fecha;
+        try {
+          const dateParts = payload.citas.fecha.split('-');
+          const localDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+          formattedDate = localDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+          formattedDate = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+        } catch (e) {
+          console.error(e);
+        }
+        document.getElementById('successDate').textContent = formattedDate;
+        document.getElementById('successTime').textContent = `${payload.citas.hora} hrs`;
+
+        // Muestra el overlay de éxito en el centro exacto con animación premium
+        const overlay = document.getElementById('successOverlay');
+        overlay.classList.remove('d-none');
+        setTimeout(() => {
+          overlay.classList.add('show');
+        }, 10);
+
+        // Reset the form in background
         form.reset();
         form.classList.remove('was-validated');
         fillSelects();
         dateInput.min = new Date().toISOString().split('T')[0];
       } catch (error) {
         console.error('Error guardando reserva:', error);
-        showMessage('danger', error.message || 'Error de conexión con el servicio de reservas.');
+        showAlert('danger', error.message || 'Error de conexión con el servicio de reservas.');
       } finally {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText;
-        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
       }
     });
     const DEFAULT_SERVICE_ICONS = ['bi-scissors', 'bi-stars', 'bi-bezier2', 'bi-lightning-charge', 'bi-droplet-half', 'bi-brush'];
@@ -1127,13 +1783,9 @@
       branding: null,
       inherited: null
     };
-    window.BA_FORCE_POOL_PHOTOS = true;
 
     function getPublicProfileEndpoint() {
       const params = getLandingUrlParams();
-      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
-        ? `https://quickchart.io/qr?size=320&margin=2&text=`
-        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       return safeSeedText(
         window.BA_PUBLIC_PROFILE_ENDPOINT ||
         params.get('profile_endpoint') ||
@@ -1148,9 +1800,6 @@
 
     function getCurrentBarberiaId() {
       const params = getLandingUrlParams();
-      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
-        ? `https://quickchart.io/qr?size=320&margin=2&text=`
-        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       const queryId =
         Number(params.get('barberia_id')) ||
         Number(params.get('id_barberia')) ||
@@ -1221,6 +1870,16 @@
         profile.map_url ||
         profile.location_address
       );
+      const mapFallback = buildMapsEmbedUrl(
+        profile.maps_url ||
+        profile.location_map_url ||
+        profile.map_url ||
+        profile.location_address ||
+        profile.direccion ||
+        branding.maps_url ||
+        branding.location_map_url
+      );
+      const nextMapsUrl = mapsUrl || mapFallback;
 
       document.querySelectorAll('.navbar-brand.brand, .navbar-brand, .brand, .footer-brand').forEach((node) => {
         if (publicName) {
@@ -1264,21 +1923,11 @@
       const heroImage = document.getElementById('heroImage');
       if (coverUrl && heroImage) heroImage.src = coverUrl;
 
-      const mapFallback = buildMapsEmbedUrl(
-        profile.maps_url ||
-        profile.location_map_url ||
-        profile.map_url ||
-        profile.location_address ||
-        profile.direccion ||
-        branding.maps_url ||
-        branding.location_map_url
-      );
-      const nextMapsUrl = mapsUrl || mapFallback;
-      document.querySelectorAll('#landingMapFrame, iframe[src*="google.com/maps"], iframe[title*="Mapa" i]').forEach((frame) => {
-        if (nextMapsUrl) {
+      if (nextMapsUrl) {
+        document.querySelectorAll('#landingMapFrame, iframe[src*="google.com/maps"], iframe[title*="Mapa" i]').forEach((frame) => {
           frame.src = nextMapsUrl;
-        }
-      });
+        });
+      }
 
       if (branding && (branding.use_custom_palette || branding.palette_primary || branding.palette_secondary || branding.palette_text)) {
         applyBrandingPalette({ ...branding, use_custom_palette: true });
@@ -1339,7 +1988,9 @@
       if ((!slug && !barberiaId) || !endpoint) return;
 
       try {
-        const query = slug ? `slug=${encodeURIComponent(slug)}` : `barberia_id=${encodeURIComponent(String(barberiaId))}`;
+        const query = slug
+          ? `slug=${encodeURIComponent(slug)}`
+          : `barberia_id=${encodeURIComponent(String(barberiaId))}`;
         const requestUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${query}`;
         const response = await fetch(requestUrl, {
           method: 'GET',
@@ -1347,6 +1998,7 @@
         });
         const json = await response.json().catch(() => ({}));
         if (!response.ok || json?.ok === false) return;
+
         const payload = extractPublicLandingPayload(json);
         if (!payload.ok) return;
 
@@ -1377,9 +2029,6 @@
 
     function getLandingSlug() {
       const params = getLandingUrlParams();
-      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
-        ? `https://quickchart.io/qr?size=320&margin=2&text=` 
-        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       const querySlug = safeSeedText(params.get('slug') || params.get('barberia_slug') || params.get('business_slug'));
       if (querySlug) return querySlug;
       const pathMatch = String(window.location?.pathname || '').match(/^\/b\/([^/]+)\/?$/i);
@@ -1393,9 +2042,6 @@
 
     function getLandingSiteBaseUrl() {
       const params = getLandingUrlParams();
-      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
-        ? `https://quickchart.io/qr?size=320&margin=2&text=`
-        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       const explicitBase = safeSeedText(
         params.get('site_base_url') ||
         params.get('base_url') ||
@@ -1423,9 +2069,6 @@
 
     function getLandingQrTargetUrl() {
       const params = getLandingUrlParams();
-      const buildQrUrl = (url, provider = 'qrserver') => provider === 'quickchart'
-        ? `https://quickchart.io/qr?size=320&margin=2&text=`
-        : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       const reservationUrl = safeSeedText(
         window.BA_RESERVATION_URL ||
         window.BA_PUBLIC_LANDING_URL ||
@@ -1453,7 +2096,7 @@
       }
     }
 
-                    function renderLandingQr() {
+    function renderLandingQr() {
       const qrImage = document.getElementById('landingQrImage');
       const qrLink = document.getElementById('landingQrLink');
       if (!qrImage || !qrLink) return;
@@ -1493,25 +2136,6 @@
       return parseRaw(sessionStorage.getItem('ba_landing_seed')) ||
         parseRaw(localStorage.getItem('ba_landing_seed')) ||
         null;
-    }
-
-    function hydrateCanonicalRouteContextIfReady() {
-      if (!/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || ''))) return false;
-      const routeContext = window.BA_LANDING_ROUTE_CONTEXT;
-      if (!routeContext || typeof routeContext !== 'object') return false;
-
-      applyInheritedCollections(
-        routeContext.servicios,
-        routeContext.barberos,
-        routeContext.horarios,
-        routeContext.slot_min || routeContext.barberia?.slot_min
-      );
-      applyPublicLandingBranding({
-        profile: routeContext.barberia || routeContext,
-        branding: routeContext.branding || {}
-      });
-      renderLandingQr();
-      return true;
     }
 
     function toSeedNumber(value, fallback) {
@@ -1582,7 +2206,6 @@
       if (typeof renderServices === 'function') renderServices();
       if (typeof renderBarbers === 'function') renderBarbers();
       if (typeof fillSelects === 'function') fillSelects();
-      if (typeof populateSelects === 'function') populateSelects();
     }
 
     function applyBrandingPalette(payload) {
@@ -1614,24 +2237,21 @@
     applyInheritedCollections(landingSeed?.servicios, landingSeed?.barberos, landingSeed?.horarios, landingSeed?.slot_min || landingSeed?.barberia?.slot_min);
     applyPublicLandingBranding({ profile: landingSeed?.barberia || landingSeed || {}, branding: landingSeed?.branding || {} });
     hydrateLandingFromPublicEndpoint();
-    if (!hydrateCanonicalRouteContextIfReady()) {
-      window.addEventListener('load', () => hydrateCanonicalRouteContextIfReady(), { once: true });
-    }
 
     window.addEventListener('message', (ev) => {
       const data = ev?.data || {};
       if (data?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(data.public_landing_url);
       if (data?.reservation_url) window.BA_RESERVATION_URL = safeSeedText(data.reservation_url);
       if (data?.qr_url) window.BA_QR_URL = safeSeedText(data.qr_url);
-      if (Array.isArray(data?.barber_photos)) window.BA_BARBER_PHOTOS = data.barber_photos.map((item) => safeSeedText(item)).filter(Boolean);
-      if (typeof data?.force_pool_photos === 'boolean') window.BA_FORCE_POOL_PHOTOS = data.force_pool_photos;
+      if (data?.source === 'ba-editor') {
+        applyBrandingPalette(data);
+      }
       if (data.type !== 'BA_BRANDING_UPDATE') return;
       const payload = data.payload || {};
       if (payload?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(payload.public_landing_url);
       if (payload?.reservation_url) window.BA_RESERVATION_URL = safeSeedText(payload.reservation_url);
       if (payload?.qr_url) window.BA_QR_URL = safeSeedText(payload.qr_url);
-      if (Array.isArray(payload?.barber_photos)) window.BA_BARBER_PHOTOS = payload.barber_photos.map((item) => safeSeedText(item)).filter(Boolean);
-      if (typeof payload?.force_pool_photos === 'boolean') window.BA_FORCE_POOL_PHOTOS = payload.force_pool_photos;
+      applyBrandingPalette(payload);
       applyInheritedCollections(
         payload.services || payload.inherited_services || payload.servicios,
         payload.barbers || payload.inherited_barbers || payload.barberos,
@@ -1648,8 +2268,8 @@
     renderBarbers();
     fillSelects();
     renderLandingQr();
-    dateInput.addEventListener('change', fillSelects);
-    serviceSelect.addEventListener('change', fillSelects);
+    dateInput.addEventListener('change', updateHourSlots);
+    serviceSelect.addEventListener('change', updateHourSlots);
 
     // Auto-collapse mobile navbar after link click
     document.querySelectorAll('#menuNav .nav-link').forEach(link => {
@@ -1661,23 +2281,18 @@
         }
       });
     });
+
+    // Botón de restablecimiento para cerrar el overlay
+    const successBtnReset = document.getElementById('successBtnReset');
+    if (successBtnReset) {
+      successBtnReset.addEventListener('click', () => {
+        const overlay = document.getElementById('successOverlay');
+        overlay.classList.remove('show');
+        setTimeout(() => {
+          overlay.classList.add('d-none');
+        }, 500); // Coincide con la transición CSS (0.5s)
+      });
+    }
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

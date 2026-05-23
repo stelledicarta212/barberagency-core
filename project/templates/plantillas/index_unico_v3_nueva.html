@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8" />
@@ -54,18 +54,46 @@
 
     #landingRoot h1, #landingRoot h2, #landingRoot h3, #landingRoot .brand { font-family: 'Archivo Black', sans-serif; letter-spacing: .4px; }
 
-    .topbar {
-      background: var(--nav);
-      backdrop-filter: blur(9px);
-      border-bottom: 1px solid var(--border);
+    /* --- BARRA DE NAVEGACIÓN FLOTANTE PREMIUM CON EFECTO VIDRIO --- */
+    .topnav {
+      position: fixed !important;
+      top: 15px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      margin: 0 !important;
+      width: 92% !important;
+      max-width: 1200px !important;
+      border-radius: 30px !important;
+      background: rgba(255, 255, 255, 0.45) !important;
+      backdrop-filter: blur(16px) saturate(180%) !important;
+      -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.25) !important;
+      box-shadow: 0 12px 32px rgba(31, 38, 135, 0.08) !important;
+      z-index: 1040 !important;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      padding: 10px 24px !important;
     }
 
-    .navbar .nav-link, .navbar .navbar-brand { color: var(--text); }
+    #landingRoot[data-theme='dark'] .topnav {
+      background: rgba(26, 30, 42, 0.55) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .navbar .navbar-brand { color: #000000 !important; }
+    #landingRoot[data-theme='dark'] .navbar .navbar-brand { color: var(--text) !important; }
 
     .navbar-brand.brand {
       display: inline-flex;
       align-items: center;
       gap: 0.75rem;
+      font-weight: 700 !important;
+      color: #000000 !important;
+      font-size: 1.35rem !important;
+      transition: all 0.3s ease !important;
+    }
+    #landingRoot[data-theme='dark'] .navbar-brand.brand {
+      color: var(--text) !important;
     }
 
     .navbar-brand.brand img {
@@ -76,6 +104,72 @@
       border-radius: 10px;
       border: 2px solid color-mix(in srgb, var(--main) 35%, white);
       box-shadow: 0 8px 18px rgba(0, 125, 134, .18);
+    }
+
+    .navbar-nav .nav-link {
+      color: #000000 !important;
+      font-weight: 600 !important;
+      font-size: 0.92rem !important;
+      padding: 6px 16px !important;
+      border-radius: 99px !important;
+      transition: all 0.3s ease !important;
+    }
+    #landingRoot[data-theme='dark'] .navbar-nav .nav-link {
+      color: var(--text) !important;
+    }
+
+    .navbar-nav .nav-link:hover {
+      background: rgba(0, 164, 122, 0.08) !important;
+      color: var(--main) !important;
+    }
+
+    #landingRoot[data-theme='dark'] .navbar-nav .nav-link:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+      color: var(--main) !important;
+    }
+
+    /* --- BOTÓN HAMBURGUESA ANIMADO EN CSS --- */
+    .custom-toggler {
+      border: none !important;
+      background: transparent !important;
+      padding: 6px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: space-between !important;
+      width: 24px !important;
+      height: 18px !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .custom-toggler:focus {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .custom-toggler .toggler-bar {
+      display: block !important;
+      width: 100% !important;
+      height: 2px !important;
+      background-color: #000000 !important;
+      border-radius: 4px !important;
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease !important;
+    }
+    #landingRoot[data-theme='dark'] .custom-toggler .toggler-bar {
+      background-color: var(--text) !important;
+    }
+
+    .custom-toggler:not(.collapsed) .top-bar {
+      transform: translateY(8px) rotate(45deg) !important;
+    }
+
+    .custom-toggler:not(.collapsed) .middle-bar {
+      opacity: 0 !important;
+      transform: scaleX(0) !important;
+    }
+
+    .custom-toggler:not(.collapsed) .bottom-bar {
+      transform: translateY(-8px) rotate(-45deg) !important;
     }
 
     #landingRoot ~ #themeToggle,
@@ -347,6 +441,130 @@
       .hero-copy { margin-left: 0; text-align: left; }
     }
 
+    @media (max-width: 991.98px) {
+      .topnav {
+        position: fixed !important;
+        top: 12px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        width: calc(100% - 24px) !important;
+        border-radius: 20px !important;
+        background: rgba(255, 255, 255, 0.7) !important;
+        backdrop-filter: blur(16px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+        border: 1px solid rgba(15, 23, 32, 0.12) !important;
+        box-shadow: 0 12px 30px rgba(15, 23, 32, 0.08) !important;
+        padding: 8px 16px !important;
+      }
+
+      .topnav:has(.navbar-collapse.show) {
+        border-radius: 24px !important;
+        background: rgba(255, 255, 255, 0.94) !important;
+        backdrop-filter: blur(20px) !important;
+      }
+
+      #landingRoot[data-theme='dark'] .topnav {
+        background: rgba(11, 15, 24, 0.75) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      #landingRoot[data-theme='dark'] .topnav:has(.navbar-collapse.show) {
+        background: rgba(11, 15, 24, 0.94) !important;
+      }
+
+      .topnav .container {
+        padding: 4px 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .navbar-brand.brand {
+        color: #000000 !important;
+        font-size: 1.55rem;
+        letter-spacing: .02em;
+      }
+
+      #landingRoot[data-theme='dark'] .navbar-brand.brand {
+        color: #ffffff !important;
+      }
+
+      .navbar-brand.brand img {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 8px !important;
+      }
+
+      .navbar-toggler {
+        border: 1px solid rgba(15, 23, 32, 0.15);
+        border-radius: 10px;
+        padding: .35rem .5rem;
+      }
+
+      #landingRoot[data-theme='dark'] .navbar-toggler {
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .navbar-toggler:focus { box-shadow: none; }
+      .navbar-toggler-icon { filter: none; }
+      #landingRoot[data-theme='dark'] .navbar-toggler-icon { filter: invert(1) brightness(2); }
+
+      .custom-toggler .toggler-bar {
+        background-color: #000000 !important;
+      }
+
+      #landingRoot[data-theme='dark'] .custom-toggler .toggler-bar {
+        background-color: #ffffff !important;
+      }
+
+      #menuNav {
+        margin-top: 0.75rem !important;
+        border: none !important;
+        background: transparent !important;
+        padding: 0.5rem 0 !important;
+        box-shadow: none !important;
+      }
+
+      #menuNav .nav-link {
+        color: #000000 !important;
+        padding: 10px 18px !important;
+        margin: 4px 0 !important;
+        display: block !important;
+        border-radius: 12px !important;
+      }
+      #menuNav .nav-link:hover {
+        color: var(--main) !important;
+        background: rgba(0, 0, 0, 0.05) !important;
+      }
+
+      #landingRoot[data-theme='dark'] #menuNav .nav-link {
+        color: #e8eeff !important;
+        padding: 10px 18px !important;
+        margin: 4px 0 !important;
+        display: block !important;
+        border-radius: 12px !important;
+      }
+      #landingRoot[data-theme='dark'] #menuNav .nav-link:hover {
+        color: var(--main) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+      }
+
+      #menuNav #themeToggle {
+        margin-top: .45rem;
+        width: 100%;
+        color: #000000 !important;
+        border-color: rgba(0, 0, 0, 0.15) !important;
+        background: transparent !important;
+      }
+
+      #landingRoot[data-theme='dark'] #menuNav #themeToggle {
+        color: #e8eeff !important;
+        border-color: rgba(255, 255, 255, 0.22) !important;
+      }
+    }
+
     @media (max-width: 575px) {
       .footer-brand-wrap {
         flex-direction: column;
@@ -361,22 +579,21 @@
 </head>
 <body>
   <div id="landingRoot" data-theme="light">
-  <nav class="navbar navbar-expand-lg sticky-top topbar">
+  <nav class="navbar navbar-expand-lg sticky-top topnav">
     <div class="container">
-      <a class="navbar-brand brand" href="#inicio">Nova Cut</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav" aria-controls="menuNav" aria-expanded="false" aria-label="menu">
-        <span class="navbar-toggler-icon"></span>
+      <a class="navbar-brand brand order-lg-0 ms-lg-0" href="#inicio">Nova Cut</a>
+      <button class="navbar-toggler custom-toggler collapsed ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav" aria-controls="menuNav" aria-expanded="false" aria-label="menu">
+        <span class="toggler-bar top-bar"></span>
+        <span class="toggler-bar middle-bar"></span>
+        <span class="toggler-bar bottom-bar"></span>
       </button>
       <div class="collapse navbar-collapse" id="menuNav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
           <li class="nav-item"><a class="nav-link" href="#barberos">Barberos</a></li>
           <li class="nav-item"><a class="nav-link" href="#mapa">Mapa</a></li>
-          <li class="nav-item"><a class="nav-link" href="#reservas">Reservas</a></li>
         </ul>
-        <button id="themeToggle" class="btn btn-theme ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla">
-          <i class="bi bi-moon-stars-fill"></i> Tema
-        </button>
+        <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i> Tema</button>
       </div>
     </div>
   </nav>
@@ -1400,6 +1617,17 @@ function normalizeDayLabel(value) {
     renderLandingQr();
     dateInput.addEventListener('change', fillSelects);
     serviceSelect.addEventListener('change', fillSelects);
+
+    // Auto-collapse mobile navbar after link click
+    document.querySelectorAll('#menuNav .nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        const menuNav = document.getElementById('menuNav');
+        if (menuNav && menuNav.classList.contains('show')) {
+          const bsCollapse = bootstrap.Collapse.getInstance(menuNav) || new bootstrap.Collapse(menuNav);
+          bsCollapse.hide();
+        }
+      });
+    });
   </script>
 </body>
 </html>

@@ -161,6 +161,16 @@ en css avanzanzado de elementor esta el css
   color: color-mix(in srgb, var(--foreground) 72%, transparent);
 }
 
+#baWizardApp .ba-maps-cta {
+  color: #d4af37;
+  font-weight: 700;
+}
+
+#baWizardApp .ba-maps-cta:hover,
+#baWizardApp .ba-maps-cta:focus-visible {
+  color: #2563eb;
+}
+
 #baWizardApp .ba-live-summary {
   display: grid;
   gap: 12px;
@@ -233,6 +243,42 @@ en css avanzanzado de elementor esta el css
   gap: 16px;
   width: min(920px, 100%);
   margin: 0 auto;
+}
+
+#baWizardApp .ba-location-preview {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+}
+
+#baWizardApp .ba-location-preview[hidden] {
+  display: none;
+}
+
+#baWizardApp .ba-location-preview-copy {
+  display: grid;
+  gap: 4px;
+  color: var(--foreground);
+}
+
+#baWizardApp .ba-location-preview-copy strong {
+  font-size: 15px;
+}
+
+#baWizardApp .ba-location-preview-copy span {
+  color: color-mix(in srgb, var(--foreground) 70%, transparent);
+  font-size: 14px;
+}
+
+#baWizardApp .ba-location-preview iframe {
+  width: 100%;
+  min-height: 280px;
+  border: 0;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface-muted) 92%, transparent);
 }
 
 #baWizardApp .ba-input-shell {
@@ -311,6 +357,7 @@ en css avanzanzado de elementor esta el css
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
+/* BOTONES PRINCIPALES: aqui ajustas alto con padding o min-height */
 #baWizardApp .ba-action,
 #baWizardApp .ba-action-secondary,
 #baWizardApp .ba-action-danger {
@@ -361,6 +408,14 @@ en css avanzanzado de elementor esta el css
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  justify-content: center;
+}
+
+/* SEPARACION ENTRE BOTONES DEL MISMO BLOQUE */
+#baWizardApp .ba-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
   justify-content: center;
 }
 
@@ -664,6 +719,19 @@ en css avanzanzado de elementor esta el css
     width: 100%;
   }
 
+  /* BOTONES EN MOVIL: separacion entre Ver mapa y Confirmar ubicacion */
+  #baWizardApp .ba-actions-row {
+    display: grid;
+    gap: 20px;
+  }
+
+  #baWizardApp .ba-actions-row .ba-action + .ba-action,
+  #baWizardApp .ba-actions-row .ba-action + .ba-action-secondary,
+  #baWizardApp .ba-actions-row .ba-action-secondary + .ba-action,
+  #baWizardApp .ba-actions-row .ba-action-secondary + .ba-action-secondary {
+    margin-top: 0;
+  }
+
   #baWizardApp .ba-password-row {
     grid-template-columns: 1fr;
   }
@@ -787,9 +855,9 @@ y este s el html y js
       {
         key: "barberia.direccion",
         label: "Paso 3",
-        prompt: "Cual es la direccion del local?",
-        helper: "Ayuda a ubicar el negocio desde el primer dia.",
-        type: "text",
+        prompt: "Cuál es la dirección del local?",
+        helper: "Escribe la dirección y confirma que el mapa ubique bien el local.",
+        type: "location",
         required: true,
         placeholder: "Ej: Calle 10 #20-30"
       },
@@ -922,6 +990,29 @@ y este s el html y js
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(value));
     }
 
+    function isLikelyGoogleMapsUrl(value) {
+      const url = clean(value);
+      if (!url) return true;
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return false;
+        const host = parsed.hostname.toLowerCase();
+        return host === "maps.app.goo.gl" ||
+          host === "goo.gl" ||
+          host === "www.google.com" ||
+          host === "google.com" ||
+          host.endsWith(".google.com");
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function buildGoogleMapsEmbedUrl(addressOrUrl) {
+      const value = clean(addressOrUrl);
+      if (!value) return "https://www.google.com/maps?q=Google%20Maps&output=embed";
+      return `https://www.google.com/maps?q=${encodeURIComponent(value)}&output=embed`;
+    }
+
     function getDefaultDraft() {
       return {
         barberia: {
@@ -929,6 +1020,7 @@ y este s el html y js
           slug: "",
           telefono: "",
           direccion: "",
+          maps_url: "",
           ciudad: "",
           timezone: "America/Bogota",
           slot_min: 15
@@ -1255,6 +1347,87 @@ y este s el html y js
       }
 
       setTimeout(() => input.focus(), 60);
+    }
+
+    function renderLocationStep(step) {
+      const address = getByPath(draft, "barberia.direccion") || "";
+      const mapsUrl = getByPath(draft, "barberia.maps_url") || "";
+      const initialPreview = buildGoogleMapsEmbedUrl(mapsUrl || address);
+
+      responseArea.innerHTML = `
+        <div class="ba-composer">
+          <div class="ba-grid">
+            <label class="ba-label">
+              Direccion
+              <input class="ba-input" id="baAddressInput" type="text" value="${escapeHtml(address)}" placeholder="${escapeHtml(step.placeholder || "")}" />
+            </label>
+          </div>
+
+          <p class="ba-helper">
+            <a class="ba-maps-cta" href="https://maps.google.com" target="_blank" rel="noopener">Haz clic aquí para abrir Google Maps</a>
+            Si no ves el punto correcto, abre el mapa, busca el local y pega aquí la ubicación exacta.
+          </p>
+
+          <div class="ba-location-preview" id="baLocationPreview">
+            <div class="ba-location-preview-copy">
+              <strong>Vista previa de ubicación</strong>
+              <span>Si el mapa se ve bien, confirma y continúa.</span>
+            </div>
+            <iframe id="baLocationMap" src="${escapeHtml(initialPreview)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Vista previa de Google Maps"></iframe>
+          </div>
+
+          <div class="ba-actions-row">
+            <button class="ba-action-secondary" type="button" id="baPreviewLocationBtn">Ver mapa</button>
+            <button class="ba-action" type="button" id="baLocationNextBtn">Confirmar ubicación</button>
+          </div>
+        </div>
+      `;
+
+      const addressInput = document.getElementById("baAddressInput");
+      const previewBtn = document.getElementById("baPreviewLocationBtn");
+      const nextBtn = document.getElementById("baLocationNextBtn");
+      const previewBox = document.getElementById("baLocationPreview");
+      const mapFrame = document.getElementById("baLocationMap");
+
+      const updatePreview = () => {
+        const nextAddress = clean(addressInput.value);
+
+        if (!nextAddress) {
+          showMessage("error", "La dirección es obligatoria para ver el mapa.");
+          return false;
+        }
+
+        mapFrame.src = buildGoogleMapsEmbedUrl(nextAddress);
+        previewBox.hidden = false;
+        hideMessage();
+        return true;
+      };
+
+      previewBtn.addEventListener("click", updatePreview);
+
+      nextBtn.addEventListener("click", () => {
+        const nextAddress = clean(addressInput.value);
+
+        if (!nextAddress) {
+          showMessage("error", "La dirección es obligatoria.");
+          return;
+        }
+
+        if (!updatePreview()) return;
+
+        setFieldValue("barberia.direccion", nextAddress);
+        setFieldValue("barberia.maps_url", "");
+        nextStep();
+      });
+
+      addressInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          previewBtn.click();
+        }
+      });
+
+      setTimeout(() => addressInput.focus(), 60);
     }
 
     function renderChoiceStep(step) {
@@ -1624,6 +1797,7 @@ y este s el html y js
             <small>Barberia</small>
             <strong>${escapeHtml(draft.barberia.nombre)}</strong>
             <span>${escapeHtml(draft.barberia.ciudad)} | ${escapeHtml(draft.barberia.direccion)}</span>
+            <span>Google Maps: ${draft.barberia.maps_url ? `<a href="${escapeHtml(draft.barberia.maps_url)}" target="_blank" rel="noopener">Abrir ubicacion</a>` : "No agregada"}</span>
             <span>Telefono: ${escapeHtml(draft.barberia.telefono)}</span>
             <span>Slug: ${escapeHtml(draft.barberia.slug)}</span>
             <span>Timezone: ${escapeHtml(draft.barberia.timezone)}</span>
@@ -1720,10 +1894,11 @@ y este s el html y js
         created_at: new Date().toISOString(),
         barberia: {
           id: data && data.barberia ? data.barberia.id : null,
-          slug: data && data.barberia ? data.barberia.slug : (payload.draft.barberia.slug || ""),
+            slug: data && data.barberia ? data.barberia.slug : (payload.draft.barberia.slug || ""),
           nombre: payload.draft.barberia.nombre || "",
           ciudad: payload.draft.barberia.ciudad || "",
           direccion: payload.draft.barberia.direccion || "",
+          maps_url: payload.draft.barberia.maps_url || "",
           telefono: payload.draft.barberia.telefono || "",
           timezone: payload.draft.barberia.timezone || "America/Bogota",
           slot_min: payload.draft.barberia.slot_min || 15
@@ -1761,6 +1936,7 @@ y este s el html y js
             slug: clean(draft.barberia.slug) || slugify(draft.barberia.nombre),
             telefono: clean(draft.barberia.telefono),
             direccion: clean(draft.barberia.direccion),
+            maps_url: clean(draft.barberia.maps_url),
             ciudad: clean(draft.barberia.ciudad),
             timezone: clean(draft.barberia.timezone) || "America/Bogota",
             slot_min: Number(draft.barberia.slot_min || 15)
@@ -1879,6 +2055,8 @@ y este s el html y js
 
       if (step.type === "text" || step.type === "email" || step.type === "tel" || step.type === "password") {
         renderTextStep(step);
+      } else if (step.type === "location") {
+        renderLocationStep(step);
       } else if (step.type === "choice") {
         renderChoiceStep(step);
       } else if (step.type === "services") {

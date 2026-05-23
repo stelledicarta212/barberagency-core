@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet"
- href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=126">
+ href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=128">
 
 <style>
   #ba-editor-v2[data-ui-theme='dark'] {
@@ -1061,6 +1061,10 @@
     return cleanAddress ? `https://www.google.com/maps?q=${encodeURIComponent(cleanAddress)}&output=embed` : '';
   }
 
+  function getPreferredMapsUrl(...values) {
+    return values.map((value) => safeText(value)).find(Boolean) || '';
+  }
+
   function isDefaultBizName(value) {
     const cleanValue = safeText(value).toLowerCase();
     return !cleanValue || cleanValue === 'barber agency';
@@ -1187,6 +1191,9 @@
       description: safeText(item?.description || item?.descripcion || 'Trabajo profesional con acabados premium.'),
       descripcion: safeText(item?.descripcion || item?.description || 'Trabajo profesional con acabados premium.'),
       icon: safeText(item?.icon || DEFAULT_SERVICE_ICONS[i % DEFAULT_SERVICE_ICONS.length]),
+      image: safeText(item?.image || item?.image_url || item?.imagen_url || item?.foto_url || item?.foto || item?.imagen),
+      image_url: safeText(item?.image_url || item?.imagen_url || item?.image || item?.foto_url || item?.foto || item?.imagen),
+      imagen_url: safeText(item?.imagen_url || item?.image_url || item?.image || item?.foto_url || item?.foto || item?.imagen),
       duration_min: Number(item?.duration_min || item?.duracion_min || 45),
       duracion_min: Number(item?.duracion_min || item?.duration_min || 45),
       price: Math.max(0, Number(item?.price || item?.precio || 0)),
@@ -2877,11 +2884,19 @@
         getQueryParam('editing') === '1' ||
         getQueryParam('is_edit') === '1';
       const seedAddress = safeText(seedLandingData?.direccion);
+      const seedMapsUrl = getPreferredMapsUrl(
+        seedLandingData?.maps_url,
+        seedLandingData?.map_url,
+        seedLandingData?.location_map_url,
+        seedLandingData?.barberia?.maps_url,
+        seedLandingData?.barberia?.map_url,
+        seedLandingData?.barberia?.location_map_url
+      );
       const onboardingDraftAddress = readOnboardingDraftAddress();
       const preferredEditAddress = onboardingDraftAddress || seedAddress;
       if (cameFromRegistroEdit && preferredEditAddress) {
         data.address = preferredEditAddress;
-        data.maps_url = buildMapsEmbedUrl(preferredEditAddress);
+        data.maps_url = seedMapsUrl || buildMapsEmbedUrl(preferredEditAddress);
         seedLandingData.direccion = preferredEditAddress;
       }
       const incomingIdentity = identity;
@@ -2892,7 +2907,7 @@
         const preferredAddress = getPreferredAddressValue();
         if (preferredAddress) {
           data.address = preferredAddress;
-          data.maps_url = buildMapsEmbedUrl(preferredAddress);
+          data.maps_url = seedMapsUrl || buildMapsEmbedUrl(preferredAddress);
           seedLandingData.direccion = preferredAddress;
           seedLandingData.maps_url = data.maps_url;
           if (seedLandingData?.barberia && typeof seedLandingData.barberia === 'object') {

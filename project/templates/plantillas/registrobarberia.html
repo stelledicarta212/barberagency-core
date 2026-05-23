@@ -1,5 +1,34 @@
 ﻿<section class="ba-wizard" id="baWizardApp" data-theme="dark">
   <div class="ba-shell">
+    <style>
+      /* SECCION: Ajustes visuales propios del registro pegado en WP */
+      #baWizardApp .ba-actions-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+
+      @media (max-width: 768px) {
+        #baWizardApp .ba-actions-row {
+          display: grid !important;
+          gap: 20px !important;
+        }
+
+        #baWizardApp .ba-actions-row > .ba-action,
+        #baWizardApp .ba-actions-row > .ba-action-secondary {
+          width: 100%;
+          margin-top: 0 !important;
+        }
+      }
+
+      #baWizardApp .ba-deep-link-target {
+        border-color: color-mix(in srgb, var(--accent) 86%, var(--line)) !important;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+      }
+    </style>
+
+    <!-- SECCION: Navegacion superior y progreso -->
     <header class="ba-topbar">
       <button class="ba-icon-btn" type="button" id="baBackBtn" aria-label="Volver">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -22,6 +51,7 @@
     </header>
 
     <div class="ba-body">
+      <!-- SECCION: Resumen lateral del registro -->
       <aside class="ba-sidebar">
         <p class="ba-kicker">Onboarding guiado</p>
         <h2 class="ba-sidebar-title">Crea tu barbería paso a paso</h2>
@@ -31,6 +61,7 @@
         <div class="ba-live-summary" id="baLiveSummary"></div>
       </aside>
 
+      <!-- SECCION: Contenido dinamico de cada paso -->
       <main class="ba-stage">
         <div class="ba-question-wrap">
           <p class="ba-step-label" id="baStepLabel">Paso 1</p>
@@ -54,12 +85,16 @@
 
     window.__BA_WP_ONBOARDING_READY__ = true;
 
+    // SECCION: Configuracion de endpoints y llaves de storage.
     const DEFAULT_ONBOARDING_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/registro-barberia";
     const DEFAULT_ONBOARDING_ENDPOINT_ALT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/onboarding/complete";
     const DEFAULT_ONBOARDING_ENDPOINT_LEGACY = "https://barberagency-app.gymh5g.easypanel.host/api/onboarding/complete";
     const DEFAULT_POSTGREST_BASE = "https://api.agencia2c.cloud";
-    const DEFAULT_CANONICAL_SYNC_RPC = "ba_sync_registro_collections";
+    const DEFAULT_CANONICAL_SYNC_RPC = "ba_sync_publicacion_collections";
     const DEFAULT_CANONICAL_HOURS_SYNC_RPC = "ba_sync_registro_horarios";
+    const DEFAULT_UPLOAD_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-live";
+    const DEFAULT_UPLOAD_ENDPOINT_V2 = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-v2";
+    const DEFAULT_UPLOAD_ENDPOINT_LEGACY = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload";
     const API_URL =
       (window.BA_ONBOARDING_ENDPOINT && String(window.BA_ONBOARDING_ENDPOINT).trim()) ||
       DEFAULT_ONBOARDING_ENDPOINT;
@@ -74,10 +109,15 @@
     const CANONICAL_HOURS_SYNC_RPC =
       (window.BA_CANONICAL_HOURS_SYNC_RPC && String(window.BA_CANONICAL_HOURS_SYNC_RPC).trim()) ||
       DEFAULT_CANONICAL_HOURS_SYNC_RPC;
+    const UPLOAD_PUBLIC_BASE =
+      (window.BA_UPLOAD_PUBLIC_BASE && String(window.BA_UPLOAD_PUBLIC_BASE).trim()) ||
+      (window.BA_R2_PUBLIC_BASE && String(window.BA_R2_PUBLIC_BASE).trim()) ||
+      "";
     const LANDING_BUILDER_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/landing_plantilla/";
     const STORAGE_KEY = "ba_wp_onboarding_v9";
     const LANDING_SEED_KEY = "ba_landing_seed";
 
+    // SECCION: Catalogos base usados por los pasos.
     const DAYS = [
       { value: "lunes", label: "Lunes" },
       { value: "martes", label: "Martes" },
@@ -88,6 +128,7 @@
       { value: "domingo", label: "Domingo" }
     ];
 
+    // SECCION: Definicion del flujo del formulario.
     const STEPS = [
       {
         key: "barberia.nombre",
@@ -110,9 +151,9 @@
       {
         key: "barberia.direccion",
         label: "Paso 3",
-        prompt: "Cual es la dirección del local?",
-        helper: "Ayuda a ubicar el negocio desde el primer dia.",
-        type: "text",
+        prompt: "Cuál es la dirección del local?",
+        helper: "Escribe la dirección y confirma que el mapa ubique bien el local.",
+        type: "location",
         required: true,
         placeholder: "Ej: Calle 10 #20-30"
       },
@@ -207,6 +248,7 @@
       "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png"
     ];
 
+    // SECCION: Referencias al DOM y estado principal del wizard.
     const progressFill = document.getElementById("baProgressFill");
     const stepLabel = document.getElementById("baStepLabel");
     const question = document.getElementById("baQuestion");
@@ -221,10 +263,13 @@
     let draft = normalizeDraft(loadInitialDraft());
     let onboardingCompleted = false;
     let onboardingResult = null;
+    const deepLinkTarget = getDeepLinkTarget();
+    currentStepIndex = deepLinkTarget.stepIndex;
     let lastPayload = null;
 
     syncThemeFromGlobal();
 
+    // SECCION: Utilidades generales y validaciones.
     function clean(value) {
       return (value || "").toString().trim();
     }
@@ -252,11 +297,118 @@
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(value));
     }
 
+    function isLikelyGoogleMapsUrl(value) {
+      const url = clean(value);
+      if (!url) return true;
+      try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return false;
+        const host = parsed.hostname.toLowerCase();
+        return host === "maps.app.goo.gl" ||
+          host === "goo.gl" ||
+          host === "www.google.com" ||
+          host === "google.com" ||
+          host.endsWith(".google.com");
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function buildGoogleMapsEmbedUrl(addressOrUrl) {
+      const value = clean(addressOrUrl);
+      if (!value) return "https://www.google.com/maps?q=Google%20Maps&output=embed";
+      if (isLikelyGoogleMapsUrl(value) && /^https?:\/\//i.test(value)) {
+        return `https://www.google.com/maps?q=${encodeURIComponent(value)}&output=embed`;
+      }
+      return `https://www.google.com/maps?q=${encodeURIComponent(value)}&output=embed`;
+    }
+
     function normalizeBarberPhoto(value) {
+      const url = clean(value);
+      return url || BARBER_PHOTO_OPTIONS[0];
+    }
+
+    function normalizeBarberAvatar(value) {
       const url = clean(value);
       return BARBER_PHOTO_OPTIONS.includes(url) ? url : BARBER_PHOTO_OPTIONS[0];
     }
 
+    function getUploadEndpointCandidates() {
+      const candidateList = [
+        clean(window.BA_UPLOAD_ENDPOINT),
+        DEFAULT_UPLOAD_ENDPOINT,
+        DEFAULT_UPLOAD_ENDPOINT_V2,
+        DEFAULT_UPLOAD_ENDPOINT_LEGACY
+      ].filter(Boolean);
+      return Array.from(new Set(candidateList));
+    }
+
+    function buildUploadPublicUrl(uploadResponse, file) {
+      const response = uploadResponse && typeof uploadResponse === "object" ? uploadResponse : {};
+      const base = clean(
+        response.public_base_url ||
+        response.publicBaseUrl ||
+        response.base_url ||
+        response.baseUrl ||
+        response.upload_base_url ||
+        response.uploadBaseUrl ||
+        UPLOAD_PUBLIC_BASE
+      ).replace(/\/+$/, "");
+      const key = clean(response.key || response.object_key || response.objectKey || response.path || response.file_path);
+      const sourceUrl = clean(
+        response.url ||
+        response.source_url ||
+        response.sourceUrl ||
+        response.location ||
+        response.public_url ||
+        response.publicUrl ||
+        response.file_url ||
+        response.fileUrl
+      );
+
+      if (sourceUrl) return sourceUrl;
+      if (base && key) return `${base}/${key.replace(/^\/+/, "")}`;
+      if (base) {
+        const fileName = clean(file && file.name);
+        return fileName ? `${base}/${fileName.replace(/^\/+/, "")}` : base;
+      }
+      return clean(response.filename || response.file_name);
+    }
+
+    async function uploadImageToStorage(file) {
+      if (!file) throw new Error("No se selecciono una imagen.");
+      if (!/^image\//i.test(file.type || "")) throw new Error("El archivo debe ser una imagen.");
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("biz_slug", slugify(draft?.barberia?.slug || draft?.barberia?.nombre || "barberia") || "barberia");
+
+      let lastError = null;
+      for (const endpoint of getUploadEndpointCandidates()) {
+        try {
+          const response = await fetch(endpoint, { method: "POST", body: formData });
+          if (!response.ok) {
+            const errorBody = await response.text().catch(() => "");
+            lastError = new Error(errorBody || `HTTP ${response.status}`);
+            continue;
+          }
+
+          const json = await response.json().catch(() => ({}));
+          const publicUrl = buildUploadPublicUrl(json, file);
+          if (!publicUrl || /^blob:/i.test(publicUrl)) {
+            lastError = new Error("El upload no devolvio una URL publica.");
+            continue;
+          }
+          return publicUrl;
+        } catch (error) {
+          lastError = error;
+        }
+      }
+
+      throw lastError || new Error("No se pudo subir la imagen.");
+    }
+
+    // SECCION: Draft, carga local y seed recibido desde otros flujos.
     function getDefaultDraft() {
       return {
         barberia: {
@@ -264,12 +416,13 @@
           slug: "",
           telefono: "",
           direccion: "",
+          maps_url: "",
           ciudad: "",
           timezone: "America/Bogotá",
           slot_min: 15
         },
         servicios: [
-          { nombre: "", duracion_min: 30, precio: 0 }
+          { nombre: "", duracion_min: 30, precio: 0, imagen_url: "" }
         ],
         horarios: DAYS.map((day, index) => ({
           dia: day.value,
@@ -393,6 +546,7 @@
           slug: clean(seed.slug || barberiaSeed.slug),
           telefono: clean(seed.telefono || barberiaSeed.telefono),
           direccion: clean(seed.direccion || barberiaSeed.direccion),
+          maps_url: clean(seed.maps_url || seed.map_url || seed.location_map_url || barberiaSeed.maps_url || barberiaSeed.map_url || barberiaSeed.location_map_url),
           ciudad: clean(seed.ciudad || barberiaSeed.ciudad),
           timezone: clean(seed.timezone || barberiaSeed.timezone || "America/Bogotá"),
           slot_min: Number(seed.slot_min || barberiaSeed.slot_min || 15)
@@ -400,7 +554,8 @@
         servicios: serviciosSeed.map((item) => ({
           nombre: clean(item && (item.nombre || item.name)),
           duracion_min: Number(item && (item.duracion_min || item.duration_min || 30)),
-          precio: Math.max(0, Number(item && (item.precio || item.price || 0)))
+          precio: Math.max(0, Number(item && (item.precio || item.price || 0))),
+          imagen_url: clean(item && (item.imagen_url || item.image_url || item.foto_url || item.foto))
         })),
         horarios: horariosSeed.map((item) => ({
           dia: clean(item && item.dia).toLowerCase(),
@@ -411,7 +566,8 @@
         barberos: barberosSeed.map((item) => ({
           nombre: clean(item && (item.nombre || item.name)),
           activo: item && item.activo !== undefined ? Boolean(item.activo) : true,
-          foto: normalizeBarberPhoto(item && (item.foto || item.foto_url || item.photo))
+          foto: normalizeBarberPhoto(item && (item.foto_url || item.foto || item.photo || item.avatar_url)),
+          foto_url: normalizeBarberPhoto(item && (item.foto_url || item.foto || item.photo || item.avatar_url))
         })),
         accesos: {
           admin: {
@@ -427,7 +583,8 @@
               nombre: clean(access.nombre || access.name || item?.nombre || item?.name),
               email: clean(access.email || item?.email).toLowerCase(),
               password: clean(access.password || item?.password),
-              foto: normalizeBarberPhoto(access.foto || access.foto_url || item?.foto || item?.foto_url || item?.photo)
+              foto: normalizeBarberPhoto(access.foto_url || access.foto || item?.foto_url || item?.foto || item?.photo || item?.avatar_url),
+              foto_url: normalizeBarberPhoto(access.foto_url || access.foto || item?.foto_url || item?.foto || item?.photo || item?.avatar_url)
             };
           })
         }
@@ -500,6 +657,7 @@
       return saved || fromSeed || null;
     }
 
+    // SECCION: Tema visual sincronizado con WordPress.
     function detectGlobalTheme() {
       const body = document.body;
       const html = document.documentElement;
@@ -520,6 +678,7 @@
       app.setAttribute("data-theme", detectGlobalTheme());
     }
 
+    // SECCION: Lectura, escritura y persistencia del draft.
     function normalizeDraft(raw) {
       const base = getDefaultDraft();
       const source = raw && typeof raw === "object" ? raw : {};
@@ -541,7 +700,8 @@
           ? source.servicios.map((item) => ({
               nombre: clean(item.nombre),
               duracion_min: Number(item.duracion_min || 30),
-              precio: Number(item.precio || 0)
+              precio: Number(item.precio || 0),
+              imagen_url: clean(item.imagen_url || item.image_url || item.foto_url || item.foto)
             }))
           : base.servicios,
         horarios,
@@ -586,9 +746,13 @@
       if (path === "barberia.direccion") {
         persistSeedAddress(value);
       }
+      if (path === "barberia.maps_url") {
+        persistSeedMapsUrl(value);
+      }
       saveDraft();
     }
 
+    // SECCION: Seed para entregar direccion/mapa al editor de plantillas.
     function persistSeedAddress(value) {
       const nextAddress = clean(value);
       if (!nextAddress) return;
@@ -613,6 +777,34 @@
       } catch (_) {}
     }
 
+    function persistSeedMapsUrl(value) {
+      const nextMapsUrl = clean(value);
+      try {
+        const seed = loadLandingSeed() || {};
+        const seedBarberia = seed.barberia && typeof seed.barberia === "object" ? seed.barberia : {};
+        const nextSeed = {
+          ...seed,
+          maps_url: nextMapsUrl,
+          map_url: nextMapsUrl,
+          location_map_url: nextMapsUrl,
+          barberia: {
+            ...seedBarberia,
+            maps_url: nextMapsUrl,
+            map_url: nextMapsUrl,
+            location_map_url: nextMapsUrl
+          }
+        };
+        const raw = JSON.stringify(nextSeed);
+        try {
+          sessionStorage.setItem(LANDING_SEED_KEY, raw);
+        } catch (_) {}
+        try {
+          localStorage.setItem(LANDING_SEED_KEY, raw);
+        } catch (_) {}
+      } catch (_) {}
+    }
+
+    // SECCION: Mensajes, navegacion y validaciones de filas.
     function hideMessage() {
       messageBox.hidden = true;
       messageBox.className = "ba-message";
@@ -635,6 +827,104 @@
         localStorage.removeItem(STORAGE_KEY);
       } catch (_) {}
       render();
+    }
+
+    function normalizeDeepLinkToken(value) {
+      return clean(value)
+        .toLowerCase()
+        .replace(/^#/, "")
+        .replace(/_/g, "-")
+        .replace(/\./g, "-")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function getDeepLinkTarget() {
+      const params = new URLSearchParams(window.location.search || "");
+      const hash = normalizeDeepLinkToken(window.location.hash || "");
+      const rawStep =
+        params.get("step") ||
+        params.get("paso") ||
+        params.get("section") ||
+        params.get("seccion") ||
+        params.get("field") ||
+        params.get("campo") ||
+        hash ||
+        "";
+      const token = normalizeDeepLinkToken(rawStep);
+      const aliases = {
+        nombre: "barberia.nombre",
+        "barberia-nombre": "barberia.nombre",
+        ciudad: "barberia.ciudad",
+        "barberia-ciudad": "barberia.ciudad",
+        direccion: "barberia.direccion",
+        ubicacion: "barberia.direccion",
+        mapa: "barberia.direccion",
+        maps: "barberia.direccion",
+        telefono: "barberia.telefono",
+        "barberia-telefono": "barberia.telefono",
+        agenda: "barberia.slot_min",
+        slot: "barberia.slot_min",
+        "slot-min": "barberia.slot_min",
+        admin: "accesos.admin.nombre",
+        administrador: "accesos.admin.nombre",
+        email: "accesos.admin.email",
+        password: "accesos.admin.password",
+        servicios: "servicios",
+        servicio: "servicios",
+        hours: "horarios",
+        horarios: "horarios",
+        horario: "horarios",
+        barberos: "barberos",
+        barbero: "barberos",
+        review: "review",
+        resumen: "review"
+      };
+      const targetKey = aliases[token] || clean(rawStep);
+      const stepIndex = Math.max(0, STEPS.findIndex((step) => step.key === targetKey));
+      const itemType =
+        normalizeDeepLinkToken(params.get("item_type") || params.get("tipo") || "") ||
+        (targetKey === "servicios" ? "servicio" : targetKey === "barberos" ? "barbero" : "");
+      const itemIndex = Math.max(
+        0,
+        Number(params.get("item") || params.get("index") || params.get("row") || params.get("fila") || 1) - 1
+      );
+
+      return {
+        stepIndex: stepIndex >= 0 ? stepIndex : 0,
+        targetKey,
+        itemType,
+        itemIndex,
+        enabled: Boolean(token || clean(rawStep))
+      };
+    }
+
+    function applyDeepLinkFocus() {
+      if (!deepLinkTarget.enabled) return;
+
+      const step = STEPS[currentStepIndex];
+      let target = null;
+
+      if (step.key === "servicios") {
+        target = document.querySelector('[data-ba-item="servicio"][data-ba-index="' + deepLinkTarget.itemIndex + '"]');
+      } else if (step.key === "barberos") {
+        target = document.querySelector('[data-ba-item="barbero"][data-ba-index="' + deepLinkTarget.itemIndex + '"]');
+      } else if (step.key === "barberia.direccion") {
+        target = document.getElementById("baLocationCard") || document.getElementById("baAddressInput");
+      } else {
+        target = responseArea.querySelector("input, select, textarea, button");
+      }
+
+      if (!target) return;
+
+      target.classList.add("ba-deep-link-target");
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      const focusable = target.matches("input, select, textarea, button")
+        ? target
+        : target.querySelector("input, select, textarea, button");
+      if (focusable && typeof focusable.focus === "function") {
+        setTimeout(() => focusable.focus(), 120);
+      }
     }
 
     function progressPercent() {
@@ -672,7 +962,8 @@
           email: clean(access.email),
           password: access.password || "",
           activo: barber.activo !== undefined ? Boolean(barber.activo) : Boolean(access.activo),
-          foto: normalizeBarberPhoto(barber.foto || access.foto)
+          foto: normalizeBarberPhoto(barber.foto_url || barber.foto || access.foto_url || access.foto),
+          foto_url: normalizeBarberPhoto(barber.foto_url || barber.foto || access.foto_url || access.foto)
         });
       }
 
@@ -683,7 +974,8 @@
       draft.barberos = rows.map((row) => ({
         nombre: clean(row.nombre),
         activo: Boolean(row.activo),
-        foto: normalizeBarberPhoto(row.foto)
+        foto: normalizeBarberPhoto(row.foto_url || row.foto),
+        foto_url: normalizeBarberPhoto(row.foto_url || row.foto)
       }));
 
       draft.accesos.barberos = rows.map((row) => ({
@@ -691,7 +983,8 @@
         email: clean(row.email).toLowerCase(),
         password: clean(row.password),
         activo: Boolean(row.activo),
-        foto: normalizeBarberPhoto(row.foto)
+        foto: normalizeBarberPhoto(row.foto_url || row.foto),
+        foto_url: normalizeBarberPhoto(row.foto_url || row.foto)
       }));
 
       saveDraft();
@@ -704,7 +997,8 @@
         email: clean(row.email).toLowerCase(),
         password: clean(row.password),
         activo: Boolean(row.activo),
-        foto: normalizeBarberPhoto(row.foto)
+        foto: normalizeBarberPhoto(row.foto_url || row.foto),
+        foto_url: normalizeBarberPhoto(row.foto_url || row.foto)
       }));
 
       const filled = normalized.filter((row) => row.nombre || row.email || row.password);
@@ -726,11 +1020,13 @@
           email: row.email,
           password: row.password,
           activo: row.activo,
-          foto: row.foto
+          foto: row.foto_url || row.foto,
+          foto_url: row.foto_url || row.foto
         }))
       };
     }
 
+    // SECCION: Render del resumen lateral.
     function renderLiveSummary() {
       const activeDays = (draft.horarios || []).filter((item) => item.activo).length;
 
@@ -759,6 +1055,7 @@
           `;
     }
 
+    // SECCION: Render de pasos simples.
     function renderTextStep(step) {
       const value = getByPath(draft, step.key) || "";
       const isPassword = step.type === "password";
@@ -771,6 +1068,7 @@
             ${isPassword ? '<button class="ba-action-secondary" type="button" id="baTogglePasswordBtn">Mostrar</button>' : (step.required ? '<span></span>' : '<button class="ba-action-secondary" type="button" id="baSkipBtn">Omitir</button>')}
             <button class="ba-action" type="button" id="baNextBtn">Continuar</button>
           </div>
+          ${step.key === "barberia.maps_url" ? '<p class="ba-helper"><a href="https://maps.google.com" target="_blank" rel="noopener">Abrir Google Maps</a></p>' : ""}
         </div>
       `;
 
@@ -794,6 +1092,11 @@
 
         if (step.type === "password" && answer && answer.length < 6) {
           showMessage("error", "La password debe tener mínimo 6 caracteres.");
+          return;
+        }
+
+        if (step.key === "barberia.maps_url" && answer && !isLikelyGoogleMapsUrl(answer)) {
+          showMessage("error", "Pega una URL valida de Google Maps o deja el campo vacio.");
           return;
         }
 
@@ -826,6 +1129,89 @@
       setTimeout(() => input.focus(), 60);
     }
 
+    // SECCION: Paso de ubicacion con mapa y confirmacion.
+    function renderLocationStep(step) {
+      const address = getByPath(draft, "barberia.direccion") || "";
+      const mapsUrl = getByPath(draft, "barberia.maps_url") || "";
+      const initialPreview = buildGoogleMapsEmbedUrl(mapsUrl || address);
+
+      responseArea.innerHTML = `
+        <div class="ba-composer">
+          <div class="ba-grid">
+            <label class="ba-label" id="baLocationCard">
+              Dirección
+              <input class="ba-input" id="baAddressInput" type="text" value="${escapeHtml(address)}" placeholder="${escapeHtml(step.placeholder || "")}" />
+            </label>
+          </div>
+
+          <p class="ba-helper">
+            <a class="ba-maps-cta" href="https://maps.google.com" target="_blank" rel="noopener">Haz clic aquí para abrir Google Maps</a>
+            Si no ves el punto correcto, abre el mapa, busca el local y pega aquí la ubicación exacta.
+          </p>
+
+          <div class="ba-location-preview" id="baLocationPreview">
+            <div class="ba-location-preview-copy">
+              <strong>Vista previa de ubicación</strong>
+              <span>Si el mapa se ve bien, confirma y continúa.</span>
+            </div>
+            <iframe id="baLocationMap" src="${escapeHtml(initialPreview)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Vista previa de Google Maps"></iframe>
+          </div>
+
+          <div class="ba-actions-row">
+            <button class="ba-action-secondary" type="button" id="baPreviewLocationBtn">Ver mapa</button>
+            <button class="ba-action" type="button" id="baLocationNextBtn">Confirmar ubicación</button>
+          </div>
+        </div>
+      `;
+
+      const addressInput = document.getElementById("baAddressInput");
+      const previewBtn = document.getElementById("baPreviewLocationBtn");
+      const nextBtn = document.getElementById("baLocationNextBtn");
+      const previewBox = document.getElementById("baLocationPreview");
+      const mapFrame = document.getElementById("baLocationMap");
+
+      const updatePreview = () => {
+        const nextAddress = clean(addressInput.value);
+
+        if (!nextAddress) {
+          showMessage("error", "La dirección es obligatoria para ver el mapa.");
+          return false;
+        }
+
+        mapFrame.src = buildGoogleMapsEmbedUrl(nextAddress);
+        previewBox.hidden = false;
+        hideMessage();
+        return true;
+      };
+
+      previewBtn.addEventListener("click", updatePreview);
+
+      nextBtn.addEventListener("click", () => {
+        const nextAddress = clean(addressInput.value);
+
+        if (!nextAddress) {
+          showMessage("error", "La dirección es obligatoria.");
+          return;
+        }
+
+        if (!updatePreview()) return;
+
+        setFieldValue("barberia.direccion", nextAddress);
+        setFieldValue("barberia.maps_url", "");
+        nextStep();
+      });
+
+      addressInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          previewBtn.click();
+        }
+      });
+
+      setTimeout(() => addressInput.focus(), 60);
+    }
+
+    // SECCION: Render de pasos compuestos.
     function renderChoiceStep(step) {
       const selected = String(getByPath(draft, step.key));
 
@@ -852,13 +1238,13 @@
     function renderServicesStep() {
       const services = Array.isArray(draft.servicios) && draft.servicios.length
         ? draft.servicios
-        : [{ nombre: "", duracion_min: 30, precio: 0 }];
+        : [{ nombre: "", duracion_min: 30, precio: 0, imagen_url: "" }];
 
       responseArea.innerHTML = `
         <div class="ba-composer">
           <div class="ba-list" id="baServicesList">
             ${services.map((service, index) => `
-              <article class="ba-card">
+              <article class="ba-card" id="ba-service-${index + 1}" data-ba-item="servicio" data-ba-index="${index}">
                 <div class="ba-card-head">
                   <h3 class="ba-card-title">Servicio ${index + 1}</h3>
                   <button class="ba-action-danger" type="button" data-remove="${index}">Eliminar</button>
@@ -883,6 +1269,24 @@
                     Precio
                     <input class="ba-number" type="number" min="0" step="1000" data-field="precio" data-index="${index}" value="${Number(service.precio || 0)}" />
                   </label>
+
+                  <label class="ba-label">
+                    Imagen del servicio (opcional)
+                    <input type="hidden" data-field="imagen_url" data-index="${index}" value="${escapeHtml(service.imagen_url || service.image_url || "")}" />
+                    <input class="ba-input" type="file" accept="image/*" data-service-upload="${index}" />
+                    <span class="ba-helper" data-service-upload-status="${index}">
+                      ${clean(service.imagen_url || service.image_url) ? "Imagen lista en storage." : "Si subes una imagen, se guardara en storage."}
+                    </span>
+                    ${clean(service.imagen_url || service.image_url) ? `
+                      <img
+                        src="${escapeHtml(service.imagen_url || service.image_url)}"
+                        alt="Imagen del servicio ${index + 1}"
+                        loading="lazy"
+                        decoding="async"
+                        style="width:100%;max-height:180px;object-fit:cover;border-radius:16px;border:1px solid rgba(148,163,184,0.35);"
+                      />
+                    ` : ""}
+                  </label>
                 </div>
               </article>
             `).join("")}
@@ -902,11 +1306,39 @@
         input.addEventListener("change", syncServicesFromDom);
       });
 
+      Array.from(list.querySelectorAll("[data-service-upload]")).forEach((input) => {
+        input.addEventListener("change", async () => {
+          const index = Number(input.dataset.serviceUpload);
+          const file = input.files && input.files[0];
+          const status = list.querySelector('[data-service-upload-status="' + index + '"]');
+          const hidden = list.querySelector('[data-field="imagen_url"][data-index="' + index + '"]');
+          if (!file || !hidden) return;
+
+          try {
+            input.disabled = true;
+            if (status) status.textContent = "Subiendo imagen a storage...";
+            const publicUrl = await uploadImageToStorage(file);
+            hidden.value = publicUrl;
+            syncServicesFromDom();
+            saveDraft();
+            if (status) status.textContent = "Imagen lista en storage.";
+            render();
+          } catch (error) {
+            console.error("Service image upload failed:", error);
+            if (status) status.textContent = "No se pudo subir la imagen.";
+            showMessage("error", "No se pudo subir la imagen del servicio. Intenta de nuevo.");
+          } finally {
+            input.disabled = false;
+            input.value = "";
+          }
+        });
+      });
+
       Array.from(list.querySelectorAll("[data-remove]")).forEach((button) => {
         button.addEventListener("click", () => {
           const next = getServicesFromDom();
           next.splice(Number(button.dataset.remove), 1);
-          draft.servicios = next.length ? next : [{ nombre: "", duracion_min: 30, precio: 0 }];
+          draft.servicios = next.length ? next : [{ nombre: "", duracion_min: 30, precio: 0, imagen_url: "" }];
           saveDraft();
           render();
         });
@@ -914,7 +1346,7 @@
 
       document.getElementById("baAddServiceBtn").addEventListener("click", () => {
         const next = getServicesFromDom();
-        next.push({ nombre: "", duracion_min: 30, precio: 0 });
+        next.push({ nombre: "", duracion_min: 30, precio: 0, imagen_url: "" });
         draft.servicios = next;
         saveDraft();
         render();
@@ -925,7 +1357,8 @@
           .map((item) => ({
             nombre: clean(item.nombre),
             duracion_min: Number(item.duracion_min || 0),
-            precio: Math.max(0, Number(item.precio || 0))
+            precio: Math.max(0, Number(item.precio || 0)),
+            imagen_url: clean(item.imagen_url)
           }))
           .filter((item) => clean(item.nombre));
 
@@ -953,10 +1386,11 @@
         return Array.from(document.querySelectorAll("#baServicesList [data-index]"))
           .reduce((acc, node) => {
             const index = Number(node.dataset.index);
-            if (!acc[index]) acc[index] = { nombre: "", duracion_min: 30, precio: 0 };
+            if (!acc[index]) acc[index] = { nombre: "", duracion_min: 30, precio: 0, imagen_url: "" };
             if (node.dataset.field === "nombre") acc[index].nombre = node.value;
             if (node.dataset.field === "duracion_min") acc[index].duracion_min = Number(node.value || 0);
             if (node.dataset.field === "precio") acc[index].precio = Math.max(0, Number(node.value || 0));
+            if (node.dataset.field === "imagen_url") acc[index].imagen_url = clean(node.value);
             return acc;
           }, [])
           .filter(Boolean);
@@ -1054,7 +1488,7 @@
         <div class="ba-composer">
           <div class="ba-list" id="baBarbersList">
             ${rows.map((row, index) => `
-              <article class="ba-card">
+              <article class="ba-card" id="ba-barber-${index + 1}" data-ba-item="barbero" data-ba-index="${index}">
                 <div class="ba-card-head">
                   <h3 class="ba-card-title">Barbero ${index + 1}</h3>
                   <div class="ba-inline">
@@ -1087,6 +1521,7 @@
 
                   <label class="ba-label">
                     Elije tu avatar para tu barbero
+                    <input type="hidden" data-barber-field="foto_url" data-barber-index="${index}" value="${escapeHtml(row.foto_url || row.foto || BARBER_PHOTO_OPTIONS[0])}" />
                     <div class="ba-photo-picker">
                       ${BARBER_PHOTO_OPTIONS.map((photo, photoIndex) => `
                         <label class="ba-photo-option" style="display:inline-flex;cursor:pointer;margin:0 8px 8px 0;">
@@ -1096,7 +1531,7 @@
                             data-barber-field="foto"
                             data-barber-index="${index}"
                             value="${escapeHtml(photo)}"
-                            ${normalizeBarberPhoto(row.foto) === photo ? "checked" : ""}
+                            ${normalizeBarberAvatar(row.foto) === photo ? "checked" : ""}
                             style="display:block;margin:0 auto 6px auto;"
                           />
                           <img
@@ -1109,6 +1544,17 @@
                         </label>
                       `).join("")}
                     </div>
+                    <input class="ba-input" type="file" accept="image/*" data-barber-upload="${index}" />
+                    <span class="ba-helper" data-barber-upload-status="${index}">
+                      ${clean(row.foto_url || row.foto) && !BARBER_PHOTO_OPTIONS.includes(clean(row.foto_url || row.foto)) ? "Foto lista en storage." : "Puedes usar un avatar o subir una foto real."}
+                    </span>
+                    <img
+                      src="${escapeHtml(row.foto_url || row.foto || BARBER_PHOTO_OPTIONS[0])}"
+                      alt="Foto actual del barbero ${index + 1}"
+                      loading="lazy"
+                      decoding="async"
+                      style="width:96px;height:96px;object-fit:cover;border-radius:999px;border:2px solid rgba(148,163,184,0.45);"
+                    />
                   </label>
                 </div>
               </article>
@@ -1128,6 +1574,44 @@
       Array.from(list.querySelectorAll("[data-barber-field]")).forEach((input) => {
         input.addEventListener("input", syncBarbersFromDom);
         input.addEventListener("change", syncBarbersFromDom);
+      });
+
+      Array.from(list.querySelectorAll('[data-barber-field="foto"]')).forEach((input) => {
+        input.addEventListener("change", () => {
+          const index = input.dataset.barberIndex;
+          const hidden = list.querySelector('[data-barber-field="foto_url"][data-barber-index="' + index + '"]');
+          if (hidden) hidden.value = input.value;
+          syncBarbersFromDom();
+          render();
+        });
+      });
+
+      Array.from(list.querySelectorAll("[data-barber-upload]")).forEach((input) => {
+        input.addEventListener("change", async () => {
+          const index = Number(input.dataset.barberUpload);
+          const file = input.files && input.files[0];
+          const status = list.querySelector('[data-barber-upload-status="' + index + '"]');
+          const hidden = list.querySelector('[data-barber-field="foto_url"][data-barber-index="' + index + '"]');
+          if (!file || !hidden) return;
+
+          try {
+            input.disabled = true;
+            if (status) status.textContent = "Subiendo foto a storage...";
+            const publicUrl = await uploadImageToStorage(file);
+            hidden.value = publicUrl;
+            syncBarbersFromDom();
+            saveDraft();
+            if (status) status.textContent = "Foto lista en storage.";
+            render();
+          } catch (error) {
+            console.error("Barber photo upload failed:", error);
+            if (status) status.textContent = "No se pudo subir la foto.";
+            showMessage("error", "No se pudo subir la foto del barbero. Intenta de nuevo.");
+          } finally {
+            input.disabled = false;
+            input.value = "";
+          }
+        });
       });
 
       Array.from(list.querySelectorAll("[data-barber-remove]")).forEach((button) => {
@@ -1152,7 +1636,7 @@
 
       document.getElementById("baAddBarberBtn").addEventListener("click", () => {
         const next = getBarbersFromDom();
-        next.push({ nombre: "", email: "", password: "", activo: true, foto: BARBER_PHOTO_OPTIONS[0] });
+        next.push({ nombre: "", email: "", password: "", activo: true, foto: BARBER_PHOTO_OPTIONS[0], foto_url: BARBER_PHOTO_OPTIONS[0] });
         setBarberRows(next);
         render();
       });
@@ -1188,13 +1672,16 @@
           const passInput = card.querySelector('[data-barber-field="password"]');
           const activeInput = card.querySelector('[data-barber-field="activo"]');
           const photoInput = card.querySelector('[data-barber-field="foto"]:checked') || card.querySelector('[data-barber-field="foto"]');
+          const photoUrlInput = card.querySelector('[data-barber-field="foto_url"]');
+          const photoUrl = clean(photoUrlInput && photoUrlInput.value) || clean(photoInput && photoInput.value);
 
           rowsFromDom.push({
             nombre: clean(nameInput && nameInput.value),
             email: clean(emailInput && emailInput.value),
             password: clean(passInput && passInput.value),
             activo: Boolean(activeInput && activeInput.checked),
-            foto: normalizeBarberPhoto(photoInput && photoInput.value)
+            foto: normalizeBarberPhoto(photoUrl),
+            foto_url: normalizeBarberPhoto(photoUrl)
           });
         });
 
@@ -1202,6 +1689,7 @@
       }
     }
 
+    // SECCION: Resumen final y acciones posteriores a crear la barberia.
     function buildReviewCards() {
       const activeDays = (draft.horarios || [])
         .filter((item) => item.activo)
@@ -1221,6 +1709,7 @@
             <small>Barbería</small>
             <strong>${escapeHtml(draft.barberia.nombre)}</strong>
             <span>${escapeHtml(draft.barberia.ciudad)} | ${escapeHtml(draft.barberia.direccion)}</span>
+            <span>Google Maps: ${draft.barberia.maps_url ? `<a href="${escapeHtml(draft.barberia.maps_url)}" target="_blank" rel="noopener">Abrir ubicacion</a>` : "No agregada"}</span>
             <span>Teléfono: ${escapeHtml(draft.barberia.telefono)}</span>
             <span>Slug: ${escapeHtml(draft.barberia.slug)}</span>
             <span>Timezone: ${escapeHtml(draft.barberia.timezone)}</span>
@@ -1334,6 +1823,7 @@
       document.getElementById("baSubmitBtn").addEventListener("click", submitDraft);
     }
 
+    // SECCION: Seed y URL para abrir el editor de plantillas.
     function persistLandingSeed(payload, data) {
       const adminAccess = payload && payload.draft && payload.draft.accesos && payload.draft.accesos.admin
         ? payload.draft.accesos.admin
@@ -1345,7 +1835,7 @@
         ? payload.draft.barberos
         : [];
       const inheritedPhotos = barberProfiles
-        .map((item) => normalizeBarberPhoto(item && item.foto))
+        .map((item) => normalizeBarberPhoto(item && (item.foto_url || item.foto)))
         .filter(Boolean);
       const landingSeed = {
         source: "onboarding_complete",
@@ -1357,6 +1847,7 @@
         nombre: clean(payload?.draft?.barberia?.nombre),
         ciudad: clean(payload?.draft?.barberia?.ciudad),
         direccion: clean(payload?.draft?.barberia?.direccion),
+        maps_url: clean(payload?.draft?.barberia?.maps_url),
         telefono: clean(payload?.draft?.barberia?.telefono),
         slot_min: Number(payload?.draft?.barberia?.slot_min || 15),
         barberia: {
@@ -1365,6 +1856,7 @@
           nombre: payload.draft.barberia.nombre || "",
           ciudad: payload.draft.barberia.ciudad || "",
           direccion: payload.draft.barberia.direccion || "",
+          maps_url: payload.draft.barberia.maps_url || "",
           telefono: payload.draft.barberia.telefono || "",
           timezone: payload.draft.barberia.timezone || "America/Bogotá",
           slot_min: payload.draft.barberia.slot_min || 15
@@ -1423,6 +1915,7 @@
       }
     }
 
+    // SECCION: Construccion de payloads para backend y RPC canonicas.
     function buildDraftPayload() {
       const identity = getEditIdentity();
       return {
@@ -1437,6 +1930,7 @@
             slug: clean(identity.slug) || clean(draft.barberia.slug) || slugify(draft.barberia.nombre),
             telefono: clean(draft.barberia.telefono),
             direccion: clean(draft.barberia.direccion),
+            maps_url: clean(draft.barberia.maps_url),
             ciudad: clean(draft.barberia.ciudad),
             timezone: clean(draft.barberia.timezone) || "America/Bogotá",
             slot_min: Number(draft.barberia.slot_min || 15)
@@ -1446,7 +1940,8 @@
             .map((item) => ({
               nombre: clean(item.nombre),
               duracion_min: Number(item.duracion_min || 0),
-              precio: Math.max(0, Number(item.precio || 0))
+              precio: Math.max(0, Number(item.precio || 0)),
+              imagen_url: clean(item.imagen_url || item.image_url)
             })),
           horarios: (draft.horarios || []).map((item) => ({
             dia: clean(item.dia),
@@ -1459,7 +1954,8 @@
             .map((item) => ({
               nombre: clean(item.nombre),
               activo: Boolean(item.activo),
-              foto: normalizeBarberPhoto(item.foto)
+              foto: normalizeBarberPhoto(item.foto_url || item.foto),
+              foto_url: normalizeBarberPhoto(item.foto_url || item.foto)
             })),
           accesos: {
             admin: {
@@ -1474,7 +1970,8 @@
                 email: clean(item.email).toLowerCase(),
                 password: clean(item.password),
                 activo: Boolean(item.activo),
-                foto: normalizeBarberPhoto(item.foto)
+                foto: normalizeBarberPhoto(item.foto_url || item.foto),
+                foto_url: normalizeBarberPhoto(item.foto_url || item.foto)
               }))
           }
         }
@@ -1501,6 +1998,7 @@
           slug: clean(barberia.slug),
           telefono: clean(barberia.telefono),
           direccion: clean(barberia.direccion),
+          maps_url: clean(barberia.maps_url),
           ciudad: clean(barberia.ciudad),
           timezone: clean(barberia.timezone) || "America/Bogota",
           slot_min: Number(barberia.slot_min || 15)
@@ -1509,6 +2007,7 @@
         slug: clean(barberia.slug),
         telefono: clean(barberia.telefono),
         direccion: clean(barberia.direccion),
+        maps_url: clean(barberia.maps_url),
         ciudad: clean(barberia.ciudad),
         timezone: clean(barberia.timezone) || "America/Bogota",
         slot_min: Number(barberia.slot_min || 15),
@@ -1524,6 +2023,7 @@
       };
     }
 
+    // SECCION: Helpers de comunicacion con PostgREST.
     function getOnboardingEndpointCandidates() {
       const candidateList = [
         clean(window.BA_ONBOARDING_ENDPOINT),
@@ -1565,6 +2065,7 @@
           nombre: clean(item?.nombre || item?.name),
           duracion_min: Number(item?.duracion_min || item?.duration_min || 30),
           precio: Math.max(0, Number(item?.precio || item?.price || 0)),
+          imagen_url: clean(item?.imagen_url || item?.image_url || item?.foto_url || item?.foto),
           activo: true
         }))
         .filter((item) => item.nombre)
@@ -1579,6 +2080,7 @@
       return list
         .map((item) => ({
           nombre: clean(item?.nombre || item?.name),
+          foto_url: normalizeBarberPhoto(item?.foto_url || item?.foto || item?.avatar_url || item?.image_url),
           activo: true
         }))
         .filter((item) => item.nombre);
@@ -1626,6 +2128,7 @@
       return response;
     }
 
+    // SECCION: Sincronizacion de servicios, barberos y horarios en fuente de verdad.
     async function syncCanonicalCatalogs(data, payload) {
       const barberiaId = getCreatedBarberiaId(data);
       if (!(barberiaId > 0)) {
@@ -1634,10 +2137,12 @@
       const servicios = normalizeServiceDraftRows(payload?.draft?.servicios).map((item) => ({
         nombre: item.nombre,
         duracion_min: Number(item.duracion_min || 30),
-        precio: Math.max(0, Number(item.precio || 0))
+        precio: Math.max(0, Number(item.precio || 0)),
+        imagen_url: clean(item.imagen_url)
       }));
       const barberos = normalizeBarberDraftRows(payload?.draft?.barberos).map((item) => ({
-        nombre: item.nombre
+        nombre: item.nombre,
+        foto_url: clean(item.foto_url)
       }));
       const horarios = normalizeHoursDraftRows(payload?.draft?.horarios);
 
@@ -1742,6 +2247,7 @@
       }
     }
 
+    // SECCION: Envio principal del onboarding.
     function isPostgrestPermissionError(error) {
       const message = clean(error?.message).toLowerCase();
       return (
@@ -1956,6 +2462,7 @@
       }
     }
 
+    // SECCION: Router de render del paso actual.
     function render() {
       syncThemeFromGlobal();
 
@@ -1965,8 +2472,10 @@
       question.textContent = step.prompt;
       helper.textContent = step.helper || "";
 
-      if (step.type === "text" || step.type === "email" || step.type === "tel" || step.type === "password") {
+      if (step.type === "text" || step.type === "email" || step.type === "tel" || step.type === "url" || step.type === "password") {
         renderTextStep(step);
+      } else if (step.type === "location") {
+        renderLocationStep(step);
       } else if (step.type === "choice") {
         renderChoiceStep(step);
       } else if (step.type === "services") {
@@ -1981,8 +2490,10 @@
 
       backBtn.disabled = currentStepIndex === 0;
       renderLiveSummary();
+      setTimeout(applyDeepLinkFocus, 80);
     }
 
+    // SECCION: Observadores y eventos globales.
     const themeObserver = new MutationObserver(() => {
       syncThemeFromGlobal();
     });
@@ -2012,7 +2523,3 @@
   }
 })();
 </script>
-
-
-
-
