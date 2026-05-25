@@ -53,6 +53,10 @@ Validaciones:
 - Commit de correccion:
   - `357ef6d Resolve dashboard identity dynamically`
 - Desde esa correccion, el dashboard debe recibir identidad real por URL/storage/seed.
+- En una segunda revision se detecto que `Barberia 58` tambien quedaba en defaults de Docker/env, storage viejo del navegador y fallback mock.
+- Se corrigio para que produccion limpie `101/barberia-58`, no tenga defaults de prueba y no use mock si falla la carga remota.
+- Commit de correccion adicional:
+  - `c8d7e49 Remove legacy fixed barbershop identity`
 - Ejemplos:
   - `https://barberagency-app.gymh5g.easypanel.host/barberia?barberia_id=125`
   - `https://barberagency-app.gymh5g.easypanel.host/barberia?slug=barberia-125`
