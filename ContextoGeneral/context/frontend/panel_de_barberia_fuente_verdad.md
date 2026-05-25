@@ -48,7 +48,14 @@ Validaciones:
 - `cmd /c npm run build` paso correctamente en `panel_de_barberia`.
 - EasyPanel desplego correctamente el servicio `app`.
 - El navegador cargo `https://barberagency-app.gymh5g.easypanel.host/barberia`.
-- La pantalla mostro `Barberia 58`, `id: 101`, `slug: barberia-58`.
+- En la primera validacion la pantalla mostro `Barberia 58`, `id: 101`, `slug: barberia-58`.
+- Luego se corrigio el panel para que no fuerce `Barberia 58`.
+- Commit de correccion:
+  - `357ef6d Resolve dashboard identity dynamically`
+- Desde esa correccion, el dashboard debe recibir identidad real por URL/storage/seed.
+- Ejemplos:
+  - `https://barberagency-app.gymh5g.easypanel.host/barberia?barberia_id=125`
+  - `https://barberagency-app.gymh5g.easypanel.host/barberia?slug=barberia-125`
 
 ## Limpieza realizada
 
