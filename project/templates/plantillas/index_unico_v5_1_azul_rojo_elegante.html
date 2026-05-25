@@ -394,6 +394,128 @@
       box-shadow: 0 0 0 .2rem var(--ring);
     }
 
+    .reservation-success-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      background: rgba(12, 16, 26, 0.46);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .32s ease;
+    }
+
+    .reservation-success-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reservation-success-card {
+      width: min(100%, 480px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 24px;
+      background: color-mix(in srgb, var(--surface) 74%, transparent);
+      box-shadow: 0 28px 80px rgba(7, 12, 24, 0.35);
+      padding: 1.5rem;
+      color: var(--text);
+      transform: translateY(22px) scale(.96);
+      transition: transform .38s cubic-bezier(.16, 1, .3, 1);
+      backdrop-filter: blur(24px) saturate(170%);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+    }
+
+    .reservation-success-overlay.show .reservation-success-card {
+      transform: translateY(0) scale(1);
+    }
+
+    #landingRoot[data-theme='dark'] .reservation-success-card {
+      background: rgba(18, 23, 34, 0.72);
+      border-color: rgba(255, 255, 255, 0.14);
+      color: #f6f8ff;
+    }
+
+    .reservation-success-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1rem;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: #23a455;
+      background: rgba(35, 164, 85, .14);
+      border: 1px solid rgba(35, 164, 85, .3);
+      font-size: 2.25rem;
+      box-shadow: 0 14px 30px rgba(35, 164, 85, .18);
+    }
+
+    .reservation-success-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: .35rem;
+    }
+
+    .reservation-success-copy {
+      color: var(--muted);
+      margin-bottom: 1.15rem;
+    }
+
+    #landingRoot[data-theme='dark'] .reservation-success-copy {
+      color: #c8d2ea;
+    }
+
+    .reservation-success-details {
+      display: grid;
+      gap: .7rem;
+      padding: 1rem;
+      margin-bottom: 1.15rem;
+      border: 1px solid rgba(39, 71, 143, .16);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .22);
+    }
+
+    #landingRoot[data-theme='dark'] .reservation-success-details {
+      border-color: rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .06);
+    }
+
+    .reservation-success-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: .65rem;
+      border-bottom: 1px dashed rgba(102, 111, 129, .28);
+    }
+
+    .reservation-success-row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .reservation-success-label {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 700;
+    }
+
+    .reservation-success-value {
+      text-align: right;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    #landingRoot[data-theme='dark'] .reservation-success-value {
+      color: #ffffff;
+    }
+
     footer {
       border-top: 1px solid var(--border);
       background: color-mix(in srgb, var(--surface) 75%, transparent);
@@ -852,20 +974,18 @@
         --bs-gutter-x: 0;
         --bs-gutter-y: 0;
         margin: 0;
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 13px;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        padding-bottom: .35rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        overflow: visible;
+        padding-bottom: 0;
       }
 
       #servicesGrid > [class*='col-'],
       #barbersGrid > [class*='col-'] {
-        flex: 0 0 86%;
-        max-width: 86%;
+        width: 100%;
+        max-width: 100%;
         padding: 0;
-        scroll-snap-align: start;
       }
 
       .service-card,
@@ -925,22 +1045,32 @@
       }
 
       .barber-card {
-        text-align: left !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: center !important;
         padding: 0 0 .95rem;
       }
 
       .barber-photo {
-        width: 100%;
-        height: 204px;
-        border-radius: 0;
-        border: 0;
-        margin: 0 0 .85rem !important;
+        display: block !important;
+        width: 112px !important;
+        height: 112px !important;
+        border-radius: 999px !important;
+        border: 3px solid rgba(233, 197, 77, 0.34) !important;
+        margin: 1.1rem auto .85rem !important;
+        object-fit: cover !important;
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22) !important;
       }
 
       .barber-card h3,
       .barber-card p,
       .barber-card small {
+        display: block !important;
+        width: 100% !important;
         padding: 0 1rem;
+        text-align: center !important;
       }
 
       .barber-card h3 { color: #f4f7ff; }
@@ -968,6 +1098,21 @@
 
       .reserve-box .form-label {
         color: #d6def8;
+      }
+
+      .reservation-success-card {
+        padding: 1.1rem;
+        border-radius: 22px;
+        background: rgba(18, 23, 34, .78);
+      }
+
+      .reservation-success-row {
+        display: grid;
+        gap: .25rem;
+      }
+
+      .reservation-success-value {
+        text-align: left;
       }
 
       footer {
@@ -1016,6 +1161,109 @@
       .mobile-dock a.is-active {
         background: rgba(233, 197, 77, 0.16);
         color: #f7dc84;
+      }
+
+      body[data-theme='light'] {
+        background: #f4f6fb;
+        color: #111827;
+      }
+
+      body[data-theme='light']::before {
+        background: radial-gradient(circle, rgba(39, 71, 143, 0.12), transparent 64%);
+      }
+
+      body[data-theme='light']::after {
+        background: radial-gradient(circle, rgba(155, 58, 68, 0.1), transparent 66%);
+      }
+
+      #landingRoot[data-theme='light'] main,
+      #landingRoot[data-theme='light'] footer,
+      #landingRoot[data-theme='light'] section,
+      #landingRoot[data-theme='light'] h2,
+      #landingRoot[data-theme='light'] h3,
+      #landingRoot[data-theme='light'] h4,
+      #landingRoot[data-theme='light'] p,
+      #landingRoot[data-theme='light'] small,
+      #landingRoot[data-theme='light'] label {
+        color: #111827;
+      }
+
+      #landingRoot[data-theme='light'] section .text-secondary,
+      #landingRoot[data-theme='light'] .slot-card small,
+      #landingRoot[data-theme='light'] .barber-card p,
+      #landingRoot[data-theme='light'] .barber-card small,
+      #landingRoot[data-theme='light'] .footer-copy {
+        color: #4b5563 !important;
+      }
+
+      #landingRoot[data-theme='light'] .slot-head span,
+      #landingRoot[data-theme='light'] .slot-card span {
+        color: #7f1d1d;
+      }
+
+      #landingRoot[data-theme='light'] .slot-card,
+      #landingRoot[data-theme='light'] .service-card,
+      #landingRoot[data-theme='light'] .barber-card,
+      #landingRoot[data-theme='light'] #mapa .panel,
+      #landingRoot[data-theme='light'] #reservas .panel {
+        border-color: rgba(17, 24, 39, 0.1);
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 16px 34px rgba(17, 24, 39, 0.1);
+      }
+
+      #landingRoot[data-theme='light'] .slot-card strong,
+      #landingRoot[data-theme='light'] .service-card .h5,
+      #landingRoot[data-theme='light'] .barber-card h3 {
+        color: #111827;
+      }
+
+      #landingRoot[data-theme='light'] .price-pill {
+        background: rgba(39, 71, 143, 0.1);
+        color: #111827;
+      }
+
+      #landingRoot[data-theme='light'] .reserve-box .form-control,
+      #landingRoot[data-theme='light'] .reserve-box .form-select {
+        color: #111827;
+        border-color: rgba(17, 24, 39, 0.16);
+        background: rgba(255, 255, 255, 0.96);
+      }
+
+      #landingRoot[data-theme='light'] .reserve-box .form-control::placeholder {
+        color: #6b7280;
+      }
+
+      #landingRoot[data-theme='light'] .reserve-box .form-label {
+        color: #111827;
+      }
+
+      #landingRoot[data-theme='light'] .reservation-success-card {
+        background: rgba(255, 255, 255, 0.78);
+        color: #111827;
+      }
+
+      #landingRoot[data-theme='light'] .reservation-success-copy,
+      #landingRoot[data-theme='light'] .reservation-success-label {
+        color: #4b5563;
+      }
+
+      #landingRoot[data-theme='light'] .reservation-success-value {
+        color: #111827;
+      }
+
+      #landingRoot[data-theme='light'] .mobile-dock {
+        border-color: rgba(17, 24, 39, 0.12);
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 16px 28px rgba(17, 24, 39, 0.12);
+      }
+
+      #landingRoot[data-theme='light'] .mobile-dock a {
+        color: #111827;
+      }
+
+      #landingRoot[data-theme='light'] .mobile-dock a.is-active {
+        background: rgba(39, 71, 143, 0.1);
+        color: #111827;
       }
     }
   </style>
@@ -1146,8 +1394,7 @@
             <form id="reservationForm" class="panel reserve-box needs-validation" novalidate>
               <h2 class="mb-3">Formulario de reserva</h2>
               <div class="row g-3">
-                <div class="col-md-6"><label class="form-label" for="documento">Documento</label><input id="documento" name="documento" class="form-control" type="text" required></div>
-                <div class="col-md-6"><label class="form-label" for="nombre">Nombre</label><input id="nombre" name="nombre" class="form-control" type="text" required></div>
+                <div class="col-12"><label class="form-label" for="nombre">Nombre y apellido</label><input id="nombre" name="nombre" class="form-control" type="text" required></div>
                 <div class="col-md-6"><label class="form-label" for="telefono">Teléfono</label><input id="telefono" name="telefono" class="form-control" type="tel" required></div>
                 <div class="col-md-6"><label class="form-label" for="email">Correo opcional</label><input id="email" name="email" class="form-control" type="email"></div>
                 <div class="col-md-6"><label class="form-label" for="servicio">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
@@ -1207,6 +1454,39 @@
     <a href="#mapa"><i class="bi bi-geo-alt"></i><span>Map</span></a>
     <a href="#reservas"><i class="bi bi-calendar-check"></i><span>Book</span></a>
   </nav>
+
+  <div id="reservationSuccessOverlay" class="reservation-success-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="reservationSuccessTitle">
+    <div class="reservation-success-card text-center">
+      <div class="reservation-success-icon" aria-hidden="true">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h3 id="reservationSuccessTitle" class="reservation-success-title">Reserva confirmada</h3>
+      <p class="reservation-success-copy">Estos son los datos de tu cita. Te esperamos.</p>
+      <div class="reservation-success-details">
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-person-fill"></i> Cliente</span>
+          <span id="successClient" class="reservation-success-value">-</span>
+        </div>
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-scissors"></i> Servicio</span>
+          <span id="successService" class="reservation-success-value">-</span>
+        </div>
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-person-badge"></i> Barbero</span>
+          <span id="successBarber" class="reservation-success-value">-</span>
+        </div>
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-calendar-event"></i> Fecha</span>
+          <span id="successDate" class="reservation-success-value">-</span>
+        </div>
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-clock"></i> Hora</span>
+          <span id="successTime" class="reservation-success-value">-</span>
+        </div>
+      </div>
+      <button id="successBtnReset" type="button" class="btn btn-blue btn-lg w-100">Nueva reserva</button>
+    </div>
+  </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -1277,10 +1557,59 @@
       if (heroIndex < heroFallbacks.length) heroImage.src = heroFallbacks[heroIndex];
     });
 
-    dateInput.min = new Date().toISOString().split('T')[0];
+    setReservationMinDate();
 
     function cop(v) {
       return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
+    }
+
+    function getBogotaDateValue(date = new Date()) {
+      try {
+        const parts = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'America/Bogota',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).formatToParts(date).reduce((acc, part) => {
+          if (part.type !== 'literal') acc[part.type] = part.value;
+          return acc;
+        }, {});
+        if (parts.year && parts.month && parts.day) {
+          return `${parts.year}-${parts.month}-${parts.day}`;
+        }
+      } catch (_) {}
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function shiftDateValue(dateValue, offsetDays) {
+      const parts = safeSeedText(dateValue).split('-').map(Number);
+      if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) return dateValue;
+      const date = new Date(parts[0], parts[1] - 1, parts[2] + offsetDays);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function setReservationMinDate() {
+      if (!dateInput) return;
+      const today = getBogotaDateValue();
+      const isMobileViewport = window.matchMedia && window.matchMedia('(max-width: 991px)').matches;
+      dateInput.dataset.realMin = today;
+      dateInput.min = isMobileViewport ? shiftDateValue(today, -1) : today;
+      if (!dateInput.value || dateInput.value < today) {
+        dateInput.value = today;
+      }
+    }
+
+    function isReservationDateBeforeToday() {
+      const selectedDate = safeSeedText(dateInput?.value);
+      if (!selectedDate) return false;
+      return selectedDate < getBogotaDateValue();
     }
 
     function renderServices() {
@@ -1523,7 +1852,6 @@ function normalizeDayLabel(value) {
 
       return {
         clientes_finales: {
-          documento: null,
           nombre_completo: nombre,
           telefono: document.getElementById('telefono').value.trim(),
           email: document.getElementById('email').value.trim()
@@ -1541,6 +1869,50 @@ function normalizeDayLabel(value) {
       };
     }
 
+    function formatReservationDate(value) {
+      const parts = safeSeedText(value).split('-').map(Number);
+      if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) return safeSeedText(value);
+      const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
+      if (Number.isNaN(localDate.getTime())) return safeSeedText(value);
+      const formatted = localDate.toLocaleDateString('es-CO', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    }
+
+    function setSuccessText(id, value) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = safeSeedText(value) || '-';
+    }
+
+    function showReservationSuccessCard(payload) {
+      const overlay = document.getElementById('reservationSuccessOverlay');
+      if (!overlay) return;
+      const serviceObj = services.find((item) => Number(item.id_servicio) === Number(payload.citas.id_servicio));
+      const barberObj = barbers.find((item) => Number(item.id_barbero) === Number(payload.citas.id_barbero));
+      const serviceLabel = serviceObj ? `${serviceObj.nombre} (${cop(serviceObj.precio)})` : 'Servicio seleccionado';
+      const barberLabel = barberObj ? barberObj.nombre : 'Barbero seleccionado';
+
+      setSuccessText('successClient', payload.clientes_finales.nombre_completo);
+      setSuccessText('successService', serviceLabel);
+      setSuccessText('successBarber', barberLabel);
+      setSuccessText('successDate', formatReservationDate(payload.citas.fecha));
+      setSuccessText('successTime', `${payload.citas.hora} hrs`);
+
+      overlay.classList.remove('d-none');
+      requestAnimationFrame(() => overlay.classList.add('show'));
+    }
+
+    function hideReservationSuccessCard() {
+      const overlay = document.getElementById('reservationSuccessOverlay');
+      if (!overlay) return;
+      overlay.classList.remove('show');
+      window.setTimeout(() => overlay.classList.add('d-none'), 320);
+    }
+
     if (themeToggle) {
       themeToggle.addEventListener('click', () => {
         const current = html.getAttribute('data-theme');
@@ -1553,6 +1925,11 @@ function normalizeDayLabel(value) {
       if (!form.checkValidity()) {
         form.classList.add('was-validated');
         showAlert('danger', 'Completa los campos obligatorios.');
+        return;
+      }
+
+      if (isReservationDateBeforeToday()) {
+        showAlert('danger', 'Selecciona una fecha de hoy en adelante.');
         return;
       }
 
@@ -1574,11 +1951,12 @@ function normalizeDayLabel(value) {
           throw new Error(data.message || 'No fue posible guardar la reserva en este momento.');
         }
 
-        showAlert('success', data.message || 'Reserva registrada correctamente.');
+        alertBox.classList.add('d-none');
+        showReservationSuccessCard(payload);
         form.reset();
         form.classList.remove('was-validated');
+        setReservationMinDate();
         fillSelects();
-        dateInput.min = new Date().toISOString().split('T')[0];
       } catch (error) {
         console.error('Error guardando reserva:', error);
         showAlert('danger', error.message || 'Error de conexión con el servicio de reservas.');
@@ -2115,7 +2493,15 @@ function normalizeDayLabel(value) {
     fillSelects();
     renderLandingQr();
     dateInput.addEventListener('change', fillSelects);
+    dateInput.addEventListener('click', setReservationMinDate);
+    dateInput.addEventListener('focus', setReservationMinDate);
+    dateInput.addEventListener('touchstart', setReservationMinDate, { passive: true });
+    dateInput.addEventListener('pointerdown', setReservationMinDate);
     serviceSelect.addEventListener('change', fillSelects);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) setReservationMinDate();
+    });
+    window.addEventListener('pageshow', setReservationMinDate);
 
     // Auto-collapse mobile navbar after link click
     document.querySelectorAll('#menuNav .nav-link').forEach(link => {
@@ -2127,6 +2513,18 @@ function normalizeDayLabel(value) {
         }
       });
     });
+
+    const successBtnReset = document.getElementById('successBtnReset');
+    if (successBtnReset) {
+      successBtnReset.addEventListener('click', hideReservationSuccessCard);
+    }
+
+    const reservationSuccessOverlay = document.getElementById('reservationSuccessOverlay');
+    if (reservationSuccessOverlay) {
+      reservationSuccessOverlay.addEventListener('click', (event) => {
+        if (event.target === reservationSuccessOverlay) hideReservationSuccessCard();
+      });
+    }
   </script>
 </body>
 </html>

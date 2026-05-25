@@ -54,62 +54,6 @@
         radial-gradient(circle at 100% 0%, rgba(255,106,61,.14), transparent 28%),
         var(--bg);
       min-height: 100vh;
-<!doctype html>
-<html lang="es" data-theme="light">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blade District - V4 Editorial</title>
-  <meta name="description" content="Landing barbería V4 con layout distinto, colores nuevos y reservas." />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <style>
-    #landingRoot {
-      --bg: #f7f8fd;
-      --surface: #ffffff;
-      --text: #11131a;
-      --muted: #5c6371;
-      --main: #ff5f2e;
-      --alt: #1f6bff;
-      --accent: #06b6d4;
-      --main2: var(--alt);
-      --hot: var(--accent);
-      --ring: rgba(31, 107, 255, .25);
-      --border: rgba(20, 28, 46, .12);
-      --nav: rgba(255,255,255,.88);
-      --shadow: 0 16px 34px rgba(18,22,35,.13);
-    }
-
-    #landingRoot[data-theme='dark'] {
-      --bg: #0b1020;
-      --surface: #111832;
-      --text: #f1f3ff;
-      --muted: #acb5d4;
-      --main: #ff6a3d;
-      --alt: #5ea0ff;
-      --accent: #22d3ee;
-      --main2: var(--alt);
-      --hot: var(--accent);
-      --ring: rgba(94,160,255,.24);
-      --border: rgba(149,169,255,.22);
-      --nav: rgba(11,16,32,.84);
-      --shadow: 0 18px 38px rgba(0,0,0,.45);
-    }
-
-    #landingRoot,
-    #landingRoot * { box-sizing: border-box; }
-
-    #landingRoot {
-      font-family: 'Space Grotesk', sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 0% 0%, rgba(34,211,238,.14), transparent 24%),
-        radial-gradient(circle at 100% 0%, rgba(255,106,61,.14), transparent 28%),
-        var(--bg);
-      min-height: 100vh;
     }
 
     #landingRoot h1,
@@ -254,7 +198,7 @@
       visibility: hidden !important;
       opacity: 0 !important;
       pointer-events: none !important;
-    }  }
+    }
 
     .btn-main:hover { color:#fff; filter:brightness(1.06); }
 
@@ -684,6 +628,103 @@
         text-align: center;
       }
     }
+    .reservation-success-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      background: rgba(12, 16, 26, 0.46);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .32s ease;
+    }
+
+    .reservation-success-overlay.show { opacity: 1; pointer-events: auto; }
+
+    .reservation-success-card {
+      width: min(100%, 480px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 24px;
+      background: color-mix(in srgb, var(--surface) 74%, transparent);
+      box-shadow: 0 28px 80px rgba(7, 12, 24, 0.35);
+      padding: 1.5rem;
+      color: var(--text);
+      transform: translateY(22px) scale(.96);
+      transition: transform .38s cubic-bezier(.16, 1, .3, 1);
+      backdrop-filter: blur(24px) saturate(170%);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+    }
+
+    .reservation-success-overlay.show .reservation-success-card { transform: translateY(0) scale(1); }
+    #landingRoot[data-theme='dark'] .reservation-success-card {
+      background: rgba(18, 23, 34, 0.72);
+      border-color: rgba(255, 255, 255, 0.14);
+      color: #f6f8ff;
+    }
+
+    .reservation-success-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1rem;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: #23a455;
+      background: rgba(35, 164, 85, .14);
+      border: 1px solid rgba(35, 164, 85, .3);
+      font-size: 2.25rem;
+      box-shadow: 0 14px 30px rgba(35, 164, 85, .18);
+    }
+
+    .reservation-success-title { font-size: 1.85rem; font-weight: 800; margin-bottom: .35rem; }
+    .reservation-success-copy { color: var(--muted); margin-bottom: 1.15rem; }
+    #landingRoot[data-theme='dark'] .reservation-success-copy { color: #c8d2ea; }
+
+    .reservation-success-details {
+      display: grid;
+      gap: .7rem;
+      padding: 1rem;
+      margin-bottom: 1.15rem;
+      border: 1px solid rgba(39, 71, 143, .16);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .22);
+    }
+
+    #landingRoot[data-theme='dark'] .reservation-success-details {
+      border-color: rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .06);
+    }
+
+    .reservation-success-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: .65rem;
+      border-bottom: 1px dashed rgba(102, 111, 129, .28);
+    }
+
+    .reservation-success-row:last-child { padding-bottom: 0; border-bottom: 0; }
+    .reservation-success-label {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 700;
+    }
+    .reservation-success-value { text-align: right; font-weight: 800; color: var(--text); }
+    #landingRoot[data-theme='dark'] .reservation-success-value { color: #ffffff; }
+
+    @media (max-width: 991px) {
+      .reservation-success-card { padding: 1.1rem; border-radius: 22px; }
+      .reservation-success-row { display: grid; gap: .25rem; }
+      .reservation-success-value { text-align: left; }
+    }
   </style>
 </head>
 <body>
@@ -788,8 +829,7 @@
             <form id="reservationForm" class="panel reserve-form p-4 p-md-5 needs-validation" novalidate>
               <h2 class="mb-3">Reserva completa</h2>
               <div class="row g-3">
-                <div class="col-md-6"><label class="form-label" for="documento">Documento</label><input class="form-control" id="documento" name="documento" type="text" required></div>
-                <div class="col-md-6"><label class="form-label" for="nombre">Nombre</label><input class="form-control" id="nombre" name="nombre" type="text" required></div>
+                <div class="col-12"><label class="form-label" for="nombre">Nombre y apellido</label><input class="form-control" id="nombre" name="nombre" type="text" required></div>
                 <div class="col-md-6"><label class="form-label" for="telefono">Teléfono</label><input class="form-control" id="telefono" name="telefono" type="tel" required></div>
                 <div class="col-md-6"><label class="form-label" for="email">Correo</label><input class="form-control" id="email" name="email" type="email" required></div>
                 <div class="col-md-6"><label class="form-label" for="servicio">Servicio</label><select class="form-select" id="servicio" name="servicio" required></select></div>
@@ -853,6 +893,36 @@
       <small class="footer-copy d-block mt-3">Reserva fácil, elige tu servicio ideal y visita una barbería pensada para cuidar tu imagen.</small>
     </div>
   </footer>
+    <div id="reservationSuccessOverlay" class="reservation-success-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="reservationSuccessTitle">
+      <div class="reservation-success-card text-center">
+        <div class="reservation-success-icon" aria-hidden="true"><i class="bi bi-check-circle-fill"></i></div>
+        <h3 id="reservationSuccessTitle" class="reservation-success-title">Reserva confirmada</h3>
+        <p class="reservation-success-copy">Estos son los datos de tu cita. Te esperamos.</p>
+        <div class="reservation-success-details">
+          <div class="reservation-success-row">
+            <span class="reservation-success-label"><i class="bi bi-person-fill"></i> Cliente</span>
+            <span id="successClient" class="reservation-success-value">-</span>
+          </div>
+          <div class="reservation-success-row">
+            <span class="reservation-success-label"><i class="bi bi-scissors"></i> Servicio</span>
+            <span id="successService" class="reservation-success-value">-</span>
+          </div>
+          <div class="reservation-success-row">
+            <span class="reservation-success-label"><i class="bi bi-person-badge"></i> Barbero</span>
+            <span id="successBarber" class="reservation-success-value">-</span>
+          </div>
+          <div class="reservation-success-row">
+            <span class="reservation-success-label"><i class="bi bi-calendar-event"></i> Fecha</span>
+            <span id="successDate" class="reservation-success-value">-</span>
+          </div>
+          <div class="reservation-success-row">
+            <span class="reservation-success-label"><i class="bi bi-clock"></i> Hora</span>
+            <span id="successTime" class="reservation-success-value">-</span>
+          </div>
+        </div>
+        <button id="successBtnReset" type="button" class="btn btn-main btn-lg w-100">Nueva reserva</button>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -914,10 +984,90 @@
       if (heroIndex < heroFallbacks.length) heroImage.src = heroFallbacks[heroIndex];
     });
 
-    dateInput.min = new Date().toISOString().split('T')[0];
+    setReservationMinDate();
 
     function cop(n) {
       return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
+    }
+
+    function getBogotaDateValue(date = new Date()) {
+      try {
+        const parts = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'America/Bogota',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).formatToParts(date).reduce((acc, part) => {
+          if (part.type !== 'literal') acc[part.type] = part.value;
+          return acc;
+        }, {});
+        if (parts.year && parts.month && parts.day) return `${parts.year}-${parts.month}-${parts.day}`;
+      } catch (_) {}
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function shiftDateValue(dateValue, offsetDays) {
+      const parts = safeSeedText(dateValue).split('-').map(Number);
+      if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) return dateValue;
+      const date = new Date(parts[0], parts[1] - 1, parts[2] + offsetDays);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function setReservationMinDate() {
+      if (!dateInput) return;
+      const today = getBogotaDateValue();
+      const isMobileViewport = window.matchMedia && window.matchMedia('(max-width: 991px)').matches;
+      dateInput.dataset.realMin = today;
+      dateInput.min = isMobileViewport ? shiftDateValue(today, -1) : today;
+      if (!dateInput.value || dateInput.value < today) dateInput.value = today;
+    }
+
+    function isReservationDateBeforeToday() {
+      const selectedDate = safeSeedText(dateInput?.value);
+      if (!selectedDate) return false;
+      return selectedDate < getBogotaDateValue();
+    }
+
+    function formatReservationDate(value) {
+      const safeValue = safeSeedText(value);
+      if (!safeValue) return '-';
+      const date = new Date(`${safeValue}T12:00:00`);
+      if (Number.isNaN(date.getTime())) return safeValue;
+      return new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+    }
+
+    function setSuccessText(id, value) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = safeSeedText(value) || '-';
+    }
+
+    function showReservationSuccessCard(payload) {
+      const overlay = document.getElementById('reservationSuccessOverlay');
+      if (!overlay) return;
+      const serviceObj = services.find((item) => Number(item.id_servicio) === Number(payload.citas.id_servicio));
+      const barberObj = barbers.find((item) => Number(item.id_barbero) === Number(payload.citas.id_barbero));
+      const serviceLabel = serviceObj ? `${serviceObj.nombre} (${cop(serviceObj.precio)})` : 'Servicio seleccionado';
+      const barberLabel = barberObj ? barberObj.nombre : 'Barbero seleccionado';
+      setSuccessText('successClient', payload.clientes_finales.nombre_completo);
+      setSuccessText('successService', serviceLabel);
+      setSuccessText('successBarber', barberLabel);
+      setSuccessText('successDate', formatReservationDate(payload.citas.fecha));
+      setSuccessText('successTime', `${payload.citas.hora} hrs`);
+      overlay.classList.remove('d-none');
+      requestAnimationFrame(() => overlay.classList.add('show'));
+    }
+
+    function hideReservationSuccessCard() {
+      const overlay = document.getElementById('reservationSuccessOverlay');
+      if (!overlay) return;
+      overlay.classList.remove('show');
+      window.setTimeout(() => overlay.classList.add('d-none'), 320);
     }
 
     function setTheme(theme) {
@@ -1111,13 +1261,32 @@ function normalizeDayLabel(value) {
     }
 
     function fillSelects() {
+      const selectedServiceValue = serviceSelect.value;
+      const selectedBarberValue = barberSelect.value;
+      const selectedHourValue = hourSelect.value;
+
       const serviceOpts = '<option value="" selected disabled>Servicio</option>' + services.map(s => `<option value="${s.id_servicio}">${s.nombre} - ${cop(s.precio)}</option>`).join('');
       const barberOpts = '<option value="" selected disabled>Barbero</option>' + barbers.map(b => `<option value="${b.id_barbero}">${b.nombre}</option>`).join('');
-      const hourOpts = '<option value="" selected disabled>Hora</option>' + buildHourSlotsForDay(getDayNameFromDate(dateInput.value)).map(h => `<option value="${h}">${h}</option>`).join('');
 
       serviceSelect.innerHTML = serviceOpts;
       barberSelect.innerHTML = barberOpts;
+
+      if (selectedServiceValue && services.some((s) => String(s.id_servicio) === String(selectedServiceValue))) {
+        serviceSelect.value = selectedServiceValue;
+      }
+
+      if (selectedBarberValue && barbers.some((b) => String(b.id_barbero) === String(selectedBarberValue))) {
+        barberSelect.value = selectedBarberValue;
+      }
+
+      const selectedDay = getDayNameFromDate(dateInput.value);
+      const availableSlots = buildHourSlotsForDay(selectedDay);
+      const hourOpts = '<option value="" selected disabled>Hora</option>' + availableSlots.map(h => `<option value="${h}">${h}</option>`).join('');
       hourSelect.innerHTML = hourOpts;
+
+      if (selectedHourValue && availableSlots.includes(selectedHourValue)) {
+        hourSelect.value = selectedHourValue;
+      }
     }
 
     function showAlert(el, type, msg) {
@@ -1129,7 +1298,6 @@ function normalizeDayLabel(value) {
     function payloadFromMain() {
       return {
         clientes_finales: {
-          documento: document.getElementById('documento').value.trim(),
           nombre_completo: document.getElementById('nombre').value.trim(),
           telefono: document.getElementById('telefono').value.trim(),
           email: document.getElementById('email').value.trim()
@@ -1154,6 +1322,10 @@ function normalizeDayLabel(value) {
         showAlert(alertBox, 'danger', 'Completa los campos obligatorios.');
         return;
       }
+      if (isReservationDateBeforeToday()) {
+        showAlert(alertBox, 'danger', 'Selecciona una fecha de hoy en adelante.');
+        return;
+      }
       const payload = payloadFromMain();
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalText = submitBtn?.textContent || 'Confirmar reserva';
@@ -1174,11 +1346,12 @@ function normalizeDayLabel(value) {
           throw new Error(data.message || 'No fue posible guardar la reserva en este momento.');
         }
 
-        showAlert(alertBox, 'success', data.message || 'Reserva confirmada con exito. Te esperamos en tu cita.');
+        alertBox.classList.add('d-none');
+        showReservationSuccessCard(payload);
         form.reset();
         form.classList.remove('was-validated');
+        setReservationMinDate();
         fillSelects();
-        dateInput.min = new Date().toISOString().split('T')[0];
       } catch (error) {
         console.error('Error guardando reserva:', error);
         showAlert(alertBox, 'danger', error.message || 'Error de conexión con el servicio de reservas.');
@@ -1717,10 +1890,25 @@ function normalizeDayLabel(value) {
     new MutationObserver(() => stripInjectedUi()).observe(document.body, { childList: true, subtree: true });
     renderServices();
     renderBarbers();
+    setReservationMinDate();
     fillSelects();
     renderLandingQr();
     dateInput.addEventListener('change', fillSelects);
+    dateInput.addEventListener('click', setReservationMinDate);
+    dateInput.addEventListener('focus', setReservationMinDate);
+    dateInput.addEventListener('touchstart', setReservationMinDate, { passive: true });
+    dateInput.addEventListener('pointerdown', setReservationMinDate);
     serviceSelect.addEventListener('change', fillSelects);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) setReservationMinDate(); });
+    window.addEventListener('pageshow', setReservationMinDate);
+    const successBtnReset = document.getElementById('successBtnReset');
+    if (successBtnReset) successBtnReset.addEventListener('click', hideReservationSuccessCard);
+    const reservationSuccessOverlay = document.getElementById('reservationSuccessOverlay');
+    if (reservationSuccessOverlay) {
+      reservationSuccessOverlay.addEventListener('click', (event) => {
+        if (event.target === reservationSuccessOverlay) hideReservationSuccessCard();
+      });
+    }
 
     // Auto-collapse mobile navbar after link click
     document.querySelectorAll('#menuNav .nav-link').forEach(link => {

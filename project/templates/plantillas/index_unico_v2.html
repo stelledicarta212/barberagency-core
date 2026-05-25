@@ -556,6 +556,129 @@
         border-color: rgba(255, 255, 255, 0.22) !important;
       }
     }
+
+    /* --- SUCCESS OVERLAY AND CARD STYLE PORTED FROM V5 --- */
+    .reservation-success-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      background: rgba(12, 16, 26, 0.46);
+      backdrop-filter: blur(18px) saturate(150%);
+      -webkit-backdrop-filter: blur(18px) saturate(150%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .32s ease;
+    }
+
+    .reservation-success-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .reservation-success-card {
+      width: min(100%, 480px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 24px;
+      background: color-mix(in srgb, var(--surface) 74%, transparent);
+      box-shadow: 0 28px 80px rgba(7, 12, 24, 0.35);
+      padding: 1.5rem;
+      color: var(--text);
+      transform: translateY(22px) scale(.96);
+      transition: transform .38s cubic-bezier(.16, 1, .3, 1);
+      backdrop-filter: blur(24px) saturate(170%);
+      -webkit-backdrop-filter: blur(24px) saturate(170%);
+    }
+
+    .reservation-success-overlay.show .reservation-success-card {
+      transform: translateY(0) scale(1);
+    }
+
+    #landingRoot[data-theme='dark'] .reservation-success-card {
+      background: rgba(18, 23, 34, 0.72);
+      border-color: rgba(255, 255, 255, 0.14);
+      color: #f6f8ff;
+    }
+
+    .reservation-success-icon {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 1rem;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      color: #23a455;
+      background: rgba(35, 164, 85, .14);
+      border: 1px solid rgba(35, 164, 85, .3);
+      font-size: 2.25rem;
+      box-shadow: 0 14px 30px rgba(35, 164, 85, .18);
+    }
+
+    .reservation-success-title {
+      font-family: inherit;
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: .35rem;
+    }
+
+    .reservation-success-copy {
+      color: var(--muted);
+      margin-bottom: 1.15rem;
+    }
+
+    #landingRoot[data-theme='dark'] .reservation-success-copy {
+      color: #c8d2ea;
+    }
+
+    .reservation-success-details {
+      display: grid;
+      gap: .7rem;
+      padding: 1rem;
+      margin-bottom: 1.15rem;
+      border: 1px solid rgba(39, 71, 143, .16);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .22);
+    }
+
+    #landingRoot[data-theme='dark'] .reservation-success-details {
+      border-color: rgba(255, 255, 255, .12);
+      background: rgba(255, 255, 255, .06);
+    }
+
+    .reservation-success-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: .65rem;
+      border-bottom: 1px dashed rgba(102, 111, 129, .28);
+    }
+
+    .reservation-success-row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .reservation-success-label {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 700;
+    }
+
+    .reservation-success-value {
+      text-align: right;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    #landingRoot[data-theme='dark'] .reservation-success-value {
+      color: #ffffff;
+    }
   </style>
 </head>
 <body>
@@ -605,63 +728,32 @@
     <section id="reservar" class="py-5">
       <div class="container">
         <div class="row g-4 align-items-stretch">
-          <div class="col-lg-7 order-lg-2">
+          <div class="col-lg-6">
+            <div class="block p-4 h-100 d-flex flex-column justify-content-center">
+              <h2 class="mb-3">Tu cita lista en menos tiempo</h2>
+              <p class="text-secondary">Elige el servicio que quieres, reserva con tu barbero ideal y asegura un espacio cómodo para verte impecable.</p>
+              <div class="d-grid gap-2">
+                <a href="#inicio" class="btn btn-main">Ver estilo de la barbería</a>
+                <button id="toMap" class="btn btn-ghost" type="button">Ver Ubicación y llegar fácil</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
             <form id="reservationForm" class="block reserve-card needs-validation" novalidate>
-              <h2 class="mb-3">Reserva tu turno</h2>
+              <h2 class="mb-3">Formulario de reserva</h2>
               <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label" for="documento">Documento</label>
-                  <input class="form-control" type="text" id="documento" name="documento" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="nombre">Nombre</label>
-                  <input class="form-control" type="text" id="nombre" name="nombre" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="telefono">Teléfono</label>
-                  <input class="form-control" type="tel" id="telefono" name="telefono" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="email">Correo</label>
-                  <input class="form-control" type="email" id="email" name="email" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="servicio">Servicio</label>
-                  <select class="form-select" id="servicio" name="servicio" required></select>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="barbero">Barbero</label>
-                  <select class="form-select" id="barbero" name="barbero" required></select>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="fecha">Fecha</label>
-                  <input class="form-control" type="date" id="fecha" name="fecha" required>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label" for="hora">Hora</label>
-                  <select class="form-select" id="hora" name="hora" required></select>
-                </div>
-                <div class="col-12">
-                  <label class="form-label" for="notas">Notas</label>
-                  <textarea class="form-control" id="notas" name="notas" rows="3" placeholder="Detalle extra de tu corte"></textarea>
-                </div>
-                <div class="col-12 d-grid">
-                  <button class="btn btn-main btn-lg" type="submit">Confirmar reserva</button>
-                </div>
+                <div class="col-12"><label class="form-label" for="nombre">Nombre y apellido</label><input id="nombre" name="nombre" class="form-control" type="text" required></div>
+                <div class="col-md-6"><label class="form-label" for="telefono">Teléfono</label><input id="telefono" name="telefono" class="form-control" type="tel" required></div>
+                <div class="col-md-6"><label class="form-label" for="email">Correo opcional</label><input id="email" name="email" class="form-control" type="email"></div>
+                <div class="col-md-6"><label class="form-label" for="servicio">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
+                <div class="col-md-6"><label class="form-label" for="barbero">Barbero</label><select id="barbero" name="barbero" class="form-select" required></select></div>
+                <div class="col-md-6"><label class="form-label" for="fecha">Fecha</label><input id="fecha" name="fecha" class="form-control" type="date" required></div>
+                <div class="col-md-6"><label class="form-label" for="hora">Hora</label><select id="hora" name="hora" class="form-select" required></select></div>
+                <div class="col-12"><label class="form-label" for="notas">Notas</label><textarea id="notas" name="notas" class="form-control" rows="3" placeholder="Detalle de preferencia"></textarea></div>
+                <div class="col-12 d-grid"><button type="submit" class="btn btn-main btn-lg">Confirmar reserva</button></div>
               </div>
               <div id="reservationAlert" class="alert mt-3 d-none" role="alert"></div>
             </form>
-          </div>
-          <div class="col-lg-5 order-lg-1">
-            <div class="block p-4 h-100 d-flex flex-column justify-content-center">
-              <h2 class="mb-3">Tu cita lista en minutos</h2>
-              <p class="text-secondary mb-3">Reserva fácil, elige el servicio ideal y asegura una experiencia cómoda desde el primer paso.</p>
-              <ul class="list-unstyled m-0">
-                <li class="mb-2"><i class="bi bi-check2-circle" style="color:var(--primary);"></i> Reserva cuando quieras, sin esperar respuesta</li>
-                <li class="mb-2"><i class="bi bi-check2-circle" style="color:var(--primary);"></i> Encuentra tu servicio y horario en un solo flujo</li>
-                <li><i class="bi bi-check2-circle" style="color:var(--primary);"></i> Confirma tu cita desde cualquier dispositivo</li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>
@@ -742,9 +834,41 @@
       <div class="footer-brand-wrap">
         <div class="brand footer-brand">Distrito Barber</div>
       </div>
-      <small class="footer-copy d-block mt-3">Reserva rápido, explora servicios y vuelve a cualquier sección en un clic.</small>
+      <small class="footer-copy d-block mt-3">Reserva rápido, explora servicios and vuelve a cualquier sección en un clic.</small>
     </div>
   </footer>
+  <div id="reservationSuccessOverlay" class="reservation-success-overlay d-none" role="dialog" aria-modal="true" aria-labelledby="reservationSuccessTitle">
+    <div class="reservation-success-card text-center">
+      <div class="reservation-success-icon" aria-hidden="true">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h3 id="reservationSuccessTitle" class="reservation-success-title">Reserva confirmada</h3>
+      <p class="reservation-success-copy">Estos son los datos de tu cita. Te esperamos.</p>
+      <div class="reservation-success-details">
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-person-fill"></i> Cliente</span>
+          <span id="successClient" class="reservation-success-value">-</span>
+        </div>
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-scissors"></i> Servicio</span>
+          <span id="successService" class="reservation-success-value">-</span>
+        </div>
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-person-badge"></i> Barbero</span>
+          <span id="successBarber" class="reservation-success-value">-</span>
+        </div>
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-calendar-event"></i> Fecha</span>
+          <span id="successDate" class="reservation-success-value">-</span>
+        </div>
+        <div class="reservation-success-row">
+          <span class="reservation-success-label"><i class="bi bi-clock"></i> Hora</span>
+          <span id="successTime" class="reservation-success-value">-</span>
+        </div>
+      </div>
+      <button id="successBtnReset" type="button" class="btn btn-main btn-lg w-100">Nueva reserva</button>
+    </div>
+  </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
@@ -792,7 +916,56 @@
     const DEFAULT_PUBLIC_PROFILE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public';
     const heroImage = document.getElementById('heroImage');
 
-    dateInput.min = new Date().toISOString().split('T')[0];
+    function getBogotaDateValue(date = new Date()) {
+      try {
+        const parts = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'America/Bogota',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        }).formatToParts(date).reduce((acc, part) => {
+          if (part.type !== 'literal') acc[part.type] = part.value;
+          return acc;
+        }, {});
+        if (parts.year && parts.month && parts.day) {
+          return `${parts.year}-${parts.month}-${parts.day}`;
+        }
+      } catch (_) {}
+
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function shiftDateValue(dateValue, offsetDays) {
+      const parts = safeSeedText(dateValue).split('-').map(Number);
+      if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) return dateValue;
+      const date = new Date(parts[0], parts[1] - 1, parts[2] + offsetDays);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function setReservationMinDate() {
+      if (!dateInput) return;
+      const today = getBogotaDateValue();
+      const isMobileViewport = window.matchMedia && window.matchMedia('(max-width: 991px)').matches;
+      dateInput.dataset.realMin = today;
+      dateInput.min = isMobileViewport ? shiftDateValue(today, -1) : today;
+      if (!dateInput.value || dateInput.value < today) {
+        dateInput.value = today;
+      }
+    }
+
+    function isReservationDateBeforeToday() {
+      const selectedDate = safeSeedText(dateInput?.value);
+      if (!selectedDate) return false;
+      return selectedDate < getBogotaDateValue();
+    }
+
+    setReservationMinDate();
 
     const heroFallbacks = [
       'https://images.pexels.com/photos/3998417/pexels-photo-3998417.jpeg?auto=compress&cs=tinysrgb&w=1920',
@@ -816,16 +989,22 @@
       servicesGrid.classList.toggle('justify-content-center', totalServices <= 2);
       const serviceColClass = totalServices <= 2 ? 'col-md-6 col-lg-5' : 'col-md-6 col-lg-4';
 
-      servicesGrid.innerHTML = services.map(s => `
+      servicesGrid.innerHTML = services.map(s => {
+        const image = safeSeedText(s.imagen_url || s.image_url);
+        const media = image
+          ? `<img class="service-photo mb-3" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.remove();" style="width:100%;height:140px;object-fit:cover;border-radius:12px;" />`
+          : `<div class="icon-dot mb-3"><i class="bi ${s.icono}"></i></div>`;
+        return `
         <div class="${serviceColClass}">
           <article class="block service-item">
-            <div class="icon-dot mb-3"><i class="bi ${s.icono}"></i></div>
+            ${media}
             <h3 class="h5">${s.nombre}</h3>
             <p class="text-secondary mb-2">Trabajo preciso, asesoria y acabado premium.</p>
             <span class="pill">${cop(s.precio)}</span>
           </article>
         </div>
-      `).join('');
+      `;
+      }).join('');
     }
 
     function getRuntimeBarberPhotoPool() {
@@ -840,25 +1019,14 @@
       return pool.length ? pool : DEFAULT_BARBER_PHOTOS;
     }
 
-    function resolveBarberPhoto(preferred, idx) {
-      if (window.BA_FORCE_POOL_PHOTOS === true) {
-        const poolForced = getRuntimeBarberPhotoPool();
-        return poolForced[idx % poolForced.length] || DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
-      }
-      const direct = safeSeedText(preferred);
-      if (direct) return direct;
-      const pool = getRuntimeBarberPhotoPool();
-      return pool[idx % pool.length] || DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
-    }
-
     function renderBarbers() {
       const totalBarbers = barbers.length;
       barbersGrid.classList.toggle('justify-content-center', totalBarbers <= 2);
       const barberColClass = totalBarbers <= 2 ? 'col-md-6 col-lg-4' : 'col-md-6 col-lg-3';
 
       barbersGrid.innerHTML = barbers.map((b, idx) => {
-        const photo = resolveBarberPhoto(b.foto, idx);
         const fallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
+        const photo = safeSeedText(b.foto) || fallback;
         return `
         <div class="${barberColClass}">
           <article class="block barber-item text-center">
@@ -938,10 +1106,28 @@
     }
 
     function fillSelects() {
+      const selectedServiceValue = serviceSelect.value;
+      const selectedBarberValue = barberSelect.value;
+      const selectedHourValue = hourSelect.value;
+
       serviceSelect.innerHTML = '<option value="" selected disabled>Elige servicio</option>' + services.map(s => `<option value="${s.id_servicio}">${s.nombre} - ${cop(s.precio)}</option>`).join('');
       barberSelect.innerHTML = '<option value="" selected disabled>Elige barbero</option>' + barbers.map(b => `<option value="${b.id_barbero}">${b.nombre}</option>`).join('');
-      const availableSlots = buildHourSlotsForDay(getDayNameFromDate(dateInput.value));
+
+      if (selectedServiceValue && services.some((s) => String(s.id_servicio) === String(selectedServiceValue))) {
+        serviceSelect.value = selectedServiceValue;
+      }
+
+      if (selectedBarberValue && barbers.some((b) => String(b.id_barbero) === String(selectedBarberValue))) {
+        barberSelect.value = selectedBarberValue;
+      }
+
+      const selectedDay = getDayNameFromDate(dateInput.value);
+      const availableSlots = buildHourSlotsForDay(selectedDay);
       hourSelect.innerHTML = '<option value="" selected disabled>Elige hora</option>' + availableSlots.map(h => `<option value="${h}">${h}</option>`).join('');
+
+      if (selectedHourValue && availableSlots.includes(selectedHourValue)) {
+        hourSelect.value = selectedHourValue;
+      }
     }
 
     function setTheme(theme) {
@@ -1034,7 +1220,6 @@
     function buildPayload() {
       return {
         clientes_finales: {
-          documento: document.getElementById('documento').value.trim(),
           nombre_completo: document.getElementById('nombre').value.trim(),
           telefono: document.getElementById('telefono').value.trim(),
           email: document.getElementById('email').value.trim()
@@ -1052,6 +1237,50 @@
       };
     }
 
+    function formatReservationDate(value) {
+      const parts = safeSeedText(value).split('-').map(Number);
+      if (parts.length !== 3 || parts.some((part) => !Number.isFinite(part))) return safeSeedText(value);
+      const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
+      if (Number.isNaN(localDate.getTime())) return safeSeedText(value);
+      const formatted = localDate.toLocaleDateString('es-CO', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+      return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+    }
+
+    function setSuccessText(id, value) {
+      const node = document.getElementById(id);
+      if (node) node.textContent = safeSeedText(value) || '-';
+    }
+
+    function showReservationSuccessCard(payload) {
+      const overlay = document.getElementById('reservationSuccessOverlay');
+      if (!overlay) return;
+      const serviceObj = services.find((item) => Number(item.id_servicio) === Number(payload.citas.id_servicio));
+      const barberObj = barbers.find((item) => Number(item.id_barbero) === Number(payload.citas.id_barbero));
+      const serviceLabel = serviceObj ? `${serviceObj.nombre} (${cop(serviceObj.precio)})` : 'Servicio seleccionado';
+      const barberLabel = barberObj ? barberObj.nombre : 'Barbero seleccionado';
+
+      setSuccessText('successClient', payload.clientes_finales.nombre_completo);
+      setSuccessText('successService', serviceLabel);
+      setSuccessText('successBarber', barberLabel);
+      setSuccessText('successDate', formatReservationDate(payload.citas.fecha));
+      setSuccessText('successTime', `${payload.citas.hora} hrs`);
+
+      overlay.classList.remove('d-none');
+      requestAnimationFrame(() => overlay.classList.add('show'));
+    }
+
+    function hideReservationSuccessCard() {
+      const overlay = document.getElementById('reservationSuccessOverlay');
+      if (!overlay) return;
+      overlay.classList.remove('show');
+      window.setTimeout(() => overlay.classList.add('d-none'), 320);
+    }
+
     if (themeToggle) {
       themeToggle.addEventListener('click', () => {
         const current = html.getAttribute('data-theme');
@@ -1064,6 +1293,11 @@
       if (!form.checkValidity()) {
         form.classList.add('was-validated');
         showMessage('danger', 'Completa todos los campos obligatorios.');
+        return;
+      }
+
+      if (isReservationDateBeforeToday()) {
+        showMessage('danger', 'Selecciona una fecha de hoy en adelante.');
         return;
       }
 
@@ -1087,11 +1321,12 @@
           throw new Error(data.message || 'No fue posible guardar la reserva en este momento.');
         }
 
-        showMessage('success', data.message || 'Reserva creada correctamente. Te esperamos en tu cita.');
+        alertBox.classList.add('d-none');
+        showReservationSuccessCard(payload);
         form.reset();
         form.classList.remove('was-validated');
+        setReservationMinDate();
         fillSelects();
-        dateInput.min = new Date().toISOString().split('T')[0];
       } catch (error) {
         console.error('Error guardando reserva:', error);
         showMessage('danger', error.message || 'Error de conexión con el servicio de reservas.');
@@ -1127,7 +1362,7 @@
       branding: null,
       inherited: null
     };
-    window.BA_FORCE_POOL_PHOTOS = true;
+    window.BA_FORCE_POOL_PHOTOS = false;
 
     function getPublicProfileEndpoint() {
       const params = getLandingUrlParams();
@@ -1531,6 +1766,7 @@
         nombre: name,
         precio: Math.max(0, toSeedNumber(item.precio ?? item.precio_base ?? item.valor ?? item.tarifa ?? item.price, 0)),
         icono: safeSeedText(item.icono || item.icon || iconFallback) || iconFallback,
+        imagen_url: safeSeedText(item.imagen_url || item.image_url || item.foto_url || item.foto || item.imagen || item.image || item.cover_url || item.photo),
         duracion_min: Math.max(15, toSeedNumber(item.duracion_min ?? item.duration_min ?? item.duracion ?? item.duration, 60))
       };
     }
@@ -1649,7 +1885,36 @@
     fillSelects();
     renderLandingQr();
     dateInput.addEventListener('change', fillSelects);
+    dateInput.addEventListener('click', setReservationMinDate);
+    dateInput.addEventListener('focus', setReservationMinDate);
+    dateInput.addEventListener('touchstart', setReservationMinDate, { passive: true });
+    dateInput.addEventListener('pointerdown', setReservationMinDate);
+    window.addEventListener('pageshow', setReservationMinDate);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) setReservationMinDate();
+    });
     serviceSelect.addEventListener('change', fillSelects);
+
+    // Success card event listeners
+    const reservationSuccessOverlay = document.getElementById('reservationSuccessOverlay');
+    if (reservationSuccessOverlay) {
+      reservationSuccessOverlay.addEventListener('click', (event) => {
+        if (event.target === reservationSuccessOverlay) hideReservationSuccessCard();
+      });
+    }
+    const successBtnReset = document.getElementById('successBtnReset');
+    if (successBtnReset) {
+      successBtnReset.addEventListener('click', () => {
+        hideReservationSuccessCard();
+      });
+    }
+    const toMapBtn = document.getElementById('toMap');
+    if (toMapBtn) {
+      toMapBtn.addEventListener('click', () => {
+        const mapSection = document.getElementById('mapa');
+        if (mapSection) mapSection.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
 
     // Auto-collapse mobile navbar after link click
     document.querySelectorAll('#menuNav .nav-link').forEach(link => {

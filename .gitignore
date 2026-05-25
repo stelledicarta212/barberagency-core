@@ -20,6 +20,9 @@ tmp_*.html
 tmp_*.json
 tmp_*.js
 
+# Panel repo lives as a sibling folder: ../panel_de_barberia
+_tmp_panel_de_barberia/
+
 .idea/
 .vscode/
 
