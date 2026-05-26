@@ -92,6 +92,7 @@
     const DEFAULT_POSTGREST_BASE = "https://api.agencia2c.cloud";
     const DEFAULT_CANONICAL_SYNC_RPC = "ba_sync_publicacion_collections";
     const DEFAULT_CANONICAL_HOURS_SYNC_RPC = "ba_sync_registro_horarios";
+    const DEFAULT_DASHBOARD_ACCESS_SYNC_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/dashboard/access-sync";
     const DEFAULT_UPLOAD_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-live";
     const DEFAULT_UPLOAD_ENDPOINT_V2 = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-v2";
     const DEFAULT_UPLOAD_ENDPOINT_LEGACY = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload";
@@ -109,6 +110,9 @@
     const CANONICAL_HOURS_SYNC_RPC =
       (window.BA_CANONICAL_HOURS_SYNC_RPC && String(window.BA_CANONICAL_HOURS_SYNC_RPC).trim()) ||
       DEFAULT_CANONICAL_HOURS_SYNC_RPC;
+    const DASHBOARD_ACCESS_SYNC_ENDPOINT =
+      (window.BA_DASHBOARD_ACCESS_SYNC_ENDPOINT && String(window.BA_DASHBOARD_ACCESS_SYNC_ENDPOINT).trim()) ||
+      DEFAULT_DASHBOARD_ACCESS_SYNC_ENDPOINT;
     const UPLOAD_PUBLIC_BASE =
       (window.BA_UPLOAD_PUBLIC_BASE && String(window.BA_UPLOAD_PUBLIC_BASE).trim()) ||
       (window.BA_R2_PUBLIC_BASE && String(window.BA_R2_PUBLIC_BASE).trim()) ||
@@ -2140,9 +2144,14 @@
         precio: Math.max(0, Number(item.precio || 0)),
         imagen_url: clean(item.imagen_url)
       }));
-      const barberos = normalizeBarberDraftRows(payload?.draft?.barberos).map((item) => ({
+      const accessBarbers = Array.isArray(payload?.draft?.accesos?.barberos)
+        ? payload.draft.accesos.barberos
+        : [];
+      const barberos = normalizeBarberDraftRows(payload?.draft?.barberos).map((item, index) => ({
         nombre: item.nombre,
-        foto_url: clean(item.foto_url)
+        foto_url: clean(item.foto_url),
+        email: clean(accessBarbers[index]?.email).toLowerCase(),
+        password: clean(accessBarbers[index]?.password)
       }));
       const horarios = normalizeHoursDraftRows(payload?.draft?.horarios);
 
@@ -2182,6 +2191,47 @@
 
       await assertCanonicalPersistence(barberiaId, servicios, barberos);
       await syncCanonicalHours(barberiaId, horarios);
+      await syncDashboardAccess(barberiaId, data, payload, barberos);
+    }
+
+    async function syncDashboardAccess(barberiaId, data, payload, barberos) {
+      const endpoint = clean(DASHBOARD_ACCESS_SYNC_ENDPOINT);
+      const admin = payload?.draft?.accesos?.admin || {};
+      if (!endpoint || !clean(admin.email) || !clean(admin.password)) return;
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          barberia_id: barberiaId,
+          slug: clean(data?.slug || data?.barberia?.slug),
+          admin: {
+            nombre: clean(admin.nombre),
+            email: clean(admin.email).toLowerCase(),
+            password: clean(admin.password)
+          },
+          barberos: (barberos || [])
+            .filter((item) => clean(item.email) && clean(item.password))
+            .map((item) => ({
+              nombre: clean(item.nombre),
+              email: clean(item.email).toLowerCase(),
+              password: clean(item.password)
+            }))
+        })
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => "");
+        throw new Error(body || "No se pudieron sincronizar accesos del dashboard.");
+      }
+
+      const json = await response.json().catch(() => ({}));
+      if (json && json.ok === false) {
+        throw new Error(clean(json.message) || "No se pudieron sincronizar accesos del dashboard.");
+      }
     }
 
     async function syncCanonicalHours(barberiaId, horarios) {
