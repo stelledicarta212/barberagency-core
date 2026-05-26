@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet"
- href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=128">
+ href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=129">
 
 <style>
   #ba-editor-v2[data-ui-theme='dark'] {
@@ -2022,7 +2022,21 @@
 
   function getExpectedPublishedUrl() {
     const data = getFormData();
-    return buildCanonicalUrlsForEditor({ fallbackSlug: safeText(data.biz_slug) }).public_landing_url;
+    const publishSlug = getPublishSlug(getSeedIdentity()) || safeText(data.biz_slug);
+    return buildCanonicalUrlsForEditor({ fallbackSlug: publishSlug }).public_landing_url;
+  }
+
+  function getPublishSlug(identity) {
+    return safeText(
+      identity?.slug ||
+      seedLandingData?.slug ||
+      seedLandingData?.barberia?.slug ||
+      getQueryParam('barberia_slug') ||
+      getQueryParam('slug') ||
+      getQueryParam('business_slug') ||
+      getQueryParam('ba_barberia_slug') ||
+      getSafeStorage(localStorage, STORAGE_BARBERIA_SLUG)
+    );
   }
 
   function buildCurrentEditorUrl() {
@@ -2129,6 +2143,7 @@
   function buildSavePayload() {
     const data = getFormData();
     const identity = getSeedIdentity();
+    const publishSlug = getPublishSlug(identity);
     const normalizedAddress = safeText(data.address) || safeText(identity.direccion);
     const normalizedMapsUrl = safeText(data.maps_url) || buildMapsEmbedUrl(normalizedAddress);
     const selectedId = getSelectedId();
@@ -2136,7 +2151,7 @@
     const payload = {
       barberia_id: identity.barberia_id,
       site_base_url: getPublicSiteBase(),
-      slug: identity.slug || data.biz_slug,
+      slug: publishSlug,
       direccion: normalizedAddress,
       address: normalizedAddress,
       ciudad: identity.ciudad || normalizedAddress,
@@ -2149,7 +2164,7 @@
       public_template_path: getTemplatePublicPath(selectedTemplate),
       inherited: {
         barberia_id: identity.barberia_id,
-        slug: identity.slug || data.biz_slug,
+        slug: publishSlug,
         nombre: identity.nombre,
         ciudad: identity.ciudad || normalizedAddress,
         direccion: normalizedAddress,
@@ -2197,7 +2212,7 @@
       profile: {
         barberia_id: identity.barberia_id,
         id: identity.barberia_id,
-        slug: identity.slug || data.biz_slug,
+        slug: publishSlug,
         nombre_publico: identity.nombre,
         nombre: identity.nombre,
         ciudad: identity.ciudad || normalizedAddress,
@@ -2214,7 +2229,7 @@
       barberia: {
         id: identity.barberia_id,
         barberia_id: identity.barberia_id,
-        slug: identity.slug || data.biz_slug,
+        slug: publishSlug,
         nombre: identity.nombre,
         nombre_publico: identity.nombre,
         ciudad: identity.ciudad || normalizedAddress,
@@ -2233,7 +2248,7 @@
     const publishedUrls = buildPublishedLandingUrls(payload);
     const landingPublish = {
       barberia_id: identity.barberia_id,
-      slug: identity.slug || data.biz_slug,
+      slug: publishSlug,
       template_id: selectedId,
       template_name: safeText(selectedTemplate?.name),
       editor_url: buildCurrentEditorUrl(),
@@ -2344,9 +2359,10 @@
   function getQrContext() {
     const data = getFormData();
     const selectedTemplate = byId[getSelectedId()] || templates[0];
+    const publishSlug = getPublishSlug(getSeedIdentity()) || safeText(data.biz_slug);
     const canonicalUrls = buildCanonicalUrlsForEditor({
       template: selectedTemplate,
-      fallbackSlug: safeText(data.biz_slug)
+      fallbackSlug: publishSlug
     });
     const publicLandingUrl =
       safeText(canonicalUrls.public_landing_url) ||
