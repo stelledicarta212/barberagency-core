@@ -913,6 +913,7 @@
     const form = document.getElementById('reservationForm');
     const alertBox = document.getElementById('reservationAlert');
     const N8N_RESERVA_WEBHOOK = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/reservas/create';
+    const N8N_SLOTS_WEBHOOK = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/reservas/slots';
     const DEFAULT_PUBLIC_PROFILE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public';
     const heroImage = document.getElementById('heroImage');
 
@@ -1105,28 +1106,259 @@
       return generated.length ? generated : slots.slice();
     }
 
-    function fillSelects() {
+    const realSlotState = {
+      requestKey: '',
+      options: [],
+      loadingKey: '',
+      loaded: false,
+      error: '',
+      requestSeq: 0
+    };
+
+    function resetRealSlotState() {
+      realSlotState.requestSeq += 1;
+      realSlotState.requestKey = '';
+      realSlotState.options = [];
+      realSlotState.loadingKey = '';
+      realSlotState.loaded = false;
+      realSlotState.error = '';
+    }
+
+    const barberAvailabilityState = {
+      requestKey: '',
+      availableBarberIds: [],
+      loadingKey: '',
+      loaded: false,
+      error: '',
+      requestSeq: 0
+    };
+
+    function resetBarberAvailabilityState() {
+      barberAvailabilityState.requestSeq += 1;
+      barberAvailabilityState.requestKey = '';
+      barberAvailabilityState.availableBarberIds = [];
+      barberAvailabilityState.loadingKey = '';
+      barberAvailabilityState.loaded = false;
+      barberAvailabilityState.error = '';
+    }
+
+    function normalizeSlotTime(value) {
+      const clean = safeSeedText(value);
+      const match = /^(\d{1,2}):(\d{2})/.exec(clean);
+      if (!match) return '';
+      return `${String(match[1]).padStart(2, '0')}:${match[2]}`;
+    }
+
+    function buildRealSlotRequestKey() {
+      const barberiaId = getCurrentBarberiaId();
+      const dateValue = safeSeedText(dateInput?.value);
+      const barberId = safeSeedText(barberSelect?.value);
+      if (!barberiaId || !dateValue || !barberId) return '';
+      return `${barberiaId}|${dateValue}|${barberId}`;
+    }
+
+    function buildBarberAvailabilityRequestKey() {
+      const barberiaId = getCurrentBarberiaId();
+      const dateValue = safeSeedText(dateInput?.value);
+      if (!barberiaId || !dateValue) return '';
+      return `${barberiaId}|${dateValue}`;
+    }
+
+    async function loadBarberAvailabilityForDate() {
+      const barberiaId = getCurrentBarberiaId();
+      const dateValue = safeSeedText(dateInput?.value);
+      if (!barberiaId || !dateValue) return false;
+
+      const requestKey = buildBarberAvailabilityRequestKey();
+      if (!requestKey) return false;
+      if (barberAvailabilityState.loaded && barberAvailabilityState.requestKey === requestKey) return true;
+      if (barberAvailabilityState.loadingKey === requestKey) return false;
+
+      const requestSeq = barberAvailabilityState.requestSeq + 1;
+      barberAvailabilityState.requestSeq = requestSeq;
+      barberAvailabilityState.loadingKey = requestKey;
+      barberAvailabilityState.error = '';
+      try {
+        const params = new URLSearchParams({
+          barberia_id: String(barberiaId),
+          fecha: dateValue,
+          _: String(Date.now())
+        });
+        const response = await fetch(`${N8N_SLOTS_WEBHOOK}?${params.toString()}`, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+          cache: 'no-store'
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || data.ok === false) {
+          throw new Error(data.message || 'No fue posible consultar disponibilidad de barberos.');
+        }
+        const availableBarberIds = Array.from(new Set(
+          (Array.isArray(data.slots) ? data.slots : [])
+            .map((slot) => safeSeedText(slot.barbero_id || slot.id_barbero))
+            .filter(Boolean)
+        ));
+        if (requestSeq !== barberAvailabilityState.requestSeq || buildBarberAvailabilityRequestKey() !== requestKey) {
+          return false;
+        }
+        barberAvailabilityState.requestKey = requestKey;
+        barberAvailabilityState.availableBarberIds = availableBarberIds;
+        barberAvailabilityState.loaded = true;
+        return true;
+      } catch (error) {
+        console.error('Error consultando disponibilidad de barberos:', error);
+        if (requestSeq !== barberAvailabilityState.requestSeq) return false;
+        barberAvailabilityState.availableBarberIds = [];
+        barberAvailabilityState.requestKey = '';
+        barberAvailabilityState.loaded = false;
+        barberAvailabilityState.error = error.message || 'No fue posible consultar disponibilidad de barberos.';
+        return false;
+      } finally {
+        if (requestSeq === barberAvailabilityState.requestSeq) {
+          barberAvailabilityState.loadingKey = '';
+        }
+      }
+    }
+
+    async function loadRealSlotsForCurrentSelection() {
+      const barberiaId = getCurrentBarberiaId();
+      const dateValue = safeSeedText(dateInput?.value);
+      const barberId = safeSeedText(barberSelect?.value);
+      if (!barberiaId || !dateValue || !barberId) return false;
+
+      const requestKey = buildRealSlotRequestKey();
+      if (!requestKey) return false;
+      if (realSlotState.loaded && realSlotState.requestKey === requestKey) return true;
+      if (realSlotState.loadingKey === requestKey) return false;
+
+      const requestSeq = realSlotState.requestSeq + 1;
+      realSlotState.requestSeq = requestSeq;
+      realSlotState.loadingKey = requestKey;
+      realSlotState.error = '';
+      try {
+        const fetchSlots = async (nextBarberId = '') => {
+          const params = new URLSearchParams({
+            barberia_id: String(barberiaId),
+            fecha: dateValue,
+            _: String(Date.now())
+          });
+          if (nextBarberId) params.set('barbero_id', nextBarberId);
+
+          const response = await fetch(`${N8N_SLOTS_WEBHOOK}?${params.toString()}`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+            cache: 'no-store'
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || data.ok === false) {
+            throw new Error(data.message || 'No fue posible consultar disponibilidad.');
+          }
+          return Array.isArray(data.slots) ? data.slots : [];
+        };
+
+        let rawSlots = await fetchSlots(barberId);
+        if (!rawSlots.length && barberId) {
+          rawSlots = (await fetchSlots()).filter((slot) => String(slot.barbero_id || slot.id_barbero || '') === String(barberId));
+        }
+
+        const uniqueSlots = Array.from(new Set(
+          rawSlots
+            .map((slot) => normalizeSlotTime(slot.hora_inicio || slot.hora || slot.start))
+            .filter(Boolean)
+        )).sort();
+        if (requestSeq !== realSlotState.requestSeq || buildRealSlotRequestKey() !== requestKey) {
+          return false;
+        }
+        realSlotState.requestKey = requestKey;
+        realSlotState.options = uniqueSlots;
+        realSlotState.loaded = true;
+        return true;
+      } catch (error) {
+        console.error('Error consultando slots reales:', error);
+        if (requestSeq !== realSlotState.requestSeq) return false;
+        realSlotState.options = [];
+        realSlotState.requestKey = '';
+        realSlotState.loaded = false;
+        realSlotState.error = error.message || 'No fue posible consultar disponibilidad.';
+        return false;
+      } finally {
+        if (requestSeq === realSlotState.requestSeq) {
+          realSlotState.loadingKey = '';
+        }
+      }
+    }
+
+    function fillSelects(options = {}) {
       const selectedServiceValue = serviceSelect.value;
       const selectedBarberValue = barberSelect.value;
       const selectedHourValue = hourSelect.value;
+      const availabilityKey = buildBarberAvailabilityRequestKey();
+      const hasAvailability = barberAvailabilityState.loaded && barberAvailabilityState.requestKey === availabilityKey;
+      const availableBarberIds = new Set(barberAvailabilityState.availableBarberIds.map(String));
 
       serviceSelect.innerHTML = '<option value="" selected disabled>Elige servicio</option>' + services.map(s => `<option value="${s.id_servicio}">${s.nombre} - ${cop(s.precio)}</option>`).join('');
-      barberSelect.innerHTML = '<option value="" selected disabled>Elige barbero</option>' + barbers.map(b => `<option value="${b.id_barbero}">${b.nombre}</option>`).join('');
+      barberSelect.innerHTML = '<option value="" selected disabled>Elige barbero</option>' + barbers.map((b) => {
+        const barberId = String(b.id_barbero);
+        const isUnavailable = hasAvailability && !availableBarberIds.has(barberId);
+        const suffix = isUnavailable ? ' (Descanso / no disponible)' : '';
+        return `<option value="${b.id_barbero}"${isUnavailable ? ' disabled' : ''}>${b.nombre}${suffix}</option>`;
+      }).join('');
 
       if (selectedServiceValue && services.some((s) => String(s.id_servicio) === String(selectedServiceValue))) {
         serviceSelect.value = selectedServiceValue;
       }
 
-      if (selectedBarberValue && barbers.some((b) => String(b.id_barbero) === String(selectedBarberValue))) {
+      const selectedBarberStillAvailable = selectedBarberValue &&
+        barbers.some((b) => String(b.id_barbero) === String(selectedBarberValue)) &&
+        (!hasAvailability || availableBarberIds.has(String(selectedBarberValue)));
+      if (selectedBarberStillAvailable) {
         barberSelect.value = selectedBarberValue;
+      } else if (selectedBarberValue && hasAvailability) {
+        resetRealSlotState();
       }
 
       const selectedDay = getDayNameFromDate(dateInput.value);
-      const availableSlots = buildHourSlotsForDay(selectedDay);
-      hourSelect.innerHTML = '<option value="" selected disabled>Elige hora</option>' + availableSlots.map(h => `<option value="${h}">${h}</option>`).join('');
+      const localSlots = buildHourSlotsForDay(selectedDay);
+      const requestKey = buildRealSlotRequestKey();
+      const hasRealSlots = realSlotState.loaded && realSlotState.requestKey === requestKey;
+      const hasRealSourceBase = Boolean(getCurrentBarberiaId() && safeSeedText(dateInput?.value));
+      const usesRealSource = Boolean(hasRealSourceBase && requestKey);
+      const availableSlots = hasRealSlots ? realSlotState.options : (usesRealSource ? [] : localSlots);
+      const placeholder = realSlotState.loadingKey === requestKey
+        ? 'Consultando disponibilidad...'
+        : realSlotState.error && usesRealSource
+          ? 'No se pudo consultar disponibilidad'
+          : hasRealSourceBase && !requestKey
+            ? 'Elige barbero'
+            : hasRealSlots && !availableSlots.length
+              ? 'Sin horarios disponibles'
+              : usesRealSource && !hasRealSlots
+                ? 'Consulta disponibilidad'
+                : 'Elige hora';
+      hourSelect.innerHTML = `<option value="" selected disabled>${placeholder}</option>` + availableSlots.map(h => `<option value="${h}">${h}</option>`).join('');
 
       if (selectedHourValue && availableSlots.includes(selectedHourValue)) {
         hourSelect.value = selectedHourValue;
+      }
+
+      if (!options.skipRealSlots && usesRealSource) {
+        if (requestKey && realSlotState.loadingKey !== requestKey && (!realSlotState.loaded || realSlotState.requestKey !== requestKey)) {
+          hourSelect.innerHTML = '<option value="" selected disabled>Consultando disponibilidad...</option>';
+          loadRealSlotsForCurrentSelection().then(() => {
+            fillSelects({ skipRealSlots: true });
+          });
+        }
+      }
+
+      if (!options.skipBarberAvailability && availabilityKey) {
+        if (
+          barberAvailabilityState.loadingKey !== availabilityKey &&
+          (!barberAvailabilityState.loaded || barberAvailabilityState.requestKey !== availabilityKey)
+        ) {
+          loadBarberAvailabilityForDate().then(() => {
+            fillSelects({ skipBarberAvailability: true });
+          });
+        }
       }
     }
 
@@ -1326,6 +1558,8 @@
         form.reset();
         form.classList.remove('was-validated');
         setReservationMinDate();
+        resetRealSlotState();
+        resetBarberAvailabilityState();
         fillSelects();
       } catch (error) {
         console.error('Error guardando reserva:', error);
@@ -1884,16 +2118,27 @@
     renderBarbers();
     fillSelects();
     renderLandingQr();
-    dateInput.addEventListener('change', fillSelects);
     dateInput.addEventListener('click', setReservationMinDate);
     dateInput.addEventListener('focus', setReservationMinDate);
     dateInput.addEventListener('touchstart', setReservationMinDate, { passive: true });
     dateInput.addEventListener('pointerdown', setReservationMinDate);
+    dateInput.addEventListener('change', () => {
+      resetRealSlotState();
+      resetBarberAvailabilityState();
+      fillSelects();
+    });
     window.addEventListener('pageshow', setReservationMinDate);
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) setReservationMinDate();
     });
-    serviceSelect.addEventListener('change', fillSelects);
+    serviceSelect.addEventListener('change', () => {
+      resetRealSlotState();
+      fillSelects();
+    });
+    barberSelect.addEventListener('change', () => {
+      resetRealSlotState();
+      fillSelects();
+    });
 
     // Success card event listeners
     const reservationSuccessOverlay = document.getElementById('reservationSuccessOverlay');
