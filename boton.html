@@ -1,0 +1,353 @@
+<div id="baHeaderMenuRoot"></div>
+
+<script>
+(function () {
+  if (window.__BA_HEADER_MENU_V10__) return;
+  window.__BA_HEADER_MENU_V10__ = true;
+
+  const BA_HOME_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/";
+  const BA_REGISTER_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/registro/";
+  const BA_CREATE_BARBERIA_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/";
+  const BA_PROFILE_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/perfil/";
+  const BA_PLANS_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/planes/";
+  const BA_DASHBOARD_URL = "https://barberagency-app.gymh5g.easypanel.host/barberia";
+
+  const BA_SESSION_ME_URL = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/session/me";
+  const BA_SESSION_LOGOUT_URL = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/session/logout";
+
+  const SESSION_KEYS = [
+    "ba_google_token",
+    "ba_user_id",
+    "ba_user_email",
+    "ba_user_nombre",
+    "ba_user_apellido",
+    "ba_user_nombre_manual",
+    "ba_user_apellido_manual",
+    "ba_puede_crear_barberia",
+    "ba_plan_name",
+    "ba_plan_status",
+    "ba_plan_renovacion",
+    "ba_barberias",
+    "ba_barberias_count",
+    "ba_current_barberia"
+  ];
+
+  function clean(v) {
+    return (v || "").toString().trim();
+  }
+
+  function esc(v) {
+    return clean(v)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function prettify(v) {
+    const x = clean(v).replace(/[_\-.]+/g, " ").replace(/\s+/g, " ").trim();
+    if (!x) return "";
+    return x
+      .split(" ")
+      .map((w) => w ? (w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()) : "")
+      .join(" ")
+      .trim();
+  }
+
+  function isHandleLike(v) {
+    const x = clean(v);
+    if (!x) return false;
+    if (x.includes("@")) return true;
+    return x.indexOf(" ") === -1 && /[_\-.]/.test(x);
+  }
+
+  function emailToName(email) {
+    const base = clean(email).includes("@") ? clean(email).split("@")[0] : "Usuario";
+    return prettify(base) || "Usuario";
+  }
+
+  function isLoggedInLocal() {
+    return !!clean(localStorage.getItem("ba_user_id")) && !!clean(localStorage.getItem("ba_user_email"));
+  }
+
+  function setLocalFromSession(data) {
+    const manualNombre = prettify(localStorage.getItem("ba_user_nombre_manual"));
+    const manualApellido = prettify(localStorage.getItem("ba_user_apellido_manual"));
+
+    const savedNombre = prettify(localStorage.getItem("ba_user_nombre"));
+    const savedApellido = prettify(localStorage.getItem("ba_user_apellido"));
+
+    const backendNombre = prettify(data.nombre);
+    const backendApellido = prettify(data.apellido);
+
+    const email = clean(data.email) || clean(localStorage.getItem("ba_user_email"));
+
+    let nombre = manualNombre || savedNombre;
+    let apellido = manualApellido || savedApellido;
+
+    if ((!nombre || isHandleLike(nombre)) && backendNombre && !isHandleLike(backendNombre)) {
+      nombre = backendNombre;
+    }
+    if ((!apellido || isHandleLike(apellido)) && backendApellido && !isHandleLike(backendApellido)) {
+      apellido = backendApellido;
+    }
+
+    if (!nombre || isHandleLike(nombre)) {
+      nombre = emailToName(email);
+    }
+
+    localStorage.setItem("ba_user_id", String(data.user_id || ""));
+    localStorage.setItem("ba_user_email", email);
+    localStorage.setItem("ba_user_nombre", nombre);
+    localStorage.setItem("ba_user_apellido", apellido);
+    localStorage.setItem("ba_puede_crear_barberia", String(!!data.puede_crear_barberia));
+
+    if (manualNombre) localStorage.setItem("ba_user_nombre_manual", manualNombre);
+    if (manualApellido) localStorage.setItem("ba_user_apellido_manual", manualApellido);
+
+    const planName = data.plan_id ? "Plan activo" : "Sin plan";
+    const planStatus = data.plan_id ? "Activo" : "Pendiente";
+    localStorage.setItem("ba_plan_name", planName);
+    localStorage.setItem("ba_plan_status", planStatus);
+
+    localStorage.setItem("ba_barberias_count", String(Number(data.barberias_count || 0)));
+    localStorage.setItem("ba_barberias", JSON.stringify(Array.isArray(data.barberias) ? data.barberias : []));
+
+    if (data.current_barberia) {
+      localStorage.setItem("ba_current_barberia", JSON.stringify(data.current_barberia));
+    } else {
+      localStorage.removeItem("ba_current_barberia");
+    }
+  }
+
+  function clearSession() {
+    SESSION_KEYS.forEach((k) => localStorage.removeItem(k));
+    if (window.google && google.accounts && google.accounts.id) {
+      try { google.accounts.id.disableAutoSelect(); } catch (_) {}
+    }
+  }
+
+  async function syncSessionFromBackend() {
+    try {
+      const r = await fetch(BA_SESSION_ME_URL, {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store"
+      });
+
+      const raw = await r.text();
+      let data = {};
+      try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
+
+      if (r.ok && data.ok) {
+        setLocalFromSession(data);
+        return true;
+      }
+
+      if (r.status === 401) {
+        clearSession();
+        return false;
+      }
+
+      return isLoggedInLocal();
+    } catch (_) {
+      return isLoggedInLocal();
+    }
+  }
+
+  function getUser() {
+    const manualNombre = prettify(localStorage.getItem("ba_user_nombre_manual"));
+    const manualApellido = prettify(localStorage.getItem("ba_user_apellido_manual"));
+
+    let nombre = manualNombre || prettify(localStorage.getItem("ba_user_nombre"));
+    let apellido = manualApellido || prettify(localStorage.getItem("ba_user_apellido"));
+    const email = clean(localStorage.getItem("ba_user_email"));
+
+    if (!nombre || isHandleLike(nombre)) {
+      nombre = emailToName(email);
+    }
+
+    const full = [nombre, apellido].filter(Boolean).join(" ").trim();
+    const first = full ? full.split(/\s+/)[0] : "Usuario";
+
+    return { first, full: full || "Usuario", email };
+  }
+
+  function getPlan() {
+    const name = clean(localStorage.getItem("ba_plan_name")) || "Sin plan";
+    const status = clean(localStorage.getItem("ba_plan_status")) || "Pendiente";
+    const renewal = clean(localStorage.getItem("ba_plan_renovacion"));
+    const cls = /activo|active/i.test(status) ? "is-active" : "is-pending";
+    return { name, status, renewal, cls };
+  }
+
+  function dashboardUrl(barberia) {
+    const slug = clean(barberia && barberia.slug);
+    const id = Number(barberia && barberia.id);
+    const url = new URL(BA_DASHBOARD_URL);
+    if (slug) url.searchParams.set("slug", slug);
+    else if (id > 0) url.searchParams.set("barberia_id", String(id));
+    return url.toString();
+  }
+
+  function getBarberiasState() {
+    let barberias = [];
+    let current = null;
+
+    try { barberias = JSON.parse(localStorage.getItem("ba_barberias") || "[]"); } catch (_) {}
+    try { current = JSON.parse(localStorage.getItem("ba_current_barberia") || "null"); } catch (_) {}
+
+    const count = Number(localStorage.getItem("ba_barberias_count") || barberias.length || 0);
+
+    return {
+      count,
+      barberias: Array.isArray(barberias) ? barberias : [],
+      current
+    };
+  }
+
+  function renderBarberiasBlock() {
+    const state = getBarberiasState();
+
+    if (state.count <= 0) {
+      return `<a class="ba5-user-item" href="${BA_CREATE_BARBERIA_URL}">Crear barbería</a>`;
+    }
+
+    if (state.count === 1 && state.current) {
+      return `<a class="ba5-user-item is-current" href="${dashboardUrl(state.current)}">Ir a mi barbería</a>`;
+    }
+
+    const currentId = Number(state.current && state.current.id);
+    const items = state.barberias.slice(0, 20).map((b) => {
+      const id = Number(b.id);
+      const name = esc(b.nombre || b.name || b.slug || "Barbería");
+      const currentClass = currentId && id === currentId ? " is-current" : "";
+
+      return `<a class="ba5-user-item${currentClass}" href="${dashboardUrl(b)}">${name}</a>`;
+    }).join("");
+
+    return `
+      <div class="ba5-plan-box">
+        <div class="ba5-plan-top">
+          <span class="ba5-plan-label">Mis barberías</span>
+          <span class="ba5-plan-pill is-active">${state.count}</span>
+        </div>
+        <div class="ba5-barberias-list">
+          ${items || (state.current ? `<a class="ba5-user-item is-current" href="${dashboardUrl(state.current)}">${esc(state.current.nombre || "Abrir barbería")}</a>` : "")}
+        </div>
+        <a class="ba5-user-item" href="${BA_CREATE_BARBERIA_URL}">Crear barbería</a>
+      </div>
+    `;
+  }
+
+  function bindMenuEvents(menu) {
+    const btn = menu.querySelector(".ba5-user-btn-menu");
+    const logout = menu.querySelector("#ba5LogoutBtn");
+    if (!btn) return;
+
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      const open = menu.classList.toggle("is-open");
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+
+    if (logout) {
+      logout.addEventListener("click", async function () {
+        try {
+          await fetch(BA_SESSION_LOGOUT_URL, {
+            method: "POST",
+            credentials: "include"
+          });
+        } catch (_) {}
+        clearSession();
+        window.location.href = BA_HOME_URL;
+      });
+    }
+
+    document.addEventListener("click", function (e) {
+      if (!menu.contains(e.target)) {
+        menu.classList.remove("is-open");
+        btn.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        menu.classList.remove("is-open");
+        btn.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+
+  function renderHeaderMenu() {
+    const root = document.getElementById("baHeaderMenuRoot");
+    if (!root) return false;
+
+    if (!isLoggedInLocal()) {
+      root.innerHTML = '<a class="ba5-user-btn" href="' + BA_REGISTER_URL + '">Registrate</a>';
+      return true;
+    }
+
+    const u = getUser();
+    const p = getPlan();
+
+    root.innerHTML = `
+      <div class="ba5-user-menu" id="ba5UserMenu">
+        <button type="button" class="ba5-user-btn ba5-user-btn-menu" aria-expanded="false">
+          Hola, ${esc(u.first)}
+        </button>
+
+        <div class="ba5-user-dropdown">
+          <div class="ba5-user-head">
+            <div class="ba5-user-name">${esc(u.full || u.first)}</div>
+            <div class="ba5-user-email">${esc(u.email)}</div>
+          </div>
+
+          <div class="ba5-plan-box">
+            <div class="ba5-plan-top">
+              <span class="ba5-plan-label">Plan actual</span>
+              <span class="ba5-plan-pill ${p.cls}">${esc(p.status)}</span>
+            </div>
+            <div class="ba5-plan-name">${esc(p.name)}</div>
+            ${p.renewal ? `<div class="ba5-plan-renewal">Renovación: ${esc(p.renewal)}</div>` : ""}
+          </div>
+
+          ${renderBarberiasBlock()}
+
+          <a class="ba5-user-item" href="${BA_PROFILE_URL}">Mi perfil</a>
+          <a class="ba5-user-item" href="${BA_PLANS_URL}">Ver planes</a>
+          <button type="button" id="ba5LogoutBtn" class="ba5-user-item ba5-user-logout">Cerrar sesión</button>
+        </div>
+      </div>
+    `;
+
+    const menu = document.getElementById("ba5UserMenu");
+    if (menu) bindMenuEvents(menu);
+
+    return true;
+  }
+
+  async function init() {
+    await syncSessionFromBackend();
+
+    if (renderHeaderMenu()) return;
+    let tries = 0;
+    const t = setInterval(function () {
+      if (renderHeaderMenu() || ++tries > 20) clearInterval(t);
+    }, 300);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  window.addEventListener("storage", renderHeaderMenu);
+  window.baRefreshUserMenu = async function () {
+    await syncSessionFromBackend();
+    renderHeaderMenu();
+  };
+})();
+</script>

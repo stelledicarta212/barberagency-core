@@ -1017,6 +1017,18 @@
         if (row.password.length < 6) return { ok: false, message: "Barbero " + row._index + ": la password debe tener mínimo 6 caracteres." };
       }
 
+      const seenEmails = new Map();
+      for (const row of filled) {
+        const previousIndex = seenEmails.get(row.email);
+        if (previousIndex) {
+          return {
+            ok: false,
+            message: "Cada barbero debe tener un correo diferente para poder ingresar a su panel. Revisa los barberos " + previousIndex + " y " + row._index + "."
+          };
+        }
+        seenEmails.set(row.email, row._index);
+      }
+
       return {
         ok: true,
         rows: filled.map((row) => ({
@@ -2316,9 +2328,7 @@
         try {
           const response = await fetch(endpoint, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
+            credentials: "include",
             body: JSON.stringify(requestPayload)
           });
 
@@ -2408,7 +2418,6 @@
 
       try {
         const { data } = await postOnboardingPayload(payload);
-        await syncCanonicalCatalogs(data, payload);
 
         persistLandingSeed(payload, data);
         onboardingCompleted = true;
@@ -2477,7 +2486,6 @@
 
       try {
         const { data } = await postOnboardingPayload(payload);
-        await syncCanonicalCatalogs(data, payload);
 
         persistLandingSeed(payload, data);
         window.location.href = buildLandingBuilderUrl(payload, data);
