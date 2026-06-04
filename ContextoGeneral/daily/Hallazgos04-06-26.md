@@ -158,3 +158,1472 @@ Para blindar la arquitectura y asegurar que PostgreSQL sea la única fuente de v
    * Mostrar mensajes de error claros en lugar de cargar datos antiguos ocultando el error.
 5. **Persistencia Directa de Citas y Servicios:**
    * Conectar las acciones de creación/edición en [src/app/citas/page.tsx](file:///C:/Users/calvi/OneDrive/n8n/Visual%20studio/barberagency-core/_work_panel_de_barberia/src/app/citas/page.tsx) y [src/app/servicios/page.tsx](file:///C:/Users/calvi/OneDrive/n8n/Visual%20studio/barberagency-core/_work_panel_de_barberia/src/app/servicios/page.tsx) con la API REST de Supabase/PostgREST o el webhook de n8n para asegurar almacenamiento en PostgreSQL.
+
+
+
+
+
+
+
+
+
+   posibles Soluciones  de Codex antigravitycli y chatgpt 
+
+   - las soluciones debes ser para desarrollo 
+
+   # 📋 Diagnóstico General de BarberAgency
+
+## Consolidación de Hallazgos (Codex + Antigravity CLI + Gemini + Revisión Técnica)
+
+**Fecha:** 04 de Junio de 2026
+
+**Proyecto:** BarberAgency
+
+**Objetivo del análisis:** Identificar la causa raíz de los problemas de sincronización, identidad, persistencia y seguridad en la arquitectura actual.
+
+---
+
+# 🎯 Resumen Ejecutivo
+
+Después de consolidar los hallazgos obtenidos por Codex, Antigravity CLI, Gemini y la revisión técnica del repositorio, la conclusión es clara:
+
+> BarberAgency no posee actualmente una Fuente Única de Verdad (Single Source of Truth - SSOT) completamente implementada.
+
+Aunque PostgreSQL fue diseñado para ser la fuente principal de datos, actualmente existen múltiples mecanismos que compiten con ella:
+
+```text
+PostgreSQL
+session/me
+dashboard/state
+localStorage
+seedLandingData
+query params
+slug
+barberia_id
+fallbacks visuales
+cache local
+```
+
+Como consecuencia, diferentes módulos del sistema pueden:
+
+* Mostrar información distinta para la misma barbería.
+* Hidratar datos incorrectos.
+* Mantener información obsoleta.
+* Generar inconsistencias entre Dashboard, Registro, Editor y Landing Pública.
+* Exponer riesgos de seguridad multi-tenant.
+
+---
+
+# 🔴 Hallazgo 1: Crisis de Identidad Multi-Tenant
+
+## Situación Actual
+
+Actualmente la identidad de una barbería puede resolverse desde múltiples fuentes:
+
+```text
+URL
+localStorage
+seedLandingData
+sessionStorage
+slug
+barberia_id
+window.BA_*
+session/me
+```
+
+Dependiendo de la pantalla o flujo utilizado.
+
+---
+
+## Riesgos
+
+### Contaminación entre Barberías
+
+Un usuario puede abrir varias barberías simultáneamente en distintas pestañas.
+
+Ejemplo:
+
+```text
+Pestaña A → Barbería Alpha
+Pestaña B → Barbería Beta
+```
+
+El localStorage compartido puede provocar:
+
+```text
+Dashboard Alpha
+↓
+Carga seed de Beta
+↓
+Datos mezclados
+```
+
+---
+
+### Hidratación Incorrecta
+
+Actualmente existen casos donde:
+
+```text
+slug = barberia-61
+barberia_id = 198
+```
+
+y el sistema intenta decidir cuál utilizar.
+
+Esto puede provocar:
+
+* Carga de barbería equivocada.
+* Modificación de datos incorrectos.
+* Publicación sobre otra barbería.
+* Fuga de información entre tenants.
+
+---
+
+## Conclusión
+
+La identidad debe construirse únicamente desde:
+
+```text
+session/me
++
+barberia_id validado por backend
+```
+
+Todo lo demás debe ser información auxiliar.
+
+---
+
+# 🔴 Hallazgo 2: Persistencia Incompleta
+
+## Situación Actual
+
+Existen módulos que trabajan únicamente en frontend sin persistencia real.
+
+---
+
+## Caso 1: Citas
+
+Actualmente:
+
+```text
+Formulario
+↓
+Estado React
+↓
+localStorage
+```
+
+en lugar de:
+
+```text
+Formulario
+↓
+API
+↓
+PostgreSQL
+```
+
+---
+
+### Consecuencias
+
+* Citas desaparecen al limpiar caché.
+* Citas no visibles desde otros dispositivos.
+* Calendarios inconsistentes.
+* Reservas fantasma.
+
+---
+
+## Caso 2: Servicios
+
+Existen operaciones visuales que no generan mutaciones reales.
+
+El usuario puede creer que:
+
+```text
+Servicio creado
+```
+
+cuando realmente:
+
+```text
+No existe en PostgreSQL
+```
+
+---
+
+## Conclusión
+
+Toda operación CRUD debe terminar obligatoriamente en:
+
+```text
+PostgreSQL
+```
+
+No debe existir lógica de negocio persistida únicamente en:
+
+```text
+localStorage
+estado React
+cache local
+```
+
+---
+
+# 🔴 Hallazgo 3: Fallbacks Ocultan Problemas Reales
+
+## Situación Actual
+
+Para evitar errores visuales se implementaron fallbacks como:
+
+```text
+Barberos ficticios
+Datos simulados
+Cache antigua
+Seeds antiguas
+setError(null)
+```
+
+---
+
+## Problema
+
+Cuando la base de datos falla:
+
+```text
+Usuario ve datos
+```
+
+aunque:
+
+```text
+Backend caído
+Dashboard desconectado
+Datos obsoletos
+```
+
+---
+
+## Consecuencias
+
+El sistema aparenta funcionar correctamente.
+
+Los errores reales quedan ocultos.
+
+El administrador no sabe que está trabajando sobre datos inválidos.
+
+---
+
+## Conclusión
+
+En producción:
+
+```text
+Error real
+↓
+Mensaje claro
+```
+
+Nunca:
+
+```text
+Error real
+↓
+Datos inventados
+```
+
+---
+
+# 🔴 Hallazgo 4: Riesgo Crítico de Seguridad
+
+## Problema Detectado
+
+En determinadas rutas existe lógica similar a:
+
+```ts
+return "admin";
+```
+
+cuando el sistema no puede resolver correctamente el rol.
+
+---
+
+## Riesgo
+
+Un error de red, caché o hidratación podría derivar en:
+
+```text
+Usuario sin rol válido
+↓
+Admin por defecto
+```
+
+---
+
+## Impacto
+
+Riesgo de:
+
+* Escalada de privilegios.
+* Acceso a información sensible.
+* Ruptura del aislamiento multi-tenant.
+
+---
+
+## Conclusión
+
+Aplicar Principio de Menor Privilegio:
+
+```text
+Sin rol válido
+=
+Sin acceso
+```
+
+Nunca:
+
+```text
+Sin rol válido
+=
+Admin
+```
+
+---
+
+# 🔴 Hallazgo 5: Sincronización Incorrecta de Horarios
+
+## Situación Actual
+
+El frontend filtra únicamente los horarios activos:
+
+```javascript
+horarios.filter(item => item.activo)
+```
+
+---
+
+## Problema
+
+La RPC nunca recibe:
+
+```text
+activo = false
+```
+
+por lo que no puede desactivar correctamente días.
+
+---
+
+## Consecuencia
+
+Un día que fue habilitado puede permanecer abierto indefinidamente.
+
+Ejemplo:
+
+```text
+Martes abierto
+↓
+Usuario intenta cerrarlo
+↓
+Frontend no lo envía
+↓
+BD nunca lo desactiva
+```
+
+---
+
+## Conclusión
+
+Siempre enviar:
+
+```text
+Los 7 días completos
+```
+
+incluyendo:
+
+```text
+activo = true
+activo = false
+```
+
+---
+
+# 🏗️ Causa Raíz Arquitectónica
+
+Todos los hallazgos apuntan a una misma causa:
+
+> Existen múltiples fuentes compitiendo por la autoridad de los datos.
+
+Actualmente:
+
+```text
+PostgreSQL
+localStorage
+seedLandingData
+cache
+slug
+query params
+```
+
+compiten entre sí.
+
+---
+
+## Lo Correcto
+
+La arquitectura debería funcionar así:
+
+```text
+Usuario autenticado
+↓
+session/me
+↓
+barberia_id validado
+↓
+dashboard/state
+↓
+PostgreSQL
+↓
+Render UI
+```
+
+---
+
+## Lo Incorrecto
+
+```text
+URL
+↓
+slug
+↓
+cache vieja
+↓
+seed antigua
+↓
+fallback
+↓
+render
+```
+
+---
+
+# 🎯 Arquitectura Objetivo
+
+## Autoridad de Identidad
+
+```text
+session/me
+```
+
+---
+
+## Autoridad de Barbería
+
+```text
+barberia_id validado por backend
+```
+
+---
+
+## Autoridad de Datos
+
+```text
+dashboard/state
+```
+
+---
+
+## Autoridad de Persistencia
+
+```text
+PostgreSQL
+```
+
+---
+
+## Caché
+
+Permitido únicamente para:
+
+```text
+UX
+performance
+borradores temporales
+```
+
+Nunca para:
+
+```text
+identidad
+roles
+permisos
+datos canónicos
+```
+
+---
+
+# 🚀 Plan de Implementación Priorizado
+
+## P0 — Crítico
+
+### 1. Seguridad
+
+* Eliminar admin por defecto.
+* Bloquear acceso sin rol válido.
+
+### 2. Identidad
+
+Implementar:
+
+```text
+session/me
+```
+
+como autoridad única.
+
+### 3. Validación
+
+Validar siempre:
+
+```text
+barberia_id ↔ slug
+```
+
+Si no coinciden:
+
+```text
+403
+No hidratar
+No usar cache
+```
+
+---
+
+## P1 — Alta Prioridad
+
+### 4. Eliminar Fallbacks Artificiales
+
+Eliminar:
+
+* Barberos mock.
+* Datos ficticios.
+* Correcciones silenciosas.
+
+### 5. Corregir Horarios
+
+Enviar siempre:
+
+```text
+7 días completos
+```
+
+### 6. Limpiar Cachés
+
+Invalidar:
+
+```text
+ba_landing_seed
+ba_barberia_id
+ba_barberia_slug
+```
+
+cuando cambie la barbería activa.
+
+---
+
+## P2 — Persistencia Real
+
+### 7. Servicios
+
+CRUD conectado a backend.
+
+### 8. Citas
+
+CRUD conectado a PostgreSQL.
+
+### 9. Revalidación
+
+Después de cada mutación:
+
+```text
+dashboard/state
+```
+
+debe recargarse.
+
+---
+
+# ✅ Resultado Esperado
+
+Una vez implementado:
+
+```text
+Usuario real
+↓
+session/me
+
+Barbería real
+↓
+barberia_id validado
+
+Estado real
+↓
+dashboard/state
+
+Persistencia real
+↓
+PostgreSQL
+
+Cache
+↓
+solo temporal
+```
+
+---
+
+# Conclusión Final
+
+BarberAgency posee una base sólida y una arquitectura multi-tenant bien encaminada. Sin embargo, todavía conserva mecanismos heredados de desarrollo (seeds, localStorage, fallbacks y estados locales) que compiten con PostgreSQL como fuente de verdad.
+
+La solución no consiste en corregir pantallas individuales.
+
+La solución consiste en establecer una jerarquía única de autoridad para identidad, permisos, hidratación y persistencia.
+
+Una vez implementada esta jerarquía, el sistema tendrá:
+
+* Consistencia de datos.
+* Seguridad multi-tenant.
+* Persistencia real.
+* Trazabilidad.
+* Escalabilidad para producción.
+* Menor complejidad de mantenimiento.
+
+Y PostgreSQL pasará a ser, finalmente, la única fuente de verdad del negocio.
+
+---
+
+## 📝 Registro de Validación: Paso 1 (Backend de Identidad)
+**Fecha:** 04 de Junio de 2026  
+**Cambio:** Refactorización del nodo `Code - build response` en el workflow `BarberAgency - Session Me v2` para evitar la escalación de privilegios a admin por defecto.
+
+### Cambios Aplicados en n8n:
+* Se reemplazó la lógica que asignaba `"admin"` por defecto al rol si no existía `current_barberia`.
+* Se implementó la resolución del rol como:
+  ```javascript
+  role: currentBarberia?.role ?? null
+  ```
+* Se inyectó el objeto de permisos (`permissions: {}`) a nivel raíz de la respuesta exitosa para que sea integrado correctamente por el frontend.
+
+### Resultados de las Pruebas de Sincronización:
+1. **Prueba Sin Cookie:**
+   * **Método:** `GET /webhook/barberagency/session/me` sin cabecera de cookie.
+   * **Resultado:** `401 Unauthorized` con el cuerpo `{"ok":false,"message":"Sesion no valida","next_action":"login"}`. **(Estado: PASS ✅)**
+2. **Prueba Con Cookie Válida:**
+   * **Resultado:** Devuelve la identidad del usuario, su listado de `barberias[]`, la `current_barberia`, el `role` real y el objeto `permissions: {}` a nivel raíz. **(Estado: PASS ✅)**
+3. **Prueba Sin `current_barberia`:**
+   * **Resultado:** Si el usuario no tiene barberías o no hay una activa, el campo `role` se evalúa como `null` (en lugar de admin), lo que restringe el acceso de forma segura. **(Estado: PASS ✅)**
+
+
+
+SOLUCION 
+# 📋 BarberAgency - Plan Maestro de Fuente Única de Verdad (SSOT)
+
+## Versión Producción
+
+**Fecha:** Junio 2026
+
+**Objetivo Principal:**
+
+Implementar una arquitectura donde exista una única fuente de verdad para identidad, permisos, hidratación y persistencia.
+
+Toda corrección futura deberá construirse sobre esta base.
+
+---
+
+# 🎯 Principio Rector
+
+La prioridad NO es arreglar citas.
+
+La prioridad NO es arreglar servicios.
+
+La prioridad NO es arreglar horarios.
+
+La prioridad NO es arreglar QR.
+
+La prioridad es implementar primero una Fuente Única de Verdad (SSOT).
+
+Una vez exista la SSOT, los demás módulos se conectarán a ella.
+
+---
+
+# 🏗️ Arquitectura Objetivo
+
+## Autoridad de Identidad
+
+```text
+session/me
+```
+
+Responsable de determinar:
+
+```text
+usuario autenticado
+roles
+barberías permitidas
+barbería activa
+permisos
+```
+
+---
+
+## Autoridad de Tenant
+
+```text
+barberia_id validado por backend
+```
+
+Responsable de determinar:
+
+```text
+qué barbería se carga
+qué datos puede ver el usuario
+qué datos puede modificar
+```
+
+---
+
+## Autoridad de Estado
+
+```text
+dashboard/state
+```
+
+Responsable de entregar:
+
+```text
+servicios
+barberos
+horarios
+citas
+branding
+estadísticas
+```
+
+---
+
+## Autoridad de Persistencia
+
+```text
+PostgreSQL
+```
+
+Tablas oficiales:
+
+```text
+usuarios
+barberias
+servicios
+barberos
+horarios
+clientes_finales
+citas
+pagos
+productos
+gastos
+```
+
+---
+
+# ❌ Lo que deja de ser autoridad
+
+Estas fuentes pueden existir únicamente como cache temporal:
+
+```text
+localStorage
+sessionStorage
+seedLandingData
+window.BA_*
+slug
+estado React
+cache de dashboard
+drafts locales
+```
+
+Nunca podrán decidir:
+
+```text
+qué barbería cargar
+qué usuario es
+qué rol tiene
+qué datos son reales
+```
+
+---
+
+# 🚨 FASE 1 — Construcción de la Fuente de Verdad
+
+## Objetivo
+
+Crear la base sobre la que se construirá todo el sistema.
+
+Sin esta fase terminada no se deben corregir módulos funcionales.
+
+---
+
+# 1. Backend de Identidad
+
+## Canal afectado
+
+```text
+n8n
+PostgreSQL
+Dashboard
+```
+
+---
+
+## Crear endpoint oficial
+
+```text
+GET /webhook/barberagency/session/me
+```
+
+Debe devolver:
+
+```json
+{
+  "user": {},
+  "role": "admin",
+  "current_barberia": {},
+  "barberias": []
+}
+```
+
+---
+
+## Validaciones
+
+Debe validar:
+
+```text
+cookie JWT
+usuario
+owner_id
+estado de barbería
+rol
+```
+
+---
+
+## Pruebas Postman
+
+### Caso 1
+
+Usuario autenticado.
+
+Resultado esperado:
+
+```text
+200
+```
+
+---
+
+### Caso 2
+
+Usuario sin cookie.
+
+Resultado esperado:
+
+```text
+401
+```
+
+---
+
+### Caso 3
+
+Usuario con varias barberías.
+
+Resultado esperado:
+
+```text
+lista completa
+```
+
+---
+
+# 2. Dashboard deja de usar localStorage como autoridad
+
+## Canal afectado
+
+```text
+Dashboard Next.js
+```
+
+---
+
+## Archivos
+
+```text
+src/lib/barbershop-context.ts
+src/store/dashboard-context.tsx
+src/lib/dashboard-api.ts
+```
+
+---
+
+## Eliminar autoridad de
+
+```text
+localStorage
+sessionStorage
+seedLandingData
+window.BA_*
+env fallback
+```
+
+---
+
+## Nueva jerarquía
+
+```text
+session/me
+↓
+barberia_id validado
+↓
+dashboard/state
+↓
+render
+```
+
+---
+
+# 3. Seguridad de Roles
+
+## Canal afectado
+
+```text
+Dashboard
+```
+
+---
+
+## Archivo
+
+```text
+src/lib/dashboard-access.ts
+```
+
+---
+
+## Corregir
+
+Eliminar cualquier lógica:
+
+```ts
+return "admin";
+```
+
+---
+
+## Regla definitiva
+
+```text
+sin rol válido
+=
+sin acceso
+```
+
+---
+
+## Pruebas
+
+Simular:
+
+```text
+rol vacío
+rol inválido
+sin sesión
+```
+
+Resultado:
+
+```text
+403
+```
+
+---
+
+# 4. Validación Universal barberia_id + slug
+
+## Canales afectados
+
+```text
+Dashboard
+Editor
+Landing pública
+Registro edición
+```
+
+---
+
+## Implementar
+
+```ts
+validateBarbershopIdentity()
+```
+
+---
+
+## Regla
+
+Si llegan:
+
+```text
+barberia_id
+slug
+```
+
+ambos deben pertenecer al mismo registro.
+
+---
+
+## Si no coinciden
+
+```text
+403
+sin hidratación
+sin cache
+sin corrección automática
+```
+
+---
+
+## Pruebas Postman
+
+```text
+ID correcto + slug correcto
+ID correcto + slug incorrecto
+ID inexistente
+slug inexistente
+```
+
+---
+
+# 5. Eliminar Fallbacks Productivos
+
+## Canales afectados
+
+```text
+Dashboard
+Editor
+Landing
+```
+
+---
+
+## Eliminar
+
+```text
+Alex M.
+James V.
+barberos ficticios
+servicios ficticios
+cache silenciosa
+setError(null)
+```
+
+---
+
+## Nuevo comportamiento
+
+Si falla:
+
+```text
+dashboard/state
+```
+
+Mostrar:
+
+```text
+No se pudo cargar la fuente de verdad.
+```
+
+---
+
+# 🚨 FASE 2 — Consolidación de Persistencia
+
+IMPORTANTE:
+
+No iniciar esta fase hasta completar Fase 1.
+
+---
+
+# 6. Horarios
+
+## Canal afectado
+
+```text
+Plantillas Core
+RPC PostgreSQL
+```
+
+---
+
+## Archivo
+
+```text
+registrobarberia.html
+```
+
+---
+
+## Corregir
+
+Eliminar:
+
+```js
+horarios.filter(item => item.activo)
+```
+
+Enviar:
+
+```js
+p_horarios: horarios
+```
+
+---
+
+## Validar
+
+```sql
+SELECT *
+FROM horarios
+WHERE barberia_id = ?
+```
+
+---
+
+# 7. Servicios
+
+## Canales afectados
+
+```text
+Dashboard
+n8n
+PostgreSQL
+```
+
+---
+
+## Crear endpoints
+
+```text
+/dashboard/servicios/upsert
+/dashboard/servicios/delete
+```
+
+---
+
+## Persistencia
+
+Tabla:
+
+```text
+public.servicios
+```
+
+---
+
+## Postman
+
+Crear.
+
+Editar.
+
+Eliminar.
+
+Validar en BD.
+
+---
+
+# 8. Barberos
+
+## Canales afectados
+
+```text
+Dashboard
+n8n
+PostgreSQL
+```
+
+---
+
+## Crear endpoints
+
+```text
+/dashboard/barberos/upsert
+/dashboard/barberos/delete
+```
+
+---
+
+## Persistencia
+
+Tabla:
+
+```text
+public.barberos
+```
+
+---
+
+## Postman
+
+Crear.
+
+Editar.
+
+Desactivar.
+
+Validar en BD.
+
+---
+
+# 9. Citas
+
+## Canales afectados
+
+```text
+Dashboard
+n8n
+PostgreSQL
+```
+
+---
+
+## Eliminar
+
+```text
+ba_dashboard_reservas
+```
+
+como fuente de verdad.
+
+---
+
+## Crear endpoints
+
+```text
+/dashboard/citas/upsert
+/dashboard/citas/cancel
+```
+
+---
+
+## Persistencia
+
+Tabla:
+
+```text
+public.citas
+```
+
+---
+
+## Validaciones
+
+```text
+barbero
+servicio
+fecha
+hora
+tenant
+solape
+```
+
+---
+
+## Postman
+
+Crear.
+
+Editar.
+
+Cancelar.
+
+Verificar en BD.
+
+---
+
+# 🚨 FASE 3 — Limpieza Final
+
+# 10. Limpieza de Seeds
+
+## Canales afectados
+
+```text
+Editor
+Dashboard
+Landing
+```
+
+---
+
+## Revisar
+
+```text
+ba_landing_seed
+ba_barberia_id
+ba_barberia_slug
+ba_dashboard_cache
+```
+
+---
+
+## Regla
+
+Cache:
+
+```text
+permitida
+```
+
+Autoridad:
+
+```text
+prohibida
+```
+
+---
+
+# 11. Limpieza de Editor
+
+## Archivo
+
+```text
+landing_editor_v2_unico_vscode.html
+```
+
+---
+
+## Nuevo orden
+
+```text
+session/me
+↓
+query válida
+↓
+cache compatible
+↓
+error
+```
+
+---
+
+# 🚨 FASE 4 — Certificación Producción
+
+La implementación NO se considera terminada hasta completar:
+
+---
+
+## Test Seguridad
+
+```text
+usuario sin rol
+usuario sin sesión
+usuario sin barbería
+```
+
+---
+
+## Test Multi-Tenant
+
+```text
+barbería A
+barbería B
+```
+
+en pestañas simultáneas.
+
+---
+
+## Test Identidad
+
+```text
+slug incorrecto
+barberia_id correcto
+```
+
+Debe bloquear.
+
+---
+
+## Test Horarios
+
+Activar.
+
+Desactivar.
+
+Verificar en PostgreSQL.
+
+---
+
+## Test Servicios
+
+CRUD completo.
+
+Verificar PostgreSQL.
+
+---
+
+## Test Barberos
+
+CRUD completo.
+
+Verificar PostgreSQL.
+
+---
+
+## Test Citas
+
+CRUD completo.
+
+Verificar PostgreSQL.
+
+---
+
+# ✅ Criterio Final de Éxito
+
+BarberAgency solo se considera estabilizado cuando:
+
+```text
+session/me decide identidad
+barberia_id decide tenant
+dashboard/state decide datos
+PostgreSQL decide persistencia
+```
+
+Y ninguna otra capa del sistema puede actuar como fuente de verdad.
+
+En ese momento:
+
+```text
+Dashboard
+n8n
+PostgreSQL
+Plantillas
+Editor
+Landing
+```
+
+trabajarán sobre una única realidad de datos, eliminando definitivamente conflictos de sincronización, contaminación de tenants y datos fantasma.
+
+---
+
+# 📌 Cierre obligatorio de cada tarea
+
+Al finalizar cada tarea o fase, el agente debe guardar los cambios en GitHub con un commit claro y descriptivo. Antes de hacer commit debe ejecutar las pruebas correspondientes, documentar qué se modificó, qué archivos fueron tocados, qué endpoints se probaron en Postman y qué validaciones se realizaron en PostgreSQL/pgAdmin. El commit debe incluir solo cambios relacionados con la tarea actual, evitando mezclar correcciones de otras fases. Después del commit, el agente debe dejar un resumen breve con: objetivo de la tarea, archivos modificados, pruebas ejecutadas, resultado obtenido, riesgos pendientes y hash del commit generado.
