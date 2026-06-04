@@ -1627,3 +1627,48 @@ trabajarán sobre una única realidad de datos, eliminando definitivamente confl
 # 📌 Cierre obligatorio de cada tarea
 
 Al finalizar cada tarea o fase, el agente debe guardar los cambios en GitHub con un commit claro y descriptivo. Antes de hacer commit debe ejecutar las pruebas correspondientes, documentar qué se modificó, qué archivos fueron tocados, qué endpoints se probaron en Postman y qué validaciones se realizaron en PostgreSQL/pgAdmin. El commit debe incluir solo cambios relacionados con la tarea actual, evitando mezclar correcciones de otras fases. Después del commit, el agente debe dejar un resumen breve con: objetivo de la tarea, archivos modificados, pruebas ejecutadas, resultado obtenido, riesgos pendientes y hash del commit generado.
+
+---
+
+## 📝 Registro de Validación: Paso 2 (Quitar localStorage como Autoridad de Identidad)
+**Fecha:** 04 de Junio de 2026  
+**Proyecto:** Panel de Barbería Next.js  
+**Rama:** `principal`  
+**Commit Hash:** `361d26c09ad4ab38a9742072f215b3d5a9d2e933`
+
+### Lógica anterior eliminada:
+* Se eliminó el fallback de identidad basado en semillas (`fromSeed`) y variables de entorno fallback (`testBarberiaId` / `testBarberiaSlug`) en el flujo de producción.
+* Se eliminó la lectura de `localStorage` y `sessionStorage` como fuentes autoritativas de identidad de la barbería en `resolveBarbershopIdentity()`.
+* Se eliminó la resolución de rol `'admin'` por defecto ante valores inválidos en `normalizeRole()` en `dashboard-access.ts`, mapeándose ahora al nuevo rol `'guest'` con `NO_PERMISSIONS`.
+* Se eliminó la recuperación silenciosa de errores con datos en caché obsoletos en `loadState()` (ya no silencia errores con `setError(null)`).
+
+### Nueva Jerarquía de Identidad:
+```text
+session/me (Autoridad de Identidad)
+↓
+URL (Candidata Validada contra barberias[])
+↓
+current_barberia (Autoridad de Tenant)
+↓
+dashboard/state (Autoridad de Estado/Datos)
+↓
+Render UI
+```
+
+### Validación de URL contra `session/me`:
+1. Se busca el `barberia_id` o `slug` de la URL en la lista de `barberias` retornada por `session/me`.
+2. Si se encuentra correspondencia exacta, se establece como la identidad activa.
+3. Si no se encuentra (mismatch o intento de acceso a otra barbería), se aborta la carga, se limpia la sesión, y se muestra un error **403 visual** en el Dashboard.
+
+### Resultados de las Pruebas de Sincronización:
+1. **Prueba Sin Cookie:**
+   * **Comportamiento:** El dashboard se inicia en estado bloqueado, borra cualquier referencia vieja e indica al usuario que inicie sesión. **(Estado: PASS ✅)**
+2. **Prueba Con Cookie Válida y Sin URL:**
+   * **Comportamiento:** Carga exitosamente `current_barberia` de la sesión de `session/me`. **(Estado: PASS ✅)**
+3. **Prueba Con Cookie Válida + URL Autorizada:**
+   * **Comportamiento:** Carga y valida correctamente la barbería solicitada por la URL en base a la lista `barberias[]`. **(Estado: PASS ✅)**
+4. **Prueba Con Cookie Válida + URL No Autorizada (403):**
+   * **Comportamiento:** El sistema detecta el mismatch y muestra el error `"403 - No tienes permisos para acceder a esta barbería."` de forma visual, bloqueando cualquier render e hidratación de datos. **(Estado: PASS ✅)**
+5. **Prueba Con LocalStorage Contaminado:**
+   * **Comportamiento:** Al alterar `ba_barberia_id` en `localStorage` con un ID falso y refrescar la página, el sistema lo ignora por completo y resuelve la barbería real a través de `session/me`. **(Estado: PASS ✅)**
+
