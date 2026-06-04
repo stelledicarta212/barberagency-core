@@ -1,4 +1,4 @@
-﻿<section class="ba-wizard" id="baWizardApp" data-theme="dark">
+<section class="ba-wizard" id="baWizardApp" data-theme="dark">
   <div class="ba-shell">
     <style>
       /* SECCION: Ajustes visuales propios del registro pegado en WP */
@@ -1959,12 +1959,25 @@
               precio: Math.max(0, Number(item.precio || 0)),
               imagen_url: clean(item.imagen_url || item.image_url)
             })),
-          horarios: (draft.horarios || []).map((item) => ({
-            dia: clean(item.dia),
-            activo: Boolean(item.activo),
-            hora_abre: clean(item.hora_abre),
-            hora_cierra: clean(item.hora_cierra)
-          })),
+          horarios: (draft.horarios || []).map((item) => {
+            const dayToIndex = {
+              domingo: 0,
+              lunes: 1,
+              martes: 2,
+              miercoles: 3,
+              jueves: 4,
+              viernes: 5,
+              sabado: 6
+            };
+            const diaClean = clean(item.dia).toLowerCase();
+            return {
+              dia: clean(item.dia),
+              dia_semana: dayToIndex[diaClean] !== undefined ? dayToIndex[diaClean] : -1,
+              activo: Boolean(item.activo),
+              hora_abre: clean(item.hora_abre),
+              hora_cierra: clean(item.hora_cierra)
+            };
+          }),
           barberos: (draft.barberos || [])
             .filter((item) => clean(item.nombre))
             .map((item) => ({
@@ -2247,8 +2260,8 @@
     }
 
     async function syncCanonicalHours(barberiaId, horarios) {
-      const activeHours = Array.isArray(horarios) ? horarios.filter((item) => item.activo) : [];
-      if (!activeHours.length) return;
+      const hoursPayload = Array.isArray(horarios) ? horarios : [];
+      if (!hoursPayload.length) return;
 
       const rpcName = clean(CANONICAL_HOURS_SYNC_RPC);
       if (!rpcName) {
@@ -2263,7 +2276,7 @@
         },
         body: JSON.stringify({
           p_barberia_id: barberiaId,
-          p_horarios: activeHours
+          p_horarios: hoursPayload
         })
       });
 

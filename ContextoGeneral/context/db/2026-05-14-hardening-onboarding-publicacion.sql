@@ -252,10 +252,16 @@ BEGIN
 
     -- Si viene inactivo, se marca inactivo sin validar horas
     IF v_activo = false THEN
+      v_hora_abre := COALESCE(NULLIF(v_row->>'hora_abre', '')::time, '09:00'::time);
+      v_hora_cierra := COALESCE(NULLIF(v_row->>'hora_cierra', '')::time, '18:00'::time);
+
       INSERT INTO public.horarios (barberia_id, dia_semana, hora_abre, hora_cierra, activo)
-      VALUES (p_barberia_id, v_dia_semana, '09:00'::time, '18:00'::time, false)
+      VALUES (p_barberia_id, v_dia_semana, v_hora_abre, v_hora_cierra, false)
       ON CONFLICT (barberia_id, dia_semana)
-      DO UPDATE SET activo = false;
+      DO UPDATE SET
+        hora_abre = EXCLUDED.hora_abre,
+        hora_cierra = EXCLUDED.hora_cierra,
+        activo = false;
       v_count_upsert := v_count_upsert + 1;
       CONTINUE;
     END IF;
