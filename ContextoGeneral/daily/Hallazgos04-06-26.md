@@ -1705,3 +1705,33 @@ Render UI
 4. **Confirmación de No Datos Falsos en Producción:**
    * **Comportamiento:** Ningún barbero mock o servicio mock es inyectado. **(Estado: PASS ✅)**
 
+---
+
+## 📝 Registro de Validación: Paso 4 (Corregir Sincronización Completa de Horarios)
+**Fecha:** 04 de Junio de 2026  
+**Proyecto:** Core (Onboarding y Registro) & PostgreSQL  
+**Rama:** `main`  
+**Commit Hash:** `c5a702e5c0399d1e269e373afbdaa339079b7688`
+
+### Lógica anterior eliminada:
+* Se eliminó el filtro `.filter((item) => item.activo)` en el frontend (`registrobarberia.html` -> `syncCanonicalHours`) que impedía el envío de los días inactivos a la RPC.
+* Se actualizó la lógica SQL en `ba_sync_registro_horarios` que anteriormente omitía la actualización de horas (`hora_abre`, `hora_cierra`) al cambiar un día a inactivo.
+
+### Nuevas Reglas Aplicadas:
+1. **Envío Completo**: Se transmiten siempre los 7 días de la semana en el payload de sincronización de horarios.
+2. **Estructura Requerida**: Cada día enviado a la RPC incluye obligatoriamente `dia_semana`, `hora_abre`, `hora_cierra` y `activo`.
+3. **Persistencia Total**: La base de datos es ahora capaz de registrar la desactivación de días previamente activos, actualizar horarios de días activos, y guardar cambios de horas incluso para días inactivos sin alterar la integridad de los datos.
+
+### Resultados de las Pruebas de Sincronización:
+1. **Prueba 1: Abrir martes:**
+   * **Comportamiento:** Martes (`dia_semana: 2`) se marca como `activo = true` con horario `09:00` - `18:00`. La base de datos actualiza el registro de forma correcta. **(Estado: PASS ✅)**
+2. **Prueba 2: Cerrar martes:**
+   * **Comportamiento:** Martes (`dia_semana: 2`) se cambia a `activo = false`. La base de datos recibe el día y aplica `activo = false` correctamente a través de `ON CONFLICT DO UPDATE`. **(Estado: PASS ✅)**
+3. **Prueba 3: Cambiar horario de apertura:**
+   * **Comportamiento:** Se modifica el horario de apertura y cierre del martes (`10:30` - `21:30`) y se guarda. La base de datos realiza la actualización de las horas en PostgreSQL de manera inmediata. **(Estado: PASS ✅)**
+4. **Prueba 4: Verificar que los 7 días llegan al payload:**
+   * **Comportamiento:** Se comprueba que los 7 días (dia_semana 0 a 6) son sincronizados y persisten de manera estructurada en la tabla `public.horarios`. **(Estado: PASS ✅)**
+5. **Prueba 5: Verificación de compilación (npx tsc):**
+   * **Comportamiento:** Compilación del frontend del dashboard se ejecuta sin problemas ni errores. **(Estado: PASS ✅)**
+
+
