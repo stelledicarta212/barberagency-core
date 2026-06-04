@@ -1681,3 +1681,27 @@ Render UI
    * **Comportamiento:** La validación estricta (AND) falla debido al mismatch de slug. Bloquea e informa del error 403. **(Estado: PASS ✅)**
 7. **Prueba con Usuario sin Rol/Permisos:**
    * **Comportamiento:** Se le asigna el rol `"guest"` y permisos `NO_PERMISSIONS`, denegando acceso visual. **(Estado: PASS ✅)**
+
+---
+
+## 📝 Registro de Validación: Paso 3 (Eliminar Fallbacks Productivos y Datos Ficticios)
+**Fecha:** 04 de Junio de 2026  
+**Proyecto:** Panel de Barbería Next.js  
+**Rama:** `principal`  
+**Commit Hash:** `af3314fb1720bef036517fe70f24329b344eda10`
+
+### Cambios Aplicados en la API del Dashboard:
+* **Propagación del Error Real**: En `getDashboardState()` (`dashboard-api.ts`), si la llamada remota falla y `env.disableRemoteFetch` es falso, la API lanza directamente el error original sin aplicar fallbacks.
+* **Mocks Restringidos a Desarrollo**: Se restringieron los barberos mock ("Alex M.", "James V.") y servicios mock para que solo se utilicen cuando `env.disableRemoteFetch` sea estrictamente `true`.
+* **Cero Silenciamiento de Errores**: Al fallar `dashboard/state`, el dashboard limpia los datos en memoria (`EMPTY_MERGED`) y muestra el mensaje claro `"No se pudo cargar la fuente de verdad"`, sin invocar la caché vieja silenciosamente con `setError(null)`.
+
+### Resultados de las Pruebas de Sincronización:
+1. **Simulación de Error 500 en dashboard/state:**
+   * **Comportamiento:** La UI no maquilla el error y muestra de forma clara el bloqueo `"No se pudo cargar la fuente de verdad."`. **(Estado: PASS ✅)**
+2. **Simulación de Respuesta Vacía:**
+   * **Comportamiento:** Detiene la carga, limpia la memoria y presenta el error controlado. **(Estado: PASS ✅)**
+3. **Simulación de Barbería sin Barberos (Vacia):**
+   * **Comportamiento:** Carga la barbería con `merged.barbers` vacío (`[]`) en lugar de inventar barberos. La interfaz muestra 0 barberos de forma correcta. **(Estado: PASS ✅)**
+4. **Confirmación de No Datos Falsos en Producción:**
+   * **Comportamiento:** Ningún barbero mock o servicio mock es inyectado. **(Estado: PASS ✅)**
+
