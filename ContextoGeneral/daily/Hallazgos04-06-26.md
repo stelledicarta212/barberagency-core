@@ -1634,13 +1634,19 @@ Al finalizar cada tarea o fase, el agente debe guardar los cambios en GitHub con
 **Fecha:** 04 de Junio de 2026  
 **Proyecto:** Panel de Barbería Next.js  
 **Rama:** `principal`  
-**Commit Hash:** `361d26c09ad4ab38a9742072f215b3d5a9d2e933`
+**Commit Hash Principal:** `361d26c09ad4ab38a9742072f215b3d5a9d2e933`  
+**Commit Hash Correcciones (Blockers):** `a6ca125ace936c953af3f8492f70b313435c77bf`
 
 ### Lógica anterior eliminada:
 * Se eliminó el fallback de identidad basado en semillas (`fromSeed`) y variables de entorno fallback (`testBarberiaId` / `testBarberiaSlug`) en el flujo de producción.
 * Se eliminó la lectura de `localStorage` y `sessionStorage` como fuentes autoritativas de identidad de la barbería en `resolveBarbershopIdentity()`.
 * Se eliminó la resolución de rol `'admin'` por defecto ante valores inválidos en `normalizeRole()` en `dashboard-access.ts`, mapeándose ahora al nuevo rol `'guest'` con `NO_PERMISSIONS`.
 * Se eliminó la recuperación silenciosa de errores con datos en caché obsoletos en `loadState()` (ya no silencia errores con `setError(null)`).
+
+### Bloqueadores Corregidos:
+1. **Remoción de Admin y ALL_PERMISSIONS por defecto**: Si el rol recibido de `session/me` es nulo o inválido, el fallback de seguridad del dashboard se asigna a `"guest"` y los permisos a `NO_PERMISSIONS`.
+2. **Validación de URL Estricta (AND)**: Si llegan tanto `barberia_id` como `slug`, el sistema valida que ambos pertenezcan al mismo registro en `barberias[]` de `session/me`, en lugar de usar un operador `OR` que permitía cruces de identidades.
+3. **No fallback automático sin current_barberia**: Si el backend no devuelve una barbería activa (`current_barberia`) y el usuario tiene barberías disponibles, se detiene la carga solicitando al usuario una selección explícita con el mensaje `"Por favor, selecciona una barbería para continuar."`, en lugar de asignar por defecto el primer elemento.
 
 ### Nueva Jerarquía de Identidad:
 ```text
@@ -1671,4 +1677,7 @@ Render UI
    * **Comportamiento:** El sistema detecta el mismatch y muestra el error `"403 - No tienes permisos para acceder a esta barbería."` de forma visual, bloqueando cualquier render e hidratación de datos. **(Estado: PASS ✅)**
 5. **Prueba Con LocalStorage Contaminado:**
    * **Comportamiento:** Al alterar `ba_barberia_id` en `localStorage` con un ID falso y refrescar la página, el sistema lo ignora por completo y resuelve la barbería real a través de `session/me`. **(Estado: PASS ✅)**
-
+6. **Prueba con URL con ID Válido + Slug de otra Barbería:**
+   * **Comportamiento:** La validación estricta (AND) falla debido al mismatch de slug. Bloquea e informa del error 403. **(Estado: PASS ✅)**
+7. **Prueba con Usuario sin Rol/Permisos:**
+   * **Comportamiento:** Se le asigna el rol `"guest"` y permisos `NO_PERMISSIONS`, denegando acceso visual. **(Estado: PASS ✅)**
