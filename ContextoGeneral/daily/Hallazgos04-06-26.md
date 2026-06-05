@@ -1734,4 +1734,97 @@ Render UI
 5. **Prueba 5: Verificación de compilación (npx tsc):**
    * **Comportamiento:** Compilación del frontend del dashboard se ejecuta sin problemas ni errores. **(Estado: PASS ✅)**
 
+---
+
+## 📝 Registro de Validación: Paso 6 (Persistencia Real de Citas)
+**Fecha:** 05 de Junio de 2026  
+**Proyecto:** Core (Citas, Clientes) & Panel de Barbería Next.js & n8n Webhook & PostgreSQL  
+**Rama:** `main` (Core) / `principal` (Panel)
+
+### Cambios Aplicados en la Persistencia de Citas:
+* **Workflow n8n de Citas**: Se actualizó el endpoint `/webhook/barberagency/dashboard/citas` (`jRi8fOiFwBGziCX5`) para validar cookies de sesión (`ba_session`), token JWT, pertenencia de barbería, rol autorizado, y la correspondencia de `barbero_id` / `servicio_id` con la barbería del usuario.
+* **Inserción/Upsert de Clientes**: En `add_cita`, el workflow ahora busca clientes en `public.clientes_finales` por `barberia_id` + `telefono`. Si existe, reutiliza el `cliente_id`, y si no, realiza un INSERT y asocia el nuevo `cliente_id` a la cita.
+* **Borrado Lógico**: La acción `cancel_cita` realiza un `UPDATE` en la tabla `public.citas` fijando `estado = 'cancelada'`, sin borrar físicamente el registro.
+* **Reglas de Negocio en Base de Datos**: PostgreSQL se mantiene como la única autoridad para validar horarios, slot_min, pertenencia de servicios/barberos, y colisiones de horarios mediante la restricción de exclusión `ex_citas_no_solape`.
+* **Frontend sin LocalStorage**: En `citas/page.tsx`, se removió la clave `ba_dashboard_reservas` y `ba_locally_paid_appointments` de `localStorage` como fuentes de persistencia. El estado local y los renders se nutren únicamente del servidor mediante el hook `useDashboard()`, y se ejecuta `refresh()` tras cada operación CRUD exitosa para mantener el panel sincronizado en tiempo real.
+
+### Resultados de las Pruebas de Persistencia y CRUD (Postman + Integration Script):
+1. **Test 1: Sin Cookie (401 Unauthorized)**
+   * **Comportamiento:** Retorna código HTTP 401 y el mensaje `"Sesion no valida"`. **(Estado: PASS ✅)**
+2. **Test 2: Cookie Válida + Barbería Ajena (403 Forbidden)**
+   * **Comportamiento:** Retorna código HTTP 403 y el mensaje `"No tienes permisos para esta barberia"`. **(Estado: PASS ✅)**
+3. **Test 3: Crear Cita Válida**
+   * **Comportamiento:** Retorna código HTTP 200, guarda el registro en `public.citas` asociándolo con el cliente final creado. **(Estado: PASS ✅)**
+4. **Test 4: Verificar en Postgres (Creación)**
+   * **Comportamiento:** Verifica que el registro de la cita y el del cliente final existan físicamente en PostgreSQL y estén vinculados correctamente. **(Estado: PASS ✅)**
+5. **Test 5: Crear Cita con Barbero Ajeno**
+   * **Comportamiento:** Retorna código HTTP 400 y el mensaje `"El barbero no pertenece a esta barberia o no existe"`. **(Estado: PASS ✅)**
+6. **Test 6: Crear Cita con Servicio Ajeno**
+   * **Comportamiento:** Retorna código HTTP 400 y el mensaje `"El servicio no pertenece a esta barberia o no existe"`. **(Estado: PASS ✅)**
+7. **Test 7: Crear Cita Solapada (Double Booking)**
+   * **Comportamiento:** La restricción `ex_citas_no_solape` lanza un error en PostgreSQL. N8n lo intercepta y responde con código HTTP 400 y el mensaje limpio `"El barbero seleccionado ya tiene una cita agendada en ese horario."`. **(Estado: PASS ✅)**
+8. **Test 8: Cancelar Cita (Soft Delete)**
+   * **Comportamiento:** Retorna código HTTP 200 y establece el estado de la cita en `'cancelada'`. **(Estado: PASS ✅)**
+9. **Test 9: Verificar en Postgres (Cancelación)**
+   * **Comportamiento:** Se comprueba en PostgreSQL que la cita persiste físicamente pero tiene `estado = 'cancelada'`. **(Estado: PASS ✅)**
+10. **Test 10: Slot Cancelado Queda Libre**
+    * **Comportamiento:** Al re-agendar una cita en el mismo slot previamente cancelado, la base de datos lo permite exitosamente ya que la exclusión solo aplica a estados activos (`confirmada`/`pendiente`). **(Estado: PASS ✅)**
+11. **Test 11: Editar Cita**
+    * **Comportamiento:** Modifica la hora de inicio y el nombre del cliente de la cita recién creada, retornando código HTTP 200. **(Estado: PASS ✅)**
+12. **Test 12: Verificar en Postgres (Edición)**
+    * **Comportamiento:** Comprueba que los cambios persistan en la base de datos PostgreSQL de forma correcta. **(Estado: PASS ✅)**
+
+### Evidencia de Registros en PostgreSQL:
+
+**Consulta de Citas en public.citas:**
+```json
+[
+  {
+    "id": 167,
+    "barberia_id": 1,
+    "barbero_id": 2,
+    "servicio_id": 1,
+    "cliente_id": 134,
+    "cliente_nombre": "Test-Cita-Cliente-Modificado",
+    "cliente_tel": "3009876545",
+    "fecha": "2026-06-08T00:00:00.000Z",
+    "hora_inicio": "11:00:00",
+    "hora_fin": "11:30:00",
+    "estado": "confirmada"
+  },
+  {
+    "id": 165,
+    "barberia_id": 1,
+    "barbero_id": 2,
+    "servicio_id": 1,
+    "cliente_id": 132,
+    "cliente_nombre": "Test-Cita-Cliente",
+    "cliente_tel": "3009876543",
+    "fecha": "2026-06-08T00:00:00.000Z",
+    "hora_inicio": "10:00:00",
+    "hora_fin": "10:30:00",
+    "estado": "cancelada"
+  }
+]
+```
+
+**Consulta de Clientes en public.clientes_finales:**
+```json
+[
+  {
+    "id": 134,
+    "barberia_id": 1,
+    "nombre": "Test-Cita-Cliente-Modificado",
+    "telefono": "3009876545"
+  },
+  {
+    "id": 132,
+    "barberia_id": 1,
+    "nombre": "Test-Cita-Cliente",
+    "telefono": "3009876543"
+  }
+]
+```
+
+
 

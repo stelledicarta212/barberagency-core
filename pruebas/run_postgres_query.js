@@ -109,18 +109,29 @@ async function setup() {
             id: "SOV6oSyuHI9cxgLF",
             "name": "Postgres account"
           }
-        }
+        },
+        continueOnFail: true
+      },
+      {
+        parameters: {
+          jsCode: "const all = $input.all().map(item => item.json);\nreturn [{ json: { results: all } }];"
+        },
+        id: "aggregate-results",
+        name: "Aggregate Results",
+        type: "n8n-nodes-base.code",
+        typeVersion: 2,
+        position: [650, 300]
       },
       {
         parameters: {
           respondWith: "json",
-          responseBody: "={{ $json }}"
+          responseBody: "={{ $json.results }}"
         },
         id: "respond-node",
         name: "Respond to Webhook",
         type: "n8n-nodes-base.respondToWebhook",
         typeVersion: 1.1,
-        position: [650, 300]
+        position: [850, 300]
       }
     ],
     connections: {
@@ -128,6 +139,9 @@ async function setup() {
         "main": [[{ node: "PG - execute query", type: "main", index: 0 }]]
       },
       "PG - execute query": {
+        "main": [[{ node: "Aggregate Results", type: "main", index: 0 }]]
+      },
+      "Aggregate Results": {
         "main": [[{ node: "Respond to Webhook", type: "main", index: 0 }]]
       }
     },
@@ -162,7 +176,8 @@ async function runSQL(query, params = []) {
 module.exports = {
   setup,
   cleanup,
-  runSQL
+  runSQL,
+  callWebhook
 };
 
 // If run directly, run a quick query to test:
