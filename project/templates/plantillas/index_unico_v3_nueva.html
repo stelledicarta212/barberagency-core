@@ -1205,14 +1205,16 @@ function normalizeDayLabel(value) {
     function buildBarberAvailabilityRequestKey() {
       const barberiaId = getCurrentBarberiaId();
       const dateValue = safeSeedText(dateInput?.value);
-      if (!barberiaId || !dateValue) return '';
-      return `${barberiaId}|${dateValue}`;
+      const serviceId = safeSeedText(serviceSelect?.value);
+      if (!barberiaId || !dateValue || !serviceId) return '';
+      return `${barberiaId}|${dateValue}|${serviceId}`;
     }
 
     async function loadBarberAvailabilityForDate() {
       const barberiaId = getCurrentBarberiaId();
       const dateValue = safeSeedText(dateInput?.value);
-      if (!barberiaId || !dateValue) return false;
+      const serviceId = safeSeedText(serviceSelect?.value);
+      if (!barberiaId || !dateValue || !serviceId) return false;
 
       const requestKey = buildBarberAvailabilityRequestKey();
       if (!requestKey) return false;
@@ -1227,6 +1229,7 @@ function normalizeDayLabel(value) {
         const params = new URLSearchParams({
           barberia_id: String(barberiaId),
           fecha: dateValue,
+          servicio_id: serviceId,
           _: String(Date.now())
         });
         const response = await fetch(`${N8N_SLOTS_WEBHOOK}?${params.toString()}`, {
@@ -1282,11 +1285,13 @@ function normalizeDayLabel(value) {
       realSlotState.error = '';
       try {
         const fetchSlots = async (nextBarberId = '') => {
+          const serviceId = safeSeedText(serviceSelect?.value);
           const params = new URLSearchParams({
             barberia_id: String(barberiaId),
             fecha: dateValue,
             _: String(Date.now())
           });
+          if (serviceId) params.set('servicio_id', serviceId);
           if (nextBarberId) params.set('barbero_id', nextBarberId);
 
           const response = await fetch(`${N8N_SLOTS_WEBHOOK}?${params.toString()}`, {

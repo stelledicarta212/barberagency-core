@@ -35,22 +35,22 @@ AS $ba_rpc$
 DECLARE
   v_barberia public.barberias%ROWTYPE;
   v_servicio public.servicios%ROWTYPE;
-  v_barbero public.barberos%ROWTYPE;
   v_dia_semana int;
   v_abre time;
   v_cierra time;
   v_slots jsonb;
 BEGIN
+  -- Validate required arguments (barberia/slug, service, date)
   IF (p_barberia_id IS NULL AND NULLIF(trim(COALESCE(p_slug, '')), '') IS NULL)
      OR p_servicio_id IS NULL
-     OR p_barbero_id IS NULL
      OR p_fecha IS NULL THEN
     RETURN public.ba_public_reserva_error(
       'datos_invalidos',
-      'Faltan barberia_id o slug, servicio_id, barbero_id y fecha.'
+      'Faltan barberia_id o slug, servicio_id y fecha.'
     );
   END IF;
 
+  -- Load barberia
   SELECT br.*
   INTO v_barberia
   FROM public.barberias br
@@ -67,6 +67,7 @@ BEGIN
     RETURN public.ba_public_reserva_error('barberia_no_encontrada', 'La barberia no esta activa.');
   END IF;
 
+  -- Load service
   SELECT s.*
   INTO v_servicio
   FROM public.servicios s
@@ -81,30 +82,19 @@ BEGIN
     RETURN public.ba_public_reserva_error('servicio_inactivo', 'El servicio no esta activo.');
   END IF;
 
-  SELECT b.*
-  INTO v_barbero
-  FROM public.barberos b
-  WHERE b.id = p_barbero_id
-  LIMIT 1;
-
-  IF v_barbero.id IS NULL OR v_barbero.barberia_id <> v_barberia.id THEN
-    RETURN public.ba_public_reserva_error('barbero_no_pertenece', 'El barbero no pertenece a la barberia.');
+  -- Validate specific barber if provided
+  IF p_barbero_id IS NOT NULL THEN
+    IF NOT EXISTS (
+      SELECT 1 FROM public.barberos b 
+      WHERE b.id = p_barbero_id 
+        AND b.barberia_id = v_barberia.id 
+        AND COALESCE(b.activo, true) = true
+    ) THEN
+      RETURN public.ba_public_reserva_error('barbero_no_pertenece', 'El barbero no pertenece a la barberia o esta inactivo.');
+    END IF;
   END IF;
 
-  IF COALESCE(v_barbero.activo, true) <> true THEN
-    RETURN public.ba_public_reserva_error('barbero_inactivo', 'El barbero no esta activo.');
-  END IF;
-
-  IF EXISTS (
-    SELECT 1
-    FROM public.barberos_descansos d
-    WHERE d.barberia_id = v_barberia.id
-      AND d.barbero_id = v_barbero.id
-      AND d.fecha = p_fecha
-  ) THEN
-    RETURN public.ba_public_reserva_error('descanso_barbero', 'El barbero esta en descanso ese dia.');
-  END IF;
-
+  -- Get working hours for the day of the week
   v_dia_semana := EXTRACT(DOW FROM p_fecha)::int;
 
   SELECT h.hora_abre, h.hora_cierra
@@ -119,11 +109,28 @@ BEGIN
     RETURN public.ba_public_reserva_error('fuera_de_horario', 'No hay horario laboral activo para ese dia.');
   END IF;
 
-  WITH candidatos AS (
+  -- Generate series of slots for all matching active barbers who are not on rest/descanso
+  WITH barberos_activos AS (
+    SELECT b.id AS barbero_id
+    FROM public.barberos b
+    WHERE b.barberia_id = v_barberia.id
+      AND COALESCE(b.activo, true) = true
+      AND (p_barbero_id IS NULL OR b.id = p_barbero_id)
+      AND NOT EXISTS (
+        SELECT 1
+        FROM public.barberos_descansos d
+        WHERE d.barberia_id = v_barberia.id
+          AND d.barbero_id = b.id
+          AND d.fecha = p_fecha
+      )
+  ),
+  candidatos AS (
     SELECT
+      ba.barbero_id,
       (v_abre + (n * make_interval(mins => v_barberia.slot_min)))::time AS hora_inicio,
       (v_abre + (n * make_interval(mins => v_barberia.slot_min)) + make_interval(mins => v_servicio.duracion_min))::time AS hora_fin
-    FROM generate_series(
+    FROM barberos_activos ba
+    CROSS JOIN generate_series(
       0,
       GREATEST(
         FLOOR(EXTRACT(EPOCH FROM ((v_cierra - v_abre) - make_interval(mins => v_servicio.duracion_min))) / (v_barberia.slot_min * 60))::int,
@@ -132,7 +139,7 @@ BEGIN
     ) n
   ),
   disponibles AS (
-    SELECT c.hora_inicio, c.hora_fin
+    SELECT c.barbero_id, c.hora_inicio, c.hora_fin
     FROM candidatos c
     WHERE c.hora_inicio >= v_abre
       AND c.hora_fin <= v_cierra
@@ -144,7 +151,7 @@ BEGIN
         SELECT 1
         FROM public.citas ci
         WHERE ci.barberia_id = v_barberia.id
-          AND ci.barbero_id = v_barbero.id
+          AND ci.barbero_id = c.barbero_id
           AND ci.fecha = p_fecha
           AND ci.estado IN ('confirmada', 'pendiente')
           AND tsrange((ci.fecha + ci.hora_inicio), (ci.fecha + ci.hora_fin), '[)')
@@ -155,13 +162,13 @@ BEGIN
     jsonb_agg(
       jsonb_build_object(
         'barberia_id', v_barberia.id,
-        'barbero_id', v_barbero.id,
+        'barbero_id', barbero_id,
         'servicio_id', v_servicio.id,
         'fecha', p_fecha,
         'hora_inicio', to_char(hora_inicio, 'HH24:MI'),
         'hora_fin', to_char(hora_fin, 'HH24:MI')
       )
-      ORDER BY hora_inicio
+      ORDER BY hora_inicio, barbero_id
     ),
     '[]'::jsonb
   )
@@ -176,7 +183,7 @@ BEGIN
       'barberia_id', v_barberia.id,
       'slug', v_barberia.slug,
       'servicio_id', v_servicio.id,
-      'barbero_id', v_barbero.id,
+      'barbero_id', p_barbero_id,
       'fecha', p_fecha,
       'slot_min', v_barberia.slot_min,
       'duracion_min', v_servicio.duracion_min,
