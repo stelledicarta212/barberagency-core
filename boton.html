@@ -186,8 +186,8 @@
     const slug = clean(barberia && barberia.slug);
     const id = Number(barberia && barberia.id);
     const url = new URL(BA_DASHBOARD_URL);
+    if (id > 0) url.searchParams.set("barberia_id", String(id));
     if (slug) url.searchParams.set("slug", slug);
-    else if (id > 0) url.searchParams.set("barberia_id", String(id));
     return url.toString();
   }
 
