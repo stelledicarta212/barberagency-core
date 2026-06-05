@@ -2408,7 +2408,9 @@
         return;
       }
 
-      if ((payload.draft.accesos.admin.password || "").length < 6) {
+      const isEdit = isEditIntent();
+      const passwordTyped = (payload.draft.accesos.admin.password || "").length > 0;
+      if ((!isEdit || passwordTyped) && (payload.draft.accesos.admin.password || "").length < 6) {
         showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
         return;
       }
@@ -2476,7 +2478,9 @@
         return;
       }
 
-      if ((payload.draft.accesos.admin.password || "").length < 6) {
+      const isEdit = isEditIntent();
+      const passwordTyped = (payload.draft.accesos.admin.password || "").length > 0;
+      if ((!isEdit || passwordTyped) && (payload.draft.accesos.admin.password || "").length < 6) {
         showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
         return;
       }
@@ -2584,7 +2588,102 @@
     backBtn.addEventListener("click", prevStep);
     resetBtn.addEventListener("click", resetDraft);
 
-    render();
+    const editIntent = isEditIntent();
+    if (editIntent) {
+      // Show loading and fetch
+      const questionEl = document.getElementById("baQuestion");
+      if (questionEl) questionEl.textContent = "Cargando configuración de la barbería...";
+      const responseAreaEl = document.getElementById("baResponseArea");
+      if (responseAreaEl) responseAreaEl.innerHTML = '<div style="text-align:center; padding: 40px;"><span style="font-size: 1.2rem; color: var(--accent);">Por favor espera...</span></div>';
+      
+      (async () => {
+        try {
+          const identity = getEditIdentity();
+          if (!identity.barberia_id || !identity.slug) {
+            throw new Error("Falta identidad de barbería (barberia_id o slug) en la URL.");
+          }
+          
+          const stateUrl = API_URL.replace("/webhook/registro-barberia", "/webhook/barberagency/dashboard/state") + `?barberia_id=${identity.barberia_id}&slug=${identity.slug}`;
+          const res = await fetch(stateUrl, { credentials: "include" });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status} al obtener configuración.`);
+          }
+          const data = await res.json();
+          if (!data.ok) {
+            throw new Error(data.message || "No se pudieron obtener los datos de la barbería.");
+          }
+          
+          const b = data.barberia || {};
+          const servicesList = Array.isArray(data.servicios) ? data.servicios : [];
+          const barbersList = Array.isArray(data.barberos) ? data.barberos : [];
+          const hoursList = Array.isArray(data.seed?.hours ?? data.merged?.hours) ? (data.seed?.hours ?? data.merged?.hours) : [];
+          
+          const dayNames = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+          
+          draft = normalizeDraft({
+            barberia: {
+              nombre: clean(b.nombre),
+              slug: clean(b.slug || identity.slug),
+              telefono: clean(b.telefono),
+              direccion: clean(b.direccion),
+              maps_url: clean(b.maps_url),
+              ciudad: clean(b.ciudad),
+              timezone: clean(b.timezone) || "America/Bogotá",
+              slot_min: Number(b.slot_min || 15)
+            },
+            servicios: servicesList.map(s => ({
+              nombre: clean(s.nombre),
+              duracion_min: Number(s.duracion_min || 30),
+              precio: Number(s.precio || 0),
+              imagen_url: clean(s.imagen_url)
+            })),
+            horarios: hoursList.map(h => ({
+              dia: dayNames[h.dia_semana] || "lunes",
+              activo: Boolean(h.activo),
+              hora_abre: clean(h.hora_abre).slice(0, 5),
+              hora_cierra: clean(h.hora_cierra).slice(0, 5)
+            })),
+            barberos: barbersList.map(ba => ({
+              nombre: clean(ba.nombre),
+              activo: Boolean(ba.activo),
+              foto: clean(ba.foto_url),
+              foto_url: clean(ba.foto_url)
+            })),
+            accesos: {
+              admin: {
+                nombre: "",
+                email: clean(b.email_contacto),
+                password: "" // Blank password means keeping existing password
+              },
+              barberos: barbersList.map(ba => ({
+                nombre: clean(ba.nombre),
+                email: "",
+                password: "",
+                foto: clean(ba.foto_url),
+                foto_url: clean(ba.foto_url)
+              }))
+            }
+          });
+          
+          saveDraft();
+          render();
+        } catch (err) {
+          console.error(err);
+          if (questionEl) questionEl.textContent = "Acceso restringido o error";
+          if (responseAreaEl) {
+            responseAreaEl.innerHTML = `
+              <div style="padding: 20px; color: #ef4444; border: 1px solid #ef4444; border-radius: 6px; background: rgba(239, 68, 68, 0.1); text-align: center;">
+                <p><strong>No se pudo cargar la configuración de la barbería:</strong></p>
+                <p>${err.message}</p>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: #94a3b8;">Por favor, asegúrate de haber iniciado sesión y de tener permisos de acceso.</p>
+              </div>
+            `;
+          }
+        }
+      })();
+    } else {
+      render();
+    }
   };
 
   if (document.readyState === "loading") {
