@@ -613,6 +613,16 @@
       }
 
       const saved = loadDraft();
+      if (saved && editIntent) {
+        const identity = getEditIdentity();
+        const savedId = Number(saved.barberia_id || saved.barberia?.id || saved.barberia?.barberia_id || 0);
+        if (savedId !== identity.barberia_id) {
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+          } catch (_) {}
+          return null;
+        }
+      }
       const seed = loadLandingSeed();
       const fromSeed = draftFromLandingSeed(seed);
 
@@ -2613,6 +2623,10 @@
             throw new Error(data.message || "No se pudieron obtener los datos de la barbería.");
           }
           
+          const params = new URLSearchParams(window.location.search || "");
+          const urlAdminEmail = clean(params.get("admin_email"));
+          const urlAdminName = clean(params.get("admin_name"));
+
           const b = data.barberia || {};
           const servicesList = Array.isArray(data.servicios) ? data.servicios : [];
           const barbersList = Array.isArray(data.barberos) ? data.barberos : [];
@@ -2651,8 +2665,8 @@
             })),
             accesos: {
               admin: {
-                nombre: "",
-                email: clean(b.email_contacto),
+                nombre: urlAdminName || "Administrador",
+                email: urlAdminEmail || clean(b.email_contacto),
                 password: "" // Blank password means keeping existing password
               },
               barberos: barbersList.map(ba => ({
