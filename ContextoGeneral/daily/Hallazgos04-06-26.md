@@ -1892,3 +1892,33 @@ Render UI
 
 
 
+---
+
+## 📝 Registro de Validación: Paso 7 P0 (Securizar /webhook/barberagency/dashboard/state)
+**Fecha:** 05 de Junio de 2026  
+**Proyecto:** Core (Dashboard State Webhook) & Panel de Barbería Next.js & n8n Webhook & PostgreSQL  
+**Rama:** `main` (Core) / `principal` (Panel)  
+**Commit Hash Core:** `3cc1745`  
+**Commit Hash Panel:** `e4942ed`  
+
+### Cambios Aplicados en la Seguridad del Dashboard State:
+* **Securización del Webhook n8n (`6JugRzxsOGKBvgWW`)**: Se modificó el trigger GET `/webhook/barberagency/dashboard/state` para exigir obligatoriamente una cookie `ba_session` con firma JWT válida. Se extrae el `user_id` del payload y se valida contra base de datos.
+* **Seguridad Tenant Relacional y Mismatches**: Se valida en PostgreSQL que la `barberia_id` o el `slug` solicitado pertenezca al `user_id` autenticado (sea dueño o barbero/empleado con `usuario_id`). Si se pasan ambos parámetros (`barberia_id` + `slug`), se valida de manera estricta mediante una consulta CTE que ambos apunten al mismo registro en base de datos. Si no, se retorna un error 403 Forbidden.
+* **Eliminación de Lectura Visual de LocalStorage**: En `src/components/dashboard-editor.tsx` y `src/app/finanzas/page.tsx`, se removió la lectura de `ba_dashboard_reservas` y `ba_locally_paid_appointments` de `localStorage` para que todos los datos vengan de `merged.appointments` / `dashboard/state`.
+* **Middlewares y Ajustes de Acceso**:
+  * Cambiado `LOCKED_ACCESS.role` de `"admin"` a `"guest"` en `dashboard-context.tsx`.
+  * Cambiado el fallback de `ROLE_PERMISSIONS.admin` a `ROLE_PERMISSIONS.guest` en `dashboard-access.ts`.
+  * Corregidos los errores de TypeScript/Eslint (Unexpected any y set-state-in-effect en effect dependencias).
+
+### Resultados de las Pruebas de Seguridad en Dashboard State:
+1. **Test 1: Sin Cookie (401 Unauthorized)** -> **(Estado: PASS ✅)**
+2. **Test 2: Cookie válida + barbería propia (ID) (200 OK)** -> **(Estado: PASS ✅)**
+3. **Test 3: Cookie válida + barbería ajena (403 Forbidden)** -> **(Estado: PASS ✅)**
+4. **Test 4: Cookie válida + barberia_id propio + slug incorrecto (403 Forbidden)** -> **(Estado: PASS ✅)**
+5. **Test 5: Cookie válida + slug propio (200 OK)** -> **(Estado: PASS ✅)**
+6. **Test 6: Cookie inválida (401 Unauthorized)** -> **(Estado: PASS ✅)**
+
+
+
+
+
