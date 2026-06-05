@@ -1833,7 +1833,9 @@ Render UI
 ## 📝 Registro de Validación: Paso 7 (Securizar y Limpiar Módulo de Barberos)
 **Fecha:** 05 de Junio de 2026  
 **Proyecto:** Core (Barberos, Descansos) & Panel de Barbería Next.js & n8n Webhook & PostgreSQL  
-**Rama:** `main` (Core) / `principal` (Panel)
+**Rama:** `main` (Core) / `principal` (Panel)  
+**Commit Hash Core:** `5329a80`  
+**Commit Hash Panel:** `73f54af`  
 
 ### Cambios Aplicados en el Módulo de Barberos:
 * **Workflow n8n de Barberos**: Se re-diseñó y securizó el endpoint `/webhook/barberagency/dashboard/barberos` (`h3JdyaI26GbRqrzE`) para incorporar de forma obligatoria la validación de sesión (JWT) y cookies `ba_session`.
