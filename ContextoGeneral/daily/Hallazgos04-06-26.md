@@ -1739,7 +1739,9 @@ Render UI
 ## 📝 Registro de Validación: Paso 6 (Persistencia Real de Citas)
 **Fecha:** 05 de Junio de 2026  
 **Proyecto:** Core (Citas, Clientes) & Panel de Barbería Next.js & n8n Webhook & PostgreSQL  
-**Rama:** `main` (Core) / `principal` (Panel)
+**Rama:** `main` (Core) / `principal` (Panel)  
+**Commit Hash Core:** `d60f30b`  
+**Commit Hash Panel:** `e3050ef`  
 
 ### Cambios Aplicados en la Persistencia de Citas:
 * **Workflow n8n de Citas**: Se actualizó el endpoint `/webhook/barberagency/dashboard/citas` (`jRi8fOiFwBGziCX5`) para validar cookies de sesión (`ba_session`), token JWT, pertenencia de barbería, rol autorizado, y la correspondencia de `barbero_id` / `servicio_id` con la barbería del usuario.
