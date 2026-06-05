@@ -1834,7 +1834,7 @@ Render UI
 **Fecha:** 05 de Junio de 2026  
 **Proyecto:** Core (Barberos, Descansos) & Panel de Barbería Next.js & n8n Webhook & PostgreSQL  
 **Rama:** `main` (Core) / `principal` (Panel)  
-**Commit Hash Core:** `5329a80`  
+**Commit Hash Core:** `b01a648`  
 **Commit Hash Panel:** `73f54af`  
 
 ### Cambios Aplicados en el Módulo de Barberos:
