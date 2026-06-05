@@ -1828,5 +1828,65 @@ Render UI
 ]
 ```
 
+---
+
+## 📝 Registro de Validación: Paso 7 (Securizar y Limpiar Módulo de Barberos)
+**Fecha:** 05 de Junio de 2026  
+**Proyecto:** Core (Barberos, Descansos) & Panel de Barbería Next.js & n8n Webhook & PostgreSQL  
+**Rama:** `main` (Core) / `principal` (Panel)
+
+### Cambios Aplicados en el Módulo de Barberos:
+* **Workflow n8n de Barberos**: Se re-diseñó y securizó el endpoint `/webhook/barberagency/dashboard/barberos` (`h3JdyaI26GbRqrzE`) para incorporar de forma obligatoria la validación de sesión (JWT) y cookies `ba_session`.
+* **Seguridad Tenant Relacional**: El webhook realiza un análisis cruzado en base de datos (`Postgres - session validate`) para verificar que el `user_id` autenticado es el propietario de la `barberia_id` objetivo. Para acciones relacionales (`update_active`, `delete_descanso`), donde no se envía `barberia_id` en el payload, el webhook consulta dinámicamente la barbería asociada al barbero en la base de datos y valida que el usuario sea el owner de esa barbería.
+* **Frontend y Métrica de Citas Reales**: En `barberos/page.tsx`, se removió por completo la clave `ba_dashboard_reservas` y el listener obsoleto de `localStorage`. Las estadísticas de servicios hoy, servicios del mes y clientes únicos del día se calculan ahora en tiempo real consultando la lista de citas unificadas `merged.appointments` provistas por la base de datos PostgreSQL, excluyendo citas canceladas.
+* **Envío con Cookies**: Se modificó `callBarberosAdminGateway` en `dashboard-api.ts` para enviar la petición con `credentials: "include"`, asegurando que la cookie de sesión viaje en todas las mutaciones al backend.
+
+### Resultados de las Pruebas de Persistencia y Seguridad (Integration Script):
+1. **Test 1: Sin Cookie (401 Unauthorized)**
+   * **Comportamiento:** Retorna código HTTP 401 y el mensaje `"Sesion no valida"`. **(Estado: PASS ✅)**
+2. **Test 2: update_active (Propio) (200 OK)**
+   * **Comportamiento:** Retorna código HTTP 200 y actualiza con éxito el estado de disponibilidad del barbero. **(Estado: PASS ✅)**
+3. **Test 3: Verificar en Postgres (update_active)**
+   * **Comportamiento:** Comprueba en PostgreSQL que el barbero objetivo (`id = 2`) tiene la columna `activo = false`. **(Estado: PASS ✅)**
+4. **Test 4: Barberia Ajena (403 Forbidden)**
+   * **Comportamiento:** Al intentar agregar un descanso a un barbero especificando una barbería ajena (`id = 3`), el endpoint rechaza con código HTTP 403 y el mensaje `"No tienes permisos para esta barberia"`. **(Estado: PASS ✅)**
+5. **Test 5: Barbero Ajeno (403 Forbidden)**
+   * **Comportamiento:** Al intentar modificar el estado activo de un barbero que pertenece a otra barbería (`id = 6`), el sistema detecta que la barbería del barbero no pertenece al usuario autenticado y rechaza la petición con código HTTP 403. **(Estado: PASS ✅)**
+6. **Test 6: add_descanso Válido**
+   * **Comportamiento:** Retorna código HTTP 200 y registra el descanso del barbero en la base de datos. **(Estado: PASS ✅)**
+7. **Test 7: Verificar en Postgres (add_descanso)**
+   * **Comportamiento:** Comprueba que se haya insertado el registro en `public.barberos_descansos` con la fecha y barbero correspondientes. **(Estado: PASS ✅)**
+8. **Test 8: delete_descanso Válido**
+   * **Comportamiento:** Retorna código HTTP 200 y elimina el descanso de la base de datos. **(Estado: PASS ✅)**
+9. **Test 9: Verificar en Postgres (delete_descanso)**
+   * **Comportamiento:** Confirma que el descanso haya sido removido físicamente de `public.barberos_descansos`. **(Estado: PASS ✅)**
+
+### Evidencia de Registros en PostgreSQL:
+
+**Consulta de Barberos en public.barberos:**
+```json
+[
+  {
+    "id": 2,
+    "barberia_id": 1,
+    "nombre": "Ricardo",
+    "activo": false
+  }
+]
+```
+
+**Consulta de Descansos en public.barberos_descansos (add_descanso):**
+```json
+[
+  {
+    "id": 71,
+    "barberia_id": 1,
+    "barbero_id": 2,
+    "fecha": "2026-06-25T00:00:00.000Z"
+  }
+]
+```
+
+
 
 
