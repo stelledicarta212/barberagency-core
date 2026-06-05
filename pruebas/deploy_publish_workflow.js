@@ -1,0 +1,400 @@
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZWRlNzUwOC05OTdhLTQ0NzUtYjJiOC05YmUyZTNhNmE0MTUiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiOWQ4MDYyMDAtNWM4Ni00ZDQ1LWIyM2ItZDEyYzc2MmMwMGEyIiwiaWF0IjoxNzc1OTIxODk4fQ.S-gQd2FKYczqgzSIqxLv3tWTkS4mJk-lvt0DMAtmfKY';
+
+function req(method, apiPath, body) {
+  return new Promise((resolve, reject) => {
+    const data = body ? JSON.stringify(body) : null;
+    const options = {
+      hostname: 'barberagency-n8n.gymh5g.easypanel.host',
+      port: 443,
+      path: apiPath,
+      method,
+      headers: {
+        'X-N8N-API-KEY': token,
+        'Content-Type': 'application/json'
+      }
+    };
+    if (data) options.headers['Content-Length'] = Buffer.byteLength(data);
+    
+    const r = https.request(options, (res) => {
+      let raw = '';
+      res.on('data', c => raw += c);
+      res.on('end', () => {
+        let parsed;
+        try {
+          parsed = raw ? JSON.parse(raw) : {};
+        } catch {
+          parsed = { raw };
+        }
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve(parsed);
+        } else {
+          reject(new Error(`HTTP ${res.statusCode}: ${raw}`));
+        }
+      });
+    });
+    r.on('error', reject);
+    if (data) r.write(data);
+    r.end();
+  });
+}
+
+(async () => {
+  try {
+    console.log('Building Dashboard Publicar Workflow definition...');
+    const definition = {
+      name: "BarberAgency - Dashboard Publicar Admin",
+      nodes: [
+        {
+          parameters: {
+            httpMethod: "POST",
+            path: "barberagency/dashboard/publicar",
+            responseMode: "responseNode",
+            options: {
+              responseHeaders: {
+                entries: [
+                  {
+                    name: "Access-Control-Allow-Origin",
+                    value: "https://barberagency-barberagency.gymh5g.easypanel.host"
+                  },
+                  {
+                    name: "Access-Control-Allow-Methods",
+                    value: "POST, OPTIONS"
+                  },
+                  {
+                    name: "Access-Control-Allow-Headers",
+                    value: "*"
+                  },
+                  {
+                    name: "Access-Control-Allow-Credentials",
+                    value: "true"
+                  }
+                ]
+              }
+            }
+          },
+          id: "webhook-trigger",
+          name: "Webhook",
+          type: "n8n-nodes-base.webhook",
+          typeVersion: 2.1,
+          position: [100, 300]
+        },
+        {
+          parameters: {
+            jsCode: "const i = $input.first().json || {};\nconst h = i.headers || {};\nconst cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\nconst m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\nconst session_token = m ? m[1] : '';\nreturn [{ json: { session_token } }];"
+          },
+          id: "parse-cookie",
+          name: "Code - parse cookie",
+          type: "n8n-nodes-base.code",
+          typeVersion: 2,
+          position: [300, 300]
+        },
+        {
+          parameters: {
+            operation: "verify",
+            token: "={{ $json.session_token }}",
+            options: {
+              algorithm: "HS256"
+            }
+          },
+          id: "verify-session",
+          name: "JWT - Verify session",
+          type: "n8n-nodes-base.jwt",
+          typeVersion: 1,
+          position: [500, 300],
+          credentials: {
+            jwtAuth: {
+              id: "mNWhzdM1ihAaBkZM",
+              name: "JWT Auth account"
+            }
+          },
+          continueOnFail: true
+        },
+        {
+          parameters: {
+            jsCode: "const i = $input.first().json || {};\nconst webhookData = $('Webhook').first().json || {};\nconst body = webhookData.body || {};\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\nconst barberia_id = Number(body.p_barberia_id ?? body.barberia_id ?? 0);\n\nconst params = [\n  JSON.stringify({ user_id }),\n  barberia_id\n];\n\nreturn [{ json: { \n  auth_ok, \n  user_id, \n  barberia_id,\n  params,\n  body\n} }];"
+          },
+          id: "claims-input",
+          name: "Code - claims input",
+          type: "n8n-nodes-base.code",
+          typeVersion: 2,
+          position: [700, 300]
+        },
+        {
+          parameters: {
+            jsCode: "const i = $input.first().json || {};\nlet ok = false;\nlet status_code = 200;\nlet message = '';\n\nif (!i.auth_ok || i.user_id === 0) {\n  status_code = 401;\n  message = 'Sesion no valida';\n} else if (i.barberia_id === 0) {\n  status_code = 400;\n  message = 'Falta el ID de la barberia';\n} else {\n  ok = true;\n}\n\nreturn [{ json: { ok, status_code, message, params: i.params, barberia_id: i.barberia_id } }];"
+          },
+          id: "check-validation",
+          name: "Check validation",
+          type: "n8n-nodes-base.code",
+          typeVersion: 2,
+          position: [900, 300]
+        },
+        {
+          parameters: {
+            conditions: {
+              combinator: "and",
+              conditions: [
+                {
+                  leftValue: "={{ $json.ok }}",
+                  rightValue: true,
+                  caseSensitive: true,
+                  operator: {
+                    type: "boolean",
+                    operation: "equals"
+                  }
+                }
+              ]
+            },
+            looseTypeValidation: true,
+            options: {}
+          },
+          id: "if-validation-ok",
+          name: "IF - Validation OK",
+          type: "n8n-nodes-base.if",
+          typeVersion: 2.2,
+          position: [1100, 300]
+        },
+        {
+          parameters: {
+            respondWith: "json",
+            responseBody: "={{ { ok: false, message: $json.message } }}",
+            options: {
+              responseCode: "={{ $json.status_code }}",
+              responseHeaders: {
+                entries: [
+                  {
+                    name: "Access-Control-Allow-Origin",
+                    value: "https://barberagency-barberagency.gymh5g.easypanel.host"
+                  },
+                  {
+                    name: "Access-Control-Allow-Methods",
+                    value: "POST, OPTIONS"
+                  },
+                  {
+                    name: "Access-Control-Allow-Headers",
+                    value: "*"
+                  },
+                  {
+                    name: "Access-Control-Allow-Credentials",
+                    value: "true"
+                  }
+                ]
+              }
+            }
+          },
+          id: "respond-error",
+          name: "Respond - error",
+          type: "n8n-nodes-base.respondToWebhook",
+          typeVersion: 1.1,
+          position: [1300, 450]
+        },
+        {
+          parameters: {
+            resource: "database",
+            operation: "executeQuery",
+            query: "SELECT set_config('request.jwt.claims', $1, true);\nSELECT public.ba_publicar_barberia($2) AS result;",
+            options: {
+              queryReplacement: "={{ $json.params }}"
+            }
+          },
+          id: "pg-execute-publish",
+          name: "Postgres - execute publish",
+          type: "n8n-nodes-base.postgres",
+          typeVersion: 2.4,
+          position: [1300, 150],
+          credentials: {
+            postgres: {
+              id: "SOV6oSyuHI9cxgLF",
+              name: "Postgres account"
+            }
+          }
+        },
+        {
+          parameters: {
+            mode: "runOnceForAllItems",
+            language: "javaScript",
+            jsCode: "const items = $input.all();\nconst publishItem = items.find(item => item.json && item.json.result !== undefined);\nconst result = publishItem ? publishItem.json.result : null;\n\nif (!result) {\n  return [{ json: { ok: false, message: 'No se obtuvo respuesta de la base de datos', status_code: 500 } }];\n}\n\nif (result.ok === false) {\n  let status_code = 400;\n  if (result.error === 'no_autorizado_barberia_ajena' || result.error === 'no_autorizado_anonimo') {\n    status_code = 403;\n  } else if (result.error === 'barberia_no_encontrada') {\n    status_code = 404;\n  }\n  return [{ json: { ok: false, error: result.error, status_code } }];\n}\n\nreturn [{ json: { ...result, ok: true, status_code: 200 } }];"
+          },
+          id: "format-response",
+          name: "Format Response",
+          type: "n8n-nodes-base.code",
+          typeVersion: 2,
+          position: [1500, 150]
+        },
+        {
+          parameters: {
+            conditions: {
+              combinator: "and",
+              conditions: [
+                {
+                  leftValue: "={{ $json.ok }}",
+                  rightValue: true,
+                  caseSensitive: true,
+                  operator: {
+                    type: "boolean",
+                    operation: "equals"
+                  }
+                }
+              ]
+            },
+            looseTypeValidation: true,
+            options: {}
+          },
+          id: "if-publish-ok",
+          name: "IF - Publish OK",
+          type: "n8n-nodes-base.if",
+          typeVersion: 2.2,
+          position: [1700, 150]
+        },
+        {
+          parameters: {
+            respondWith: "json",
+            responseBody: "={{ { ok: false, error: $json.error || $json.message || 'Error desconocido' } }}",
+            options: {
+              responseCode: "={{ $json.status_code }}",
+              responseHeaders: {
+                entries: [
+                  {
+                    name: "Access-Control-Allow-Origin",
+                    value: "https://barberagency-barberagency.gymh5g.easypanel.host"
+                  },
+                  {
+                    name: "Access-Control-Allow-Methods",
+                    value: "POST, OPTIONS"
+                  },
+                  {
+                    name: "Access-Control-Allow-Headers",
+                    value: "*"
+                  },
+                  {
+                    name: "Access-Control-Allow-Credentials",
+                    value: "true"
+                  }
+                ]
+              }
+            }
+          },
+          id: "respond-error-db",
+          name: "Respond - error DB",
+          type: "n8n-nodes-base.respondToWebhook",
+          typeVersion: 1.1,
+          position: [1900, 250]
+        },
+        {
+          parameters: {
+            respondWith: "json",
+            responseBody: "={{ $json }}",
+            options: {
+              responseCode: 200,
+              responseHeaders: {
+                entries: [
+                  {
+                    name: "Access-Control-Allow-Origin",
+                    value: "https://barberagency-barberagency.gymh5g.easypanel.host"
+                  },
+                  {
+                    name: "Access-Control-Allow-Methods",
+                    value: "POST, OPTIONS"
+                  },
+                  {
+                    name: "Access-Control-Allow-Headers",
+                    value: "*"
+                  },
+                  {
+                    name: "Access-Control-Allow-Credentials",
+                    value: "true"
+                  }
+                ]
+              }
+            }
+          },
+          id: "respond-ok",
+          name: "Respond - ok",
+          type: "n8n-nodes-base.respondToWebhook",
+          typeVersion: 1.1,
+          position: [1900, 50]
+        }
+      ],
+      connections: {
+        "Webhook": {
+          "main": [[{ node: "Code - parse cookie", type: "main", index: 0 }]]
+        },
+        "Code - parse cookie": {
+          "main": [[{ node: "JWT - Verify session", type: "main", index: 0 }]]
+        },
+        "JWT - Verify session": {
+          "main": [[{ node: "Code - claims input", type: "main", index: 0 }]]
+        },
+        "Code - claims input": {
+          "main": [[{ node: "Check validation", type: "main", index: 0 }]]
+        },
+        "Check validation": {
+          "main": [[{ node: "IF - Validation OK", type: "main", index: 0 }]]
+        },
+        "IF - Validation OK": {
+          "main": [
+            [{ node: "Postgres - execute publish", type: "main", index: 0 }],
+            [{ node: "Respond - error", type: "main", index: 0 }]
+          ]
+        },
+        "Postgres - execute publish": {
+          "main": [[{ node: "Format Response", type: "main", index: 0 }]]
+        },
+        "Format Response": {
+          "main": [[{ node: "IF - Publish OK", type: "main", index: 0 }]]
+        },
+        "IF - Publish OK": {
+          "main": [
+            [{ node: "Respond - ok", type: "main", index: 0 }],
+            [{ node: "Respond - error DB", type: "main", index: 0 }]
+          ]
+        }
+      },
+      settings: {}
+    };
+
+    console.log('Checking for existing Dashboard Publicar Workflow...');
+    const wfs = await req('GET', '/api/v1/workflows');
+    const existing = wfs.data.find(w => w.name === definition.name);
+    
+    let workflowId = null;
+    if (existing) {
+      console.log(`Found existing workflow with ID: ${existing.id}. Updating it...`);
+      workflowId = existing.id;
+      
+      await req('PUT', `/api/v1/workflows/${workflowId}`, {
+        name: definition.name,
+        nodes: definition.nodes,
+        connections: definition.connections,
+        settings: definition.settings
+      });
+      console.log('Workflow updated successfully.');
+    } else {
+      console.log('Workflow not found. Creating a new one...');
+      const created = await req('POST', '/api/v1/workflows', definition);
+      workflowId = created.id;
+      console.log(`Workflow created with ID: ${workflowId}`);
+    }
+
+    console.log('Making sure the workflow is active...');
+    await req('POST', `/api/v1/workflows/${workflowId}/deactivate`).catch(() => {});
+    const activation = await req('POST', `/api/v1/workflows/${workflowId}/activate`);
+    console.log('Workflow is active:', activation.active);
+    
+    fs.writeFileSync(
+      path.join(__dirname, 'publish_workflow.json'), 
+      JSON.stringify(definition, null, 2), 
+      'utf8'
+    );
+    console.log('Saved current definition to publish_workflow.json');
+    console.log('--- DEPLOYMENT SUCCESSFUL ---');
+
+  } catch (error) {
+    console.error('Error during deployment:', error);
+    process.exit(1);
+  }
+})();

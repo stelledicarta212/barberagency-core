@@ -1918,6 +1918,86 @@ Render UI
 5. **Test 5: Cookie válida + slug propio (200 OK)** -> **(Estado: PASS ✅)**
 6. **Test 6: Cookie inválida (401 Unauthorized)** -> **(Estado: PASS ✅)**
 
+---
+
+## 📝 Registro de Validación: Paso RC-1 (Seguridad y Hardening del Flujo de Publicación)
+**Fecha:** 05 de Junio de 2026  
+**Proyecto:** Core (Hardening public.ba_publicar_barberia) & Panel de Barbería Next.js & n8n Webhook & PostgreSQL  
+**Rama:** `main` (Core) / `principal` (Panel)  
+
+### Cambios Aplicados en el Módulo de Publicación:
+* **Base de Datos (PostgreSQL)**:
+  * Se modificó la función `public.ba_publicar_barberia(integer)` para obtener el usuario autenticado a través de `jwt_user_id()`.
+  * Se agregaron validaciones obligatorias: rechazar si el usuario autenticado es NULL, verificar que la barbería existe, asegurar que el propietario es el usuario autenticado (`owner_id = jwt_user_id()`), y comprobar que la barbería no esté eliminada lógica ni físicamente (`deleted_at IS NULL`).
+  * Se revocaron los permisos de ejecución de la función para el rol `anon`, restringiéndolos únicamente a `authenticated` y `postgres`.
+* **Workflow n8n de Publicación**:
+  * Se implementó el webhook seguro `/webhook/barberagency/dashboard/publicar` (`Qeou40pYsQPg2ROK`).
+  * El webhook valida la cookie `ba_session` (JWT), extrae el `user_id`, y ejecuta las consultas PostgreSQL (`set_config` para propagar los claims del usuario y llama a `public.ba_publicar_barberia`).
+* **Frontend (Next.js Panel)**:
+  * Se modificó `publishBarbershopViaRpc` en `dashboard-api.ts` para enviar la solicitud al nuevo webhook de n8n con `credentials: "include"`, asegurando el viaje seguro de la cookie de sesión.
+
+### Resultados de las Pruebas de Publicación y Seguridad:
+1. **TEST A: Webhook call without session cookie (401 Unauthorized)** -> **(Estado: PASS ✅)**
+2. **TEST B: Webhook call with valid cookie of owner (200 OK)** -> **(Estado: PASS ✅)**
+3. **TEST C: Webhook call trying to publish foreign barberia (403 Forbidden)** -> **(Estado: PASS ✅)**
+4. **TEST D: Direct PostgREST call without authorization (401 Unauthorized)** -> **(Estado: PASS ✅)**
+5. **TEST E: Direct PostgREST call with anon JWT (401 Unauthorized)** -> **(Estado: PASS ✅)**
+6. **TEST F: Direct PostgREST call with authenticated JWT of owner (200 OK)** -> **(Estado: PASS ✅)**
+7. **TEST G: Direct PostgREST call with authenticated JWT of non-owner (200 OK con ok: false, error: 'no_autorizado_barberia_ajena')** -> **(Estado: PASS ✅)**
+
+### Evidencia de Registros en PostgreSQL:
+
+**Evidence 1: Procedure Definitions**
+```json
+[
+  {
+    "proname": "ba_publicar_barberia",
+    "prosecdef": true
+  }
+]
+```
+
+**Evidence 2: Routine Privileges**
+```json
+[
+  {
+    "grantee": "postgres",
+    "privilege_type": "EXECUTE"
+  },
+  {
+    "grantee": "authenticated",
+    "privilege_type": "EXECUTE"
+  }
+]
+```
+
+**Evidence 3: Barberia ID 1 after publication**
+```json
+[
+  {
+    "id": 1,
+    "owner_id": 1,
+    "slug": "test",
+    "publicada": true,
+    "published_at": "2026-05-13T22:29:04.456Z"
+  }
+]
+```
+
+**Evidence 4: Public profile details for Barberia ID 1**
+```json
+[
+  {
+    "barberia_id": 1,
+    "slug": "test",
+    "public_landing_url": null,
+    "reservation_url": null,
+    "qr_url": null
+  }
+]
+```
+
+
 
 
 
