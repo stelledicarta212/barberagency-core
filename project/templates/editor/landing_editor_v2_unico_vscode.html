@@ -1,4 +1,4 @@
-﻿
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
@@ -605,8 +605,18 @@
   const STORAGE_ONBOARDING_DRAFT = 'ba_wp_onboarding_v9';
   const STORAGE_MOBILE_LOGO_WIDTH_MIGRATION = 'ba_mobile_logo_width_migrated_v1';
   const STORAGE_LANDING_SEED = 'ba_landing_seed';
-  const STORAGE_BARBERIA_ID = 'ba_barberia_id';
-  const STORAGE_BARBERIA_SLUG = 'ba_barberia_slug';
+  const getQueryParamForStorage = (name) => {
+    try {
+      return new URLSearchParams(window.location.search).get(name) || '';
+    } catch (_) {
+      return '';
+    }
+  };
+  const activeIdForStorage = getQueryParamForStorage('barberia_id') || getQueryParamForStorage('id') || getQueryParamForStorage('id_barberia');
+  const activeSlugForStorage = getQueryParamForStorage('slug') || getQueryParamForStorage('barberia_slug');
+  const storageScopeKey = activeSlugForStorage || activeIdForStorage || '';
+  const STORAGE_BARBERIA_ID = storageScopeKey ? `ba_barberia_id:${storageScopeKey}` : 'ba_barberia_id';
+  const STORAGE_BARBERIA_SLUG = storageScopeKey ? `ba_barberia_slug:${storageScopeKey}` : 'ba_barberia_slug';
   const STORAGE_PUBLISH_WELCOME_SEEN = 'ba_publish_welcome_seen';
   const DEFAULT_SELECTOR_URL = '/landing_plantilla/';
   const DEFAULT_REGISTRO_URL = 'https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/';
