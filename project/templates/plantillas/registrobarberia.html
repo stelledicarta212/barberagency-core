@@ -1049,8 +1049,9 @@
           id: Number(barber.id || access.id || 0) || undefined,
           usuario_id: Number(barber.usuario_id || access.usuario_id || 0) || undefined,
           nombre: clean(barber.nombre) || clean(access.nombre),
-          email: clean(access.email),
+          email: clean(access.email || barber.email),
           password: access.password || "",
+          has_password: Boolean(access.has_password || barber.has_password),
           activo: barber.activo !== undefined ? Boolean(barber.activo) : Boolean(access.activo),
           foto: normalizeBarberPhoto(barber.foto_url || barber.foto || access.foto_url || access.foto),
           foto_url: normalizeBarberPhoto(barber.foto_url || barber.foto || access.foto_url || access.foto)
@@ -1065,6 +1066,8 @@
         id: Number(row.id || 0) || undefined,
         usuario_id: Number(row.usuario_id || 0) || undefined,
         nombre: clean(row.nombre),
+        email: clean(row.email).toLowerCase(),
+        has_password: Boolean(row.has_password),
         activo: Boolean(row.activo),
         foto: normalizeBarberPhoto(row.foto_url || row.foto),
         foto_url: normalizeBarberPhoto(row.foto_url || row.foto)
@@ -1076,6 +1079,7 @@
         nombre: clean(row.nombre),
         email: clean(row.email).toLowerCase(),
         password: clean(row.password),
+        has_password: Boolean(row.has_password),
         activo: Boolean(row.activo),
         foto: normalizeBarberPhoto(row.foto_url || row.foto),
         foto_url: normalizeBarberPhoto(row.foto_url || row.foto)
@@ -1654,10 +1658,15 @@
 
                   <label class="ba-label">
                     Password
-                    <div class="ba-password-row">
-                      <input class="ba-input" type="password" data-barber-field="password" data-barber-index="${index}" value="${escapeHtml(row.password || "")}" placeholder="mínimo 6 caracteres" />
-                      <button class="ba-action-secondary" type="button" data-toggle-pass="${index}">Mostrar</button>
-                    </div>
+                    ${isEditIntent() && row.id ? `
+                      <input class="ba-input" type="text" value="${row.has_password ? "Password configurada" : "Sin password configurada"}" disabled />
+                      <span class="ba-helper">La password no se muestra ni se modifica desde Configuracion.</span>
+                    ` : `
+                      <div class="ba-password-row">
+                        <input class="ba-input" type="password" data-barber-field="password" data-barber-index="${index}" value="${escapeHtml(row.password || "")}" placeholder="minimo 6 caracteres" />
+                        <button class="ba-action-secondary" type="button" data-toggle-pass="${index}">Mostrar</button>
+                      </div>
+                    `}
                   </label>
 
                   <label class="ba-label">
@@ -2077,6 +2086,7 @@
       const accessBarbers = (draft.accesos.barberos || [])
         .filter((item) => {
           if (!isEdit) return clean(item.nombre);
+          if (Number(item.id || 0) > 0) return false;
           return clean(item.email) || clean(item.password);
         })
         .map((item) => ({
@@ -2867,6 +2877,8 @@
               id: Number(ba.id || 0) || undefined,
               usuario_id: Number(ba.usuario_id || 0) || undefined,
               nombre: clean(ba.nombre),
+              email: clean(ba.email).toLowerCase(),
+              has_password: Boolean(ba.has_password),
               activo: Boolean(ba.activo),
               foto: clean(ba.foto_url),
               foto_url: clean(ba.foto_url)
@@ -2881,8 +2893,9 @@
                 id: Number(ba.id || 0) || undefined,
                 usuario_id: Number(ba.usuario_id || 0) || undefined,
                 nombre: clean(ba.nombre),
-                email: "",
+                email: clean(ba.email).toLowerCase(),
                 password: "",
+                has_password: Boolean(ba.has_password),
                 foto: clean(ba.foto_url),
                 foto_url: clean(ba.foto_url)
               }))
@@ -2931,3 +2944,4 @@
   }
 })();
 </script>
+
