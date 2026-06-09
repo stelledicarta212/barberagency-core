@@ -89,6 +89,7 @@
     const DEFAULT_ONBOARDING_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/registro-barberia";
     const DEFAULT_ONBOARDING_ENDPOINT_ALT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/onboarding/complete";
     const DEFAULT_ONBOARDING_ENDPOINT_LEGACY = "https://barberagency-app.gymh5g.easypanel.host/api/onboarding/complete";
+    const DEFAULT_CONFIG_UPDATE_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/configuracion/update";
     const DEFAULT_POSTGREST_BASE = "https://api.agencia2c.cloud";
     const DEFAULT_CANONICAL_SYNC_RPC = "ba_sync_publicacion_collections";
     const DEFAULT_CANONICAL_HOURS_SYNC_RPC = "ba_sync_registro_horarios";
@@ -99,6 +100,9 @@
     const API_URL =
       (window.BA_ONBOARDING_ENDPOINT && String(window.BA_ONBOARDING_ENDPOINT).trim()) ||
       DEFAULT_ONBOARDING_ENDPOINT;
+    const CONFIG_UPDATE_ENDPOINT =
+      (window.BA_CONFIG_UPDATE_ENDPOINT && String(window.BA_CONFIG_UPDATE_ENDPOINT).trim()) ||
+      DEFAULT_CONFIG_UPDATE_ENDPOINT;
     const POSTGREST_BASE =
       (window.BA_POSTGREST_URL && String(window.BA_POSTGREST_URL).trim()) ||
       DEFAULT_POSTGREST_BASE;
@@ -2287,6 +2291,49 @@
       return response;
     }
 
+    async function postConfiguracionUpdate(payload) {
+      const endpoint = clean(CONFIG_UPDATE_ENDPOINT);
+      if (!endpoint) {
+        throw new Error("No hay endpoint configurado para guardar edicion.");
+      }
+
+      const requestPayload = buildOnboardingRequestPayload({
+        ...payload,
+        mode: "edit"
+      });
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "text/plain;charset=UTF-8"
+        },
+        body: JSON.stringify(requestPayload)
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.ok === false) {
+        const code = clean(data?.code || data?.error);
+        const message = clean(data?.message) || (code ? `No se pudo guardar configuracion: ${code}` : `HTTP ${response.status} en ${endpoint}`);
+        const error = new Error(message);
+        error.code = code || "configuracion_update_error";
+        throw error;
+      }
+
+      if (data.ok !== true || clean(data.code) !== "configuracion_actualizada") {
+        throw new Error("Respuesta invalida del endpoint de configuracion.");
+      }
+
+      if (data.data && data.data.barberia && !data.barberia) {
+        data.barberia = data.data.barberia;
+        data.barberia_id = Number(data.data.barberia.id || payload?.barberia_id || 0);
+        data.slug = clean(data.data.barberia.slug || payload?.slug);
+      }
+
+      return { response, data, endpoint };
+    }
+
     // SECCION: Sincronizacion de servicios, barberos y horarios en fuente de verdad.
     async function syncCanonicalCatalogs(data, payload) {
       const barberiaId = getCreatedBarberiaId(data);
@@ -2463,6 +2510,10 @@
     }
 
     async function postOnboardingPayload(payload) {
+      if (isEditIntent() || clean(payload?.mode) === "edit") {
+        return postConfiguracionUpdate(payload);
+      }
+
       const endpoints = getOnboardingEndpointCandidates();
       let lastError = null;
       const requestPayload = buildOnboardingRequestPayload(payload);
