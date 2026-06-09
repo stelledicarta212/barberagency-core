@@ -1092,9 +1092,12 @@
       const isEdit = isEditIntent();
       const normalized = rows.map((row, index) => ({
         _index: index + 1,
+        id: Number(row.id || 0) || 0,
+        usuario_id: Number(row.usuario_id || 0) || 0,
         nombre: clean(row.nombre),
         email: clean(row.email).toLowerCase(),
         password: clean(row.password),
+        has_password: Boolean(row.has_password),
         activo: Boolean(row.activo),
         foto: normalizeBarberPhoto(row.foto_url || row.foto),
         foto_url: normalizeBarberPhoto(row.foto_url || row.foto)
@@ -1106,7 +1109,10 @@
         const row = filled[i];
 
         if (!row.nombre) return { ok: false, message: "Barbero " + row._index + ": falta el nombre." };
-        if (isEdit && !row.email && !row.password) continue;
+        if (isEdit && row.id) {
+          if (row.email && !isValidEmail(row.email)) return { ok: false, message: "Barbero " + row._index + ": el email no es valido." };
+          continue;
+        }
         if (!row.email) return { ok: false, message: "Barbero " + row._index + ": falta el email." };
         if (!isValidEmail(row.email)) return { ok: false, message: "Barbero " + row._index + ": el email no es válido." };
         if (!row.password) return { ok: false, message: "Barbero " + row._index + ": falta la password." };
@@ -1115,6 +1121,7 @@
 
       const seenEmails = new Map();
       for (const row of filled) {
+        if (isEdit && row.id) continue;
         if (isEdit && !row.email && !row.password) continue;
         const previousIndex = seenEmails.get(row.email);
         if (previousIndex) {
@@ -1129,9 +1136,12 @@
       return {
         ok: true,
         rows: filled.map((row) => ({
+          id: row.id || undefined,
+          usuario_id: row.usuario_id || undefined,
           nombre: row.nombre,
           email: row.email,
           password: row.password,
+          has_password: row.has_password,
           activo: row.activo,
           foto: row.foto_url || row.foto,
           foto_url: row.foto_url || row.foto
@@ -1653,7 +1663,8 @@
 
                   <label class="ba-label">
                     Email
-                    <input class="ba-input" type="email" data-barber-field="email" data-barber-index="${index}" value="${escapeHtml(row.email || "")}" placeholder="Ej: york@correo.com" />
+                    <input class="ba-input" type="email" data-barber-field="email" data-barber-index="${index}" value="${escapeHtml(row.email || "")}" placeholder="Ej: york@correo.com" ${isEditIntent() && row.id ? "disabled" : ""} />
+                    ${isEditIntent() && row.id ? `<span class="ba-helper">El email de acceso se cambia desde un flujo separado.</span>` : ""}
                   </label>
 
                   <label class="ba-label">
@@ -1817,6 +1828,9 @@
         const cards = document.querySelectorAll("#baBarbersList .ba-card");
 
         cards.forEach((card) => {
+          const index = Number(card.dataset.baIndex || 0);
+          const currentBarber = draft.barberos[index] || {};
+          const currentAccess = (draft.accesos && draft.accesos.barberos && draft.accesos.barberos[index]) || {};
           const nameInput = card.querySelector('[data-barber-field="nombre"]');
           const emailInput = card.querySelector('[data-barber-field="email"]');
           const passInput = card.querySelector('[data-barber-field="password"]');
@@ -1826,9 +1840,12 @@
           const photoUrl = clean(photoUrlInput && photoUrlInput.value) || clean(photoInput && photoInput.value);
 
           rowsFromDom.push({
+            id: Number(currentBarber.id || currentAccess.id || 0) || undefined,
+            usuario_id: Number(currentBarber.usuario_id || currentAccess.usuario_id || 0) || undefined,
             nombre: clean(nameInput && nameInput.value),
             email: clean(emailInput && emailInput.value),
             password: clean(passInput && passInput.value),
+            has_password: Boolean(currentBarber.has_password || currentAccess.has_password),
             activo: Boolean(activeInput && activeInput.checked),
             foto: normalizeBarberPhoto(photoUrl),
             foto_url: normalizeBarberPhoto(photoUrl)
