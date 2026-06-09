@@ -640,6 +640,8 @@
           hora_cierra: clean(item && item.hora_cierra)
         })),
         barberos: barberosSeed.map((item) => ({
+          id: Number(item && item.id) || undefined,
+          usuario_id: Number(item && (item.usuario_id || item.user_id)) || undefined,
           nombre: clean(item && (item.nombre || item.name)),
           activo: item && item.activo !== undefined ? Boolean(item.activo) : true,
           foto: normalizeBarberPhoto(item && (item.foto_url || item.foto || item.photo || item.avatar_url)),
@@ -1044,6 +1046,8 @@
         const barber = draft.barberos[i] || {};
         const access = draft.accesos.barberos[i] || {};
         rows.push({
+          id: Number(barber.id || access.id || 0) || undefined,
+          usuario_id: Number(barber.usuario_id || access.usuario_id || 0) || undefined,
           nombre: clean(barber.nombre) || clean(access.nombre),
           email: clean(access.email),
           password: access.password || "",
@@ -1058,6 +1062,8 @@
 
     function setBarberRows(rows) {
       draft.barberos = rows.map((row) => ({
+        id: Number(row.id || 0) || undefined,
+        usuario_id: Number(row.usuario_id || 0) || undefined,
         nombre: clean(row.nombre),
         activo: Boolean(row.activo),
         foto: normalizeBarberPhoto(row.foto_url || row.foto),
@@ -1065,6 +1071,8 @@
       }));
 
       draft.accesos.barberos = rows.map((row) => ({
+        id: Number(row.id || 0) || undefined,
+        usuario_id: Number(row.usuario_id || 0) || undefined,
         nombre: clean(row.nombre),
         email: clean(row.email).toLowerCase(),
         password: clean(row.password),
@@ -2128,6 +2136,8 @@
           barberos: (draft.barberos || [])
             .filter((item) => clean(item.nombre))
             .map((item) => ({
+              id: Number(item.id || 0) || undefined,
+              usuario_id: Number(item.usuario_id || 0) || undefined,
               nombre: clean(item.nombre),
               activo: Boolean(item.activo),
               foto: normalizeBarberPhoto(item.foto_url || item.foto),
@@ -2854,6 +2864,8 @@
               hora_cierra: clean(h.hora_cierra).slice(0, 5)
             })),
             barberos: barbersList.map(ba => ({
+              id: Number(ba.id || 0) || undefined,
+              usuario_id: Number(ba.usuario_id || 0) || undefined,
               nombre: clean(ba.nombre),
               activo: Boolean(ba.activo),
               foto: clean(ba.foto_url),
@@ -2866,6 +2878,8 @@
                 password: "" // Blank password means keeping existing password
               },
               barberos: barbersList.map(ba => ({
+                id: Number(ba.id || 0) || undefined,
+                usuario_id: Number(ba.usuario_id || 0) || undefined,
                 nombre: clean(ba.nombre),
                 email: "",
                 password: "",
