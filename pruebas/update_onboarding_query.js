@@ -43,7 +43,7 @@ function req(method, path, body) {
         if (q.includes('JOIN auth_user au ON b.owner_id = au.id')) {
           console.log(`Found matching query in node: ${node.name} [ID: ${node.id}]`);
           q = q.replace(
-            'JOIN auth_user au ON b.owner_id = au.id',
+            /'JOIN auth_user au ON \(b.owner_id = au.id OR lower\(COALESCE\(b.email_contacto, ''\)\) = lower\(COALESCE\(au.email, ''\)\)\)/g',
             'JOIN auth_user au ON (b.owner_id = au.id OR lower(COALESCE(b.email_contacto, \'\')) = lower(COALESCE(au.email, \'\')))'
           );
           node.parameters.query = q;

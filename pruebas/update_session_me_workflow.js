@@ -64,62 +64,29 @@ function req(method, apiPath, body) {
     COALESCE(NULLIF(trim($4::text), ''), 'https://barberagency-barberagency.gymh5g.easypanel.host') AS cors_origin
 ),
 resolved AS (
-  SELECT u.id AS user_id, u.email, u.nombre, u.plan_id, u.role
+  SELECT u.id AS user_id, u.email, u.nombre, u.plan_id
   FROM public.usuarios u
   JOIN input i ON u.id = i.user_id_in
   LIMIT 1
 ),
 owned_barberias AS (
-  -- 1. Barberias donde el usuario es el propietario
-  SELECT
+  SELECT DISTINCT ON (b.id)
     b.id,
     b.slug,
     b.nombre,
-    'owner'::text AS role
+    x.role
   FROM public.barberias b
-  JOIN resolved r ON b.owner_id = r.user_id
+  JOIN resolved r ON true
+  JOIN LATERAL (
+    SELECT 'owner'::text AS role WHERE b.owner_id = r.user_id
+    UNION ALL
+    SELECT bm.rol::text AS role FROM public.barberia_miembros bm
+    WHERE bm.barberia_id = b.id 
+      AND (bm.usuario_id = r.user_id OR lower(bm.email) = lower(r.email))
+      AND bm.activo = true
+  ) x ON true
   WHERE b.deleted_at IS NULL
-
-  UNION
-
-  -- 2. Barberias donde el correo del usuario es el email de contacto (y es admin/owner/super_admin)
-  SELECT
-    b.id,
-    b.slug,
-    b.nombre,
-    'owner'::text AS role
-  FROM public.barberias b
-  JOIN resolved r ON lower(COALESCE(b.email_contacto, '')) = lower(r.email)
-  WHERE b.deleted_at IS NULL
-    AND COALESCE(NULLIF(r.role, ''), 'admin') IN ('admin', 'owner', 'super_admin')
-
-  UNION
-
-  -- 3. Barberias donde esta registrado como barbero activo
-  SELECT
-    b.id,
-    b.slug,
-    b.nombre,
-    'barbero'::text AS role
-  FROM public.barberias b
-  JOIN public.barberos bar ON b.id = bar.barberia_id
-  JOIN resolved r ON bar.usuario_id = r.user_id
-  WHERE b.deleted_at IS NULL
-    AND bar.activo = true
-    AND COALESCE(NULLIF(r.role, ''), 'admin') = 'barbero'
-
-  UNION
-
-  -- 4. Barberias donde esta registrado como cajero
-  SELECT
-    b.id,
-    b.slug,
-    b.nombre,
-    'cajero'::text AS role
-  FROM public.barberias b
-  JOIN resolved r ON b.owner_id = r.user_id
-  WHERE b.deleted_at IS NULL
-    AND COALESCE(NULLIF(r.role, ''), 'admin') = 'cajero'
+  ORDER BY b.id DESC, CASE x.role WHEN 'owner' THEN 1 WHEN 'admin' THEN 2 WHEN 'barbero' THEN 3 WHEN 'cajero' THEN 4 ELSE 5 END ASC
 ),
 current_barberia AS (
   SELECT *
