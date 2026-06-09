@@ -270,6 +270,13 @@
     const deepLinkTarget = getDeepLinkTarget();
     currentStepIndex = deepLinkTarget.stepIndex;
     let lastPayload = null;
+    let editHydrationState = {
+      required: isEditIntent(),
+      complete: !isEditIntent(),
+      failed: false,
+      message: "",
+      owner: null
+    };
 
     syncThemeFromGlobal();
 
@@ -299,6 +306,67 @@
 
     function isValidEmail(value) {
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(value));
+    }
+
+    function firstCleanValue(...values) {
+      for (const value of values) {
+        const cleaned = clean(value);
+        if (cleaned) return cleaned;
+      }
+      return "";
+    }
+
+    function resolveOwnerFromDashboardState(data) {
+      const source = data && typeof data === "object" ? data : {};
+      const barberia = source.barberia && typeof source.barberia === "object" ? source.barberia : {};
+      const owner = source.owner && typeof source.owner === "object" ? source.owner : {};
+      const currentUser = source.current_user && typeof source.current_user === "object" ? source.current_user : {};
+      const user = source.user && typeof source.user === "object" ? source.user : {};
+      const session = source.session && typeof source.session === "object" ? source.session : {};
+
+      const ownerId = Number(
+        owner.id ||
+        owner.user_id ||
+        barberia.owner_id ||
+        source.owner_id ||
+        currentUser.id ||
+        user.id ||
+        0
+      ) || null;
+
+      const nombre = firstCleanValue(
+        owner.nombre,
+        owner.name,
+        owner.full_name,
+        source.owner_nombre,
+        source.owner_name,
+        barberia.owner_nombre,
+        barberia.owner_name,
+        currentUser.nombre,
+        currentUser.name,
+        user.nombre,
+        user.name,
+        session.nombre,
+        session.name
+      );
+
+      const email = firstCleanValue(
+        owner.email,
+        source.owner_email,
+        barberia.owner_email,
+        currentUser.email,
+        user.email,
+        session.email
+      ).toLowerCase();
+
+      return { id: ownerId, nombre, email };
+    }
+
+    function requireEditHydrationReady() {
+      if (!editHydrationState.required) return true;
+      if (editHydrationState.complete && !editHydrationState.failed) return true;
+      showMessage("error", editHydrationState.message || "La configuracion real de la barberia aun no termino de cargar. No se puede guardar.");
+      return false;
     }
 
     function isLikelyGoogleMapsUrl(value) {
@@ -1005,6 +1073,7 @@
     }
 
     function validateBarberRows(rows) {
+      const isEdit = isEditIntent();
       const normalized = rows.map((row, index) => ({
         _index: index + 1,
         nombre: clean(row.nombre),
@@ -1021,6 +1090,7 @@
         const row = filled[i];
 
         if (!row.nombre) return { ok: false, message: "Barbero " + row._index + ": falta el nombre." };
+        if (isEdit && !row.email && !row.password) continue;
         if (!row.email) return { ok: false, message: "Barbero " + row._index + ": falta el email." };
         if (!isValidEmail(row.email)) return { ok: false, message: "Barbero " + row._index + ": el email no es válido." };
         if (!row.password) return { ok: false, message: "Barbero " + row._index + ": falta la password." };
@@ -1029,6 +1099,7 @@
 
       const seenEmails = new Map();
       for (const row of filled) {
+        if (isEdit && !row.email && !row.password) continue;
         const previousIndex = seenEmails.get(row.email);
         if (previousIndex) {
           return {
@@ -1085,6 +1156,38 @@
     function renderTextStep(step) {
       const value = getByPath(draft, step.key) || "";
       const isPassword = step.type === "password";
+
+      if (isEditIntent() && step.key.indexOf("accesos.admin.") === 0) {
+        const owner = editHydrationState.owner || {};
+        const ownerName = firstCleanValue(owner.nombre, draft.accesos.admin.nombre, "Administrador");
+        const ownerEmail = firstCleanValue(owner.email, draft.accesos.admin.email);
+        const valueText = step.key === "accesos.admin.password"
+          ? "Se mantiene la password actual"
+          : (step.key === "accesos.admin.email" ? ownerEmail : ownerName);
+
+        responseArea.innerHTML = `
+          <div class="ba-composer">
+            <article class="ba-summary-item">
+              <small>Administrador actual</small>
+              <strong>${escapeHtml(valueText || "No disponible")}</strong>
+            </article>
+            <p class="ba-helper">En modo edicion el administrador no se modifica desde este formulario.</p>
+            <div class="ba-inline">
+              <button class="ba-action" type="button" id="baNextBtn">Continuar</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("baNextBtn").addEventListener("click", () => {
+          if (!requireEditHydrationReady()) return;
+          if ((step.key === "accesos.admin.email" || step.key === "accesos.admin.nombre") && !valueText) {
+            showMessage("error", "No se cargo el administrador real desde el backend.");
+            return;
+          }
+          nextStep();
+        });
+        return;
+      }
 
       responseArea.innerHTML = `
         <div class="ba-composer">
@@ -1944,9 +2047,39 @@
     // SECCION: Construccion de payloads para backend y RPC canonicas.
     function buildDraftPayload() {
       const identity = getEditIdentity();
+      const isEdit = isEditIntent();
+      const owner = editHydrationState.owner || {};
+      const adminPayload = {
+        nombre: isEdit
+          ? firstCleanValue(owner.nombre, draft.accesos.admin.nombre)
+          : clean(draft.accesos.admin.nombre),
+        email: (isEdit
+          ? firstCleanValue(owner.email, draft.accesos.admin.email)
+          : clean(draft.accesos.admin.email)
+        ).toLowerCase()
+      };
+      const adminPassword = clean(draft.accesos.admin.password);
+      if (!isEdit || adminPassword) {
+        adminPayload.password = adminPassword;
+      }
+      const accessBarbers = (draft.accesos.barberos || [])
+        .filter((item) => {
+          if (!isEdit) return clean(item.nombre);
+          return clean(item.email) || clean(item.password);
+        })
+        .map((item) => ({
+          nombre: clean(item.nombre),
+          email: clean(item.email).toLowerCase(),
+          password: clean(item.password),
+          activo: Boolean(item.activo),
+          foto: normalizeBarberPhoto(item.foto_url || item.foto),
+          foto_url: normalizeBarberPhoto(item.foto_url || item.foto)
+        }));
+
       return {
         barberia_id: Number(identity.barberia_id) || undefined,
         slug: clean(identity.slug) || undefined,
+        mode: isEdit ? "edit" : "create",
         draft: {
           barberia: {
             id: Number(identity.barberia_id) || undefined,
@@ -1997,21 +2130,8 @@
               foto_url: normalizeBarberPhoto(item.foto_url || item.foto)
             })),
           accesos: {
-            admin: {
-              nombre: clean(draft.accesos.admin.nombre),
-              email: clean(draft.accesos.admin.email).toLowerCase(),
-              password: clean(draft.accesos.admin.password)
-            },
-            barberos: (draft.accesos.barberos || [])
-              .filter((item) => clean(item.nombre))
-              .map((item) => ({
-                nombre: clean(item.nombre),
-                email: clean(item.email).toLowerCase(),
-                password: clean(item.password),
-                activo: Boolean(item.activo),
-                foto: normalizeBarberPhoto(item.foto_url || item.foto),
-                foto_url: normalizeBarberPhoto(item.foto_url || item.foto)
-              }))
+            admin: adminPayload,
+            barberos: accessBarbers
           }
         }
       };
@@ -2397,6 +2517,10 @@
     async function submitDraft() {
       hideMessage();
 
+      if (!requireEditHydrationReady()) {
+        return;
+      }
+
       const barberValidation = validateBarberRows(getBarberRows());
       if (!barberValidation.ok) {
         showMessage("error", barberValidation.message);
@@ -2466,6 +2590,10 @@
 
     async function submitDraftAndContinue() {
       hideMessage();
+
+      if (!requireEditHydrationReady()) {
+        return;
+      }
 
       const barberValidation = validateBarberRows(getBarberRows());
       if (!barberValidation.ok) {
@@ -2600,6 +2728,13 @@
 
     const editIntent = isEditIntent();
     if (editIntent) {
+      editHydrationState = {
+        required: true,
+        complete: false,
+        failed: false,
+        message: "Cargando configuracion real de la barberia.",
+        owner: null
+      };
       // Show loading and fetch
       const questionEl = document.getElementById("baQuestion");
       if (questionEl) questionEl.textContent = "Cargando configuración de la barbería...";
@@ -2622,12 +2757,22 @@
           if (!data.ok) {
             throw new Error(data.message || "No se pudieron obtener los datos de la barbería.");
           }
-          
-          const params = new URLSearchParams(window.location.search || "");
-          const urlAdminEmail = clean(params.get("admin_email"));
-          const urlAdminName = clean(params.get("admin_name"));
-
           const b = data.barberia || {};
+          const responseIdentity = data.identity || {};
+          const responseId = Number(responseIdentity.barberia_id || b.id || 0);
+          const responseSlug = clean(responseIdentity.slug || b.slug);
+          if (responseId !== Number(identity.barberia_id)) {
+            throw new Error("La identidad devuelta por el backend no coincide con barberia_id.");
+          }
+          if (clean(identity.slug) && responseSlug && responseSlug !== clean(identity.slug)) {
+            throw new Error("La identidad devuelta por el backend no coincide con slug.");
+          }
+
+          const owner = resolveOwnerFromDashboardState(data);
+          if (!owner.email || !isValidEmail(owner.email)) {
+            throw new Error("No se cargo el administrador real desde el backend. Guardado bloqueado para evitar sobrescribir owner/admin.");
+          }
+
           const servicesList = Array.isArray(data.servicios) ? data.servicios : [];
           const barbersList = Array.isArray(data.barberos) ? data.barberos : [];
           const hoursList = Array.isArray(data.seed?.hours ?? data.merged?.hours) ? (data.seed?.hours ?? data.merged?.hours) : [];
@@ -2665,8 +2810,8 @@
             })),
             accesos: {
               admin: {
-                nombre: urlAdminName || "Administrador",
-                email: urlAdminEmail || clean(b.email_contacto),
+                nombre: owner.nombre || "Administrador",
+                email: owner.email,
                 password: "" // Blank password means keeping existing password
               },
               barberos: barbersList.map(ba => ({
@@ -2678,11 +2823,25 @@
               }))
             }
           });
+          editHydrationState = {
+            required: true,
+            complete: true,
+            failed: false,
+            message: "",
+            owner
+          };
           
           saveDraft();
           render();
         } catch (err) {
           console.error(err);
+          editHydrationState = {
+            required: true,
+            complete: false,
+            failed: true,
+            message: err && err.message ? err.message : "No se pudo cargar la configuracion real de la barberia.",
+            owner: null
+          };
           if (questionEl) questionEl.textContent = "Acceso restringido o error";
           if (responseAreaEl) {
             responseAreaEl.innerHTML = `
