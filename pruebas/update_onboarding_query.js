@@ -39,12 +39,12 @@ function req(method, path, body) {
     wf.nodes.forEach(node => {
       if (node.name === 'Crear barberia' && node.parameters && node.parameters.query) {
         let q = node.parameters.query;
-        // Check if query contains old owned_existing
-        if (q.includes('JOIN auth_user au ON b.owner_id = au.id')) {
+        // Check if query contains insecure email_contacto matching
+        if (q.includes('email_contacto')) {
           console.log(`Found matching query in node: ${node.name} [ID: ${node.id}]`);
           q = q.replace(
-            /'JOIN auth_user au ON \(b.owner_id = au.id OR lower\(COALESCE\(b.email_contacto, ''\)\) = lower\(COALESCE\(au.email, ''\)\)\)/g',
-            'JOIN auth_user au ON (b.owner_id = au.id OR lower(COALESCE(b.email_contacto, \'\')) = lower(COALESCE(au.email, \'\')))'
+            /JOIN auth_user au ON \(b\.owner_id = au\.id OR lower\(COALESCE\(b\.email_contacto, ''\)\) = lower\(COALESCE\(au\.email, ''\)\)\)/g,
+            'JOIN auth_user au ON b.owner_id = au.id'
           );
           node.parameters.query = q;
           updatedCount++;
@@ -53,7 +53,7 @@ function req(method, path, body) {
     });
 
     if (updatedCount === 0) {
-      console.log('No matching node or query found. Maybe already updated?');
+      console.log('No matching insecure query found. Onboarding query is already secure.');
       return;
     }
 
