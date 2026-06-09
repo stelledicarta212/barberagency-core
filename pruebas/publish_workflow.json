@@ -77,7 +77,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const i = $input.first().json || {};\nconst webhookData = $('Webhook').first().json || {};\nconst body = webhookData.body || {};\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\nconst barberia_id = Number(body.p_barberia_id ?? body.barberia_id ?? 0);\n\nconst params = [\n  JSON.stringify({ user_id }),\n  barberia_id\n];\n\nreturn [{ json: { \n  auth_ok, \n  user_id, \n  barberia_id,\n  params,\n  body\n} }];"
+        "jsCode": "const i = $input.first().json || {};\nconst webhookData = $('Webhook').first().json || {};\nconst body = webhookData.body || {};\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\nconst barberia_id = Number(body.p_barberia_id ?? body.barberia_id ?? body.p_payload?.barberia_id ?? 0);\n\nconst params = [\n  JSON.stringify({ user_id }),\n  barberia_id,\n  body.p_payload ? JSON.stringify(body.p_payload) : null\n];\n\nreturn [{ json: { \n  auth_ok, \n  user_id, \n  barberia_id,\n  params,\n  body\n} }];"
       },
       "id": "claims-input",
       "name": "Code - claims input",
@@ -170,7 +170,7 @@
       "parameters": {
         "resource": "database",
         "operation": "executeQuery",
-        "query": "SELECT set_config('request.jwt.claims', $1, true);\nSELECT public.ba_publicar_barberia($2) AS result;",
+        "query": "SELECT set_config('request.jwt.claims', $1, true);\nWITH auth_check AS (\n  SELECT public.ba_publicar_barberia($2) AS res\n)\nSELECT \n  CASE \n    WHEN (SELECT (res->>'ok')::boolean FROM auth_check) = false \n      THEN (SELECT res FROM auth_check)\n    WHEN $3::jsonb IS NOT NULL \n      THEN public.ba_publicar_landing_completa($3)\n    ELSE (SELECT res FROM auth_check)\n  END AS result;",
         "options": {
           "queryReplacement": "={{ $json.params }}"
         }

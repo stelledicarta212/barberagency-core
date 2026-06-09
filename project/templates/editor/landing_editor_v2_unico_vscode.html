@@ -1,4 +1,4 @@
-﻿
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
@@ -623,7 +623,7 @@
   const DEFAULT_UPLOAD_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-live';
   const DEFAULT_UPLOAD_ENDPOINT_V2 = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-v2';
   const DEFAULT_UPLOAD_ENDPOINT_LEGACY = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload';
-  const DEFAULT_SAVE_ENDPOINT = 'https://api.agencia2c.cloud/rpc/ba_publicar_landing_completa';
+  const DEFAULT_SAVE_ENDPOINT = 'https://barberagency-app.gymh5g.easypanel.host/api/editor/publish';
   const DEFAULT_PUBLIC_LANDING_RPC_ENDPOINT = 'https://api.agencia2c.cloud/rpc/ba_get_landing_publica';
   const DEFAULT_DRAFT_SAVE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/draft/save';
   const DEFAULT_DRAFT_GET_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/draft/get';
@@ -2520,7 +2520,8 @@
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ p_payload: publishPayload })
+          body: JSON.stringify({ p_payload: publishPayload }),
+          credentials: 'include'
         });
         const rawText = await response.text().catch(() => '');
         let json = {};

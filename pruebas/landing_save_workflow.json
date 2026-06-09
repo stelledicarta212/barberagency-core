@@ -1,0 +1,331 @@
+{
+  "updatedAt": "2026-03-16T20:01:01.941Z",
+  "createdAt": "2026-03-16T19:49:38.198Z",
+  "id": "SX8JofEZAGEDdsSS",
+  "name": "BarberAgency - Landing Save v1",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "barberagency/landing/save",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "d8be53fd-d2f1-42ef-a42c-56a9a304104f",
+      "name": "Webhook - landing save",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        0
+      ],
+      "webhookId": "c8e09255-0037-4e9d-8e98-00e51817f11b"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json || {};\nlet payload = input;\nif (input.body && typeof input.body === 'object') payload = input.body;\nif (typeof payload.payload === 'string') {\n  try { payload = JSON.parse(payload.payload); } catch (e) {}\n} else if (payload.payload && typeof payload.payload === 'object') {\n  payload = payload.payload;\n}\nconst branding = payload.branding && typeof payload.branding === 'object' ? payload.branding : {};\nconst inherited = payload.inherited && typeof payload.inherited === 'object' ? payload.inherited : {};\nconst clean = (v) => (v ?? '').toString().trim();\nconst toInt = (v) => {\n  const n = Number(v);\n  return Number.isInteger(n) && n > 0 ? n : '';\n};\nconst navItems = Array.isArray(branding.nav_items)\n  ? branding.nav_items.map((x) => clean(x)).filter(Boolean)\n  : clean(branding.nav_items).split(',').map((x) => x.trim()).filter(Boolean);\nconst config = {\n  template_id: clean(payload.template_id || payload.templateId || payload.template || ''),\n  template_name: clean(branding.template_name || ''),\n  theme_mode: clean(branding.theme_mode || branding.themeMode || ''),\n  color_primary: clean(branding.color_primary),\n  color_secondary: clean(branding.color_secondary),\n  color_background: clean(branding.color_background),\n  color_surface: clean(branding.color_surface),\n  color_text: clean(branding.color_text),\n  cta_label: clean(branding.cta_label),\n  logo_width: Number(branding.logo_width || 0) || 0,\n  font_pair: clean(branding.font_pair),\n  nav_items: navItems,\n  hero_badge: clean(branding.hero_badge),\n  hero_title: clean(branding.hero_title),\n  hero_subtitle: clean(branding.hero_subtitle),\n  booking_title: clean(branding.booking_title),\n  booking_subtitle: clean(branding.booking_subtitle),\n  benefit_1: clean(branding.benefit_1),\n  benefit_2: clean(branding.benefit_2),\n  benefit_3: clean(branding.benefit_3),\n  footer_note: clean(branding.footer_note),\n  hero_image_url: clean(branding.hero_image_url),\n  image_secondary_url: clean(branding.image_secondary_url),\n  image_tertiary_url: clean(branding.image_tertiary_url)\n};\nconst encoded = Buffer.from(JSON.stringify(config), 'utf8').toString('base64').replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/g, '');\nreturn [{\n  json: {\n    barberia_id: toInt(payload.barberia_id || payload.barberiaId || inherited.barberia_id),\n    slug: clean(payload.slug || inherited.slug),\n    nombre: clean(inherited.nombre || payload.nombre),\n    logo_url: clean(branding.logo_url),\n    cover_url: clean(branding.cover_url || branding.hero_image_url),\n    ciudad: clean(branding.location_city || inherited.ciudad),\n    direccion: clean(branding.location_address || inherited.direccion),\n    telefono: clean(branding.location_phone || inherited.telefono),\n    color_primary: clean(branding.color_primary),\n    color_secondary: clean(branding.color_secondary),\n    color_background: clean(branding.color_background),\n    color_text: clean(branding.color_text),\n    config_url: `ba://landing-config/${encoded}`\n  }\n}];"
+      },
+      "id": "2f14ec87-a58f-42d4-852d-f47f563fba50",
+      "name": "Normalizar payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -256,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH resolved AS (\n  SELECT COALESCE(\n    NULLIF($1::text, '')::int,\n    (SELECT id FROM barberias WHERE slug = NULLIF($2::text, '') LIMIT 1)\n  ) AS barberia_id\n), upd_barberia AS (\n  UPDATE barberias b\n  SET\n    nombre = COALESCE(NULLIF($3::text, ''), b.nombre),\n    slug = COALESCE(NULLIF($2::text, ''), b.slug),\n    logo_url = COALESCE(NULLIF($4::text, ''), b.logo_url),\n    cover_url = COALESCE(NULLIF($5::text, ''), b.cover_url),\n    ciudad = COALESCE(NULLIF($6::text, ''), b.ciudad),\n    direccion = COALESCE(NULLIF($7::text, ''), b.direccion),\n    telefono = COALESCE(NULLIF($8::text, ''), b.telefono)\n  FROM resolved r\n  WHERE b.id = r.barberia_id\n  RETURNING b.id\n), upd_theme AS (\n  UPDATE barberia_theme t\n  SET\n    primary_color = COALESCE(NULLIF($9::text, ''), t.primary_color),\n    secondary_color = COALESCE(NULLIF($10::text, ''), t.secondary_color),\n    background_color = COALESCE(NULLIF($11::text, ''), t.background_color),\n    text_color = COALESCE(NULLIF($12::text, ''), t.text_color)\n  WHERE t.barberia_id = (SELECT id FROM upd_barberia LIMIT 1)\n  RETURNING t.barberia_id\n), ins_theme AS (\n  INSERT INTO barberia_theme (barberia_id, primary_color, secondary_color, background_color, text_color)\n  SELECT id, NULLIF($9::text, ''), NULLIF($10::text, ''), NULLIF($11::text, ''), NULLIF($12::text, '')\n  FROM upd_barberia\n  WHERE NOT EXISTS (SELECT 1 FROM upd_theme)\n), existing_asset AS (\n  SELECT a.id\n  FROM barberia_assets a\n  JOIN upd_barberia u ON u.id = a.barberia_id\n  WHERE a.tipo = 'other'\n  ORDER BY CASE WHEN a.orden = 999 THEN 0 ELSE 1 END, a.id DESC\n  LIMIT 1\n), upd_asset AS (\n  UPDATE barberia_assets a\n  SET url = $13::text, orden = 999, activo = true\n  WHERE a.id IN (SELECT id FROM existing_asset)\n  RETURNING a.id\n), ins_asset AS (\n  INSERT INTO barberia_assets (barberia_id, tipo, url, orden, activo)\n  SELECT id, 'other', $13::text, 999, true\n  FROM upd_barberia\n  WHERE NOT EXISTS (SELECT 1 FROM upd_asset)\n  RETURNING barberia_id\n)\nSELECT COALESCE(\n  (SELECT id FROM upd_barberia LIMIT 1),\n  (SELECT barberia_id FROM ins_asset LIMIT 1)\n) AS barberia_id;",
+        "options": {
+          "queryReplacement": "={{ [$json.barberia_id, $json.slug, $json.nombre, $json.logo_url, $json.cover_url, $json.ciudad, $json.direccion, $json.telefono, $json.color_primary, $json.color_secondary, $json.color_background, $json.color_text, $json.config_url] }}"
+        }
+      },
+      "id": "278f89ef-cd80-4c2c-ab82-df8cb404aa65",
+      "name": "Guardar landing en BD",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        16,
+        16
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ok: !!$json.barberia_id, message: $json.barberia_id ? \"Landing guardada en BD.\" : \"No se encontro barberia para guardar.\", barberia_id: $json.barberia_id || null } }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://barberagency-barberagency.gymh5g.easypanel.host"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "592fc574-3fb6-4fa7-bf84-8f31cc5d4cf9",
+      "name": "Respond - landing save",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        288,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook - landing save": {
+      "main": [
+        [
+          {
+            "node": "Normalizar payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar payload": {
+      "main": [
+        [
+          {
+            "node": "Guardar landing en BD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar landing en BD": {
+      "main": [
+        [
+          {
+            "node": "Respond - landing save",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "b8d4df12-3842-4568-9cb7-af14da4c7682",
+  "activeVersionId": "b8d4df12-3842-4568-9cb7-af14da4c7682",
+  "versionCounter": 32,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-03-16T19:49:38.199Z",
+      "createdAt": "2026-03-16T19:49:38.199Z",
+      "role": "workflow:owner",
+      "workflowId": "SX8JofEZAGEDdsSS",
+      "projectId": "ajSDxUXg76Ss65zL",
+      "project": {
+        "updatedAt": "2026-02-09T14:41:23.917Z",
+        "createdAt": "2026-02-09T14:01:19.465Z",
+        "id": "ajSDxUXg76Ss65zL",
+        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-04-10T15:08:27.000Z",
+    "createdAt": "2026-03-16T20:01:01.942Z",
+    "versionId": "b8d4df12-3842-4568-9cb7-af14da4c7682",
+    "workflowId": "SX8JofEZAGEDdsSS",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "barberagency/landing/save",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "d8be53fd-d2f1-42ef-a42c-56a9a304104f",
+        "name": "Webhook - landing save",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          -528,
+          0
+        ],
+        "webhookId": "c8e09255-0037-4e9d-8e98-00e51817f11b"
+      },
+      {
+        "parameters": {
+          "jsCode": "const input = $json || {};\nlet payload = input;\nif (input.body && typeof input.body === 'object') payload = input.body;\nif (typeof payload.payload === 'string') {\n  try { payload = JSON.parse(payload.payload); } catch (e) {}\n} else if (payload.payload && typeof payload.payload === 'object') {\n  payload = payload.payload;\n}\nconst branding = payload.branding && typeof payload.branding === 'object' ? payload.branding : {};\nconst inherited = payload.inherited && typeof payload.inherited === 'object' ? payload.inherited : {};\nconst clean = (v) => (v ?? '').toString().trim();\nconst toInt = (v) => {\n  const n = Number(v);\n  return Number.isInteger(n) && n > 0 ? n : '';\n};\nconst navItems = Array.isArray(branding.nav_items)\n  ? branding.nav_items.map((x) => clean(x)).filter(Boolean)\n  : clean(branding.nav_items).split(',').map((x) => x.trim()).filter(Boolean);\nconst config = {\n  template_id: clean(payload.template_id || payload.templateId || payload.template || ''),\n  template_name: clean(branding.template_name || ''),\n  theme_mode: clean(branding.theme_mode || branding.themeMode || ''),\n  color_primary: clean(branding.color_primary),\n  color_secondary: clean(branding.color_secondary),\n  color_background: clean(branding.color_background),\n  color_surface: clean(branding.color_surface),\n  color_text: clean(branding.color_text),\n  cta_label: clean(branding.cta_label),\n  logo_width: Number(branding.logo_width || 0) || 0,\n  font_pair: clean(branding.font_pair),\n  nav_items: navItems,\n  hero_badge: clean(branding.hero_badge),\n  hero_title: clean(branding.hero_title),\n  hero_subtitle: clean(branding.hero_subtitle),\n  booking_title: clean(branding.booking_title),\n  booking_subtitle: clean(branding.booking_subtitle),\n  benefit_1: clean(branding.benefit_1),\n  benefit_2: clean(branding.benefit_2),\n  benefit_3: clean(branding.benefit_3),\n  footer_note: clean(branding.footer_note),\n  hero_image_url: clean(branding.hero_image_url),\n  image_secondary_url: clean(branding.image_secondary_url),\n  image_tertiary_url: clean(branding.image_tertiary_url)\n};\nconst encoded = Buffer.from(JSON.stringify(config), 'utf8').toString('base64').replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/g, '');\nreturn [{\n  json: {\n    barberia_id: toInt(payload.barberia_id || payload.barberiaId || inherited.barberia_id),\n    slug: clean(payload.slug || inherited.slug),\n    nombre: clean(inherited.nombre || payload.nombre),\n    logo_url: clean(branding.logo_url),\n    cover_url: clean(branding.cover_url || branding.hero_image_url),\n    ciudad: clean(branding.location_city || inherited.ciudad),\n    direccion: clean(branding.location_address || inherited.direccion),\n    telefono: clean(branding.location_phone || inherited.telefono),\n    color_primary: clean(branding.color_primary),\n    color_secondary: clean(branding.color_secondary),\n    color_background: clean(branding.color_background),\n    color_text: clean(branding.color_text),\n    config_url: `ba://landing-config/${encoded}`\n  }\n}];"
+        },
+        "id": "2f14ec87-a58f-42d4-852d-f47f563fba50",
+        "name": "Normalizar payload",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -256,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH resolved AS (\n  SELECT COALESCE(\n    NULLIF($1::text, '')::int,\n    (SELECT id FROM barberias WHERE slug = NULLIF($2::text, '') LIMIT 1)\n  ) AS barberia_id\n), upd_barberia AS (\n  UPDATE barberias b\n  SET\n    nombre = COALESCE(NULLIF($3::text, ''), b.nombre),\n    slug = COALESCE(NULLIF($2::text, ''), b.slug),\n    logo_url = COALESCE(NULLIF($4::text, ''), b.logo_url),\n    cover_url = COALESCE(NULLIF($5::text, ''), b.cover_url),\n    ciudad = COALESCE(NULLIF($6::text, ''), b.ciudad),\n    direccion = COALESCE(NULLIF($7::text, ''), b.direccion),\n    telefono = COALESCE(NULLIF($8::text, ''), b.telefono)\n  FROM resolved r\n  WHERE b.id = r.barberia_id\n  RETURNING b.id\n), upd_theme AS (\n  UPDATE barberia_theme t\n  SET\n    primary_color = COALESCE(NULLIF($9::text, ''), t.primary_color),\n    secondary_color = COALESCE(NULLIF($10::text, ''), t.secondary_color),\n    background_color = COALESCE(NULLIF($11::text, ''), t.background_color),\n    text_color = COALESCE(NULLIF($12::text, ''), t.text_color)\n  WHERE t.barberia_id = (SELECT id FROM upd_barberia LIMIT 1)\n  RETURNING t.barberia_id\n), ins_theme AS (\n  INSERT INTO barberia_theme (barberia_id, primary_color, secondary_color, background_color, text_color)\n  SELECT id, NULLIF($9::text, ''), NULLIF($10::text, ''), NULLIF($11::text, ''), NULLIF($12::text, '')\n  FROM upd_barberia\n  WHERE NOT EXISTS (SELECT 1 FROM upd_theme)\n), existing_asset AS (\n  SELECT a.id\n  FROM barberia_assets a\n  JOIN upd_barberia u ON u.id = a.barberia_id\n  WHERE a.tipo = 'other'\n  ORDER BY CASE WHEN a.orden = 999 THEN 0 ELSE 1 END, a.id DESC\n  LIMIT 1\n), upd_asset AS (\n  UPDATE barberia_assets a\n  SET url = $13::text, orden = 999, activo = true\n  WHERE a.id IN (SELECT id FROM existing_asset)\n  RETURNING a.id\n), ins_asset AS (\n  INSERT INTO barberia_assets (barberia_id, tipo, url, orden, activo)\n  SELECT id, 'other', $13::text, 999, true\n  FROM upd_barberia\n  WHERE NOT EXISTS (SELECT 1 FROM upd_asset)\n  RETURNING barberia_id\n)\nSELECT COALESCE(\n  (SELECT id FROM upd_barberia LIMIT 1),\n  (SELECT barberia_id FROM ins_asset LIMIT 1)\n) AS barberia_id;",
+          "options": {
+            "queryReplacement": "={{ [$json.barberia_id, $json.slug, $json.nombre, $json.logo_url, $json.cover_url, $json.ciudad, $json.direccion, $json.telefono, $json.color_primary, $json.color_secondary, $json.color_background, $json.color_text, $json.config_url] }}"
+          }
+        },
+        "id": "278f89ef-cd80-4c2c-ab82-df8cb404aa65",
+        "name": "Guardar landing en BD",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2,
+        "position": [
+          16,
+          16
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "SOV6oSyuHI9cxgLF",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ { ok: !!$json.barberia_id, message: $json.barberia_id ? \"Landing guardada en BD.\" : \"No se encontro barberia para guardar.\", barberia_id: $json.barberia_id || null } }}",
+          "options": {
+            "responseCode": 200,
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "https://barberagency-barberagency.gymh5g.easypanel.host"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "POST, OPTIONS"
+                },
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "*"
+                }
+              ]
+            }
+          }
+        },
+        "id": "592fc574-3fb6-4fa7-bf84-8f31cc5d4cf9",
+        "name": "Respond - landing save",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1,
+        "position": [
+          288,
+          0
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook - landing save": {
+        "main": [
+          [
+            {
+              "node": "Normalizar payload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Normalizar payload": {
+        "main": [
+          [
+            {
+              "node": "Guardar landing en BD",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Guardar landing en BD": {
+        "main": [
+          [
+            {
+              "node": "Respond - landing save",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Carlos a Alvis",
+    "name": "Version b8d4df12",
+    "description": "",
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-03-16T20:01:01.997Z",
+        "id": 177,
+        "workflowId": "SX8JofEZAGEDdsSS",
+        "versionId": "b8d4df12-3842-4568-9cb7-af14da4c7682",
+        "event": "activated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      },
+      {
+        "createdAt": "2026-04-10T15:08:27.265Z",
+        "id": 259,
+        "workflowId": "SX8JofEZAGEDdsSS",
+        "versionId": "b8d4df12-3842-4568-9cb7-af14da4c7682",
+        "event": "activated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      },
+      {
+        "createdAt": "2026-03-16T20:01:01.981Z",
+        "id": 176,
+        "workflowId": "SX8JofEZAGEDdsSS",
+        "versionId": "b8d4df12-3842-4568-9cb7-af14da4c7682",
+        "event": "deactivated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      },
+      {
+        "createdAt": "2026-04-10T02:51:24.784Z",
+        "id": 255,
+        "workflowId": "SX8JofEZAGEDdsSS",
+        "versionId": "b8d4df12-3842-4568-9cb7-af14da4c7682",
+        "event": "deactivated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      }
+    ]
+  }
+}
