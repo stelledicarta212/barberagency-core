@@ -1,0 +1,17 @@
+{
+  "id": "471110",
+  "finished": true,
+  "mode": "webhook",
+  "retryOf": null,
+  "retrySuccessId": null,
+  "status": "success",
+  "createdAt": "2026-06-05T19:30:40.141Z",
+  "startedAt": "2026-06-05T19:30:40.150Z",
+  "stoppedAt": "2026-06-05T19:30:40.197Z",
+  "deletedAt": null,
+  "workflowId": "oAQzjkGzCuCjT1EP",
+  "waitTill": null,
+  "storedAt": "db",
+  "tracingContext": null,
+  "deduplicationKey": null
+}

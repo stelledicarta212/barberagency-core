@@ -1,0 +1,534 @@
+{
+  "updatedAt": "2026-06-05T20:37:44.542Z",
+  "createdAt": "2026-02-26T15:46:49.343Z",
+  "id": "iUZCTRli7ghGFrEb",
+  "name": "BarberAgency - Session Me v2",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "id": "e44bd95b-6e79-407a-9010-545197cfbf68",
+      "name": "Webhook - session me",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        160,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "barberagency/session/me",
+        "responseMode": "responseNode",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Credentials",
+                "value": "true"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Accept"
+              }
+            ]
+          },
+          "allowedOrigins": "https://barberagency-barberagency.gymh5g.easypanel.host,https://panel-de-barberia.gymh5g.easypanel.host"
+        }
+      },
+      "webhookId": "4df585fe-ddaa-406d-b717-f56607e7994b"
+    },
+    {
+      "id": "4d8beb67-f825-4a55-ba25-e4b7066f266d",
+      "name": "Code - parse cookie",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const i = $input.first().json || {};\nconst h = i.headers || {};\nconst cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\nconst m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\nconst session_token = m ? m[1] : '';\nconst origin = (h.origin ?? h.Origin ?? '').toString().trim();\nconst allowedOrigins = [\"https://barberagency-barberagency.gymh5g.easypanel.host\",\"https://panel-de-barberia.gymh5g.easypanel.host\"];\nconst cors_origin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];\nreturn [{ json: { session_token, cors_origin } }];"
+      }
+    },
+    {
+      "id": "22467673-e0fe-4744-906b-4e3bf090c9f3",
+      "name": "JWT - Verify session",
+      "type": "n8n-nodes-base.jwt",
+      "typeVersion": 1,
+      "position": [
+        640,
+        300
+      ],
+      "parameters": {
+        "operation": "verify",
+        "token": "={{ $json.session_token }}",
+        "options": {
+          "algorithm": "HS256"
+        }
+      },
+      "credentials": {
+        "jwtAuth": {
+          "id": "mNWhzdM1ihAaBkZM",
+          "name": "JWT Auth account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "id": "1acfe5c1-1c27-49ca-bdce-c0be91a6b01b",
+      "name": "Code - claims input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        860,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const i = $input.first().json || {};\nlet cors_origin = 'https://barberagency-barberagency.gymh5g.easypanel.host';\ntry {\n  const source = $('Code - parse cookie').first().json || {};\n  cors_origin = source.cors_origin || cors_origin;\n} catch (_) {}\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\nconst message = auth_ok ? '' : 'Sesion no valida';\nreturn [{ json: { auth_ok, user_id, message, cors_origin } }];"
+      }
+    },
+    {
+      "id": "db859604-6a11-4d0c-b32f-f409ce0256af",
+      "name": "Postgres - session me",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        1100,
+        300
+      ],
+      "parameters": {
+        "resource": "database",
+        "operation": "executeQuery",
+        "query": "\nWITH input AS (\n  SELECT\n    COALESCE($1::boolean, false) AS auth_ok,\n    COALESCE($2::int, 0) AS user_id_in,\n    NULLIF(trim(COALESCE($3::text, '')), '') AS message_in,\n    COALESCE(NULLIF(trim($4::text), ''), 'https://barberagency-barberagency.gymh5g.easypanel.host') AS cors_origin\n),\nresolved AS (\n  SELECT u.id AS user_id, u.email, u.nombre, u.plan_id\n  FROM public.usuarios u\n  JOIN input i ON u.id = i.user_id_in\n  LIMIT 1\n),\nowned_barberias AS (\n  SELECT DISTINCT ON (b.id)\n    b.id,\n    b.slug,\n    b.nombre,\n    x.role\n  FROM public.barberias b\n  JOIN resolved r ON true\n  JOIN LATERAL (\n    SELECT 'owner'::text AS role WHERE b.owner_id = r.user_id\n    UNION ALL\n    SELECT bm.rol::text AS role FROM public.barberia_miembros bm\n    WHERE bm.barberia_id = b.id \n      AND (bm.usuario_id = r.user_id OR lower(bm.email) = lower(r.email))\n      AND bm.activo = true\n  ) x ON true\n  WHERE b.deleted_at IS NULL\n  ORDER BY b.id DESC, CASE x.role WHEN 'owner' THEN 1 WHEN 'admin' THEN 2 WHEN 'barbero' THEN 3 WHEN 'cajero' THEN 4 ELSE 5 END ASC\n),\ncurrent_barberia AS (\n  SELECT *\n  FROM owned_barberias\n  ORDER BY id DESC\n  LIMIT 1\n)\nSELECT\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN true ELSE false END AS ok,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN 200 ELSE 401 END AS status_code,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN NULL ELSE COALESCE(i.message_in, 'Sesion no valida') END AS message,\n  i.cors_origin,\n  (SELECT user_id FROM resolved LIMIT 1) AS user_id,\n  (SELECT email FROM resolved LIMIT 1) AS email,\n  (SELECT nombre FROM resolved LIMIT 1) AS nombre,\n  (SELECT plan_id FROM resolved LIMIT 1) AS plan_id,\n  CASE WHEN (SELECT plan_id FROM resolved LIMIT 1) IS NULL THEN false ELSE true END AS puede_crear_barberia,\n  COALESCE((SELECT count(*) FROM owned_barberias), 0)::int AS barberias_count,\n  COALESCE((SELECT row_to_json(current_barberia) FROM current_barberia), NULL) AS current_barberia,\n  COALESCE((SELECT json_agg(owned_barberias) FROM owned_barberias), '[]'::json) AS barberias\nFROM input i;\n    ",
+        "options": {
+          "queryReplacement": "={{ [Boolean($json.auth_ok), Number($json.user_id ?? 0), ($json.message ?? \"\").toString(), ($json.cors_origin ?? \"\").toString()] }}"
+        }
+      },
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "id": "cbaf5db9-c0dc-4aa7-9981-da9044f1102f",
+      "name": "Code - build response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        300
+      ],
+      "parameters": {
+        "jsCode": "const i = $input.first().json || {};\nconst ok = !!i.ok;\nconst status_code = Number(i.status_code ?? (ok ? 200 : 401));\nconst clearCookie = 'ba_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax';\n\nconst nombreRaw = (i.nombre ?? '').toString().trim();\nconst parts = nombreRaw ? nombreRaw.split(/\\s+/).filter(Boolean) : [];\nconst apellido = parts.length > 1 ? parts.slice(1).join(' ') : null;\nconst barberias = Array.isArray(i.barberias) ? i.barberias : [];\nconst currentBarberia = i.current_barberia && typeof i.current_barberia === 'object'\n  ? i.current_barberia\n  : null;\nconst barberiasCount = Number(i.barberias_count ?? barberias.length ?? 0);\n\nlet next_action = 'login';\nif (ok) {\n  if (barberiasCount <= 0) next_action = 'create_barberia';\n  else if (barberiasCount === 1) next_action = 'open_dashboard';\n  else next_action = 'choose_barberia';\n}\n\nreturn [{\n  json: {\n    status_code,\n    response_body: ok\n      ? {\n          ok: true,\n          user_id: i.user_id,\n          email: i.email,\n          nombre: nombreRaw,\n          apellido,\n          plan_id: i.plan_id ?? null,\n          puede_crear_barberia: !!i.puede_crear_barberia,\n          user: {\n            id: i.user_id,\n            email: i.email,\n            nombre: nombreRaw,\n            apellido,\n          },\n          current_barberia: currentBarberia,\n          barberias,\n          barberias_count: barberiasCount,\n          next_action,\n        }\n      : {\n          ok: false,\n          message: (i.message ?? 'Sesion no valida').toString(),\n          next_action,\n        },\n    set_cookie: ok ? '' : clearCookie,\n    cors_origin: i.cors_origin || 'https://barberagency-barberagency.gymh5g.easypanel.host',\n  },\n}];"
+      }
+    },
+    {
+      "id": "5df4d3d5-432f-4e64-bb33-409990399562",
+      "name": "Respond - session me",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        300
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.response_body }}",
+        "options": {
+          "responseCode": "={{ Number($json.status_code ?? 401) }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Set-Cookie",
+                "value": "={{ $json.set_cookie }}"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "={{ $json.cors_origin }}"
+              },
+              {
+                "name": "Access-Control-Allow-Credentials",
+                "value": "true"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Accept"
+              },
+              {
+                "name": "Access-Control-Max-Age",
+                "value": "86400"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Code - parse cookie": {
+      "main": [
+        [
+          {
+            "node": "JWT - Verify session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - session me": {
+      "main": [
+        [
+          {
+            "node": "Code - parse cookie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - claims input": {
+      "main": [
+        [
+          {
+            "node": "Postgres - session me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - build response": {
+      "main": [
+        [
+          {
+            "node": "Respond - session me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - session me": {
+      "main": [
+        [
+          {
+            "node": "Code - build response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JWT - Verify session": {
+      "main": [
+        [
+          {
+            "node": "Code - claims input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "134d5cdd-dd95-4a4e-a1e3-1da3a15b5890",
+  "activeVersionId": "134d5cdd-dd95-4a4e-a1e3-1da3a15b5890",
+  "versionCounter": 24,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-26T15:46:49.348Z",
+      "createdAt": "2026-02-26T15:46:49.348Z",
+      "role": "workflow:owner",
+      "workflowId": "iUZCTRli7ghGFrEb",
+      "projectId": "ajSDxUXg76Ss65zL",
+      "project": {
+        "updatedAt": "2026-02-09T14:41:23.917Z",
+        "createdAt": "2026-02-09T14:01:19.465Z",
+        "id": "ajSDxUXg76Ss65zL",
+        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-06-05T20:37:44.543Z",
+    "createdAt": "2026-06-05T20:37:44.543Z",
+    "versionId": "134d5cdd-dd95-4a4e-a1e3-1da3a15b5890",
+    "workflowId": "iUZCTRli7ghGFrEb",
+    "nodes": [
+      {
+        "id": "e44bd95b-6e79-407a-9010-545197cfbf68",
+        "name": "Webhook - session me",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          160,
+          300
+        ],
+        "parameters": {
+          "httpMethod": "GET",
+          "path": "barberagency/session/me",
+          "responseMode": "responseNode",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "GET, OPTIONS"
+                },
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "Content-Type, Accept"
+                }
+              ]
+            },
+            "allowedOrigins": "https://barberagency-barberagency.gymh5g.easypanel.host,https://panel-de-barberia.gymh5g.easypanel.host"
+          }
+        },
+        "webhookId": "4df585fe-ddaa-406d-b717-f56607e7994b"
+      },
+      {
+        "id": "4d8beb67-f825-4a55-ba25-e4b7066f266d",
+        "name": "Code - parse cookie",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          400,
+          300
+        ],
+        "parameters": {
+          "jsCode": "const i = $input.first().json || {};\nconst h = i.headers || {};\nconst cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\nconst m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\nconst session_token = m ? m[1] : '';\nconst origin = (h.origin ?? h.Origin ?? '').toString().trim();\nconst allowedOrigins = [\"https://barberagency-barberagency.gymh5g.easypanel.host\",\"https://panel-de-barberia.gymh5g.easypanel.host\"];\nconst cors_origin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];\nreturn [{ json: { session_token, cors_origin } }];"
+        }
+      },
+      {
+        "id": "22467673-e0fe-4744-906b-4e3bf090c9f3",
+        "name": "JWT - Verify session",
+        "type": "n8n-nodes-base.jwt",
+        "typeVersion": 1,
+        "position": [
+          640,
+          300
+        ],
+        "parameters": {
+          "operation": "verify",
+          "token": "={{ $json.session_token }}",
+          "options": {
+            "algorithm": "HS256"
+          }
+        },
+        "credentials": {
+          "jwtAuth": {
+            "id": "mNWhzdM1ihAaBkZM",
+            "name": "JWT Auth account"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "id": "1acfe5c1-1c27-49ca-bdce-c0be91a6b01b",
+        "name": "Code - claims input",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          860,
+          300
+        ],
+        "parameters": {
+          "jsCode": "const i = $input.first().json || {};\nlet cors_origin = 'https://barberagency-barberagency.gymh5g.easypanel.host';\ntry {\n  const source = $('Code - parse cookie').first().json || {};\n  cors_origin = source.cors_origin || cors_origin;\n} catch (_) {}\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\nconst message = auth_ok ? '' : 'Sesion no valida';\nreturn [{ json: { auth_ok, user_id, message, cors_origin } }];"
+        }
+      },
+      {
+        "id": "db859604-6a11-4d0c-b32f-f409ce0256af",
+        "name": "Postgres - session me",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          1100,
+          300
+        ],
+        "parameters": {
+          "resource": "database",
+          "operation": "executeQuery",
+          "query": "\nWITH input AS (\n  SELECT\n    COALESCE($1::boolean, false) AS auth_ok,\n    COALESCE($2::int, 0) AS user_id_in,\n    NULLIF(trim(COALESCE($3::text, '')), '') AS message_in,\n    COALESCE(NULLIF(trim($4::text), ''), 'https://barberagency-barberagency.gymh5g.easypanel.host') AS cors_origin\n),\nresolved AS (\n  SELECT u.id AS user_id, u.email, u.nombre, u.plan_id\n  FROM public.usuarios u\n  JOIN input i ON u.id = i.user_id_in\n  LIMIT 1\n),\nowned_barberias AS (\n  SELECT DISTINCT ON (b.id)\n    b.id,\n    b.slug,\n    b.nombre,\n    x.role\n  FROM public.barberias b\n  JOIN resolved r ON true\n  JOIN LATERAL (\n    SELECT 'owner'::text AS role WHERE b.owner_id = r.user_id\n    UNION ALL\n    SELECT bm.rol::text AS role FROM public.barberia_miembros bm\n    WHERE bm.barberia_id = b.id \n      AND (bm.usuario_id = r.user_id OR lower(bm.email) = lower(r.email))\n      AND bm.activo = true\n  ) x ON true\n  WHERE b.deleted_at IS NULL\n  ORDER BY b.id DESC, CASE x.role WHEN 'owner' THEN 1 WHEN 'admin' THEN 2 WHEN 'barbero' THEN 3 WHEN 'cajero' THEN 4 ELSE 5 END ASC\n),\ncurrent_barberia AS (\n  SELECT *\n  FROM owned_barberias\n  ORDER BY id DESC\n  LIMIT 1\n)\nSELECT\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN true ELSE false END AS ok,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN 200 ELSE 401 END AS status_code,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN NULL ELSE COALESCE(i.message_in, 'Sesion no valida') END AS message,\n  i.cors_origin,\n  (SELECT user_id FROM resolved LIMIT 1) AS user_id,\n  (SELECT email FROM resolved LIMIT 1) AS email,\n  (SELECT nombre FROM resolved LIMIT 1) AS nombre,\n  (SELECT plan_id FROM resolved LIMIT 1) AS plan_id,\n  CASE WHEN (SELECT plan_id FROM resolved LIMIT 1) IS NULL THEN false ELSE true END AS puede_crear_barberia,\n  COALESCE((SELECT count(*) FROM owned_barberias), 0)::int AS barberias_count,\n  COALESCE((SELECT row_to_json(current_barberia) FROM current_barberia), NULL) AS current_barberia,\n  COALESCE((SELECT json_agg(owned_barberias) FROM owned_barberias), '[]'::json) AS barberias\nFROM input i;\n    ",
+          "options": {
+            "queryReplacement": "={{ [Boolean($json.auth_ok), Number($json.user_id ?? 0), ($json.message ?? \"\").toString(), ($json.cors_origin ?? \"\").toString()] }}"
+          }
+        },
+        "credentials": {
+          "postgres": {
+            "id": "SOV6oSyuHI9cxgLF",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "id": "cbaf5db9-c0dc-4aa7-9981-da9044f1102f",
+        "name": "Code - build response",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1320,
+          300
+        ],
+        "parameters": {
+          "jsCode": "const i = $input.first().json || {};\nconst ok = !!i.ok;\nconst status_code = Number(i.status_code ?? (ok ? 200 : 401));\nconst clearCookie = 'ba_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax';\n\nconst nombreRaw = (i.nombre ?? '').toString().trim();\nconst parts = nombreRaw ? nombreRaw.split(/\\s+/).filter(Boolean) : [];\nconst apellido = parts.length > 1 ? parts.slice(1).join(' ') : null;\nconst barberias = Array.isArray(i.barberias) ? i.barberias : [];\nconst currentBarberia = i.current_barberia && typeof i.current_barberia === 'object'\n  ? i.current_barberia\n  : null;\nconst barberiasCount = Number(i.barberias_count ?? barberias.length ?? 0);\n\nlet next_action = 'login';\nif (ok) {\n  if (barberiasCount <= 0) next_action = 'create_barberia';\n  else if (barberiasCount === 1) next_action = 'open_dashboard';\n  else next_action = 'choose_barberia';\n}\n\nreturn [{\n  json: {\n    status_code,\n    response_body: ok\n      ? {\n          ok: true,\n          user_id: i.user_id,\n          email: i.email,\n          nombre: nombreRaw,\n          apellido,\n          plan_id: i.plan_id ?? null,\n          puede_crear_barberia: !!i.puede_crear_barberia,\n          user: {\n            id: i.user_id,\n            email: i.email,\n            nombre: nombreRaw,\n            apellido,\n          },\n          current_barberia: currentBarberia,\n          barberias,\n          barberias_count: barberiasCount,\n          next_action,\n        }\n      : {\n          ok: false,\n          message: (i.message ?? 'Sesion no valida').toString(),\n          next_action,\n        },\n    set_cookie: ok ? '' : clearCookie,\n    cors_origin: i.cors_origin || 'https://barberagency-barberagency.gymh5g.easypanel.host',\n  },\n}];"
+        }
+      },
+      {
+        "id": "5df4d3d5-432f-4e64-bb33-409990399562",
+        "name": "Respond - session me",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1540,
+          300
+        ],
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json.response_body }}",
+          "options": {
+            "responseCode": "={{ Number($json.status_code ?? 401) }}",
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Set-Cookie",
+                  "value": "={{ $json.set_cookie }}"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "={{ $json.cors_origin }}"
+                },
+                {
+                  "name": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "GET, OPTIONS"
+                },
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "Content-Type, Accept"
+                },
+                {
+                  "name": "Access-Control-Max-Age",
+                  "value": "86400"
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Code - parse cookie": {
+        "main": [
+          [
+            {
+              "node": "JWT - Verify session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook - session me": {
+        "main": [
+          [
+            {
+              "node": "Code - parse cookie",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - claims input": {
+        "main": [
+          [
+            {
+              "node": "Postgres - session me",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - build response": {
+        "main": [
+          [
+            {
+              "node": "Respond - session me",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Postgres - session me": {
+        "main": [
+          [
+            {
+              "node": "Code - build response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JWT - Verify session": {
+        "main": [
+          [
+            {
+              "node": "Code - claims input",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Carlos a Alvis",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-05T20:37:44.687Z",
+        "id": 1664,
+        "workflowId": "iUZCTRli7ghGFrEb",
+        "versionId": "134d5cdd-dd95-4a4e-a1e3-1da3a15b5890",
+        "event": "activated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      }
+    ]
+  }
+}

@@ -1,0 +1,2074 @@
+{
+  "id": "476862",
+  "finished": true,
+  "mode": "webhook",
+  "retryOf": null,
+  "retrySuccessId": null,
+  "status": "success",
+  "createdAt": "2026-06-09T22:24:03.652Z",
+  "startedAt": "2026-06-09T22:24:03.663Z",
+  "stoppedAt": "2026-06-09T22:24:03.845Z",
+  "deletedAt": null,
+  "workflowId": "6JugRzxsOGKBvgWW",
+  "waitTill": null,
+  "storedAt": "db",
+  "tracingContext": null,
+  "deduplicationKey": null,
+  "data": {
+    "version": 1,
+    "startData": {},
+    "resultData": {
+      "runData": {
+        "Webhook": [
+          {
+            "startTime": 1781043843691,
+            "executionIndex": 0,
+            "source": [],
+            "hints": [],
+            "executionTime": 3,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "headers": {
+                        "host": "barberagency-n8n.gymh5g.easypanel.host",
+                        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+                        "accept": "*/*",
+                        "accept-encoding": "gzip, deflate, br, zstd",
+                        "accept-language": "es-US,es;q=0.9",
+                        "cookie": "ba_session=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXV0aGVudGljYXRlZCIsInN1YiI6IjciLCJ1c2VyX2lkIjo3LCJlbWFpbCI6InBpbGRvcmFzZGVhdXRvbWF0aXphY2lvbkBnbWFpbC5jb20iLCJwbGFuX2lkIjpudWxsLCJleHAiOjE3ODE2NDQyMDAsImlhdCI6MTc4MTAzOTQwMH0.LT4rKRo2yd58ZgnerUu7SdDvg5wUXsTsX_5klPABhFM",
+                        "dnt": "1",
+                        "if-none-match": "W/\"25d0-uB0DceWLS/jdaLu7KC16Lt3Oadk\"",
+                        "origin": "https://barberagency-barberagency.gymh5g.easypanel.host",
+                        "priority": "u=1, i",
+                        "referer": "https://barberagency-barberagency.gymh5g.easypanel.host/",
+                        "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                        "sec-ch-ua-mobile": "?0",
+                        "sec-ch-ua-platform": "\"Windows\"",
+                        "sec-fetch-dest": "empty",
+                        "sec-fetch-mode": "cors",
+                        "sec-fetch-site": "same-site",
+                        "x-forwarded-for": "179.19.39.199",
+                        "x-forwarded-host": "barberagency-n8n.gymh5g.easypanel.host",
+                        "x-forwarded-port": "443",
+                        "x-forwarded-proto": "https",
+                        "x-forwarded-server": "14bdf3710966",
+                        "x-real-ip": "179.19.39.199"
+                      },
+                      "params": {},
+                      "query": {
+                        "barberia_id": "198",
+                        "slug": "barberia-prueba-4"
+                      },
+                      "body": {},
+                      "webhookUrl": "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/dashboard/state",
+                      "executionMode": "production"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Code - parse cookie": [
+          {
+            "startTime": 1781043843694,
+            "executionIndex": 1,
+            "source": [
+              {
+                "previousNode": "Webhook",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 14,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "session_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYXV0aGVudGljYXRlZCIsInN1YiI6IjciLCJ1c2VyX2lkIjo3LCJlbWFpbCI6InBpbGRvcmFzZGVhdXRvbWF0aXphY2lvbkBnbWFpbC5jb20iLCJwbGFuX2lkIjpudWxsLCJleHAiOjE3ODE2NDQyMDAsImlhdCI6MTc4MTAzOTQwMH0.LT4rKRo2yd58ZgnerUu7SdDvg5wUXsTsX_5klPABhFM"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "JWT - Verify session": [
+          {
+            "startTime": 1781043843709,
+            "executionIndex": 2,
+            "source": [
+              {
+                "previousNode": "Code - parse cookie",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 3,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "payload": {
+                        "role": "authenticated",
+                        "sub": "7",
+                        "user_id": 7,
+                        "email": "pildorasdeautomatizacion@gmail.com",
+                        "plan_id": null,
+                        "exp": 1781644200,
+                        "iat": 1781039400
+                      }
+                    },
+                    "pairedItem": 0
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Code - claims input": [
+          {
+            "startTime": 1781043843713,
+            "executionIndex": 3,
+            "source": [
+              {
+                "previousNode": "JWT - Verify session",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 27,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "auth_ok": true,
+                      "user_id": 7,
+                      "barberia_id": 198,
+                      "slug": "barberia-prueba-4",
+                      "params": [
+                        7,
+                        198,
+                        "barberia-prueba-4",
+                        true
+                      ]
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Postgres - session validate": [
+          {
+            "startTime": 1781043843741,
+            "executionIndex": 4,
+            "source": [
+              {
+                "previousNode": "Code - claims input",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 29,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "auth_ok_jwt": true,
+                      "auth_ok": true,
+                      "barberia_ok": true,
+                      "role_ok": true,
+                      "validated_barberia_id": 198,
+                      "user_role": "admin"
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Check validation": [
+          {
+            "startTime": 1781043843770,
+            "executionIndex": 5,
+            "source": [
+              {
+                "previousNode": "Postgres - session validate",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 11,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "ok": true,
+                      "status_code": 200,
+                      "message": "",
+                      "validated_barberia_id": 198
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "IF - Validation OK": [
+          {
+            "startTime": 1781043843781,
+            "executionIndex": 6,
+            "source": [
+              {
+                "previousNode": "Check validation",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 1,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "ok": true,
+                      "status_code": 200,
+                      "message": "",
+                      "validated_barberia_id": 198
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ],
+                []
+              ]
+            }
+          }
+        ],
+        "PG - Fetch Aggregated Data": [
+          {
+            "startTime": 1781043843782,
+            "executionIndex": 7,
+            "source": [
+              {
+                "previousNode": "IF - Validation OK",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 22,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "result": {
+                        "barberia": {
+                          "id": 198,
+                          "nombre": "Barberia Prueba 4",
+                          "slug": "barberia-prueba-4",
+                          "estado": "activa",
+                          "created_at": "2026-06-02T03:06:24.21677+00:00",
+                          "owner_id": 7,
+                          "plan_id": 2,
+                          "slot_min": 30,
+                          "deleted_at": null,
+                          "logo_url": null,
+                          "cover_url": null,
+                          "telefono": "3106974573",
+                          "whatsapp": null,
+                          "email_contacto": "pildorasdeautomatizacion@gmail.com",
+                          "direccion": "Calle 131#101-10",
+                          "ciudad": "Bogota",
+                          "instagram": null,
+                          "tiktok": null,
+                          "politicas": null,
+                          "moneda": "COP",
+                          "acepta_efectivo": true,
+                          "acepta_digital": true,
+                          "publicada": true,
+                          "published_at": "2026-06-02T03:08:23.494621+00:00"
+                        },
+                        "owner": {
+                          "id": 7,
+                          "nombre": "Carlos Alvis",
+                          "email": "pildorasdeautomatizacion@gmail.com"
+                        },
+                        "servicios": [
+                          {
+                            "id": 489,
+                            "barberia_id": 198,
+                            "nombre": "Corte Clasico",
+                            "duracion_min": 30,
+                            "precio": 20000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+                          },
+                          {
+                            "id": 490,
+                            "barberia_id": 198,
+                            "nombre": "Barba",
+                            "duracion_min": 30,
+                            "precio": 12000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+                          },
+                          {
+                            "id": 491,
+                            "barberia_id": 198,
+                            "nombre": "Corte + Cejas",
+                            "duracion_min": 30,
+                            "precio": 23000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+                          }
+                        ],
+                        "barberos": [
+                          {
+                            "id": 440,
+                            "barberia_id": 198,
+                            "nombre": "Barbero Prueba 4.1",
+                            "activo": true,
+                            "usuario_id": 256,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg",
+                            "barbero_email": "barberopruab4@gmail.com",
+                            "password_hash_len": 60
+                          },
+                          {
+                            "id": 439,
+                            "barberia_id": 198,
+                            "nombre": "Barbero prueba 4",
+                            "activo": true,
+                            "usuario_id": 6,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg",
+                            "barbero_email": "carlosalbertoalvisrodriguez@gmail.com",
+                            "password_hash_len": 60
+                          }
+                        ],
+                        "horarios": [
+                          {
+                            "id": 1600,
+                            "barberia_id": 198,
+                            "dia_semana": 0,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00",
+                            "activo": true
+                          },
+                          {
+                            "id": 1594,
+                            "barberia_id": 198,
+                            "dia_semana": 1,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00",
+                            "activo": true
+                          },
+                          {
+                            "id": 1595,
+                            "barberia_id": 198,
+                            "dia_semana": 2,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00",
+                            "activo": true
+                          },
+                          {
+                            "id": 1596,
+                            "barberia_id": 198,
+                            "dia_semana": 3,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00",
+                            "activo": true
+                          },
+                          {
+                            "id": 1597,
+                            "barberia_id": 198,
+                            "dia_semana": 4,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00",
+                            "activo": true
+                          },
+                          {
+                            "id": 1598,
+                            "barberia_id": 198,
+                            "dia_semana": 5,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00",
+                            "activo": true
+                          },
+                          {
+                            "id": 1599,
+                            "barberia_id": 198,
+                            "dia_semana": 6,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00",
+                            "activo": true
+                          }
+                        ],
+                        "clientes": [
+                          {
+                            "id": 148,
+                            "barberia_id": 198,
+                            "nombre": "Gerardo paz",
+                            "telefono": "3192219829",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00"
+                          },
+                          {
+                            "id": 147,
+                            "barberia_id": 198,
+                            "nombre": "carlos",
+                            "telefono": "3132219824",
+                            "created_at": "2026-06-05T17:39:30.28313+00:00"
+                          },
+                          {
+                            "id": 140,
+                            "barberia_id": 198,
+                            "nombre": "RC2 QA Cliente",
+                            "telefono": "300RC20001",
+                            "created_at": "2026-06-05T01:24:30.787854+00:00"
+                          }
+                        ],
+                        "reservas": [
+                          {
+                            "id": 180,
+                            "barberia_id": 198,
+                            "barbero_id": 440,
+                            "servicio_id": 490,
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "19:00:00",
+                            "hora_fin": "19:30:00",
+                            "cliente_nombre": "Gerardo paz",
+                            "cliente_tel": "3192219829",
+                            "estado": "confirmada",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00",
+                            "cliente_id": 148,
+                            "dashboard_barberia_id": 198,
+                            "dashboard_barbero_id": 440,
+                            "dashboard_servicio_id": 490,
+                            "dashboard_cliente_id": 148,
+                            "servicio_nombre": "Barba",
+                            "precio": 12000,
+                            "barbero_nombre": "Barbero Prueba 4.1",
+                            "dashboard_cliente_nombre": "Gerardo paz",
+                            "dashboard_cliente_tel": "3192219829",
+                            "pago_id": 20,
+                            "total_pagado": 12000,
+                            "metodo_pago": "efectivo",
+                            "pagado_en": "2026-06-05T21:06:47.8858+00:00"
+                          },
+                          {
+                            "id": 179,
+                            "barberia_id": 198,
+                            "barbero_id": 439,
+                            "servicio_id": 489,
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "13:30:00",
+                            "hora_fin": "14:00:00",
+                            "cliente_nombre": "carlos",
+                            "cliente_tel": "3132219824",
+                            "estado": "confirmada",
+                            "created_at": "2026-06-05T17:39:30.28313+00:00",
+                            "cliente_id": 147,
+                            "dashboard_barberia_id": 198,
+                            "dashboard_barbero_id": 439,
+                            "dashboard_servicio_id": 489,
+                            "dashboard_cliente_id": 147,
+                            "servicio_nombre": "Corte Clasico",
+                            "precio": 20000,
+                            "barbero_nombre": "Barbero prueba 4",
+                            "dashboard_cliente_nombre": "carlos",
+                            "dashboard_cliente_tel": "3132219824",
+                            "pago_id": null,
+                            "total_pagado": null,
+                            "metodo_pago": null,
+                            "pagado_en": null
+                          }
+                        ]
+                      }
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Format Response": [
+          {
+            "startTime": 1781043843805,
+            "executionIndex": 8,
+            "source": [
+              {
+                "previousNode": "PG - Fetch Aggregated Data",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 38,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "ok": true,
+                      "identity": {
+                        "barberia_id": 198,
+                        "slug": "barberia-prueba-4"
+                      },
+                      "seed": {
+                        "id": 198,
+                        "nombre": "Barberia Prueba 4",
+                        "slug": "barberia-prueba-4",
+                        "services": [
+                          {
+                            "id": 489,
+                            "barberia_id": 198,
+                            "nombre": "Corte Clasico",
+                            "duracion_min": 30,
+                            "precio": 20000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+                          },
+                          {
+                            "id": 490,
+                            "barberia_id": 198,
+                            "nombre": "Barba",
+                            "duracion_min": 30,
+                            "precio": 12000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+                          },
+                          {
+                            "id": 491,
+                            "barberia_id": 198,
+                            "nombre": "Corte + Cejas",
+                            "duracion_min": 30,
+                            "precio": 23000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+                          }
+                        ],
+                        "barbers": [
+                          {
+                            "id": 440,
+                            "barberia_id": 198,
+                            "nombre": "Barbero Prueba 4.1",
+                            "activo": true,
+                            "usuario_id": 256,
+                            "email": "barberopruab4@gmail.com",
+                            "has_password": true,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg"
+                          },
+                          {
+                            "id": 439,
+                            "barberia_id": 198,
+                            "nombre": "Barbero prueba 4",
+                            "activo": true,
+                            "usuario_id": 6,
+                            "email": "carlosalbertoalvisrodriguez@gmail.com",
+                            "has_password": true,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg"
+                          }
+                        ],
+                        "hours": [
+                          {
+                            "id": 1600,
+                            "barberia_id": 198,
+                            "dia_semana": 0,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1594,
+                            "barberia_id": 198,
+                            "dia_semana": 1,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1595,
+                            "barberia_id": 198,
+                            "dia_semana": 2,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1596,
+                            "barberia_id": 198,
+                            "dia_semana": 3,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1597,
+                            "barberia_id": 198,
+                            "dia_semana": 4,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1598,
+                            "barberia_id": 198,
+                            "dia_semana": 5,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1599,
+                            "barberia_id": 198,
+                            "dia_semana": 6,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          }
+                        ],
+                        "clients": [
+                          {
+                            "id": 148,
+                            "barberia_id": 198,
+                            "nombre": "Gerardo paz",
+                            "telefono": "3192219829",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00"
+                          },
+                          {
+                            "id": 147,
+                            "barberia_id": 198,
+                            "nombre": "carlos",
+                            "telefono": "3132219824",
+                            "created_at": "2026-06-05T17:39:30.28313+00:00"
+                          },
+                          {
+                            "id": 140,
+                            "barberia_id": 198,
+                            "nombre": "RC2 QA Cliente",
+                            "telefono": "300RC20001",
+                            "created_at": "2026-06-05T01:24:30.787854+00:00"
+                          }
+                        ],
+                        "appointments": [
+                          {
+                            "id": 180,
+                            "barberia_id": 198,
+                            "barbero_id": 440,
+                            "id_barbero": 440,
+                            "servicio_id": 490,
+                            "id_servicio": 490,
+                            "cliente_id": 148,
+                            "cliente_nombre": "Gerardo paz",
+                            "cliente_tel": "3192219829",
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "19:00:00",
+                            "hora_fin": "19:30:00",
+                            "servicio_nombre": "Barba",
+                            "barbero_nombre": "Barbero Prueba 4.1",
+                            "estado": "confirmada",
+                            "total": 12000,
+                            "pago_id": 20,
+                            "total_pagado": 12000,
+                            "metodo_pago": "efectivo",
+                            "pagado_en": "2026-06-05T21:06:47.8858+00:00",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00"
+                          },
+                          {
+                            "id": 179,
+                            "barberia_id": 198,
+                            "barbero_id": 439,
+                            "id_barbero": 439,
+                            "servicio_id": 489,
+                            "id_servicio": 489,
+                            "cliente_id": 147,
+                            "cliente_nombre": "carlos",
+                            "cliente_tel": "3132219824",
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "13:30:00",
+                            "hora_fin": "14:00:00",
+                            "servicio_nombre": "Corte Clasico",
+                            "barbero_nombre": "Barbero prueba 4",
+                            "estado": "confirmada",
+                            "total": 20000,
+                            "pago_id": null,
+                            "total_pagado": null,
+                            "metodo_pago": null,
+                            "pagado_en": null,
+                            "created_at": "2026-06-05T17:39:30.28313+00:00"
+                          }
+                        ]
+                      },
+                      "merged": {
+                        "biz_name": "Barberia Prueba 4",
+                        "biz_slug": "barberia-prueba-4",
+                        "services": [
+                          {
+                            "id": 489,
+                            "barberia_id": 198,
+                            "nombre": "Corte Clasico",
+                            "duracion_min": 30,
+                            "precio": 20000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+                          },
+                          {
+                            "id": 490,
+                            "barberia_id": 198,
+                            "nombre": "Barba",
+                            "duracion_min": 30,
+                            "precio": 12000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+                          },
+                          {
+                            "id": 491,
+                            "barberia_id": 198,
+                            "nombre": "Corte + Cejas",
+                            "duracion_min": 30,
+                            "precio": 23000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+                          }
+                        ],
+                        "barbers": [
+                          {
+                            "id": 440,
+                            "barberia_id": 198,
+                            "nombre": "Barbero Prueba 4.1",
+                            "activo": true,
+                            "usuario_id": 256,
+                            "email": "barberopruab4@gmail.com",
+                            "has_password": true,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg"
+                          },
+                          {
+                            "id": 439,
+                            "barberia_id": 198,
+                            "nombre": "Barbero prueba 4",
+                            "activo": true,
+                            "usuario_id": 6,
+                            "email": "carlosalbertoalvisrodriguez@gmail.com",
+                            "has_password": true,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg"
+                          }
+                        ],
+                        "hours": [
+                          {
+                            "id": 1600,
+                            "barberia_id": 198,
+                            "dia_semana": 0,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1594,
+                            "barberia_id": 198,
+                            "dia_semana": 1,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1595,
+                            "barberia_id": 198,
+                            "dia_semana": 2,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1596,
+                            "barberia_id": 198,
+                            "dia_semana": 3,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1597,
+                            "barberia_id": 198,
+                            "dia_semana": 4,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1598,
+                            "barberia_id": 198,
+                            "dia_semana": 5,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1599,
+                            "barberia_id": 198,
+                            "dia_semana": 6,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          }
+                        ],
+                        "clients": [
+                          {
+                            "id": 148,
+                            "barberia_id": 198,
+                            "nombre": "Gerardo paz",
+                            "telefono": "3192219829",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00"
+                          },
+                          {
+                            "id": 147,
+                            "barberia_id": 198,
+                            "nombre": "carlos",
+                            "telefono": "3132219824",
+                            "created_at": "2026-06-05T17:39:30.28313+00:00"
+                          },
+                          {
+                            "id": 140,
+                            "barberia_id": 198,
+                            "nombre": "RC2 QA Cliente",
+                            "telefono": "300RC20001",
+                            "created_at": "2026-06-05T01:24:30.787854+00:00"
+                          }
+                        ],
+                        "appointments": [
+                          {
+                            "id": 180,
+                            "barberia_id": 198,
+                            "barbero_id": 440,
+                            "id_barbero": 440,
+                            "servicio_id": 490,
+                            "id_servicio": 490,
+                            "cliente_id": 148,
+                            "cliente_nombre": "Gerardo paz",
+                            "cliente_tel": "3192219829",
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "19:00:00",
+                            "hora_fin": "19:30:00",
+                            "servicio_nombre": "Barba",
+                            "barbero_nombre": "Barbero Prueba 4.1",
+                            "estado": "confirmada",
+                            "total": 12000,
+                            "pago_id": 20,
+                            "total_pagado": 12000,
+                            "metodo_pago": "efectivo",
+                            "pagado_en": "2026-06-05T21:06:47.8858+00:00",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00"
+                          },
+                          {
+                            "id": 179,
+                            "barberia_id": 198,
+                            "barbero_id": 439,
+                            "id_barbero": 439,
+                            "servicio_id": 489,
+                            "id_servicio": 489,
+                            "cliente_id": 147,
+                            "cliente_nombre": "carlos",
+                            "cliente_tel": "3132219824",
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "13:30:00",
+                            "hora_fin": "14:00:00",
+                            "servicio_nombre": "Corte Clasico",
+                            "barbero_nombre": "Barbero prueba 4",
+                            "estado": "confirmada",
+                            "total": 20000,
+                            "pago_id": null,
+                            "total_pagado": null,
+                            "metodo_pago": null,
+                            "pagado_en": null,
+                            "created_at": "2026-06-05T17:39:30.28313+00:00"
+                          }
+                        ]
+                      },
+                      "barberia": {
+                        "id": 198,
+                        "nombre": "Barberia Prueba 4",
+                        "slug": "barberia-prueba-4",
+                        "estado": "activa",
+                        "created_at": "2026-06-02T03:06:24.21677+00:00",
+                        "owner_id": 7,
+                        "plan_id": 2,
+                        "slot_min": 30,
+                        "deleted_at": null,
+                        "logo_url": null,
+                        "cover_url": null,
+                        "telefono": "3106974573",
+                        "whatsapp": null,
+                        "email_contacto": "pildorasdeautomatizacion@gmail.com",
+                        "direccion": "Calle 131#101-10",
+                        "ciudad": "Bogota",
+                        "instagram": null,
+                        "tiktok": null,
+                        "politicas": null,
+                        "moneda": "COP",
+                        "acepta_efectivo": true,
+                        "acepta_digital": true,
+                        "publicada": true,
+                        "published_at": "2026-06-02T03:08:23.494621+00:00"
+                      },
+                      "owner": {
+                        "id": 7,
+                        "nombre": "Carlos Alvis",
+                        "email": "pildorasdeautomatizacion@gmail.com"
+                      },
+                      "reservas": [
+                        {
+                          "id": 180,
+                          "barberia_id": 198,
+                          "barbero_id": 440,
+                          "id_barbero": 440,
+                          "servicio_id": 490,
+                          "id_servicio": 490,
+                          "cliente_id": 148,
+                          "cliente_nombre": "Gerardo paz",
+                          "cliente_tel": "3192219829",
+                          "fecha": "2026-06-05",
+                          "hora_inicio": "19:00:00",
+                          "hora_fin": "19:30:00",
+                          "servicio_nombre": "Barba",
+                          "barbero_nombre": "Barbero Prueba 4.1",
+                          "estado": "confirmada",
+                          "total": 12000,
+                          "pago_id": 20,
+                          "total_pagado": 12000,
+                          "metodo_pago": "efectivo",
+                          "pagado_en": "2026-06-05T21:06:47.8858+00:00",
+                          "created_at": "2026-06-05T21:06:15.324234+00:00"
+                        },
+                        {
+                          "id": 179,
+                          "barberia_id": 198,
+                          "barbero_id": 439,
+                          "id_barbero": 439,
+                          "servicio_id": 489,
+                          "id_servicio": 489,
+                          "cliente_id": 147,
+                          "cliente_nombre": "carlos",
+                          "cliente_tel": "3132219824",
+                          "fecha": "2026-06-05",
+                          "hora_inicio": "13:30:00",
+                          "hora_fin": "14:00:00",
+                          "servicio_nombre": "Corte Clasico",
+                          "barbero_nombre": "Barbero prueba 4",
+                          "estado": "confirmada",
+                          "total": 20000,
+                          "pago_id": null,
+                          "total_pagado": null,
+                          "metodo_pago": null,
+                          "pagado_en": null,
+                          "created_at": "2026-06-05T17:39:30.28313+00:00"
+                        }
+                      ],
+                      "clientes": [
+                        {
+                          "id": 148,
+                          "barberia_id": 198,
+                          "nombre": "Gerardo paz",
+                          "telefono": "3192219829",
+                          "created_at": "2026-06-05T21:06:15.324234+00:00"
+                        },
+                        {
+                          "id": 147,
+                          "barberia_id": 198,
+                          "nombre": "carlos",
+                          "telefono": "3132219824",
+                          "created_at": "2026-06-05T17:39:30.28313+00:00"
+                        },
+                        {
+                          "id": 140,
+                          "barberia_id": 198,
+                          "nombre": "RC2 QA Cliente",
+                          "telefono": "300RC20001",
+                          "created_at": "2026-06-05T01:24:30.787854+00:00"
+                        }
+                      ],
+                      "metricas": {
+                        "ingresos_mensuales": 32000,
+                        "citas_hoy": 0,
+                        "nuevos_clientes": 3
+                      },
+                      "barberos": [
+                        {
+                          "id": 440,
+                          "barberia_id": 198,
+                          "nombre": "Barbero Prueba 4.1",
+                          "activo": true,
+                          "usuario_id": 256,
+                          "email": "barberopruab4@gmail.com",
+                          "has_password": true,
+                          "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg"
+                        },
+                        {
+                          "id": 439,
+                          "barberia_id": 198,
+                          "nombre": "Barbero prueba 4",
+                          "activo": true,
+                          "usuario_id": 6,
+                          "email": "carlosalbertoalvisrodriguez@gmail.com",
+                          "has_password": true,
+                          "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg"
+                        }
+                      ],
+                      "servicios": [
+                        {
+                          "id": 489,
+                          "barberia_id": 198,
+                          "nombre": "Corte Clasico",
+                          "duracion_min": 30,
+                          "precio": 20000,
+                          "activo": true,
+                          "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+                        },
+                        {
+                          "id": 490,
+                          "barberia_id": 198,
+                          "nombre": "Barba",
+                          "duracion_min": 30,
+                          "precio": 12000,
+                          "activo": true,
+                          "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+                        },
+                        {
+                          "id": 491,
+                          "barberia_id": 198,
+                          "nombre": "Corte + Cejas",
+                          "duracion_min": 30,
+                          "precio": 23000,
+                          "activo": true,
+                          "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+                        }
+                      ]
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        "Respond - ok": [
+          {
+            "startTime": 1781043843843,
+            "executionIndex": 9,
+            "source": [
+              {
+                "previousNode": "Format Response",
+                "previousNodeOutput": 0,
+                "previousNodeRun": 0
+              }
+            ],
+            "hints": [],
+            "executionTime": 1,
+            "executionStatus": "success",
+            "data": {
+              "main": [
+                [
+                  {
+                    "json": {
+                      "ok": true,
+                      "identity": {
+                        "barberia_id": 198,
+                        "slug": "barberia-prueba-4"
+                      },
+                      "seed": {
+                        "id": 198,
+                        "nombre": "Barberia Prueba 4",
+                        "slug": "barberia-prueba-4",
+                        "services": [
+                          {
+                            "id": 489,
+                            "barberia_id": 198,
+                            "nombre": "Corte Clasico",
+                            "duracion_min": 30,
+                            "precio": 20000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+                          },
+                          {
+                            "id": 490,
+                            "barberia_id": 198,
+                            "nombre": "Barba",
+                            "duracion_min": 30,
+                            "precio": 12000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+                          },
+                          {
+                            "id": 491,
+                            "barberia_id": 198,
+                            "nombre": "Corte + Cejas",
+                            "duracion_min": 30,
+                            "precio": 23000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+                          }
+                        ],
+                        "barbers": [
+                          {
+                            "id": 440,
+                            "barberia_id": 198,
+                            "nombre": "Barbero Prueba 4.1",
+                            "activo": true,
+                            "usuario_id": 256,
+                            "email": "barberopruab4@gmail.com",
+                            "has_password": true,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg"
+                          },
+                          {
+                            "id": 439,
+                            "barberia_id": 198,
+                            "nombre": "Barbero prueba 4",
+                            "activo": true,
+                            "usuario_id": 6,
+                            "email": "carlosalbertoalvisrodriguez@gmail.com",
+                            "has_password": true,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg"
+                          }
+                        ],
+                        "hours": [
+                          {
+                            "id": 1600,
+                            "barberia_id": 198,
+                            "dia_semana": 0,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1594,
+                            "barberia_id": 198,
+                            "dia_semana": 1,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1595,
+                            "barberia_id": 198,
+                            "dia_semana": 2,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1596,
+                            "barberia_id": 198,
+                            "dia_semana": 3,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1597,
+                            "barberia_id": 198,
+                            "dia_semana": 4,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1598,
+                            "barberia_id": 198,
+                            "dia_semana": 5,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1599,
+                            "barberia_id": 198,
+                            "dia_semana": 6,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          }
+                        ],
+                        "clients": [
+                          {
+                            "id": 148,
+                            "barberia_id": 198,
+                            "nombre": "Gerardo paz",
+                            "telefono": "3192219829",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00"
+                          },
+                          {
+                            "id": 147,
+                            "barberia_id": 198,
+                            "nombre": "carlos",
+                            "telefono": "3132219824",
+                            "created_at": "2026-06-05T17:39:30.28313+00:00"
+                          },
+                          {
+                            "id": 140,
+                            "barberia_id": 198,
+                            "nombre": "RC2 QA Cliente",
+                            "telefono": "300RC20001",
+                            "created_at": "2026-06-05T01:24:30.787854+00:00"
+                          }
+                        ],
+                        "appointments": [
+                          {
+                            "id": 180,
+                            "barberia_id": 198,
+                            "barbero_id": 440,
+                            "id_barbero": 440,
+                            "servicio_id": 490,
+                            "id_servicio": 490,
+                            "cliente_id": 148,
+                            "cliente_nombre": "Gerardo paz",
+                            "cliente_tel": "3192219829",
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "19:00:00",
+                            "hora_fin": "19:30:00",
+                            "servicio_nombre": "Barba",
+                            "barbero_nombre": "Barbero Prueba 4.1",
+                            "estado": "confirmada",
+                            "total": 12000,
+                            "pago_id": 20,
+                            "total_pagado": 12000,
+                            "metodo_pago": "efectivo",
+                            "pagado_en": "2026-06-05T21:06:47.8858+00:00",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00"
+                          },
+                          {
+                            "id": 179,
+                            "barberia_id": 198,
+                            "barbero_id": 439,
+                            "id_barbero": 439,
+                            "servicio_id": 489,
+                            "id_servicio": 489,
+                            "cliente_id": 147,
+                            "cliente_nombre": "carlos",
+                            "cliente_tel": "3132219824",
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "13:30:00",
+                            "hora_fin": "14:00:00",
+                            "servicio_nombre": "Corte Clasico",
+                            "barbero_nombre": "Barbero prueba 4",
+                            "estado": "confirmada",
+                            "total": 20000,
+                            "pago_id": null,
+                            "total_pagado": null,
+                            "metodo_pago": null,
+                            "pagado_en": null,
+                            "created_at": "2026-06-05T17:39:30.28313+00:00"
+                          }
+                        ]
+                      },
+                      "merged": {
+                        "biz_name": "Barberia Prueba 4",
+                        "biz_slug": "barberia-prueba-4",
+                        "services": [
+                          {
+                            "id": 489,
+                            "barberia_id": 198,
+                            "nombre": "Corte Clasico",
+                            "duracion_min": 30,
+                            "precio": 20000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+                          },
+                          {
+                            "id": 490,
+                            "barberia_id": 198,
+                            "nombre": "Barba",
+                            "duracion_min": 30,
+                            "precio": 12000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+                          },
+                          {
+                            "id": 491,
+                            "barberia_id": 198,
+                            "nombre": "Corte + Cejas",
+                            "duracion_min": 30,
+                            "precio": 23000,
+                            "activo": true,
+                            "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+                          }
+                        ],
+                        "barbers": [
+                          {
+                            "id": 440,
+                            "barberia_id": 198,
+                            "nombre": "Barbero Prueba 4.1",
+                            "activo": true,
+                            "usuario_id": 256,
+                            "email": "barberopruab4@gmail.com",
+                            "has_password": true,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg"
+                          },
+                          {
+                            "id": 439,
+                            "barberia_id": 198,
+                            "nombre": "Barbero prueba 4",
+                            "activo": true,
+                            "usuario_id": 6,
+                            "email": "carlosalbertoalvisrodriguez@gmail.com",
+                            "has_password": true,
+                            "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg"
+                          }
+                        ],
+                        "hours": [
+                          {
+                            "id": 1600,
+                            "barberia_id": 198,
+                            "dia_semana": 0,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1594,
+                            "barberia_id": 198,
+                            "dia_semana": 1,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1595,
+                            "barberia_id": 198,
+                            "dia_semana": 2,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1596,
+                            "barberia_id": 198,
+                            "dia_semana": 3,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1597,
+                            "barberia_id": 198,
+                            "dia_semana": 4,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1598,
+                            "barberia_id": 198,
+                            "dia_semana": 5,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          },
+                          {
+                            "id": 1599,
+                            "barberia_id": 198,
+                            "dia_semana": 6,
+                            "activo": true,
+                            "hora_abre": "08:00:00",
+                            "hora_cierra": "20:30:00"
+                          }
+                        ],
+                        "clients": [
+                          {
+                            "id": 148,
+                            "barberia_id": 198,
+                            "nombre": "Gerardo paz",
+                            "telefono": "3192219829",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00"
+                          },
+                          {
+                            "id": 147,
+                            "barberia_id": 198,
+                            "nombre": "carlos",
+                            "telefono": "3132219824",
+                            "created_at": "2026-06-05T17:39:30.28313+00:00"
+                          },
+                          {
+                            "id": 140,
+                            "barberia_id": 198,
+                            "nombre": "RC2 QA Cliente",
+                            "telefono": "300RC20001",
+                            "created_at": "2026-06-05T01:24:30.787854+00:00"
+                          }
+                        ],
+                        "appointments": [
+                          {
+                            "id": 180,
+                            "barberia_id": 198,
+                            "barbero_id": 440,
+                            "id_barbero": 440,
+                            "servicio_id": 490,
+                            "id_servicio": 490,
+                            "cliente_id": 148,
+                            "cliente_nombre": "Gerardo paz",
+                            "cliente_tel": "3192219829",
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "19:00:00",
+                            "hora_fin": "19:30:00",
+                            "servicio_nombre": "Barba",
+                            "barbero_nombre": "Barbero Prueba 4.1",
+                            "estado": "confirmada",
+                            "total": 12000,
+                            "pago_id": 20,
+                            "total_pagado": 12000,
+                            "metodo_pago": "efectivo",
+                            "pagado_en": "2026-06-05T21:06:47.8858+00:00",
+                            "created_at": "2026-06-05T21:06:15.324234+00:00"
+                          },
+                          {
+                            "id": 179,
+                            "barberia_id": 198,
+                            "barbero_id": 439,
+                            "id_barbero": 439,
+                            "servicio_id": 489,
+                            "id_servicio": 489,
+                            "cliente_id": 147,
+                            "cliente_nombre": "carlos",
+                            "cliente_tel": "3132219824",
+                            "fecha": "2026-06-05",
+                            "hora_inicio": "13:30:00",
+                            "hora_fin": "14:00:00",
+                            "servicio_nombre": "Corte Clasico",
+                            "barbero_nombre": "Barbero prueba 4",
+                            "estado": "confirmada",
+                            "total": 20000,
+                            "pago_id": null,
+                            "total_pagado": null,
+                            "metodo_pago": null,
+                            "pagado_en": null,
+                            "created_at": "2026-06-05T17:39:30.28313+00:00"
+                          }
+                        ]
+                      },
+                      "barberia": {
+                        "id": 198,
+                        "nombre": "Barberia Prueba 4",
+                        "slug": "barberia-prueba-4",
+                        "estado": "activa",
+                        "created_at": "2026-06-02T03:06:24.21677+00:00",
+                        "owner_id": 7,
+                        "plan_id": 2,
+                        "slot_min": 30,
+                        "deleted_at": null,
+                        "logo_url": null,
+                        "cover_url": null,
+                        "telefono": "3106974573",
+                        "whatsapp": null,
+                        "email_contacto": "pildorasdeautomatizacion@gmail.com",
+                        "direccion": "Calle 131#101-10",
+                        "ciudad": "Bogota",
+                        "instagram": null,
+                        "tiktok": null,
+                        "politicas": null,
+                        "moneda": "COP",
+                        "acepta_efectivo": true,
+                        "acepta_digital": true,
+                        "publicada": true,
+                        "published_at": "2026-06-02T03:08:23.494621+00:00"
+                      },
+                      "owner": {
+                        "id": 7,
+                        "nombre": "Carlos Alvis",
+                        "email": "pildorasdeautomatizacion@gmail.com"
+                      },
+                      "reservas": [
+                        {
+                          "id": 180,
+                          "barberia_id": 198,
+                          "barbero_id": 440,
+                          "id_barbero": 440,
+                          "servicio_id": 490,
+                          "id_servicio": 490,
+                          "cliente_id": 148,
+                          "cliente_nombre": "Gerardo paz",
+                          "cliente_tel": "3192219829",
+                          "fecha": "2026-06-05",
+                          "hora_inicio": "19:00:00",
+                          "hora_fin": "19:30:00",
+                          "servicio_nombre": "Barba",
+                          "barbero_nombre": "Barbero Prueba 4.1",
+                          "estado": "confirmada",
+                          "total": 12000,
+                          "pago_id": 20,
+                          "total_pagado": 12000,
+                          "metodo_pago": "efectivo",
+                          "pagado_en": "2026-06-05T21:06:47.8858+00:00",
+                          "created_at": "2026-06-05T21:06:15.324234+00:00"
+                        },
+                        {
+                          "id": 179,
+                          "barberia_id": 198,
+                          "barbero_id": 439,
+                          "id_barbero": 439,
+                          "servicio_id": 489,
+                          "id_servicio": 489,
+                          "cliente_id": 147,
+                          "cliente_nombre": "carlos",
+                          "cliente_tel": "3132219824",
+                          "fecha": "2026-06-05",
+                          "hora_inicio": "13:30:00",
+                          "hora_fin": "14:00:00",
+                          "servicio_nombre": "Corte Clasico",
+                          "barbero_nombre": "Barbero prueba 4",
+                          "estado": "confirmada",
+                          "total": 20000,
+                          "pago_id": null,
+                          "total_pagado": null,
+                          "metodo_pago": null,
+                          "pagado_en": null,
+                          "created_at": "2026-06-05T17:39:30.28313+00:00"
+                        }
+                      ],
+                      "clientes": [
+                        {
+                          "id": 148,
+                          "barberia_id": 198,
+                          "nombre": "Gerardo paz",
+                          "telefono": "3192219829",
+                          "created_at": "2026-06-05T21:06:15.324234+00:00"
+                        },
+                        {
+                          "id": 147,
+                          "barberia_id": 198,
+                          "nombre": "carlos",
+                          "telefono": "3132219824",
+                          "created_at": "2026-06-05T17:39:30.28313+00:00"
+                        },
+                        {
+                          "id": 140,
+                          "barberia_id": 198,
+                          "nombre": "RC2 QA Cliente",
+                          "telefono": "300RC20001",
+                          "created_at": "2026-06-05T01:24:30.787854+00:00"
+                        }
+                      ],
+                      "metricas": {
+                        "ingresos_mensuales": 32000,
+                        "citas_hoy": 0,
+                        "nuevos_clientes": 3
+                      },
+                      "barberos": [
+                        {
+                          "id": 440,
+                          "barberia_id": 198,
+                          "nombre": "Barbero Prueba 4.1",
+                          "activo": true,
+                          "usuario_id": 256,
+                          "email": "barberopruab4@gmail.com",
+                          "has_password": true,
+                          "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg"
+                        },
+                        {
+                          "id": 439,
+                          "barberia_id": 198,
+                          "nombre": "Barbero prueba 4",
+                          "activo": true,
+                          "usuario_id": 6,
+                          "email": "carlosalbertoalvisrodriguez@gmail.com",
+                          "has_password": true,
+                          "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg"
+                        }
+                      ],
+                      "servicios": [
+                        {
+                          "id": 489,
+                          "barberia_id": 198,
+                          "nombre": "Corte Clasico",
+                          "duracion_min": 30,
+                          "precio": 20000,
+                          "activo": true,
+                          "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+                        },
+                        {
+                          "id": 490,
+                          "barberia_id": 198,
+                          "nombre": "Barba",
+                          "duracion_min": 30,
+                          "precio": 12000,
+                          "activo": true,
+                          "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+                        },
+                        {
+                          "id": 491,
+                          "barberia_id": 198,
+                          "nombre": "Corte + Cejas",
+                          "duracion_min": 30,
+                          "precio": 23000,
+                          "activo": true,
+                          "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+                        }
+                      ]
+                    },
+                    "pairedItem": {
+                      "item": 0
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      },
+      "lastNodeExecuted": "Respond - ok"
+    },
+    "executionData": {
+      "contextData": {},
+      "nodeExecutionStack": [],
+      "metadata": {},
+      "waitingExecution": {},
+      "waitingExecutionSource": {},
+      "runtimeData": {
+        "version": 1,
+        "establishedAt": 1781043843652,
+        "source": "webhook",
+        "redaction": {
+          "version": 1,
+          "policy": "none"
+        },
+        "triggerNode": {
+          "name": "Webhook",
+          "type": "n8n-nodes-base.webhook"
+        }
+      }
+    },
+    "resumeToken": "76c734d673f73e7fe0bfba0a28ba3d95ae7d3a3eda3433f298bb5d79a6be6cb7"
+  },
+  "workflowData": {
+    "id": "6JugRzxsOGKBvgWW",
+    "name": "BarberAgency - Dashboard State Webhook",
+    "active": true,
+    "activeVersionId": "460fa59e-148e-457e-8f2d-0899aa63be65",
+    "isArchived": false,
+    "createdAt": "2026-05-25T21:37:48.456Z",
+    "updatedAt": "2026-06-09T22:08:13.102Z",
+    "nodes": [
+      {
+        "parameters": {
+          "multipleMethods": false,
+          "httpMethod": "GET",
+          "path": "barberagency/dashboard/state",
+          "authentication": "none",
+          "responseMode": "responseNode",
+          "webhookNotice": "",
+          "options": {}
+        },
+        "id": "webhook-trigger-id",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1.1,
+        "position": [
+          100,
+          400
+        ],
+        "webhookId": "7d0193ce-0b83-447c-82a7-25f05a8ebf65"
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const i = $input.first().json || {};\nconst h = i.headers || {};\nconst cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\nconst m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\nconst session_token = m ? m[1] : '';\nreturn [{ json: { session_token } }];",
+          "notice": ""
+        },
+        "id": "parse-cookie",
+        "name": "Code - parse cookie",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          300,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "verify",
+          "token": "={{ $json.session_token }}",
+          "options": {
+            "algorithm": "HS256"
+          }
+        },
+        "id": "verify-session",
+        "name": "JWT - Verify session",
+        "type": "n8n-nodes-base.jwt",
+        "typeVersion": 1,
+        "position": [
+          500,
+          400
+        ],
+        "credentials": {
+          "jwtAuth": {
+            "id": "mNWhzdM1ihAaBkZM",
+            "name": "JWT Auth account"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const i = $input.first().json || {};\nconst query = $('Webhook').first().json.query || {};\n\nconst slug = query.slug || query.barberia_slug || null;\nconst idRaw = query.barberia_id || query.id_barberia || null;\nconst barberia_id = idRaw ? Number(idRaw) : 0;\n\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\n\nconst params = [\n  user_id,\n  barberia_id,\n  slug,\n  auth_ok\n];\n\nreturn [{ json: { \n  auth_ok, \n  user_id, \n  barberia_id,\n  slug,\n  params\n} }];",
+          "notice": ""
+        },
+        "id": "claims-input",
+        "name": "Code - claims input",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          700,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "database",
+          "operation": "executeQuery",
+          "query": "WITH target_barberia AS (\n  SELECT id, slug, owner_id, email_contacto FROM public.barberias\n  WHERE (\n    ($2::int > 0 AND id = $2::int) OR\n    (($2::int IS NULL OR $2::int = 0) AND slug = $3::text)\n  ) AND deleted_at IS NULL\n),\nauth_check AS (\n  SELECT id, role, email FROM public.usuarios WHERE id = $1 LIMIT 1\n),\nbarberia_check AS (\n  SELECT tb.id FROM target_barberia tb\n  LEFT JOIN auth_check ac ON true\n  WHERE (\n    tb.owner_id = $1 OR\n    lower(COALESCE(tb.email_contacto, '')) = lower(COALESCE(ac.email, '')) OR\n    EXISTS (SELECT 1 FROM public.barberos WHERE usuario_id = $1 AND barberia_id = tb.id)\n  )\n  AND ($2::int IS NULL OR $2::int = 0 OR tb.slug IS NULL OR $3::text IS NULL OR tb.slug = $3::text)\n  LIMIT 1\n)\nSELECT\n  $4::boolean AS auth_ok_jwt,\n  EXISTS (SELECT 1 FROM auth_check) AS auth_ok,\n  EXISTS (SELECT 1 FROM barberia_check) AS barberia_ok,\n  COALESCE(\n    (SELECT role FROM auth_check) IN ('admin', 'owner', 'super_admin', 'barbero', 'cajero'),\n    false\n  ) AS role_ok,\n  (SELECT id FROM target_barberia LIMIT 1) AS validated_barberia_id,\n  (SELECT role FROM auth_check) AS user_role;",
+          "options": {
+            "queryReplacement": "={{ $json.params }}"
+          }
+        },
+        "id": "session-validate",
+        "name": "Postgres - session validate",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          900,
+          400
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "SOV6oSyuHI9cxgLF",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const i = $input.first().json || {};\n\nlet ok = false;\nlet status_code = 200;\nlet message = '';\n\nif (!i.auth_ok_jwt || !i.auth_ok) {\n  status_code = 401;\n  message = 'Sesion no valida';\n} else if (!i.barberia_ok) {\n  status_code = 403;\n  message = 'No tienes permisos para esta barberia o no existe';\n} else if (!i.role_ok) {\n  status_code = 403;\n  message = 'Tu rol no tiene permisos para acceder al dashboard';\n} else {\n  ok = true;\n}\n\nreturn [{ json: { ok, status_code, message, validated_barberia_id: i.validated_barberia_id } }];",
+          "notice": ""
+        },
+        "id": "check-validation",
+        "name": "Check validation",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1100,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "leftValue": "={{ $json.ok }}",
+                "rightValue": true,
+                "caseSensitive": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 1
+            }
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "id": "if-validation-ok",
+        "name": "IF - Validation OK",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1300,
+          400
+        ]
+      },
+      {
+        "parameters": {
+          "generalNotice": "",
+          "respondWith": "json",
+          "webhookNotice": "",
+          "responseBody": "={{ { ok: false, message: $json.message } }}",
+          "options": {
+            "responseCode": "={{ $json.status_code }}",
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "https://barberagency-barberagency.gymh5g.easypanel.host"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "GET, OPTIONS"
+                },
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "*"
+                },
+                {
+                  "name": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        "id": "respond-error",
+        "name": "Respond - error",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1500,
+          550
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "database",
+          "operation": "executeQuery",
+          "query": "SELECT json_build_object(\n  'barberia', (SELECT row_to_json(b) FROM (SELECT * FROM public.barberias WHERE id = $1) b),\n  'owner', (\n    SELECT row_to_json(owner_row)\n    FROM (\n      SELECT u.id, u.nombre, u.email\n      FROM public.barberias b\n      LEFT JOIN public.usuarios u ON u.id = b.owner_id\n      WHERE b.id = $1\n      LIMIT 1\n    ) owner_row\n  ),\n  'servicios', (SELECT COALESCE(json_agg(s), '[]'::json) FROM (SELECT * FROM public.servicios WHERE barberia_id = $1) s),\n  'barberos', (SELECT COALESCE(json_agg(ba), '[]'::json) FROM (\n    SELECT\n      br.*,\n      u.email AS barbero_email,\n      length(COALESCE(u.password_hash, '')) AS password_hash_len\n    FROM public.barberos br\n    LEFT JOIN public.usuarios u ON u.id = br.usuario_id\n    WHERE br.barberia_id = $1\n  ) ba),\n  'horarios', (SELECT COALESCE(json_agg(h), '[]'::json) FROM (SELECT * FROM public.horarios WHERE barberia_id = $1 ORDER BY dia_semana ASC) h),\n  'clientes', (SELECT COALESCE(json_agg(cl), '[]'::json) FROM (SELECT * FROM public.clientes_finales WHERE barberia_id = $1 ORDER BY id DESC) cl),\n  'reservas', (\n    SELECT COALESCE(json_agg(ci), '[]'::json) FROM (\n      SELECT\n        c.*,\n        c.barberia_id AS dashboard_barberia_id,\n        c.barbero_id AS dashboard_barbero_id,\n        c.servicio_id AS dashboard_servicio_id,\n        c.cliente_id AS dashboard_cliente_id,\n        s.nombre AS servicio_nombre,\n        s.precio AS precio,\n        b.nombre AS barbero_nombre,\n        COALESCE(cf.nombre, c.cliente_nombre) AS dashboard_cliente_nombre,\n        COALESCE(cf.telefono, c.cliente_tel) AS dashboard_cliente_tel,\n        p.id AS pago_id,\n        p.total AS total_pagado,\n        p.metodo AS metodo_pago,\n        p.pagado_en AS pagado_en\n      FROM public.citas c\n      LEFT JOIN public.servicios s ON c.servicio_id = s.id\n      LEFT JOIN public.barberos b ON c.barbero_id = b.id\n      LEFT JOIN public.clientes_finales cf ON c.cliente_id = cf.id\n      LEFT JOIN public.pagos p ON c.id = p.cita_id\n      WHERE c.barberia_id = $1\n      ORDER BY c.fecha DESC, c.hora_inicio DESC\n    ) ci\n  )\n) AS result;",
+          "options": {
+            "queryReplacement": "={{ [$json.validated_barberia_id] }}"
+          }
+        },
+        "id": "pg-fetch-aggregated-data",
+        "name": "PG - Fetch Aggregated Data",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          1500,
+          250
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "SOV6oSyuHI9cxgLF",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const data = $input.first().json.result || {};\nconst barberia = data.barberia || {};\nconst owner = data.owner || {};\nconst servicios = data.servicios || [];\nconst barberos = data.barberos || [];\nconst horarios = data.horarios || [];\nconst clientes = data.clientes || [];\nconst reservas = data.reservas || [];\n\nconst firstText = (...values) => values.map(v => (v ?? '').toString().trim()).find(Boolean) || '';\nconst firstNumber = (...values) => {\n  for (const value of values) {\n    const n = Number(value);\n    if (Number.isFinite(n) && n > 0) return n;\n  }\n  return null;\n};\n\nconst mappedServices = servicios.map(s => ({\n  id: s.id,\n  barberia_id: s.barberia_id,\n  nombre: s.nombre,\n  duracion_min: s.duracion_min,\n  precio: s.precio,\n  activo: s.activo,\n  imagen_url: s.imagen_url\n}));\n\nconst mappedBarbers = barberos.map(b => ({\n  id: b.id,\n  barberia_id: b.barberia_id,\n  nombre: b.nombre,\n  activo: b.activo,\n  usuario_id: b.usuario_id,\n  email: firstText(b.barbero_email, b.email),\n  has_password: Number(b.password_hash_len || 0) > 0,\n  foto_url: b.foto_url\n}));\n\nconst mappedHours = horarios.map(h => ({\n  id: h.id,\n  barberia_id: h.barberia_id,\n  dia_semana: h.dia_semana,\n  activo: h.activo,\n  hora_abre: h.hora_abre,\n  hora_cierra: h.hora_cierra\n}));\n\nconst mappedClients = clientes.map(c => ({\n  id: c.id,\n  barberia_id: firstNumber(c.barberia_id),\n  nombre: firstText(c.nombre),\n  telefono: firstText(c.telefono),\n  created_at: c.created_at\n}));\n\nconst mappedReservations = reservas.map(c => ({\n  id: c.id,\n  barberia_id: firstNumber(c.dashboard_barberia_id, c.barberia_id),\n  barbero_id: firstNumber(c.dashboard_barbero_id, c.barbero_id),\n  id_barbero: firstNumber(c.dashboard_barbero_id, c.barbero_id),\n  servicio_id: firstNumber(c.dashboard_servicio_id, c.servicio_id),\n  id_servicio: firstNumber(c.dashboard_servicio_id, c.servicio_id),\n  cliente_id: firstNumber(c.dashboard_cliente_id, c.cliente_id),\n  cliente_nombre: firstText(c.dashboard_cliente_nombre, c.cliente_nombre),\n  cliente_tel: firstText(c.dashboard_cliente_tel, c.cliente_tel),\n  fecha: firstText(c.fecha),\n  hora_inicio: firstText(c.hora_inicio),\n  hora_fin: firstText(c.hora_fin),\n  servicio_nombre: firstText(c.servicio_nombre),\n  barbero_nombre: firstText(c.barbero_nombre),\n  estado: firstText(c.estado) || 'confirmada',\n  total: Number(c.total || c.precio || 0),\n  pago_id: c.pago_id ? Number(c.pago_id) : null,\n  total_pagado: c.total_pagado ? Number(c.total_pagado) : null,\n  metodo_pago: c.metodo_pago || null,\n  pagado_en: c.pagado_en || null,\n  created_at: c.created_at\n}));\n\nconst now = new Date();\nconst todayDay = now.getDate();\nconst todayMonth = now.getMonth();\nconst todayYear = now.getFullYear();\nconst todayDateString = todayYear + \"-\" + String(todayMonth + 1).padStart(2, \"0\") + \"-\" + String(todayDay).padStart(2, \"0\");\n\nconst todayCitas = mappedReservations.filter(r => String(r.fecha || '').startsWith(todayDateString));\nconst monthlyIncome = mappedReservations.reduce((sum, r) => sum + Number(r.total || 0), 0);\n\nconst response = {\n  ok: true,\n  identity: {\n    barberia_id: barberia.id || null,\n    slug: barberia.slug || null\n  },\n  seed: {\n    id: barberia.id,\n    nombre: barberia.nombre,\n    slug: barberia.slug,\n    services: mappedServices,\n    barbers: mappedBarbers,\n    hours: mappedHours,\n    clients: mappedClients,\n    appointments: mappedReservations\n  },\n  merged: {\n    biz_name: barberia.nombre,\n    biz_slug: barberia.slug,\n    services: mappedServices,\n    barbers: mappedBarbers,\n    hours: mappedHours,\n    clients: mappedClients,\n    appointments: mappedReservations\n  },\n  barberia: barberia,\n  owner: {\n    id: firstNumber(owner.id, barberia.owner_id),\n    nombre: firstText(owner.nombre, owner.name),\n    email: firstText(owner.email)\n  },\n  reservas: mappedReservations,\n  clientes: mappedClients,\n  metricas: {\n    ingresos_mensuales: monthlyIncome,\n    citas_hoy: todayCitas.length,\n    nuevos_clientes: mappedClients.length\n  },\n  barberos: mappedBarbers,\n  servicios: mappedServices\n};\n\nreturn [{ json: response }];",
+          "notice": ""
+        },
+        "id": "code-format-response",
+        "name": "Format Response",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1700,
+          250
+        ]
+      },
+      {
+        "parameters": {
+          "generalNotice": "",
+          "respondWith": "json",
+          "webhookNotice": "",
+          "responseBody": "={{ $json }}",
+          "options": {
+            "responseCode": 200,
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "https://barberagency-barberagency.gymh5g.easypanel.host"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "GET, OPTIONS"
+                },
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "*"
+                },
+                {
+                  "name": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        "id": "respond-ok",
+        "name": "Respond - ok",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1900,
+          250
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Code - parse cookie",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - parse cookie": {
+        "main": [
+          [
+            {
+              "node": "JWT - Verify session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JWT - Verify session": {
+        "main": [
+          [
+            {
+              "node": "Code - claims input",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - claims input": {
+        "main": [
+          [
+            {
+              "node": "Postgres - session validate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Postgres - session validate": {
+        "main": [
+          [
+            {
+              "node": "Check validation",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check validation": {
+        "main": [
+          [
+            {
+              "node": "IF - Validation OK",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF - Validation OK": {
+        "main": [
+          [
+            {
+              "node": "PG - Fetch Aggregated Data",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond - error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PG - Fetch Aggregated Data": {
+        "main": [
+          [
+            {
+              "node": "Format Response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Response": {
+        "main": [
+          [
+            {
+              "node": "Respond - ok",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {},
+    "staticData": {},
+    "pinData": null
+  },
+  "workflowVersionId": "460fa59e-148e-457e-8f2d-0899aa63be65",
+  "customData": {}
+}

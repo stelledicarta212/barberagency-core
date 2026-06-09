@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "id": "476894",
+      "finished": true,
+      "mode": "webhook",
+      "retryOf": null,
+      "retrySuccessId": null,
+      "status": "success",
+      "startedAt": "2026-06-09T22:43:55.390Z",
+      "stoppedAt": "2026-06-09T22:43:55.451Z",
+      "workflowId": "oAQzjkGzCuCjT1EP",
+      "waitTill": null
+    },
+    {
+      "id": "476879",
+      "finished": true,
+      "mode": "webhook",
+      "retryOf": null,
+      "retrySuccessId": null,
+      "status": "success",
+      "startedAt": "2026-06-09T22:33:26.669Z",
+      "stoppedAt": "2026-06-09T22:33:26.709Z",
+      "workflowId": "oAQzjkGzCuCjT1EP",
+      "waitTill": null
+    },
+    {
+      "id": "476878",
+      "finished": true,
+      "mode": "webhook",
+      "retryOf": null,
+      "retrySuccessId": null,
+      "status": "success",
+      "startedAt": "2026-06-09T22:33:22.348Z",
+      "stoppedAt": "2026-06-09T22:33:22.389Z",
+      "workflowId": "oAQzjkGzCuCjT1EP",
+      "waitTill": null
+    },
+    {
+      "id": "476481",
+      "finished": true,
+      "mode": "webhook",
+      "retryOf": null,
+      "retrySuccessId": null,
+      "status": "success",
+      "startedAt": "2026-06-09T21:11:26.519Z",
+      "stoppedAt": "2026-06-09T21:11:26.594Z",
+      "workflowId": "oAQzjkGzCuCjT1EP",
+      "waitTill": null
+    },
+    {
+      "id": "476431",
+      "finished": true,
+      "mode": "webhook",
+      "retryOf": null,
+      "retrySuccessId": null,
+      "status": "success",
+      "startedAt": "2026-06-09T19:35:18.740Z",
+      "stoppedAt": "2026-06-09T19:35:18.811Z",
+      "workflowId": "oAQzjkGzCuCjT1EP",
+      "waitTill": null
+    }
+  ],
+  "nextCursor": "eyJsYXN0SWQiOiI0NzY0MzEiLCJsaW1pdCI6NX0="
+}

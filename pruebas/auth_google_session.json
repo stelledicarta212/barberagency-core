@@ -1,0 +1,447 @@
+{
+  "updatedAt": "2026-02-26T20:50:36.960Z",
+  "createdAt": "2026-02-24T23:01:31.603Z",
+  "id": "R8yiVJR331AZ5YoJ",
+  "name": "BarberAgency - Auth Google Session v1",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "barberagency/auth/google-session",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "98805608-6ee0-47d9-9b70-cbad2f6f9fbd",
+      "name": "Webhook - auth google",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        144,
+        320
+      ],
+      "webhookId": "185ab78f-ef14-46ca-b504-564c23e53e61"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json || {};\nconst body = (input.body && typeof input.body === 'object') ? input.body : {};\n\nfunction clean(v) {\n  return (v ?? '').toString().trim();\n}\n\nconst idToken = clean(body.id_token ?? input.id_token);\nconst nombreForm = clean(body.nombre ?? body.nombre_form);\nconst apellidoForm = clean(body.apellido ?? body.apellido_form);\n\nif (!idToken) {\n  return [{\n    json: {\n      auth_valid: false,\n      status_code: 400,\n      message: 'Falta id_token',\n      email: '',\n      nombre: '',\n      nombre_form: nombreForm,\n      apellido_form: apellidoForm,\n    },\n  }];\n}\n\nlet tokenInfo;\ntry {\n  tokenInfo = await this.helpers.httpRequest({\n    method: 'GET',\n    url: 'https://oauth2.googleapis.com/tokeninfo',\n    qs: { id_token: idToken },\n    json: true,\n  });\n} catch (error) {\n  return [{\n    json: {\n      auth_valid: false,\n      status_code: 401,\n      message: 'Google token invalido',\n      email: '',\n      nombre: '',\n      nombre_form: nombreForm,\n      apellido_form: apellidoForm,\n    },\n  }];\n}\n\nconst expectedAud = '674090944474-uvnagnjnf92e0u7jc6jpd9uhhtl52a0v.apps.googleusercontent.com';\nconst aud = clean(tokenInfo.aud);\nconst azp = clean(tokenInfo.azp);\nconst iss = clean(tokenInfo.iss);\nconst email = clean(tokenInfo.email).toLowerCase();\nconst emailVerifiedRaw = tokenInfo.email_verified;\nconst emailVerified = emailVerifiedRaw === true || emailVerifiedRaw === 'true';\nconst issOk = iss === 'accounts.google.com' || iss === 'https://accounts.google.com';\nconst audOk = expectedAud ? (aud === expectedAud || azp === expectedAud) : true;\n\nif (!email || !emailVerified || !issOk || !audOk) {\n  return [{\n    json: {\n      auth_valid: false,\n      status_code: 401,\n      message: 'Google token invalido',\n      email: '',\n      nombre: '',\n      nombre_form: nombreForm,\n      apellido_form: apellidoForm,\n    },\n  }];\n}\n\nconst nombreGoogle = clean(tokenInfo.name ?? tokenInfo.given_name ?? 'Usuario') || 'Usuario';\nreturn [{\n  json: {\n    auth_valid: true,\n    status_code: 200,\n    message: '',\n    email,\n    nombre: nombreGoogle,\n    nombre_form: nombreForm,\n    apellido_form: apellidoForm,\n  },\n}];"
+      },
+      "id": "7ba41365-fa9e-4263-a177-f10e454d50e0",
+      "name": "Code - validate google",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH input AS (\n  SELECT\n    COALESCE($1::boolean, false) AS auth_valid,\n    COALESCE($2::int, 401) AS status_code_in,\n    NULLIF(trim(COALESCE($3::text, '')), '') AS message_in,\n    NULLIF(lower(trim(COALESCE($4::text, ''))), '') AS email_in,\n    NULLIF(trim(COALESCE($5::text, '')), '') AS nombre_google_in,\n    NULLIF(trim(COALESCE($6::text, '')), '') AS nombre_form_in,\n    NULLIF(trim(COALESCE($7::text, '')), '') AS apellido_form_in\n),\nprepared AS (\n  SELECT\n    i.*,\n    NULLIF(trim(concat_ws(' ', i.nombre_form_in, i.apellido_form_in)), '') AS nombre_form_full,\n    COALESCE(\n      NULLIF(trim(concat_ws(' ', i.nombre_form_in, i.apellido_form_in)), ''),\n      i.nombre_google_in,\n      'Usuario'\n    ) AS nombre_preferido\n  FROM input i\n),\nexisting AS (\n  SELECT u.id, u.email, u.nombre, u.plan_id\n  FROM public.usuarios u\n  JOIN prepared p ON p.auth_valid = true AND u.email = p.email_in\n),\nupdated_existing AS (\n  UPDATE public.usuarios u\n  SET nombre = p.nombre_preferido\n  FROM prepared p\n  WHERE p.auth_valid = true\n    AND p.email_in IS NOT NULL\n    AND u.email = p.email_in\n    AND p.nombre_preferido IS NOT NULL\n    AND trim(COALESCE(u.nombre, '')) IS DISTINCT FROM trim(p.nombre_preferido)\n  RETURNING u.id, u.email, u.nombre, u.plan_id\n),\ninserted AS (\n  INSERT INTO public.usuarios (nombre, email)\n  SELECT COALESCE(p.nombre_preferido, 'Usuario'), p.email_in\n  FROM prepared p\n  WHERE p.auth_valid = true\n    AND p.email_in IS NOT NULL\n    AND NOT EXISTS (SELECT 1 FROM existing)\n  RETURNING id, email, nombre, plan_id\n),\nresolved AS (\n  SELECT\n    COALESCE((SELECT id FROM updated_existing LIMIT 1), (SELECT id FROM inserted LIMIT 1), (SELECT id FROM existing LIMIT 1)) AS user_id,\n    COALESCE((SELECT email FROM updated_existing LIMIT 1), (SELECT email FROM inserted LIMIT 1), (SELECT email FROM existing LIMIT 1)) AS email,\n    COALESCE((SELECT nombre FROM updated_existing LIMIT 1), (SELECT nombre FROM inserted LIMIT 1), (SELECT nombre FROM existing LIMIT 1)) AS nombre,\n    COALESCE((SELECT plan_id FROM updated_existing LIMIT 1), (SELECT plan_id FROM inserted LIMIT 1), (SELECT plan_id FROM existing LIMIT 1)) AS plan_id\n)\nSELECT\n  p.auth_valid,\n  p.status_code_in,\n  p.message_in,\n  r.user_id,\n  r.email,\n  r.nombre,\n  NULLIF(trim(regexp_replace(COALESCE(r.nombre, ''), '^[^[:space:]]+[[:space:]]*', '')), '') AS apellido,\n  r.plan_id,\n  CASE WHEN r.plan_id IS NULL THEN false ELSE true END AS puede_crear_barberia\nFROM prepared p\nLEFT JOIN resolved r ON true;",
+        "options": {
+          "queryReplacement": "={{ [\n  Boolean($json.auth_valid),\n  Number($json.status_code ?? 401),\n  ($json.message ?? '').toString(),\n  ($json.email ?? '').toString(),\n  ($json.nombre ?? '').toString(),\n  ($json.nombre_form ?? '').toString(),\n  ($json.apellido_form ?? '').toString()\n] }}"
+        }
+      },
+      "id": "3b791714-a513-43c7-b0f4-462468e4f0e9",
+      "name": "Postgres - auth tx",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        528,
+        288
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.response_body }}",
+        "options": {
+          "responseCode": "={{ Number($json.response_code ?? 200) }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Set-Cookie",
+                "value": "={{ $json.set_cookie }}"
+              },
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://barberagency-barberagency.gymh5g.easypanel.host"
+              },
+              {
+                "name": "Access-Control-Allow-Credentials",
+                "value": "true"
+              }
+            ]
+          }
+        }
+      },
+      "id": "19b73b19-6cbb-4aed-a9c6-c6b56522dc73",
+      "name": "Respond - auth",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const pgItems = $items('Postgres - auth tx', 0, 0) || [];\nconst base = pgItems[0]?.json || {};\nconst jwtOut = $input.first().json || {};\nconst token = jwtOut.token ?? null;\n\nconst clearCookie = 'ba_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax';\nconst statusCodeIn = Number(base.status_code_in ?? 401);\nconst message = (base.message_in ?? (statusCodeIn === 400 ? 'Falta id_token' : 'Google token invalido')).toString();\n\nif (!base.auth_valid || !base.user_id) {\n  return [{\n    json: {\n      ...base,\n      response_code: statusCodeIn,\n      response_body: { ok: false, message },\n      set_cookie: clearCookie,\n      session_token: null,\n      session_max_age: 0,\n    },\n  }];\n}\n\nif (!token) {\n  return [{\n    json: {\n      ...base,\n      response_code: 500,\n      response_body: { ok: false, message: 'Token de session no generado' },\n      set_cookie: clearCookie,\n      session_token: null,\n      session_max_age: 0,\n    },\n  }];\n}\n\nconst nombreRaw = (base.nombre ?? '').toString().trim();\nconst parts = nombreRaw ? nombreRaw.split(/\\s+/).filter(Boolean) : [];\nconst apellidoFromNombre = parts.length > 1 ? parts.slice(1).join(' ') : null;\n\nconst maxAge = 604800;\nconst cookie = 'ba_session=' + token + '; Path=/; Max-Age=' + maxAge + '; HttpOnly; Secure; SameSite=Lax';\n\nreturn [{\n  json: {\n    ...base,\n    response_code: 200,\n    response_body: {\n      ok: true,\n      user_id: base.user_id,\n      email: base.email,\n      nombre: base.nombre,\n      apellido: apellidoFromNombre ?? base.apellido ?? null,\n      plan_id: base.plan_id ?? null,\n      puede_crear_barberia: !!base.puede_crear_barberia,\n    },\n    set_cookie: cookie,\n    session_token: token,\n    session_max_age: maxAge,\n  },\n}];"
+      },
+      "id": "9090c905-5638-4047-98ba-f38779e1653e",
+      "name": "Code - crear session cookie",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "useJson": true,
+        "claimsJson": "={{ { \"role\":\"authenticated\", \"sub\": String($json.user_id), \"user_id\": Number($json.user_id), \"email\": ($json.email ?? null), \"plan_id\": ($json.plan_id ?? null), \"exp\": Math.floor(Date.now()/1000) + 604800 } }}",
+        "options": {
+          "algorithm": "HS256"
+        }
+      },
+      "id": "session-jwt-sign-1",
+      "name": "JWT - Sign session",
+      "type": "n8n-nodes-base.jwt",
+      "typeVersion": 1,
+      "position": [
+        704,
+        240
+      ],
+      "credentials": {
+        "jwtAuth": {
+          "id": "mNWhzdM1ihAaBkZM",
+          "name": "JWT Auth account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Code - validate google": {
+      "main": [
+        [
+          {
+            "node": "Postgres - auth tx",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JWT - Sign session": {
+      "main": [
+        [
+          {
+            "node": "Code - crear session cookie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - crear session cookie": {
+      "main": [
+        [
+          {
+            "node": "Respond - auth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - auth google": {
+      "main": [
+        [
+          {
+            "node": "Code - validate google",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - auth tx": {
+      "main": [
+        [
+          {
+            "node": "JWT - Sign session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "66efffe2-f4ee-4a72-a24b-478266a87821",
+  "activeVersionId": "6ea8913c-6fab-4853-8824-6b09900fa713",
+  "versionCounter": 124,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-02-24T23:01:31.606Z",
+      "createdAt": "2026-02-24T23:01:31.606Z",
+      "role": "workflow:owner",
+      "workflowId": "R8yiVJR331AZ5YoJ",
+      "projectId": "ajSDxUXg76Ss65zL",
+      "project": {
+        "updatedAt": "2026-02-09T14:41:23.917Z",
+        "createdAt": "2026-02-09T14:01:19.465Z",
+        "id": "ajSDxUXg76Ss65zL",
+        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-02-26T17:17:53.778Z",
+    "createdAt": "2026-02-26T17:17:53.778Z",
+    "versionId": "6ea8913c-6fab-4853-8824-6b09900fa713",
+    "workflowId": "R8yiVJR331AZ5YoJ",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "barberagency/auth/google-session",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "98805608-6ee0-47d9-9b70-cbad2f6f9fbd",
+        "name": "Webhook - auth google",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1,
+        "position": [
+          160,
+          240
+        ],
+        "webhookId": "185ab78f-ef14-46ca-b504-564c23e53e61"
+      },
+      {
+        "parameters": {
+          "jsCode": "const input = $input.first().json || {};\nconst body = (input.body && typeof input.body === 'object') ? input.body : {};\n\nfunction clean(v) {\n  return (v ?? '').toString().trim();\n}\n\nconst idToken = clean(body.id_token ?? input.id_token);\nconst nombreForm = clean(body.nombre ?? body.nombre_form);\nconst apellidoForm = clean(body.apellido ?? body.apellido_form);\n\nif (!idToken) {\n  return [{\n    json: {\n      auth_valid: false,\n      status_code: 400,\n      message: 'Falta id_token',\n      email: '',\n      nombre: '',\n      nombre_form: nombreForm,\n      apellido_form: apellidoForm,\n    },\n  }];\n}\n\nlet tokenInfo;\ntry {\n  tokenInfo = await this.helpers.httpRequest({\n    method: 'GET',\n    url: 'https://oauth2.googleapis.com/tokeninfo',\n    qs: { id_token: idToken },\n    json: true,\n  });\n} catch (error) {\n  return [{\n    json: {\n      auth_valid: false,\n      status_code: 401,\n      message: 'Google token invalido',\n      email: '',\n      nombre: '',\n      nombre_form: nombreForm,\n      apellido_form: apellidoForm,\n    },\n  }];\n}\n\nconst expectedAud = '674090944474-uvnagnjnf92e0u7jc6jpd9uhhtl52a0v.apps.googleusercontent.com';\nconst aud = clean(tokenInfo.aud);\nconst azp = clean(tokenInfo.azp);\nconst iss = clean(tokenInfo.iss);\nconst email = clean(tokenInfo.email).toLowerCase();\nconst emailVerifiedRaw = tokenInfo.email_verified;\nconst emailVerified = emailVerifiedRaw === true || emailVerifiedRaw === 'true';\nconst issOk = iss === 'accounts.google.com' || iss === 'https://accounts.google.com';\nconst audOk = expectedAud ? (aud === expectedAud || azp === expectedAud) : true;\n\nif (!email || !emailVerified || !issOk || !audOk) {\n  return [{\n    json: {\n      auth_valid: false,\n      status_code: 401,\n      message: 'Google token invalido',\n      email: '',\n      nombre: '',\n      nombre_form: nombreForm,\n      apellido_form: apellidoForm,\n    },\n  }];\n}\n\nconst nombreGoogle = clean(tokenInfo.name ?? tokenInfo.given_name ?? 'Usuario') || 'Usuario';\nreturn [{\n  json: {\n    auth_valid: true,\n    status_code: 200,\n    message: '',\n    email,\n    nombre: nombreGoogle,\n    nombre_form: nombreForm,\n    apellido_form: apellidoForm,\n  },\n}];"
+        },
+        "id": "7ba41365-fa9e-4263-a177-f10e454d50e0",
+        "name": "Code - validate google",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          432,
+          304
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "WITH input AS (\n  SELECT\n    COALESCE($1::boolean, false) AS auth_valid,\n    COALESCE($2::int, 401) AS status_code_in,\n    NULLIF(trim(COALESCE($3::text, '')), '') AS message_in,\n    NULLIF(lower(trim(COALESCE($4::text, ''))), '') AS email_in,\n    NULLIF(trim(COALESCE($5::text, '')), '') AS nombre_google_in,\n    NULLIF(trim(COALESCE($6::text, '')), '') AS nombre_form_in,\n    NULLIF(trim(COALESCE($7::text, '')), '') AS apellido_form_in\n),\nprepared AS (\n  SELECT\n    i.*,\n    NULLIF(trim(concat_ws(' ', i.nombre_form_in, i.apellido_form_in)), '') AS nombre_form_full,\n    COALESCE(\n      NULLIF(trim(concat_ws(' ', i.nombre_form_in, i.apellido_form_in)), ''),\n      i.nombre_google_in,\n      'Usuario'\n    ) AS nombre_preferido\n  FROM input i\n),\nexisting AS (\n  SELECT u.id, u.email, u.nombre, u.plan_id\n  FROM public.usuarios u\n  JOIN prepared p ON p.auth_valid = true AND u.email = p.email_in\n),\nupdated_existing AS (\n  UPDATE public.usuarios u\n  SET nombre = p.nombre_preferido\n  FROM prepared p\n  WHERE p.auth_valid = true\n    AND p.email_in IS NOT NULL\n    AND u.email = p.email_in\n    AND p.nombre_preferido IS NOT NULL\n    AND trim(COALESCE(u.nombre, '')) IS DISTINCT FROM trim(p.nombre_preferido)\n  RETURNING u.id, u.email, u.nombre, u.plan_id\n),\ninserted AS (\n  INSERT INTO public.usuarios (nombre, email)\n  SELECT COALESCE(p.nombre_preferido, 'Usuario'), p.email_in\n  FROM prepared p\n  WHERE p.auth_valid = true\n    AND p.email_in IS NOT NULL\n    AND NOT EXISTS (SELECT 1 FROM existing)\n  RETURNING id, email, nombre, plan_id\n),\nresolved AS (\n  SELECT\n    COALESCE((SELECT id FROM updated_existing LIMIT 1), (SELECT id FROM inserted LIMIT 1), (SELECT id FROM existing LIMIT 1)) AS user_id,\n    COALESCE((SELECT email FROM updated_existing LIMIT 1), (SELECT email FROM inserted LIMIT 1), (SELECT email FROM existing LIMIT 1)) AS email,\n    COALESCE((SELECT nombre FROM updated_existing LIMIT 1), (SELECT nombre FROM inserted LIMIT 1), (SELECT nombre FROM existing LIMIT 1)) AS nombre,\n    COALESCE((SELECT plan_id FROM updated_existing LIMIT 1), (SELECT plan_id FROM inserted LIMIT 1), (SELECT plan_id FROM existing LIMIT 1)) AS plan_id\n)\nSELECT\n  p.auth_valid,\n  p.status_code_in,\n  p.message_in,\n  r.user_id,\n  r.email,\n  r.nombre,\n  NULLIF(trim(regexp_replace(COALESCE(r.nombre, ''), '^[^[:space:]]+[[:space:]]*', '')), '') AS apellido,\n  r.plan_id,\n  CASE WHEN r.plan_id IS NULL THEN false ELSE true END AS puede_crear_barberia\nFROM prepared p\nLEFT JOIN resolved r ON true;",
+          "options": {
+            "queryReplacement": "={{ [\n  Boolean($json.auth_valid),\n  Number($json.status_code ?? 401),\n  ($json.message ?? '').toString(),\n  ($json.email ?? '').toString(),\n  ($json.nombre ?? '').toString(),\n  ($json.nombre_form ?? '').toString(),\n  ($json.apellido_form ?? '').toString()\n] }}"
+          }
+        },
+        "id": "3b791714-a513-43c7-b0f4-462468e4f0e9",
+        "name": "Postgres - auth tx",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          672,
+          320
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "SOV6oSyuHI9cxgLF",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "responseBody": "={{ $json.response_body }}",
+          "respondWith": "json",
+          "options": {
+            "responseCode": "={{ Number($json.response_code ?? 200) }}",
+            "responseHeaders": {
+              "entries": [
+                {
+                  "value": "={{ $json.set_cookie }}",
+                  "name": "Set-Cookie"
+                },
+                {
+                  "value": "https://barberagency-barberagency.gymh5g.easypanel.host",
+                  "name": "Access-Control-Allow-Origin"
+                },
+                {
+                  "value": "true",
+                  "name": "Access-Control-Allow-Credentials"
+                }
+              ]
+            }
+          }
+        },
+        "id": "19b73b19-6cbb-4aed-a9c6-c6b56522dc73",
+        "name": "Respond - auth",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1120,
+          320
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const pgItems = $items('Postgres - auth tx', 0, 0) || [];\nconst base = pgItems[0]?.json || {};\nconst jwtOut = $input.first().json || {};\nconst token = jwtOut.token ?? null;\n\nconst clearCookie = 'ba_session=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax';\nconst statusCodeIn = Number(base.status_code_in ?? 401);\nconst message = (base.message_in ?? (statusCodeIn === 400 ? 'Falta id_token' : 'Google token invalido')).toString();\n\nif (!base.auth_valid || !base.user_id) {\n  return [{\n    json: {\n      ...base,\n      response_code: statusCodeIn,\n      response_body: { ok: false, message },\n      set_cookie: clearCookie,\n      session_token: null,\n      session_max_age: 0,\n    },\n  }];\n}\n\nif (!token) {\n  return [{\n    json: {\n      ...base,\n      response_code: 500,\n      response_body: { ok: false, message: 'Token de session no generado' },\n      set_cookie: clearCookie,\n      session_token: null,\n      session_max_age: 0,\n    },\n  }];\n}\n\nconst nombreRaw = (base.nombre ?? '').toString().trim();\nconst parts = nombreRaw ? nombreRaw.split(/\\s+/).filter(Boolean) : [];\nconst apellidoFromNombre = parts.length > 1 ? parts.slice(1).join(' ') : null;\n\nconst maxAge = 604800;\nconst cookie = 'ba_session=' + token + '; Path=/; Max-Age=' + maxAge + '; HttpOnly; Secure; SameSite=Lax';\n\nreturn [{\n  json: {\n    ...base,\n    response_code: 200,\n    response_body: {\n      ok: true,\n      user_id: base.user_id,\n      email: base.email,\n      nombre: base.nombre,\n      apellido: apellidoFromNombre ?? base.apellido ?? null,\n      plan_id: base.plan_id ?? null,\n      puede_crear_barberia: !!base.puede_crear_barberia,\n    },\n    set_cookie: cookie,\n    session_token: token,\n    session_max_age: maxAge,\n  },\n}];"
+        },
+        "id": "9090c905-5638-4047-98ba-f38779e1653e",
+        "name": "Code - crear session cookie",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          912,
+          336
+        ]
+      },
+      {
+        "id": "session-jwt-sign-1",
+        "name": "JWT - Sign session",
+        "type": "n8n-nodes-base.jwt",
+        "typeVersion": 1,
+        "position": [
+          800,
+          336
+        ],
+        "parameters": {
+          "operation": "sign",
+          "useJson": true,
+          "claimsJson": "={{ { \"role\":\"authenticated\", \"sub\": String($json.user_id), \"user_id\": Number($json.user_id), \"email\": ($json.email ?? null), \"plan_id\": ($json.plan_id ?? null), \"exp\": Math.floor(Date.now()/1000) + 604800 } }}",
+          "options": {
+            "algorithm": "HS256"
+          }
+        },
+        "credentials": {
+          "jwtAuth": {
+            "id": "mNWhzdM1ihAaBkZM",
+            "name": "JWT Auth account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Code - validate google": {
+        "main": [
+          [
+            {
+              "node": "Postgres - auth tx",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JWT - Sign session": {
+        "main": [
+          [
+            {
+              "node": "Code - crear session cookie",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - crear session cookie": {
+        "main": [
+          [
+            {
+              "node": "Respond - auth",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook - auth google": {
+        "main": [
+          [
+            {
+              "node": "Code - validate google",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Postgres - auth tx": {
+        "main": [
+          [
+            {
+              "node": "JWT - Sign session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Carlos a Alvis",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-02-26T17:17:54.022Z",
+        "id": 61,
+        "workflowId": "R8yiVJR331AZ5YoJ",
+        "versionId": "6ea8913c-6fab-4853-8824-6b09900fa713",
+        "event": "activated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      },
+      {
+        "createdAt": "2026-02-26T17:17:54.413Z",
+        "id": 63,
+        "workflowId": "R8yiVJR331AZ5YoJ",
+        "versionId": "6ea8913c-6fab-4853-8824-6b09900fa713",
+        "event": "activated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      },
+      {
+        "createdAt": "2026-02-26T17:17:54.009Z",
+        "id": 60,
+        "workflowId": "R8yiVJR331AZ5YoJ",
+        "versionId": "6ea8913c-6fab-4853-8824-6b09900fa713",
+        "event": "deactivated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      },
+      {
+        "createdAt": "2026-02-26T17:17:54.403Z",
+        "id": 62,
+        "workflowId": "R8yiVJR331AZ5YoJ",
+        "versionId": "6ea8913c-6fab-4853-8824-6b09900fa713",
+        "event": "deactivated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      }
+    ]
+  }
+}

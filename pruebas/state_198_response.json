@@ -1,0 +1,517 @@
+{
+  "ok": true,
+  "identity": {
+    "barberia_id": 198,
+    "slug": "barberia-prueba-4"
+  },
+  "seed": {
+    "id": 198,
+    "nombre": "Barberia Prueba 4",
+    "slug": "barberia-prueba-4",
+    "services": [
+      {
+        "id": 489,
+        "barberia_id": 198,
+        "nombre": "Corte Clasico",
+        "duracion_min": 30,
+        "precio": 20000,
+        "activo": true,
+        "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+      },
+      {
+        "id": 490,
+        "barberia_id": 198,
+        "nombre": "Barba",
+        "duracion_min": 30,
+        "precio": 12000,
+        "activo": true,
+        "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+      },
+      {
+        "id": 491,
+        "barberia_id": 198,
+        "nombre": "Corte + Cejas",
+        "duracion_min": 30,
+        "precio": 23000,
+        "activo": true,
+        "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+      }
+    ],
+    "barbers": [
+      {
+        "id": 439,
+        "barberia_id": 198,
+        "nombre": "Barbero prueba 4",
+        "activo": true,
+        "usuario_id": 6,
+        "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg"
+      },
+      {
+        "id": 440,
+        "barberia_id": 198,
+        "nombre": "Barbero Prueba 4.1",
+        "activo": true,
+        "usuario_id": 256,
+        "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg"
+      }
+    ],
+    "hours": [
+      {
+        "id": 1600,
+        "barberia_id": 198,
+        "dia_semana": 0,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1594,
+        "barberia_id": 198,
+        "dia_semana": 1,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1595,
+        "barberia_id": 198,
+        "dia_semana": 2,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1596,
+        "barberia_id": 198,
+        "dia_semana": 3,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1597,
+        "barberia_id": 198,
+        "dia_semana": 4,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1598,
+        "barberia_id": 198,
+        "dia_semana": 5,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1599,
+        "barberia_id": 198,
+        "dia_semana": 6,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      }
+    ],
+    "clients": [
+      {
+        "id": 148,
+        "barberia_id": 198,
+        "nombre": "Gerardo paz",
+        "telefono": "3192219829",
+        "created_at": "2026-06-05T21:06:15.324234+00:00"
+      },
+      {
+        "id": 147,
+        "barberia_id": 198,
+        "nombre": "carlos",
+        "telefono": "3132219824",
+        "created_at": "2026-06-05T17:39:30.28313+00:00"
+      },
+      {
+        "id": 140,
+        "barberia_id": 198,
+        "nombre": "RC2 QA Cliente",
+        "telefono": "300RC20001",
+        "created_at": "2026-06-05T01:24:30.787854+00:00"
+      }
+    ],
+    "appointments": [
+      {
+        "id": 180,
+        "barberia_id": 198,
+        "barbero_id": 440,
+        "id_barbero": 440,
+        "servicio_id": 490,
+        "id_servicio": 490,
+        "cliente_id": 148,
+        "cliente_nombre": "Gerardo paz",
+        "cliente_tel": "3192219829",
+        "fecha": "2026-06-05",
+        "hora_inicio": "19:00:00",
+        "hora_fin": "19:30:00",
+        "servicio_nombre": "Barba",
+        "barbero_nombre": "Barbero Prueba 4.1",
+        "estado": "confirmada",
+        "total": 12000,
+        "pago_id": 20,
+        "total_pagado": 12000,
+        "metodo_pago": "efectivo",
+        "pagado_en": "2026-06-05T21:06:47.8858+00:00",
+        "created_at": "2026-06-05T21:06:15.324234+00:00"
+      },
+      {
+        "id": 179,
+        "barberia_id": 198,
+        "barbero_id": 439,
+        "id_barbero": 439,
+        "servicio_id": 489,
+        "id_servicio": 489,
+        "cliente_id": 147,
+        "cliente_nombre": "carlos",
+        "cliente_tel": "3132219824",
+        "fecha": "2026-06-05",
+        "hora_inicio": "13:30:00",
+        "hora_fin": "14:00:00",
+        "servicio_nombre": "Corte Clasico",
+        "barbero_nombre": "Barbero prueba 4",
+        "estado": "confirmada",
+        "total": 20000,
+        "pago_id": null,
+        "total_pagado": null,
+        "metodo_pago": null,
+        "pagado_en": null,
+        "created_at": "2026-06-05T17:39:30.28313+00:00"
+      }
+    ]
+  },
+  "merged": {
+    "biz_name": "Barberia Prueba 4",
+    "biz_slug": "barberia-prueba-4",
+    "services": [
+      {
+        "id": 489,
+        "barberia_id": 198,
+        "nombre": "Corte Clasico",
+        "duracion_min": 30,
+        "precio": 20000,
+        "activo": true,
+        "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+      },
+      {
+        "id": 490,
+        "barberia_id": 198,
+        "nombre": "Barba",
+        "duracion_min": 30,
+        "precio": 12000,
+        "activo": true,
+        "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+      },
+      {
+        "id": 491,
+        "barberia_id": 198,
+        "nombre": "Corte + Cejas",
+        "duracion_min": 30,
+        "precio": 23000,
+        "activo": true,
+        "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+      }
+    ],
+    "barbers": [
+      {
+        "id": 439,
+        "barberia_id": 198,
+        "nombre": "Barbero prueba 4",
+        "activo": true,
+        "usuario_id": 6,
+        "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg"
+      },
+      {
+        "id": 440,
+        "barberia_id": 198,
+        "nombre": "Barbero Prueba 4.1",
+        "activo": true,
+        "usuario_id": 256,
+        "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg"
+      }
+    ],
+    "hours": [
+      {
+        "id": 1600,
+        "barberia_id": 198,
+        "dia_semana": 0,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1594,
+        "barberia_id": 198,
+        "dia_semana": 1,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1595,
+        "barberia_id": 198,
+        "dia_semana": 2,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1596,
+        "barberia_id": 198,
+        "dia_semana": 3,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1597,
+        "barberia_id": 198,
+        "dia_semana": 4,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1598,
+        "barberia_id": 198,
+        "dia_semana": 5,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      },
+      {
+        "id": 1599,
+        "barberia_id": 198,
+        "dia_semana": 6,
+        "activo": true,
+        "hora_abre": "08:00:00",
+        "hora_cierra": "20:30:00"
+      }
+    ],
+    "clients": [
+      {
+        "id": 148,
+        "barberia_id": 198,
+        "nombre": "Gerardo paz",
+        "telefono": "3192219829",
+        "created_at": "2026-06-05T21:06:15.324234+00:00"
+      },
+      {
+        "id": 147,
+        "barberia_id": 198,
+        "nombre": "carlos",
+        "telefono": "3132219824",
+        "created_at": "2026-06-05T17:39:30.28313+00:00"
+      },
+      {
+        "id": 140,
+        "barberia_id": 198,
+        "nombre": "RC2 QA Cliente",
+        "telefono": "300RC20001",
+        "created_at": "2026-06-05T01:24:30.787854+00:00"
+      }
+    ],
+    "appointments": [
+      {
+        "id": 180,
+        "barberia_id": 198,
+        "barbero_id": 440,
+        "id_barbero": 440,
+        "servicio_id": 490,
+        "id_servicio": 490,
+        "cliente_id": 148,
+        "cliente_nombre": "Gerardo paz",
+        "cliente_tel": "3192219829",
+        "fecha": "2026-06-05",
+        "hora_inicio": "19:00:00",
+        "hora_fin": "19:30:00",
+        "servicio_nombre": "Barba",
+        "barbero_nombre": "Barbero Prueba 4.1",
+        "estado": "confirmada",
+        "total": 12000,
+        "pago_id": 20,
+        "total_pagado": 12000,
+        "metodo_pago": "efectivo",
+        "pagado_en": "2026-06-05T21:06:47.8858+00:00",
+        "created_at": "2026-06-05T21:06:15.324234+00:00"
+      },
+      {
+        "id": 179,
+        "barberia_id": 198,
+        "barbero_id": 439,
+        "id_barbero": 439,
+        "servicio_id": 489,
+        "id_servicio": 489,
+        "cliente_id": 147,
+        "cliente_nombre": "carlos",
+        "cliente_tel": "3132219824",
+        "fecha": "2026-06-05",
+        "hora_inicio": "13:30:00",
+        "hora_fin": "14:00:00",
+        "servicio_nombre": "Corte Clasico",
+        "barbero_nombre": "Barbero prueba 4",
+        "estado": "confirmada",
+        "total": 20000,
+        "pago_id": null,
+        "total_pagado": null,
+        "metodo_pago": null,
+        "pagado_en": null,
+        "created_at": "2026-06-05T17:39:30.28313+00:00"
+      }
+    ]
+  },
+  "barberia": {
+    "id": 198,
+    "nombre": "Barberia Prueba 4",
+    "slug": "barberia-prueba-4",
+    "estado": "activa",
+    "created_at": "2026-06-02T03:06:24.21677+00:00",
+    "owner_id": 7,
+    "plan_id": 2,
+    "slot_min": 30,
+    "deleted_at": null,
+    "logo_url": null,
+    "cover_url": null,
+    "telefono": "3106974573",
+    "whatsapp": null,
+    "email_contacto": "calvis590@gmail.com",
+    "direccion": "Calle 131#101-10",
+    "ciudad": "Bogota",
+    "instagram": null,
+    "tiktok": null,
+    "politicas": null,
+    "moneda": "COP",
+    "acepta_efectivo": true,
+    "acepta_digital": true,
+    "publicada": true,
+    "published_at": "2026-06-02T03:08:23.494621+00:00"
+  },
+  "reservas": [
+    {
+      "id": 180,
+      "barberia_id": 198,
+      "barbero_id": 440,
+      "id_barbero": 440,
+      "servicio_id": 490,
+      "id_servicio": 490,
+      "cliente_id": 148,
+      "cliente_nombre": "Gerardo paz",
+      "cliente_tel": "3192219829",
+      "fecha": "2026-06-05",
+      "hora_inicio": "19:00:00",
+      "hora_fin": "19:30:00",
+      "servicio_nombre": "Barba",
+      "barbero_nombre": "Barbero Prueba 4.1",
+      "estado": "confirmada",
+      "total": 12000,
+      "pago_id": 20,
+      "total_pagado": 12000,
+      "metodo_pago": "efectivo",
+      "pagado_en": "2026-06-05T21:06:47.8858+00:00",
+      "created_at": "2026-06-05T21:06:15.324234+00:00"
+    },
+    {
+      "id": 179,
+      "barberia_id": 198,
+      "barbero_id": 439,
+      "id_barbero": 439,
+      "servicio_id": 489,
+      "id_servicio": 489,
+      "cliente_id": 147,
+      "cliente_nombre": "carlos",
+      "cliente_tel": "3132219824",
+      "fecha": "2026-06-05",
+      "hora_inicio": "13:30:00",
+      "hora_fin": "14:00:00",
+      "servicio_nombre": "Corte Clasico",
+      "barbero_nombre": "Barbero prueba 4",
+      "estado": "confirmada",
+      "total": 20000,
+      "pago_id": null,
+      "total_pagado": null,
+      "metodo_pago": null,
+      "pagado_en": null,
+      "created_at": "2026-06-05T17:39:30.28313+00:00"
+    }
+  ],
+  "clientes": [
+    {
+      "id": 148,
+      "barberia_id": 198,
+      "nombre": "Gerardo paz",
+      "telefono": "3192219829",
+      "created_at": "2026-06-05T21:06:15.324234+00:00"
+    },
+    {
+      "id": 147,
+      "barberia_id": 198,
+      "nombre": "carlos",
+      "telefono": "3132219824",
+      "created_at": "2026-06-05T17:39:30.28313+00:00"
+    },
+    {
+      "id": 140,
+      "barberia_id": 198,
+      "nombre": "RC2 QA Cliente",
+      "telefono": "300RC20001",
+      "created_at": "2026-06-05T01:24:30.787854+00:00"
+    }
+  ],
+  "metricas": {
+    "ingresos_mensuales": 32000,
+    "citas_hoy": 2,
+    "nuevos_clientes": 3
+  },
+  "barberos": [
+    {
+      "id": 439,
+      "barberia_id": 198,
+      "nombre": "Barbero prueba 4",
+      "activo": true,
+      "usuario_id": 6,
+      "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg"
+    },
+    {
+      "id": 440,
+      "barberia_id": 198,
+      "nombre": "Barbero Prueba 4.1",
+      "activo": true,
+      "usuario_id": 256,
+      "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg"
+    }
+  ],
+  "servicios": [
+    {
+      "id": 489,
+      "barberia_id": 198,
+      "nombre": "Corte Clasico",
+      "duracion_min": 30,
+      "precio": 20000,
+      "activo": true,
+      "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+    },
+    {
+      "id": 490,
+      "barberia_id": 198,
+      "nombre": "Barba",
+      "duracion_min": 30,
+      "precio": 12000,
+      "activo": true,
+      "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png"
+    },
+    {
+      "id": 491,
+      "barberia_id": 198,
+      "nombre": "Corte + Cejas",
+      "duracion_min": 30,
+      "precio": 23000,
+      "activo": true,
+      "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png"
+    }
+  ]
+}

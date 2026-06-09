@@ -1,0 +1,503 @@
+{
+  "updatedAt": "2026-06-09T22:17:32.494Z",
+  "createdAt": "2026-06-09T21:34:23.044Z",
+  "id": "dB102yaMhaxNSGpK",
+  "name": "BarberAgency - Configuracion Update",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "barberagency/configuracion/update",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-post",
+      "name": "Webhook - POST",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        100,
+        300
+      ],
+      "webhookId": "62e89d75-8b9e-4cb6-afc6-2ae5ccc6dc2c"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst i = $input.first().json || {};\nconst h = i.headers || {};\nlet body = {};\nif (i.body && typeof i.body === 'object') {\n  body = i.body;\n} else if (typeof i.body === 'string') {\n  try {\n    body = JSON.parse(i.body);\n  } catch (_) {\n    body = {};\n  }\n}\nconst draft = body.draft && typeof body.draft === 'object' ? body.draft : {};\nconst barberia = draft.barberia && typeof draft.barberia === 'object' ? draft.barberia : {};\nconst accesos = draft.accesos && typeof draft.accesos === 'object' ? draft.accesos : {};\nconst admin = accesos.admin && typeof accesos.admin === 'object' ? accesos.admin : {};\nconst accessBarbers = Array.isArray(accesos.barberos) ? accesos.barberos : [];\nconst cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\nconst m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\nconst session_token = m ? m[1] : '';\nconst clean = (v) => (v ?? '').toString().trim();\nconst toNumber = (v) => {\n  const n = Number(v);\n  return Number.isFinite(n) ? n : 0;\n};\nconst normalizeServicios = (rows) => Array.isArray(rows) ? rows\n  .map((item) => ({\n    nombre: clean(item?.nombre || item?.name),\n    duracion_min: Math.max(1, Number(item?.duracion_min || item?.duration_min || 30)),\n    precio: Math.max(0, Number(item?.precio || item?.price || 0)),\n    imagen_url: clean(item?.imagen_url || item?.image_url || item?.foto_url || item?.foto)\n  }))\n  .filter((item) => item.nombre) : [];\nconst findAccessForBarber = (item, index) => {\n  const id = toNumber(item?.id || item?.barbero_id);\n  const nombre = clean(item?.nombre || item?.name).toLowerCase();\n  const byIndex = accessBarbers[index] && typeof accessBarbers[index] === 'object' ? accessBarbers[index] : null;\n  if (byIndex && (!id || toNumber(byIndex.id || byIndex.barbero_id) === id)) return byIndex;\n  return accessBarbers.find((access) => {\n    const accessId = toNumber(access?.id || access?.barbero_id);\n    const accessName = clean(access?.nombre || access?.name).toLowerCase();\n    return (id && accessId === id) || (!id && nombre && accessName === nombre);\n  }) || {};\n};\nconst normalizeBarberos = (rows) => Array.isArray(rows) ? rows\n  .map((item, index) => {\n    const id = toNumber(item?.id || item?.barbero_id);\n    const access = findAccessForBarber(item, index);\n    const payload = {\n      id,\n      usuario_id: toNumber(item?.usuario_id || item?.user_id),\n      nombre: clean(item?.nombre || item?.name),\n      foto_url: clean(item?.foto_url || item?.foto || item?.avatar_url || item?.image_url),\n      activo: item?.activo === undefined ? true : Boolean(item.activo)\n    };\n    if (!id) {\n      payload.email = clean(access?.email || item?.email).toLowerCase();\n      payload.password = clean(access?.password || item?.password);\n    }\n    return payload;\n  })\n  .filter((item) => item.nombre) : [];\nconst dayToIndex = { domingo: 0, lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6 };\nconst normalizeHorarios = (rows) => Array.isArray(rows) ? rows\n  .map((item) => {\n    const dia = clean(item?.dia || '').toLowerCase();\n    const dia_semana = Number.isInteger(item?.dia_semana) ? Number(item.dia_semana) : dayToIndex[dia];\n    return {\n      dia_semana,\n      activo: Boolean(item?.activo),\n      hora_abre: clean(item?.hora_abre) || '09:00',\n      hora_cierra: clean(item?.hora_cierra) || '18:00'\n    };\n  })\n  .filter((item) => Number.isInteger(item.dia_semana) && item.dia_semana >= 0 && item.dia_semana <= 6) : [];\n\nreturn [{\n  json: {\n    session_token,\n    request: {\n      mode: clean(body.mode || 'edit'),\n      barberia_id: toNumber(body.barberia_id || barberia.barberia_id || barberia.id || barberia.id_barberia),\n      slug: clean(body.slug || barberia.slug),\n      barberia: {\n        nombre: clean(barberia.nombre || body.nombre),\n        slug: clean(body.slug || barberia.slug),\n        telefono: clean(barberia.telefono || body.telefono),\n        direccion: clean(barberia.direccion || body.direccion),\n        ciudad: clean(barberia.ciudad || body.ciudad),\n        politicas: clean(barberia.politicas || body.politicas),\n        slot_min: toNumber(barberia.slot_min || body.slot_min || 15)\n      },\n      servicios: normalizeServicios(draft.servicios || body.servicios),\n      barberos: normalizeBarberos(draft.barberos || body.barberos),\n      horarios: normalizeHorarios(draft.horarios || body.horarios),\n      admin: {\n        nombre: clean(admin.nombre),\n        email: clean(admin.email).toLowerCase(),\n        password: clean(admin.password)\n      }\n    }\n  }\n}];\n"
+      },
+      "id": "parse-request",
+      "name": "Code - parse request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "verify",
+        "token": "={{ $json.session_token }}",
+        "options": {
+          "algorithm": "HS256"
+        }
+      },
+      "id": "verify-session",
+      "name": "JWT - Verify session",
+      "type": "n8n-nodes-base.jwt",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ],
+      "credentials": {
+        "jwtAuth": {
+          "id": "mNWhzdM1ihAaBkZM",
+          "name": "JWT Auth account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst jwt = $input.first().json || {};\nconst request = $('Code - parse request').first().json.request || {};\nconst auth_ok = !jwt.error && !!jwt.payload?.user_id;\nconst user_id = auth_ok ? Number(jwt.payload.user_id) : 0;\nconst asJson = (value, fallback) => JSON.stringify(value ?? fallback);\nreturn [{\n  json: {\n    params: [\n      user_id,\n      auth_ok,\n      Number(request.barberia_id || 0),\n      request.slug || null,\n      request.mode || 'edit',\n      asJson(request.barberia, {}),\n      asJson(request.servicios, []),\n      asJson(request.barberos, []),\n      asJson(request.horarios, []),\n      asJson(request.admin, {})\n    ]\n  }\n}];\n"
+      },
+      "id": "prepare-sql",
+      "name": "Code - prepare SQL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "operation": "executeQuery",
+        "query": "\nWITH input AS (\n  SELECT\n    $1::int AS user_id,\n    COALESCE($2::boolean, false) AS auth_ok_jwt,\n    $3::int AS barberia_id,\n    NULLIF(trim($4::text), '') AS slug,\n    lower(NULLIF(trim($5::text), '')) AS mode,\n    COALESCE($6::jsonb, '{}'::jsonb) AS barberia,\n    COALESCE($7::jsonb, '[]'::jsonb) AS servicios,\n    COALESCE($8::jsonb, '[]'::jsonb) AS barberos,\n    COALESCE($9::jsonb, '[]'::jsonb) AS horarios,\n    COALESCE($10::jsonb, '{}'::jsonb) AS admin\n),\ntarget AS (\n  SELECT b.*\n  FROM public.barberias b, input i\n  WHERE b.id = i.barberia_id\n    AND b.deleted_at IS NULL\n  LIMIT 1\n),\nauth_check AS (\n  SELECT u.id, u.role, u.email\n  FROM public.usuarios u, input i\n  WHERE u.id = i.user_id\n  LIMIT 1\n),\nvalidation AS (\n  SELECT\n    i.*,\n    t.id AS target_id,\n    t.slug AS target_slug,\n    t.owner_id AS original_owner_id,\n    ac.role AS user_role,\n    CASE\n      WHEN NOT i.auth_ok_jwt OR ac.id IS NULL THEN 'sesion_no_valida'\n      WHEN i.mode <> 'edit' THEN 'modo_invalido'\n      WHEN i.barberia_id <= 0 OR i.slug IS NULL THEN 'datos_invalidos'\n      WHEN t.id IS NULL THEN 'barberia_no_encontrada'\n      WHEN t.slug IS DISTINCT FROM i.slug THEN 'slug_mismatch'\n      WHEN NOT (\n        t.owner_id = i.user_id \n        OR ac.role = 'super_admin' \n        OR EXISTS (\n          SELECT 1 FROM public.barberia_miembros m \n          WHERE m.barberia_id = t.id \n            AND (m.usuario_id = i.user_id OR lower(m.email) = lower(ac.email)) \n            AND m.rol IN ('owner', 'admin', 'super_admin')\n            AND m.activo = true\n        )\n      ) THEN 'sin_permiso'\n      WHEN COALESCE(jsonb_array_length(i.servicios), 0) = 0 THEN 'servicios_invalidos'\n      WHEN COALESCE(jsonb_array_length(i.horarios), 0) = 0 THEN 'horarios_invalidos'\n      WHEN EXISTS (\n        SELECT 1\n        FROM jsonb_array_elements(i.barberos) nb(value)\n        WHERE COALESCE(NULLIF(nb.value->>'id', '')::int, 0) = 0\n          AND (\n            NULLIF(btrim(nb.value->>'email'), '') IS NULL OR\n            NULLIF(btrim(nb.value->>'password'), '') IS NULL OR\n            length(btrim(nb.value->>'password')) < 6\n          )\n      ) THEN 'credenciales_barbero_nuevo_invalidas'\n      ELSE 'ok'\n    END AS code\n  FROM input i\n  LEFT JOIN target t ON true\n  LEFT JOIN auth_check ac ON true\n),\nupdated_barberia AS (\n  UPDATE public.barberias b\n  SET\n    nombre = COALESCE(NULLIF(trim(v.barberia->>'nombre'), ''), b.nombre),\n    telefono = NULLIF(trim(v.barberia->>'telefono'), ''),\n    direccion = NULLIF(trim(v.barberia->>'direccion'), ''),\n    ciudad = NULLIF(trim(v.barberia->>'ciudad'), ''),\n    politicas = NULLIF(trim(v.barberia->>'politicas'), ''),\n    slot_min = CASE\n      WHEN COALESCE((v.barberia->>'slot_min')::int, b.slot_min) IN (5, 10, 15, 20, 30)\n        THEN COALESCE((v.barberia->>'slot_min')::int, b.slot_min)\n      ELSE b.slot_min\n    END\n  FROM validation v\n  WHERE v.code = 'ok'\n    AND b.id = v.target_id\n  RETURNING b.id, b.nombre, b.slug, b.telefono, b.direccion, b.ciudad, b.politicas, b.slot_min, b.owner_id\n),\nsync_catalogs AS (\n  SELECT\n    CASE WHEN v.code = 'ok'\n      THEN public.ba_sync_publicacion_collections(v.target_id, v.servicios, v.barberos)\n      ELSE NULL::jsonb\n    END AS result\n  FROM validation v\n),\nsync_hours AS (\n  SELECT\n    CASE WHEN v.code = 'ok'\n      THEN public.ba_sync_registro_horarios(v.target_id, v.horarios)\n      ELSE NULL::jsonb\n    END AS result\n  FROM validation v\n),\nnew_barber_access AS (\n  SELECT\n    v.target_id AS barberia_id,\n    NULLIF(btrim(item.value->>'nombre'), '') AS nombre,\n    lower(NULLIF(btrim(item.value->>'email'), '')) AS email,\n    NULLIF(btrim(item.value->>'password'), '') AS password\n  FROM validation v\n  CROSS JOIN LATERAL jsonb_array_elements(v.barberos) item(value)\n  WHERE v.code = 'ok'\n    AND COALESCE(NULLIF(item.value->>'id', '')::int, 0) = 0\n    AND NULLIF(btrim(item.value->>'nombre'), '') IS NOT NULL\n    AND NULLIF(btrim(item.value->>'email'), '') IS NOT NULL\n    AND NULLIF(btrim(item.value->>'password'), '') IS NOT NULL\n),\nexisting_new_users AS (\n  SELECT nba.nombre, nba.email, u.id AS user_id\n  FROM new_barber_access nba\n  JOIN public.usuarios u ON lower(u.email) = nba.email\n),\ninserted_new_users AS (\n  INSERT INTO public.usuarios (nombre, email, password_hash, role)\n  SELECT\n    nba.nombre,\n    nba.email,\n    crypt(nba.password, gen_salt('bf', 8)),\n    'barbero'\n  FROM new_barber_access nba\n  WHERE NOT EXISTS (\n    SELECT 1\n    FROM public.usuarios u\n    WHERE lower(u.email) = nba.email\n  )\n  RETURNING id AS user_id, nombre, email\n),\nresolved_new_users AS (\n  SELECT user_id, nombre, email FROM existing_new_users\n  UNION ALL\n  SELECT user_id, nombre, email FROM inserted_new_users\n),\nlinked_new_barbers AS (\n  UPDATE public.barberos br\n  SET usuario_id = rnu.user_id\n  FROM resolved_new_users rnu, validation v\n  WHERE v.code = 'ok'\n    AND br.barberia_id = v.target_id\n    AND lower(btrim(br.nombre)) = lower(btrim(rnu.nombre))\n    AND br.usuario_id IS NULL\n  RETURNING br.id, br.usuario_id\n)\nSELECT\n  CASE WHEN v.code = 'ok' THEN true ELSE false END AS ok,\n  CASE WHEN v.code = 'ok' THEN 'configuracion_actualizada' ELSE v.code END AS code,\n  CASE\n    WHEN v.code = 'ok' THEN 'Configuracion actualizada'\n    WHEN v.code = 'sesion_no_valida' THEN 'Sesion no valida'\n    WHEN v.code = 'sin_permiso' THEN 'No tienes permisos para editar esta barberia'\n    WHEN v.code = 'slug_mismatch' THEN 'El slug no coincide con la barberia solicitada'\n    WHEN v.code = 'barberia_no_encontrada' THEN 'Barberia no encontrada'\n    WHEN v.code = 'credenciales_barbero_nuevo_invalidas' THEN 'Los barberos nuevos requieren email valido y password de minimo 6 caracteres'\n    ELSE 'Datos invalidos'\n  END AS message,\n  CASE WHEN v.code = 'ok' THEN 200 WHEN v.code = 'sesion_no_valida' THEN 401 WHEN v.code IN ('sin_permiso', 'slug_mismatch') THEN 403 ELSE 400 END AS status_code,\n  CASE WHEN v.code = 'ok'\n    THEN jsonb_build_object(\n      'barberia', COALESCE(to_jsonb(ub), '{}'::jsonb),\n      'catalogs', (SELECT result FROM sync_catalogs LIMIT 1),\n      'hours', (SELECT result FROM sync_hours LIMIT 1),\n      'new_barber_users_linked', (SELECT count(*) FROM linked_new_barbers),\n      'owner_id_original', v.original_owner_id,\n      'owner_id_actual', COALESCE(ub.owner_id, v.original_owner_id)\n    )\n    ELSE NULL::jsonb\n  END AS data\nFROM validation v\nLEFT JOIN updated_barberia ub ON true;\n    ",
+        "options": {
+          "queryReplacement": "={{ $json.params }}"
+        }
+      },
+      "id": "pg-update",
+      "name": "Postgres - update configuracion",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        900,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst row = $input.first().json || {};\nreturn [{\n  json: {\n    status_code: Number(row.status_code || (row.ok ? 200 : 400)),\n    body: {\n      ok: !!row.ok,\n      code: row.code || (row.ok ? 'configuracion_actualizada' : 'datos_invalidos'),\n      message: row.message || '',\n      data: row.data || null\n    }\n  }\n}];\n"
+      },
+      "id": "format-response",
+      "name": "Code - format response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.body }}",
+        "options": {
+          "responseCode": "={{ $json.status_code }}",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "https://barberagency-barberagency.gymh5g.easypanel.host"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type, Accept"
+              },
+              {
+                "name": "Access-Control-Allow-Credentials",
+                "value": "true"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1300,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook - POST": {
+      "main": [
+        [
+          {
+            "node": "Code - parse request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - parse request": {
+      "main": [
+        [
+          {
+            "node": "JWT - Verify session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JWT - Verify session": {
+      "main": [
+        [
+          {
+            "node": "Code - prepare SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - prepare SQL": {
+      "main": [
+        [
+          {
+            "node": "Postgres - update configuracion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres - update configuracion": {
+      "main": [
+        [
+          {
+            "node": "Code - format response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - format response": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": null,
+  "pinData": null,
+  "versionId": "decbd9f2-f08d-471e-a6cf-936e9d42096f",
+  "activeVersionId": "decbd9f2-f08d-471e-a6cf-936e9d42096f",
+  "versionCounter": 6,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-06-09T21:34:23.046Z",
+      "createdAt": "2026-06-09T21:34:23.046Z",
+      "role": "workflow:owner",
+      "workflowId": "dB102yaMhaxNSGpK",
+      "projectId": "ajSDxUXg76Ss65zL",
+      "project": {
+        "updatedAt": "2026-02-09T14:41:23.917Z",
+        "createdAt": "2026-02-09T14:01:19.465Z",
+        "id": "ajSDxUXg76Ss65zL",
+        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-06-09T22:17:32.496Z",
+    "createdAt": "2026-06-09T22:17:32.496Z",
+    "versionId": "decbd9f2-f08d-471e-a6cf-936e9d42096f",
+    "workflowId": "dB102yaMhaxNSGpK",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "barberagency/configuracion/update",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "webhook-post",
+        "name": "Webhook - POST",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 1.1,
+        "position": [
+          100,
+          300
+        ],
+        "webhookId": "62e89d75-8b9e-4cb6-afc6-2ae5ccc6dc2c"
+      },
+      {
+        "parameters": {
+          "jsCode": "\nconst i = $input.first().json || {};\nconst h = i.headers || {};\nlet body = {};\nif (i.body && typeof i.body === 'object') {\n  body = i.body;\n} else if (typeof i.body === 'string') {\n  try {\n    body = JSON.parse(i.body);\n  } catch (_) {\n    body = {};\n  }\n}\nconst draft = body.draft && typeof body.draft === 'object' ? body.draft : {};\nconst barberia = draft.barberia && typeof draft.barberia === 'object' ? draft.barberia : {};\nconst accesos = draft.accesos && typeof draft.accesos === 'object' ? draft.accesos : {};\nconst admin = accesos.admin && typeof accesos.admin === 'object' ? accesos.admin : {};\nconst accessBarbers = Array.isArray(accesos.barberos) ? accesos.barberos : [];\nconst cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\nconst m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\nconst session_token = m ? m[1] : '';\nconst clean = (v) => (v ?? '').toString().trim();\nconst toNumber = (v) => {\n  const n = Number(v);\n  return Number.isFinite(n) ? n : 0;\n};\nconst normalizeServicios = (rows) => Array.isArray(rows) ? rows\n  .map((item) => ({\n    nombre: clean(item?.nombre || item?.name),\n    duracion_min: Math.max(1, Number(item?.duracion_min || item?.duration_min || 30)),\n    precio: Math.max(0, Number(item?.precio || item?.price || 0)),\n    imagen_url: clean(item?.imagen_url || item?.image_url || item?.foto_url || item?.foto)\n  }))\n  .filter((item) => item.nombre) : [];\nconst findAccessForBarber = (item, index) => {\n  const id = toNumber(item?.id || item?.barbero_id);\n  const nombre = clean(item?.nombre || item?.name).toLowerCase();\n  const byIndex = accessBarbers[index] && typeof accessBarbers[index] === 'object' ? accessBarbers[index] : null;\n  if (byIndex && (!id || toNumber(byIndex.id || byIndex.barbero_id) === id)) return byIndex;\n  return accessBarbers.find((access) => {\n    const accessId = toNumber(access?.id || access?.barbero_id);\n    const accessName = clean(access?.nombre || access?.name).toLowerCase();\n    return (id && accessId === id) || (!id && nombre && accessName === nombre);\n  }) || {};\n};\nconst normalizeBarberos = (rows) => Array.isArray(rows) ? rows\n  .map((item, index) => {\n    const id = toNumber(item?.id || item?.barbero_id);\n    const access = findAccessForBarber(item, index);\n    const payload = {\n      id,\n      usuario_id: toNumber(item?.usuario_id || item?.user_id),\n      nombre: clean(item?.nombre || item?.name),\n      foto_url: clean(item?.foto_url || item?.foto || item?.avatar_url || item?.image_url),\n      activo: item?.activo === undefined ? true : Boolean(item.activo)\n    };\n    if (!id) {\n      payload.email = clean(access?.email || item?.email).toLowerCase();\n      payload.password = clean(access?.password || item?.password);\n    }\n    return payload;\n  })\n  .filter((item) => item.nombre) : [];\nconst dayToIndex = { domingo: 0, lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6 };\nconst normalizeHorarios = (rows) => Array.isArray(rows) ? rows\n  .map((item) => {\n    const dia = clean(item?.dia || '').toLowerCase();\n    const dia_semana = Number.isInteger(item?.dia_semana) ? Number(item.dia_semana) : dayToIndex[dia];\n    return {\n      dia_semana,\n      activo: Boolean(item?.activo),\n      hora_abre: clean(item?.hora_abre) || '09:00',\n      hora_cierra: clean(item?.hora_cierra) || '18:00'\n    };\n  })\n  .filter((item) => Number.isInteger(item.dia_semana) && item.dia_semana >= 0 && item.dia_semana <= 6) : [];\n\nreturn [{\n  json: {\n    session_token,\n    request: {\n      mode: clean(body.mode || 'edit'),\n      barberia_id: toNumber(body.barberia_id || barberia.barberia_id || barberia.id || barberia.id_barberia),\n      slug: clean(body.slug || barberia.slug),\n      barberia: {\n        nombre: clean(barberia.nombre || body.nombre),\n        slug: clean(body.slug || barberia.slug),\n        telefono: clean(barberia.telefono || body.telefono),\n        direccion: clean(barberia.direccion || body.direccion),\n        ciudad: clean(barberia.ciudad || body.ciudad),\n        politicas: clean(barberia.politicas || body.politicas),\n        slot_min: toNumber(barberia.slot_min || body.slot_min || 15)\n      },\n      servicios: normalizeServicios(draft.servicios || body.servicios),\n      barberos: normalizeBarberos(draft.barberos || body.barberos),\n      horarios: normalizeHorarios(draft.horarios || body.horarios),\n      admin: {\n        nombre: clean(admin.nombre),\n        email: clean(admin.email).toLowerCase(),\n        password: clean(admin.password)\n      }\n    }\n  }\n}];\n"
+        },
+        "id": "parse-request",
+        "name": "Code - parse request",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          300,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "verify",
+          "token": "={{ $json.session_token }}",
+          "options": {
+            "algorithm": "HS256"
+          }
+        },
+        "id": "verify-session",
+        "name": "JWT - Verify session",
+        "type": "n8n-nodes-base.jwt",
+        "typeVersion": 1,
+        "position": [
+          500,
+          300
+        ],
+        "credentials": {
+          "jwtAuth": {
+            "id": "mNWhzdM1ihAaBkZM",
+            "name": "JWT Auth account"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "\nconst jwt = $input.first().json || {};\nconst request = $('Code - parse request').first().json.request || {};\nconst auth_ok = !jwt.error && !!jwt.payload?.user_id;\nconst user_id = auth_ok ? Number(jwt.payload.user_id) : 0;\nconst asJson = (value, fallback) => JSON.stringify(value ?? fallback);\nreturn [{\n  json: {\n    params: [\n      user_id,\n      auth_ok,\n      Number(request.barberia_id || 0),\n      request.slug || null,\n      request.mode || 'edit',\n      asJson(request.barberia, {}),\n      asJson(request.servicios, []),\n      asJson(request.barberos, []),\n      asJson(request.horarios, []),\n      asJson(request.admin, {})\n    ]\n  }\n}];\n"
+        },
+        "id": "prepare-sql",
+        "name": "Code - prepare SQL",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          700,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "database",
+          "operation": "executeQuery",
+          "query": "\nWITH input AS (\n  SELECT\n    $1::int AS user_id,\n    COALESCE($2::boolean, false) AS auth_ok_jwt,\n    $3::int AS barberia_id,\n    NULLIF(trim($4::text), '') AS slug,\n    lower(NULLIF(trim($5::text), '')) AS mode,\n    COALESCE($6::jsonb, '{}'::jsonb) AS barberia,\n    COALESCE($7::jsonb, '[]'::jsonb) AS servicios,\n    COALESCE($8::jsonb, '[]'::jsonb) AS barberos,\n    COALESCE($9::jsonb, '[]'::jsonb) AS horarios,\n    COALESCE($10::jsonb, '{}'::jsonb) AS admin\n),\ntarget AS (\n  SELECT b.*\n  FROM public.barberias b, input i\n  WHERE b.id = i.barberia_id\n    AND b.deleted_at IS NULL\n  LIMIT 1\n),\nauth_check AS (\n  SELECT u.id, u.role, u.email\n  FROM public.usuarios u, input i\n  WHERE u.id = i.user_id\n  LIMIT 1\n),\nvalidation AS (\n  SELECT\n    i.*,\n    t.id AS target_id,\n    t.slug AS target_slug,\n    t.owner_id AS original_owner_id,\n    ac.role AS user_role,\n    CASE\n      WHEN NOT i.auth_ok_jwt OR ac.id IS NULL THEN 'sesion_no_valida'\n      WHEN i.mode <> 'edit' THEN 'modo_invalido'\n      WHEN i.barberia_id <= 0 OR i.slug IS NULL THEN 'datos_invalidos'\n      WHEN t.id IS NULL THEN 'barberia_no_encontrada'\n      WHEN t.slug IS DISTINCT FROM i.slug THEN 'slug_mismatch'\n      WHEN NOT (\n        t.owner_id = i.user_id \n        OR ac.role = 'super_admin' \n        OR EXISTS (\n          SELECT 1 FROM public.barberia_miembros m \n          WHERE m.barberia_id = t.id \n            AND (m.usuario_id = i.user_id OR lower(m.email) = lower(ac.email)) \n            AND m.rol IN ('owner', 'admin', 'super_admin')\n            AND m.activo = true\n        )\n      ) THEN 'sin_permiso'\n      WHEN COALESCE(jsonb_array_length(i.servicios), 0) = 0 THEN 'servicios_invalidos'\n      WHEN COALESCE(jsonb_array_length(i.horarios), 0) = 0 THEN 'horarios_invalidos'\n      WHEN EXISTS (\n        SELECT 1\n        FROM jsonb_array_elements(i.barberos) nb(value)\n        WHERE COALESCE(NULLIF(nb.value->>'id', '')::int, 0) = 0\n          AND (\n            NULLIF(btrim(nb.value->>'email'), '') IS NULL OR\n            NULLIF(btrim(nb.value->>'password'), '') IS NULL OR\n            length(btrim(nb.value->>'password')) < 6\n          )\n      ) THEN 'credenciales_barbero_nuevo_invalidas'\n      ELSE 'ok'\n    END AS code\n  FROM input i\n  LEFT JOIN target t ON true\n  LEFT JOIN auth_check ac ON true\n),\nupdated_barberia AS (\n  UPDATE public.barberias b\n  SET\n    nombre = COALESCE(NULLIF(trim(v.barberia->>'nombre'), ''), b.nombre),\n    telefono = NULLIF(trim(v.barberia->>'telefono'), ''),\n    direccion = NULLIF(trim(v.barberia->>'direccion'), ''),\n    ciudad = NULLIF(trim(v.barberia->>'ciudad'), ''),\n    politicas = NULLIF(trim(v.barberia->>'politicas'), ''),\n    slot_min = CASE\n      WHEN COALESCE((v.barberia->>'slot_min')::int, b.slot_min) IN (5, 10, 15, 20, 30)\n        THEN COALESCE((v.barberia->>'slot_min')::int, b.slot_min)\n      ELSE b.slot_min\n    END\n  FROM validation v\n  WHERE v.code = 'ok'\n    AND b.id = v.target_id\n  RETURNING b.id, b.nombre, b.slug, b.telefono, b.direccion, b.ciudad, b.politicas, b.slot_min, b.owner_id\n),\nsync_catalogs AS (\n  SELECT\n    CASE WHEN v.code = 'ok'\n      THEN public.ba_sync_publicacion_collections(v.target_id, v.servicios, v.barberos)\n      ELSE NULL::jsonb\n    END AS result\n  FROM validation v\n),\nsync_hours AS (\n  SELECT\n    CASE WHEN v.code = 'ok'\n      THEN public.ba_sync_registro_horarios(v.target_id, v.horarios)\n      ELSE NULL::jsonb\n    END AS result\n  FROM validation v\n),\nnew_barber_access AS (\n  SELECT\n    v.target_id AS barberia_id,\n    NULLIF(btrim(item.value->>'nombre'), '') AS nombre,\n    lower(NULLIF(btrim(item.value->>'email'), '')) AS email,\n    NULLIF(btrim(item.value->>'password'), '') AS password\n  FROM validation v\n  CROSS JOIN LATERAL jsonb_array_elements(v.barberos) item(value)\n  WHERE v.code = 'ok'\n    AND COALESCE(NULLIF(item.value->>'id', '')::int, 0) = 0\n    AND NULLIF(btrim(item.value->>'nombre'), '') IS NOT NULL\n    AND NULLIF(btrim(item.value->>'email'), '') IS NOT NULL\n    AND NULLIF(btrim(item.value->>'password'), '') IS NOT NULL\n),\nexisting_new_users AS (\n  SELECT nba.nombre, nba.email, u.id AS user_id\n  FROM new_barber_access nba\n  JOIN public.usuarios u ON lower(u.email) = nba.email\n),\ninserted_new_users AS (\n  INSERT INTO public.usuarios (nombre, email, password_hash, role)\n  SELECT\n    nba.nombre,\n    nba.email,\n    crypt(nba.password, gen_salt('bf', 8)),\n    'barbero'\n  FROM new_barber_access nba\n  WHERE NOT EXISTS (\n    SELECT 1\n    FROM public.usuarios u\n    WHERE lower(u.email) = nba.email\n  )\n  RETURNING id AS user_id, nombre, email\n),\nresolved_new_users AS (\n  SELECT user_id, nombre, email FROM existing_new_users\n  UNION ALL\n  SELECT user_id, nombre, email FROM inserted_new_users\n),\nlinked_new_barbers AS (\n  UPDATE public.barberos br\n  SET usuario_id = rnu.user_id\n  FROM resolved_new_users rnu, validation v\n  WHERE v.code = 'ok'\n    AND br.barberia_id = v.target_id\n    AND lower(btrim(br.nombre)) = lower(btrim(rnu.nombre))\n    AND br.usuario_id IS NULL\n  RETURNING br.id, br.usuario_id\n)\nSELECT\n  CASE WHEN v.code = 'ok' THEN true ELSE false END AS ok,\n  CASE WHEN v.code = 'ok' THEN 'configuracion_actualizada' ELSE v.code END AS code,\n  CASE\n    WHEN v.code = 'ok' THEN 'Configuracion actualizada'\n    WHEN v.code = 'sesion_no_valida' THEN 'Sesion no valida'\n    WHEN v.code = 'sin_permiso' THEN 'No tienes permisos para editar esta barberia'\n    WHEN v.code = 'slug_mismatch' THEN 'El slug no coincide con la barberia solicitada'\n    WHEN v.code = 'barberia_no_encontrada' THEN 'Barberia no encontrada'\n    WHEN v.code = 'credenciales_barbero_nuevo_invalidas' THEN 'Los barberos nuevos requieren email valido y password de minimo 6 caracteres'\n    ELSE 'Datos invalidos'\n  END AS message,\n  CASE WHEN v.code = 'ok' THEN 200 WHEN v.code = 'sesion_no_valida' THEN 401 WHEN v.code IN ('sin_permiso', 'slug_mismatch') THEN 403 ELSE 400 END AS status_code,\n  CASE WHEN v.code = 'ok'\n    THEN jsonb_build_object(\n      'barberia', COALESCE(to_jsonb(ub), '{}'::jsonb),\n      'catalogs', (SELECT result FROM sync_catalogs LIMIT 1),\n      'hours', (SELECT result FROM sync_hours LIMIT 1),\n      'new_barber_users_linked', (SELECT count(*) FROM linked_new_barbers),\n      'owner_id_original', v.original_owner_id,\n      'owner_id_actual', COALESCE(ub.owner_id, v.original_owner_id)\n    )\n    ELSE NULL::jsonb\n  END AS data\nFROM validation v\nLEFT JOIN updated_barberia ub ON true;\n    ",
+          "options": {
+            "queryReplacement": "={{ $json.params }}"
+          }
+        },
+        "id": "pg-update",
+        "name": "Postgres - update configuracion",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          900,
+          300
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "SOV6oSyuHI9cxgLF",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "\nconst row = $input.first().json || {};\nreturn [{\n  json: {\n    status_code: Number(row.status_code || (row.ok ? 200 : 400)),\n    body: {\n      ok: !!row.ok,\n      code: row.code || (row.ok ? 'configuracion_actualizada' : 'datos_invalidos'),\n      message: row.message || '',\n      data: row.data || null\n    }\n  }\n}];\n"
+        },
+        "id": "format-response",
+        "name": "Code - format response",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1100,
+          300
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json.body }}",
+          "options": {
+            "responseCode": "={{ $json.status_code }}",
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "https://barberagency-barberagency.gymh5g.easypanel.host"
+                },
+                {
+                  "name": "Access-Control-Allow-Methods",
+                  "value": "POST, OPTIONS"
+                },
+                {
+                  "name": "Access-Control-Allow-Headers",
+                  "value": "Content-Type, Accept"
+                },
+                {
+                  "name": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        "id": "respond",
+        "name": "Respond",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1300,
+          300
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook - POST": {
+        "main": [
+          [
+            {
+              "node": "Code - parse request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - parse request": {
+        "main": [
+          [
+            {
+              "node": "JWT - Verify session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JWT - Verify session": {
+        "main": [
+          [
+            {
+              "node": "Code - prepare SQL",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - prepare SQL": {
+        "main": [
+          [
+            {
+              "node": "Postgres - update configuracion",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Postgres - update configuracion": {
+        "main": [
+          [
+            {
+              "node": "Code - format response",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - format response": {
+        "main": [
+          [
+            {
+              "node": "Respond",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "authors": "Carlos a Alvis",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-06-09T22:17:32.541Z",
+        "id": 1714,
+        "workflowId": "dB102yaMhaxNSGpK",
+        "versionId": "decbd9f2-f08d-471e-a6cf-936e9d42096f",
+        "event": "activated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      },
+      {
+        "createdAt": "2026-06-09T22:17:32.720Z",
+        "id": 1716,
+        "workflowId": "dB102yaMhaxNSGpK",
+        "versionId": "decbd9f2-f08d-471e-a6cf-936e9d42096f",
+        "event": "activated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      },
+      {
+        "createdAt": "2026-06-09T22:17:32.533Z",
+        "id": 1713,
+        "workflowId": "dB102yaMhaxNSGpK",
+        "versionId": "decbd9f2-f08d-471e-a6cf-936e9d42096f",
+        "event": "deactivated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      },
+      {
+        "createdAt": "2026-06-09T22:17:32.712Z",
+        "id": 1715,
+        "workflowId": "dB102yaMhaxNSGpK",
+        "versionId": "decbd9f2-f08d-471e-a6cf-936e9d42096f",
+        "event": "deactivated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      }
+    ]
+  }
+}
