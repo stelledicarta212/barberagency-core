@@ -86,10 +86,14 @@
     window.__BA_WP_ONBOARDING_READY__ = true;
 
     // SECCION: Configuracion de endpoints y llaves de storage.
+    window.BA_PANEL_API_BASE_URL =
+      (window.BA_PANEL_API_BASE_URL && String(window.BA_PANEL_API_BASE_URL).trim()) ||
+      "https://barberagency-app.gymh5g.easypanel.host";
+
     const DEFAULT_ONBOARDING_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/registro-barberia";
     const DEFAULT_ONBOARDING_ENDPOINT_ALT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/onboarding/complete";
-    const DEFAULT_ONBOARDING_ENDPOINT_LEGACY = "https://barberagency-app.gymh5g.easypanel.host/api/onboarding/complete";
-    const DEFAULT_CONFIG_UPDATE_ENDPOINT = "https://barberagency-app.gymh5g.easypanel.host/api/configuracion/update";
+    const DEFAULT_ONBOARDING_ENDPOINT_LEGACY = window.BA_PANEL_API_BASE_URL + "/api/onboarding/complete";
+    const DEFAULT_CONFIG_UPDATE_ENDPOINT = window.BA_PANEL_API_BASE_URL + "/api/configuracion/update";
     const DEFAULT_POSTGREST_BASE = "https://api.agencia2c.cloud";
     const DEFAULT_CANONICAL_SYNC_RPC = "ba_sync_publicacion_collections";
     const DEFAULT_CANONICAL_HOURS_SYNC_RPC = "ba_sync_registro_horarios";
@@ -100,9 +104,13 @@
     const API_URL =
       (window.BA_ONBOARDING_ENDPOINT && String(window.BA_ONBOARDING_ENDPOINT).trim()) ||
       DEFAULT_ONBOARDING_ENDPOINT;
-    const CONFIG_UPDATE_ENDPOINT =
+    let CONFIG_UPDATE_ENDPOINT =
       (window.BA_CONFIG_UPDATE_ENDPOINT && String(window.BA_CONFIG_UPDATE_ENDPOINT).trim()) ||
       DEFAULT_CONFIG_UPDATE_ENDPOINT;
+
+    if (CONFIG_UPDATE_ENDPOINT.startsWith("/api/")) {
+      CONFIG_UPDATE_ENDPOINT = window.BA_PANEL_API_BASE_URL + CONFIG_UPDATE_ENDPOINT;
+    }
     const POSTGREST_BASE =
       (window.BA_POSTGREST_URL && String(window.BA_POSTGREST_URL).trim()) ||
       DEFAULT_POSTGREST_BASE;
