@@ -281,6 +281,9 @@
       message: "",
       owner: null
     };
+    let truthLoaded = !isEditIntent();
+    let identityValidated = !isEditIntent();
+    let initialTruthState = null;
 
     syncThemeFromGlobal();
 
@@ -367,10 +370,20 @@
     }
 
     function requireEditHydrationReady() {
-      if (!editHydrationState.required) return true;
-      if (editHydrationState.complete && !editHydrationState.failed) return true;
-      showMessage("error", editHydrationState.message || "La configuracion real de la barberia aun no termino de cargar. No se puede guardar.");
-      return false;
+      if (!isEditIntent()) return true;
+      if (!truthLoaded) {
+        showMessage("error", "La configuración de la barbería no se ha cargado.");
+        return false;
+      }
+      if (!identityValidated) {
+        showMessage("error", "La identidad de la barbería no pudo ser validada. Guardado bloqueado.");
+        return false;
+      }
+      if (editHydrationState.failed) {
+        showMessage("error", editHydrationState.message || "La hidratación falló. No se permite guardar.");
+        return false;
+      }
+      return true;
     }
 
     function isLikelyGoogleMapsUrl(value) {
@@ -786,6 +799,7 @@
         barberia: Object.assign({}, base.barberia, source.barberia || {}),
         servicios: Array.isArray(source.servicios) && source.servicios.length
           ? source.servicios.map((item) => ({
+              id: item.id || undefined,
               nombre: clean(item.nombre),
               duracion_min: Number(item.duracion_min || 30),
               precio: Number(item.precio || 0),
@@ -1541,7 +1555,10 @@
         return Array.from(document.querySelectorAll("#baServicesList [data-index]"))
           .reduce((acc, node) => {
             const index = Number(node.dataset.index);
-            if (!acc[index]) acc[index] = { nombre: "", duracion_min: 30, precio: 0, imagen_url: "" };
+            if (!acc[index]) {
+              const existingId = draft.servicios && draft.servicios[index] ? draft.servicios[index].id : undefined;
+              acc[index] = { id: existingId, nombre: "", duracion_min: 30, precio: 0, imagen_url: "" };
+            }
             if (node.dataset.field === "nombre") acc[index].nombre = node.value;
             if (node.dataset.field === "duracion_min") acc[index].duracion_min = Number(node.value || 0);
             if (node.dataset.field === "precio") acc[index].precio = Math.max(0, Number(node.value || 0));
@@ -1965,9 +1982,15 @@
           render();
         });
 
-        document.getElementById("baContinueTemplateBtn").addEventListener("click", () => {
-          submitDraftAndContinue();
-        });
+        const continueBtn = document.getElementById("baContinueTemplateBtn");
+        if (continueBtn) {
+          if (!truthLoaded || !identityValidated || editHydrationState.failed) {
+            continueBtn.disabled = true;
+          }
+          continueBtn.addEventListener("click", () => {
+            submitDraftAndContinue();
+          });
+        }
         return;
       }
 
@@ -2178,6 +2201,211 @@
       };
     }
 
+    function buildPatchPayload() {
+      const identity = getEditIdentity();
+      const patch = {};
+      const allowedPatchFields = [
+        "nombre",
+        "telefono",
+        "whatsapp",
+        "email_contacto",
+        "direccion",
+        "ciudad",
+        "instagram",
+        "tiktok",
+        "politicas",
+        "logo_url",
+        "cover_url",
+        "moneda",
+        "acepta_efectivo",
+        "acepta_digital",
+        "timezone",
+        "slot_min"
+      ];
+      
+      for (const field of allowedPatchFields) {
+        const currentVal = draft.barberia[field];
+        const initialVal = initialTruthState && initialTruthState.barberia ? initialTruthState.barberia[field] : undefined;
+
+        const cleanCurrent = (currentVal === undefined || currentVal === null) ? "" : clean(currentVal);
+        const cleanInitial = (initialVal === undefined || initialVal === null) ? "" : clean(initialVal);
+
+        if (field === "slot_min") {
+          const numCurrent = Number(currentVal || 15);
+          const numInitial = Number(initialVal || 15);
+          if (numCurrent !== numInitial) {
+            patch[field] = numCurrent;
+          }
+        } else if (field === "acepta_efectivo" || field === "acepta_digital") {
+          const boolCurrent = Boolean(currentVal);
+          const boolInitial = Boolean(initialVal);
+          if (boolCurrent !== boolInitial) {
+            patch[field] = boolCurrent;
+          }
+        } else {
+          if (cleanCurrent !== cleanInitial) {
+            patch[field] = cleanCurrent;
+          }
+        }
+      }
+
+      const serviciosUpsert = [];
+      const serviciosDeactivate = [];
+      const currentServices = (draft.servicios || []).filter((item) => clean(item.nombre));
+      const initialServices = (initialTruthState && initialTruthState.servicios) || [];
+      
+      for (const currentS of currentServices) {
+        if (currentS.id !== undefined && currentS.id !== null) {
+          const initialS = initialServices.find(item => item.id === currentS.id);
+          if (initialS) {
+            const hasChanged = 
+              clean(currentS.nombre) !== clean(initialS.nombre) ||
+              Number(currentS.duracion_min || 30) !== Number(initialS.duracion_min || 30) ||
+              Number(currentS.precio || 0) !== Number(initialS.precio || 0) ||
+              clean(currentS.imagen_url) !== clean(initialS.imagen_url);
+            
+            if (hasChanged) {
+              serviciosUpsert.push({
+                id: currentS.id,
+                nombre: clean(currentS.nombre),
+                duracion_min: Number(currentS.duracion_min || 30),
+                precio: Number(currentS.precio || 0),
+                imagen_url: clean(currentS.imagen_url)
+              });
+            }
+          } else {
+            serviciosUpsert.push({
+              id: currentS.id,
+              nombre: clean(currentS.nombre),
+              duracion_min: Number(currentS.duracion_min || 30),
+              precio: Number(currentS.precio || 0),
+              imagen_url: clean(currentS.imagen_url)
+            });
+          }
+        } else {
+          serviciosUpsert.push({
+            nombre: clean(currentS.nombre),
+            duracion_min: Number(currentS.duracion_min || 30),
+            precio: Number(currentS.precio || 0),
+            imagen_url: clean(currentS.imagen_url)
+          });
+        }
+      }
+      
+      for (const initialS of initialServices) {
+        if (initialS.id !== undefined && initialS.id !== null) {
+          const stillExists = currentServices.some(item => item.id === initialS.id);
+          if (!stillExists) {
+            serviciosDeactivate.push(initialS.id);
+          }
+        }
+      }
+
+      const barberosUpsert = [];
+      const barberosDeactivate = [];
+      const currentBarbers = (draft.barberos || []).filter((item) => clean(item.nombre));
+      const initialBarbers = (initialTruthState && initialTruthState.barberos) || [];
+      
+      for (const currentB of currentBarbers) {
+        if (currentB.id !== undefined && currentB.id !== null) {
+          const initialB = initialBarbers.find(item => item.id === currentB.id);
+          if (initialB) {
+            const hasChanged = 
+              clean(currentB.nombre) !== clean(initialB.nombre) ||
+              Boolean(currentB.activo) !== Boolean(initialB.activo) ||
+              clean(currentB.foto_url || currentB.foto) !== clean(initialB.foto_url || initialB.foto);
+            
+            if (hasChanged) {
+              barberosUpsert.push({
+                id: currentB.id,
+                nombre: clean(currentB.nombre),
+                activo: Boolean(currentB.activo),
+                foto_url: normalizeBarberPhoto(currentB.foto_url || currentB.foto)
+              });
+            }
+          } else {
+            barberosUpsert.push({
+              id: currentB.id,
+              nombre: clean(currentB.nombre),
+              activo: Boolean(currentB.activo),
+              foto_url: normalizeBarberPhoto(currentB.foto_url || currentB.foto)
+            });
+          }
+        } else {
+          barberosUpsert.push({
+            nombre: clean(currentB.nombre),
+            activo: Boolean(currentB.activo),
+            foto_url: normalizeBarberPhoto(currentB.foto_url || currentB.foto)
+          });
+        }
+      }
+      
+      for (const initialB of initialBarbers) {
+        if (initialB.id !== undefined && initialB.id !== null) {
+          const stillExists = currentBarbers.some(item => item.id === initialB.id);
+          if (!stillExists) {
+            barberosDeactivate.push(initialB.id);
+          }
+        }
+      }
+
+      const horariosUpsert = [];
+      const currentHours = draft.horarios || [];
+      const initialHours = (initialTruthState && initialTruthState.horarios) || [];
+      const dayToIndex = {
+        domingo: 0,
+        lunes: 1,
+        martes: 2,
+        miercoles: 3,
+        jueves: 4,
+        viernes: 5,
+        sabado: 6
+      };
+      
+      for (const currentH of currentHours) {
+        const diaClean = clean(currentH.dia).toLowerCase();
+        const diaSemana = dayToIndex[diaClean] !== undefined ? dayToIndex[diaClean] : -1;
+        
+        if (diaSemana !== -1) {
+          const initialH = initialHours.find(item => clean(item.dia).toLowerCase() === diaClean);
+          const hasChanged = !initialH ||
+            Boolean(currentH.activo) !== Boolean(initialH.activo) ||
+            clean(currentH.hora_abre).slice(0, 5) !== clean(initialH.hora_abre).slice(0, 5) ||
+            clean(currentH.hora_cierra).slice(0, 5) !== clean(initialH.hora_cierra).slice(0, 5);
+          
+          if (hasChanged) {
+            horariosUpsert.push({
+              dia: clean(currentH.dia),
+              dia_semana: diaSemana,
+              activo: Boolean(currentH.activo),
+              hora_abre: clean(currentH.hora_abre),
+              hora_cierra: clean(currentH.hora_cierra)
+            });
+          }
+        }
+      }
+
+      return {
+        mode: "edit",
+        barberia_id: Number(identity.barberia_id) || undefined,
+        slug: clean(identity.slug) || undefined,
+        patch: patch,
+        collections_patch: {
+          servicios: {
+            upsert: serviciosUpsert,
+            deactivate: serviciosDeactivate
+          },
+          barberos: {
+            upsert: barberosUpsert,
+            deactivate: barberosDeactivate
+          },
+          horarios: {
+            upsert: horariosUpsert
+          }
+        }
+      };
+    }
+
     function buildOnboardingRequestPayload(payload) {
       const draftPayload = payload && payload.draft ? payload.draft : {};
       const barberia = draftPayload.barberia || {};
@@ -2334,7 +2562,7 @@
         throw new Error("No hay endpoint configurado para guardar edicion.");
       }
 
-      const requestPayload = buildOnboardingRequestPayload({
+      const requestPayload = (payload && payload.patch) ? payload : buildOnboardingRequestPayload({
         ...payload,
         mode: "edit"
       });
@@ -2617,32 +2845,35 @@
 
       setBarberRows(barberValidation.rows);
 
-      const payload = buildDraftPayload();
+      const isEdit = isEditIntent();
+      const payload = isEdit ? buildPatchPayload() : buildDraftPayload();
       lastPayload = payload;
 
-      if (!payload.draft.barberia.nombre) {
+      if (!draft.barberia.nombre) {
         showMessage("error", "Falta el nombre de la barbería.");
         return;
       }
 
-      if (!isValidEmail(payload.draft.accesos.admin.email)) {
-        showMessage("error", "El email del administrador no es válido.");
-        return;
+      if (!isEdit) {
+        const adminEmail = draft.accesos.admin.email;
+        if (!isValidEmail(adminEmail)) {
+          showMessage("error", "El email del administrador no es válido.");
+          return;
+        }
+
+        const adminPassword = draft.accesos.admin.password;
+        if ((adminPassword || "").length < 6) {
+          showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
+          return;
+        }
       }
 
-      const isEdit = isEditIntent();
-      const passwordTyped = (payload.draft.accesos.admin.password || "").length > 0;
-      if ((!isEdit || passwordTyped) && (payload.draft.accesos.admin.password || "").length < 6) {
-        showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
-        return;
-      }
-
-      if (!payload.draft.servicios.length) {
+      if (!draft.servicios.length) {
         showMessage("error", "Debes crear al menos un servicio.");
         return;
       }
 
-      if (!payload.draft.horarios.some((item) => item.activo)) {
+      if (!draft.horarios.some((item) => item.activo)) {
         showMessage("error", "Debes dejar al menos un horario activo.");
         return;
       }
@@ -2691,32 +2922,35 @@
 
       setBarberRows(barberValidation.rows);
 
-      const payload = buildDraftPayload();
+      const isEdit = isEditIntent();
+      const payload = isEdit ? buildPatchPayload() : buildDraftPayload();
       lastPayload = payload;
 
-      if (!payload.draft.barberia.nombre) {
+      if (!draft.barberia.nombre) {
         showMessage("error", "Falta el nombre de la barbería.");
         return;
       }
 
-      if (!isValidEmail(payload.draft.accesos.admin.email)) {
-        showMessage("error", "El email del administrador no es válido.");
-        return;
+      if (!isEdit) {
+        const adminEmail = draft.accesos.admin.email;
+        if (!isValidEmail(adminEmail)) {
+          showMessage("error", "El email del administrador no es válido.");
+          return;
+        }
+
+        const adminPassword = draft.accesos.admin.password;
+        if ((adminPassword || "").length < 6) {
+          showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
+          return;
+        }
       }
 
-      const isEdit = isEditIntent();
-      const passwordTyped = (payload.draft.accesos.admin.password || "").length > 0;
-      if ((!isEdit || passwordTyped) && (payload.draft.accesos.admin.password || "").length < 6) {
-        showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
-        return;
-      }
-
-      if (!payload.draft.servicios.length) {
+      if (!draft.servicios.length) {
         showMessage("error", "Debes crear al menos un servicio.");
         return;
       }
 
-      if (!payload.draft.horarios.some((item) => item.activo)) {
+      if (!draft.horarios.some((item) => item.activo)) {
         showMessage("error", "Debes dejar al menos un horario activo.");
         return;
       }
@@ -2869,6 +3103,7 @@
           
           draft = normalizeDraft({
             barberia: {
+              ...b,
               nombre: clean(b.nombre),
               slug: clean(b.slug || identity.slug),
               telefono: clean(b.telefono),
@@ -2879,6 +3114,7 @@
               slot_min: Number(b.slot_min || 15)
             },
             servicios: servicesList.map(s => ({
+              id: s.id,
               nombre: clean(s.nombre),
               duracion_min: Number(s.duracion_min || 30),
               precio: Number(s.precio || 0),
@@ -2926,6 +3162,10 @@
             owner
           };
           
+          initialTruthState = JSON.parse(JSON.stringify(draft));
+          truthLoaded = true;
+          identityValidated = true;
+
           saveDraft();
           render();
         } catch (err) {
