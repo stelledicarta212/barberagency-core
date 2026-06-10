@@ -2427,6 +2427,44 @@
       };
     }
 
+    function patchPayloadHasChanges(payload) {
+      const patch = (payload && payload.patch && typeof payload.patch === "object") ? payload.patch : {};
+      const collections = (payload && payload.collections_patch && typeof payload.collections_patch === "object")
+        ? payload.collections_patch
+        : {};
+      const servicios = collections.servicios || {};
+      const barberos = collections.barberos || {};
+      const horarios = collections.horarios || {};
+
+      return (
+        Object.keys(patch).length > 0 ||
+        (Array.isArray(servicios.upsert) && servicios.upsert.length > 0) ||
+        (Array.isArray(servicios.deactivate) && servicios.deactivate.length > 0) ||
+        (Array.isArray(barberos.upsert) && barberos.upsert.length > 0) ||
+        (Array.isArray(barberos.deactivate) && barberos.deactivate.length > 0) ||
+        (Array.isArray(horarios.upsert) && horarios.upsert.length > 0)
+      );
+    }
+
+    function buildEditNavigationData() {
+      const identity = getEditIdentity();
+      const barberiaId = Number(identity.barberia_id) || Number(draft?.barberia?.id || 0) || 0;
+      const slug = clean(identity.slug) || clean(draft?.barberia?.slug);
+
+      return {
+        barberia_id: barberiaId,
+        slug,
+        barberia: {
+          id: barberiaId,
+          slug,
+          nombre: clean(draft?.barberia?.nombre),
+          telefono: clean(draft?.barberia?.telefono),
+          direccion: clean(draft?.barberia?.direccion)
+        },
+        message: "Continuando sin cambios pendientes."
+      };
+    }
+
     function buildOnboardingRequestPayload(payload) {
       const draftPayload = payload && payload.draft ? payload.draft : {};
       const barberia = draftPayload.barberia || {};
@@ -2906,6 +2944,13 @@
       }
 
       try {
+        if (isEdit && !patchPayloadHasChanges(payload)) {
+          const data = buildEditNavigationData();
+          persistLandingSeed(payload, data);
+          window.location.href = buildLandingBuilderUrl(payload, data);
+          return;
+        }
+
         const { data } = await postOnboardingPayload(payload);
 
         persistLandingSeed(payload, data);
