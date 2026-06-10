@@ -3091,7 +3091,7 @@
             throw new Error("Falta identidad de barbería (barberia_id o slug) en la URL.");
           }
           
-          const stateUrl = API_URL.replace("/webhook/registro-barberia", "/webhook/barberagency/dashboard/state") + `?barberia_id=${identity.barberia_id}&slug=${identity.slug}`;
+          const stateUrl = window.BA_PANEL_API_BASE_URL + `/api/dashboard/state?barberia_id=${identity.barberia_id}&slug=${identity.slug}`;
           const res = await fetch(stateUrl, { credentials: "include" });
           if (!res.ok) {
             throw new Error(`HTTP ${res.status} al obtener configuración.`);
