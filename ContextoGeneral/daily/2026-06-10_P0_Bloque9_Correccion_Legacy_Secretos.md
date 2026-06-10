@@ -1,8 +1,8 @@
 # Reporte de Corrección: Limpieza Legacy y Secretos - Bloque 9
 **Fecha:** 2026-06-10  
-**Estado / Decisión:** **P1 CORREGIDO**
+**Estado / Decisión:** **P1 CORREGIDO (Ajuste de Seguridad Endurecido)**
 
-Este reporte documenta las modificaciones realizadas en BarberAgency para blindar la seguridad del cliente y centralizar todas las llamadas de infraestructura sensibles del lado del servidor.
+Este reporte documenta las modificaciones realizadas en BarberAgency para blindar la seguridad del cliente y centralizar todas las llamadas de infraestructura sensibles en el lado del servidor, eliminando de forma absoluta cualquier URL interna hardcodeada y dependencias de variables públicas del cliente.
 
 ---
 
@@ -25,20 +25,24 @@ La causa raíz fue que el frontend de Next.js (lado del cliente) necesitaba invo
 ### A. Repositorio `panel_de_barberia`:
 * **[`src/lib/env.ts`](file:///C:/Users/calvi/OneDrive/n8n/Visual%20studio/panel_de_barberia/src/lib/env.ts):**
   * Se removieron del objeto `env` expuesto al cliente las propiedades `dashboardLoginEndpoint`, `dashboardRecoverRequestEndpoint`, `dashboardRecoverResetEndpoint` y `posSaleEndpoint`.
-  * Se erradicaron todos los fallbacks hardcodeados que apuntaban al subdominio de n8n (`https://barberagency-n8n.gymh5g.easypanel.host/...`).
+  * Se erradicaron todos los fallbacks hardcodeados que apuntaban al subdominio de n8n.
 * **[`src/lib/dashboard-api.ts`](file:///C:/Users/calvi/OneDrive/n8n/Visual%20studio/panel_de_barberia/src/lib/dashboard-api.ts):**
   * Se removió la importación innecesaria de `env`.
   * Se re-enrutaron las llamadas de `recoverPasswordRequest` y `recoverPasswordReset` para que utilicen rutas de proxy same-origin relativas (`/api/auth/recover/request` y `/api/auth/recover/reset`).
+* **[`.env.local.example`](file:///C:/Users/calvi/OneDrive/n8n/Visual%20studio/panel_de_barberia/.env.local.example):**
+  * Se agregaron como documentación las variables privadas server-only: `DASHBOARD_RECOVER_REQUEST_ENDPOINT` y `DASHBOARD_RECOVER_RESET_ENDPOINT` (sin valores reales).
 
-### B. Nuevos Proxies Same-Origin Creados (Server-side):
+### B. Nuevos Proxies Same-Origin Endurecidos (Server-side):
 * **[`src/app/api/auth/recover/request/route.ts`](file:///C:/Users/calvi/OneDrive/n8n/Visual%20studio/panel_de_barberia/src/app/api/auth/recover/request/route.ts):**
   * Maneja solicitudes `POST /api/auth/recover/request`.
-  * Valida payload mínimo (requiere `email`).
-  * Propaga la solicitud a n8n del lado del servidor de forma opaca al cliente.
+  * Requiere **estrictamente** la variable de entorno privada `DASHBOARD_RECOVER_REQUEST_ENDPOINT`.
+  * No utiliza variables públicas `NEXT_PUBLIC_*` ni fallbacks hardcodeados.
+  * Si la variable no está configurada, responde de forma segura con `500 Internal Server Error` y el código `"recover_endpoint_not_configured"` sin revelar la topología interna.
 * **[`src/app/api/auth/recover/reset/route.ts`](file:///C:/Users/calvi/OneDrive/n8n/Visual%20studio/panel_de_barberia/src/app/api/auth/recover/reset/route.ts):**
   * Maneja solicitudes `POST /api/auth/recover/reset`.
-  * Valida payload mínimo (requiere `token` y `new_password` >= 6 caracteres).
-  * Propaga de forma segura la petición a n8n en el servidor.
+  * Requiere **estrictamente** la variable de entorno privada `DASHBOARD_RECOVER_RESET_ENDPOINT`.
+  * No utiliza variables públicas `NEXT_PUBLIC_*` ni fallbacks hardcodeados.
+  * Si falta la configuración, responde de forma segura con `500` y el código `"recover_endpoint_not_configured"`.
 
 ---
 
@@ -70,28 +74,13 @@ El linter finalizó exitosamente sin errores en la estructura del código:
 ### C. Ejecución de `npm run build`
 Next.js compiló correctamente de forma limpia y generó el bundle optimizado sin fallos:
 ```bash
-✓ Compiled successfully in 2.9s
+✓ Compiled successfully in 2.7s
   Running TypeScript ...
   Finished TypeScript in 3.5s ...
   Collecting page data using 11 workers ...
   Generating static pages using 11 workers (25/25) ...
-✓ Generating static pages using 11 workers (25/25) in 434ms
+✓ Generating static pages using 11 workers (25/25) in 464ms
   Finalizing page optimization ...
-```
-
-### D. Pruebas de Funcionamiento HTTP Local:
-Se levantó temporalmente el servidor de producción Next.js y se verificó el enrutamiento:
-```bash
-========================================
-            LOCAL TEST RESULTS         
-========================================
-[Test #1] PASS | Status: 200 | Test: POST /api/auth/recover/request (valid payload)
-Response Body: {}
-[Test #2] PASS | Status: 200 | Test: POST /api/auth/recover/reset (test payload)
-Response Body: {}
-[Test #3] PASS | Status: 410 | Test: POST /api/auth/login (deprecated)
-Response Body: {"ok":false,"code":"endpoint_deprecated","message":"Usa /api/session/login"}
-========================================
 ```
 
 ---
@@ -107,6 +96,7 @@ Response Body: {"ok":false,"code":"endpoint_deprecated","message":"Usa /api/sess
 
 ## 7. Identificadores de Commits
 
-* **Hash del commit del panel (`panel_de_barberia`):** `44ac577`
-* **Hash del commit del core (`barberagency-core`):** `c01e9ab`
+* **Hash del commit del panel (`panel_de_barberia`):** `08a956c`
+* **Hash del commit del core (`barberagency-core`):** `af2221d`
+
 
