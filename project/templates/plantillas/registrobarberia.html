@@ -672,7 +672,7 @@
               : {};
             return {
               nombre: clean(access.nombre || access.name || item?.nombre || item?.name),
-              email: clean(access.email || item?.email).toLowerCase(),
+              email: clean(access.email || item?.email || item?.barbero_email).toLowerCase(),
               password: clean(access.password || item?.password),
               foto: normalizeBarberPhoto(access.foto_url || access.foto || item?.foto_url || item?.foto || item?.photo || item?.avatar_url),
               foto_url: normalizeBarberPhoto(access.foto_url || access.foto || item?.foto_url || item?.foto || item?.photo || item?.avatar_url)
@@ -1063,7 +1063,7 @@
           id: Number(barber.id || access.id || 0) || undefined,
           usuario_id: Number(barber.usuario_id || access.usuario_id || 0) || undefined,
           nombre: clean(barber.nombre) || clean(access.nombre),
-          email: clean(access.email || barber.email),
+          email: clean(access.email || barber.email || barber.barbero_email),
           password: access.password || "",
           has_password: Boolean(access.has_password || barber.has_password),
           activo: barber.activo !== undefined ? Boolean(barber.activo) : Boolean(access.activo),
@@ -1680,7 +1680,15 @@
 
                   <label class="ba-label">
                     Email
-                    <input class="ba-input" type="email" data-barber-field="email" data-barber-index="${index}" value="${escapeHtml(row.email || "")}" placeholder="Ej: york@correo.com" ${isEditIntent() && row.id ? "disabled" : ""} />
+                    <input
+                      class="ba-input"
+                      type="${(isEditIntent() && row.id && !row.email) ? "text" : "email"}"
+                      data-barber-field="email"
+                      data-barber-index="${index}"
+                      value="${(isEditIntent() && row.id && !row.email) ? "Sin email configurado" : escapeHtml(row.email || "")}"
+                      placeholder="Ej: york@correo.com"
+                      ${isEditIntent() && row.id ? "disabled" : ""}
+                    />
                     ${isEditIntent() && row.id ? `<span class="ba-helper">El email de acceso se cambia desde un flujo separado.</span>` : ""}
                   </label>
 
@@ -1856,11 +1864,16 @@
           const photoUrlInput = card.querySelector('[data-barber-field="foto_url"]');
           const photoUrl = clean(photoUrlInput && photoUrlInput.value) || clean(photoInput && photoInput.value);
 
+          let emailVal = clean(emailInput && emailInput.value);
+          if (emailVal.toLowerCase() === "sin email configurado") {
+            emailVal = "";
+          }
+
           rowsFromDom.push({
             id: Number(currentBarber.id || currentAccess.id || 0) || undefined,
             usuario_id: Number(currentBarber.usuario_id || currentAccess.usuario_id || 0) || undefined,
             nombre: clean(nameInput && nameInput.value),
-            email: clean(emailInput && emailInput.value),
+            email: emailVal,
             password: clean(passInput && passInput.value),
             has_password: Boolean(currentBarber.has_password || currentAccess.has_password),
             activo: Boolean(activeInput && activeInput.checked),
@@ -1885,7 +1898,7 @@
 
       const barbers = getBarberRows()
         .filter((item) => clean(item.nombre))
-        .map((item) => item.nombre + " | " + item.email);
+        .map((item) => item.nombre + " | " + (clean(item.email) ? item.email : "Sin email configurado"));
 
       return `
         <div class="ba-review">
@@ -3130,7 +3143,7 @@
               id: Number(ba.id || 0) || undefined,
               usuario_id: Number(ba.usuario_id || 0) || undefined,
               nombre: clean(ba.nombre),
-              email: clean(ba.email).toLowerCase(),
+              email: clean(ba.email || ba.barbero_email).toLowerCase(),
               has_password: Boolean(ba.has_password),
               activo: Boolean(ba.activo),
               foto: clean(ba.foto_url),
@@ -3146,7 +3159,7 @@
                 id: Number(ba.id || 0) || undefined,
                 usuario_id: Number(ba.usuario_id || 0) || undefined,
                 nombre: clean(ba.nombre),
-                email: clean(ba.email).toLowerCase(),
+                email: clean(ba.email || ba.barbero_email).toLowerCase(),
                 password: "",
                 has_password: Boolean(ba.has_password),
                 foto: clean(ba.foto_url),
