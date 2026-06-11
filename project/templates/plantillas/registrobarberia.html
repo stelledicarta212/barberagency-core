@@ -2999,9 +2999,8 @@
       const isEdit = isEditIntent();
       const payload = isEdit ? buildPatchPayload() : buildDraftPayload();
       lastPayload = payload;
-            if (isEdit) {
+          if (isEdit) {
         const data = buildEditNavigationData();
-        persistLandingSeed(payload, data);
         window.location.href = buildLandingBuilderUrl(payload, data);
         return;
       }
