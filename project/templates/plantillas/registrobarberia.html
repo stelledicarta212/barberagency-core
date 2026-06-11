@@ -2036,6 +2036,39 @@
 
     // SECCION: Seed y URL para abrir el editor de plantillas.
     function persistLandingSeed(payload, data) {
+        if (!data || typeof data !== "object") {
+    data = {};
+  }
+
+  if (!data.barberia) {
+    data.barberia = {
+      id: Number(payload?.barberia_id || 0),
+      slug: clean(payload?.slug || ""),
+      nombre: clean(payload?.draft?.barberia?.nombre || ""),
+      ciudad: clean(payload?.draft?.barberia?.ciudad || ""),
+      direccion: clean(payload?.draft?.barberia?.direccion || ""),
+      maps_url: clean(payload?.draft?.barberia?.maps_url || ""),
+      telefono: clean(payload?.draft?.barberia?.telefono || "")
+    };
+  }
+
+  if (!Array.isArray(data.servicios)) {
+    data.servicios = Array.isArray(payload?.collections_patch?.servicios?.upsert)
+      ? payload.collections_patch.servicios.upsert
+      : [];
+  }
+
+  if (!Array.isArray(data.barberos)) {
+    data.barberos = Array.isArray(payload?.collections_patch?.barberos?.upsert)
+      ? payload.collections_patch.barberos.upsert
+      : [];
+  }
+
+  if (!Array.isArray(data.horarios)) {
+    data.horarios = Array.isArray(payload?.collections_patch?.horarios?.upsert)
+      ? payload.collections_patch.horarios.upsert
+      : [];
+  }
       const adminAccess = payload && payload.draft && payload.draft.accesos && payload.draft.accesos.admin
         ? payload.draft.accesos.admin
         : {};
