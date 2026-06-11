@@ -3156,6 +3156,13 @@ SISTEMA DE DISEÑO ESCRITORIO SAAS PREMIUM DARK
 FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
 ================================================================
 */
+@media (min-width: 901px) {
+  #ba-editor-v2 .ba-mobile-header,
+  .ba-mobile-only {
+    display: none !important;
+  }
+}
+
 @media (max-width: 900px) {
   /* Ocultar elementos exclusivos de escritorio */
   #ba-editor-v2 .ba-desktop-only,
@@ -3163,13 +3170,29 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
   #ba-editor-v2 .ba-sidebar-help-desktop,
   #ba-editor-v2 .ba-desktop-templates-section,
   #ba-editor-v2 .ba-preview-toolbar-desktop,
-  #ba-editor-v2 .ba-browser-bar {
+  #ba-editor-v2 .ba-browser-bar,
+  #ba-editor-v2 .ba-browser-chrome,
+  #ba-editor-v2 .ba-device-frame,
+  #ba-editor-v2 .ba-phone-frame,
+  #ba-editor-v2 .ba-preview-btn-desktop {
     display: none !important;
+  }
+
+  /* Desactivar pseudo-elementos del header simulado */
+  #ba-editor-v2::before,
+  #ba-editor-v2::after,
+  #ba-editor-v2 .ba-row::before {
+    display: none !important;
+    content: none !important;
   }
 
   /* El wrapper del previsualizador en móvil se comporta como contenedor pasante */
   #ba-editor-v2 .ba-browser-mockup {
     display: contents !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
   }
 
   /* Posicionamiento del Dock Móvil en el pie de página */
@@ -3190,5 +3213,180 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
   #ba-editor-v2 .ba-row,
   #ba-editor-v2 #ba-right.ba-preview {
     padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Ajustes generales del editor móvil tipo App */
+  html,
+  body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+
+  #ba-editor-v2 {
+    width: 100% !important;
+    min-height: 100dvh !important;
+    padding-top: calc(88px + env(safe-area-inset-top, 0px)) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-radius: 0 !important;
+    background:
+      radial-gradient(circle at 20% 0%, rgba(201,162,78,.14), transparent 34%),
+      linear-gradient(180deg, #070A0D 0%, #0B1117 100%) !important;
+  }
+
+  #ba-editor-v2 .ba-row {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    gap: 16px !important;
+  }
+
+  #ba-editor-v2 #ba-left,
+  #ba-editor-v2 #ba-right.ba-preview {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Card Tu Landing */
+  #ba-editor-v2 #ba-right.ba-preview {
+    padding-top: 68px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    padding-bottom: 12px !important;
+    border-radius: 24px !important;
+    border: 1px solid var(--ba-mobile-border) !important;
+    background: var(--ba-mobile-surface) !important;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  /* Estilo del Iframe en móvil: Sin bordes de mockup de celular ni sombras internas */
+  #ba-editor-v2 #preview {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 16px !important;
+    background: #ffffff !important;
+    height: var(--work-height) !important;
+  }
+
+  /* Desactivar cualquier shadow o borde en modo claro para preview */
+  body.light-mode #ba-editor-v2 #preview,
+  #ba-editor-v2[data-ui-theme='light'] #preview {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Estilo de la barra del header movil real */
+  #ba-editor-v2 .ba-mobile-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 72px !important;
+    height: calc(72px + env(safe-area-inset-top, 0px)) !important;
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    background: rgba(7, 10, 13, 0.72) !important;
+    backdrop-filter: blur(20px) saturate(1.4) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    z-index: 10001 !important;
+  }
+
+  body.light-mode #ba-editor-v2 .ba-mobile-header,
+  #ba-editor-v2[data-ui-theme='light'] .ba-mobile-header {
+    background: rgba(247, 245, 239, 0.72) !important;
+    border-bottom-color: rgba(20, 27, 38, 0.08) !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-brand .ba-logo-icon {
+    display: grid !important;
+    place-items: center !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(201, 162, 78, 0.38) !important;
+    background:
+      linear-gradient(180deg, rgba(201, 162, 78, 0.22), rgba(201, 162, 78, 0.08)),
+      rgba(10, 14, 18, 0.62) !important;
+    color: var(--ba-mobile-gold) !important;
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  body.light-mode #ba-editor-v2 .ba-mobile-brand .ba-logo-icon,
+  #ba-editor-v2[data-ui-theme='light'] .ba-mobile-brand .ba-logo-icon {
+    border-color: rgba(184, 138, 34, 0.38) !important;
+    background:
+      linear-gradient(180deg, rgba(184, 138, 34, 0.22), rgba(184, 138, 34, 0.08)),
+      rgba(255, 255, 255, 0.62) !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-brand-info {
+    display: flex !important;
+    flex-direction: column !important;
+    line-height: 1.2 !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-brand-title {
+    color: var(--ba-mobile-text) !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-brand-sub {
+    color: var(--ba-mobile-muted) !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-status {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 6px 12px !important;
+    border-radius: 99px !important;
+  }
+
+  body.light-mode #ba-editor-v2 .ba-mobile-status,
+  #ba-editor-v2[data-ui-theme='light'] .ba-mobile-status {
+    background: rgba(0, 0, 0, 0.03) !important;
+    border-color: rgba(0, 0, 0, 0.06) !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-status .ba-status-dot {
+    display: inline-block !important;
+    width: 6px !important;
+    height: 6px !important;
+    border-radius: 50% !important;
+    background-color: var(--ba-mobile-success, #32D583) !important;
+    box-shadow: 0 0 8px var(--ba-mobile-success, #32D583) !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-status .ba-status-text {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: var(--ba-mobile-text) !important;
   }
 }
