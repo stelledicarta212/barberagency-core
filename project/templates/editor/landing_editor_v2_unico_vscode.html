@@ -1,4 +1,4 @@
-﻿
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
@@ -4526,6 +4526,10 @@
           window.addEventListener("load", () => setTimeout(doPublish, 500));
       }
     }
+  } catch(e) {
+    // Silently fail if not in an iframe or cannot access src
+  }
+
   // Desktop view switchers and click delegates
   try {
     const btnDesktop = document.getElementById('btnViewDesktop');
