@@ -2040,7 +2040,7 @@
         data = {};
       }
 
-      const sourceDraft = (payload && payload.draft) || window.draft || {};
+      const sourceDraft = (payload && payload.draft) || draft || {};
 
       if (!data.barberia) {
         data.barberia = {
@@ -2081,6 +2081,18 @@
       const barberProfiles = Array.isArray(sourceDraft.barberos)
         ? sourceDraft.barberos
         : [];
+      const finalServices = Array.isArray(data?.servicios) && data.servicios.length
+        ? data.servicios
+        : (Array.isArray(sourceDraft.servicios) ? sourceDraft.servicios : []);
+      const finalHours = Array.isArray(data?.horarios) && data.horarios.length
+        ? data.horarios
+        : (Array.isArray(sourceDraft.horarios) ? sourceDraft.horarios : []);
+      const finalBarbers = Array.isArray(data?.barberos) && data.barberos.length
+        ? data.barberos
+        : (barberProfiles.length ? barberProfiles : barberAccesses);
+      data.servicios = finalServices;
+      data.horarios = finalHours;
+      data.barberos = finalBarbers;
       const inheritedPhotos = barberProfiles
         .map((item) => normalizeBarberPhoto(item && (item.foto_url || item.foto)))
         .filter(Boolean);
@@ -2109,9 +2121,9 @@
           timezone: sourceDraft?.barberia?.timezone || "America/Bogotá",
           slot_min: sourceDraft?.barberia?.slot_min || 15
         },
-        servicios: sourceDraft.servicios || [],
-        horarios: sourceDraft.horarios || [],
-        barberos: barberProfiles.length ? barberProfiles : barberAccesses,
+        servicios: finalServices,
+        horarios: finalHours,
+        barberos: finalBarbers,
         barber_photos: inheritedPhotos.length ? inheritedPhotos : BARBER_PHOTO_OPTIONS.slice(),
         accesos: {
           admin: {
