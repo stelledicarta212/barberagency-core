@@ -2558,6 +2558,20 @@ function normalizeDayLabel(value) {
       if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || '')) &&
           window.BA_LANDING_ROUTE_CONTEXT &&
           typeof window.BA_LANDING_ROUTE_CONTEXT === 'object') {
+        const payload = extractPublicLandingPayload(window.BA_LANDING_ROUTE_CONTEXT);
+        if (!payload.ok) return;
+
+        runtimeLandingState.barberia_id = payload.barberia_id;
+        runtimeLandingState.profile = payload.profile || null;
+        runtimeLandingState.branding = payload.branding || null;
+        runtimeLandingState.inherited = payload.inherited || null;
+
+        if (payload.public_landing_url) window.BA_PUBLIC_LANDING_URL = payload.public_landing_url;
+        if (payload.reservation_url) window.BA_RESERVATION_URL = payload.reservation_url;
+        if (payload.qr_url) window.BA_QR_URL = payload.qr_url;
+
+        applyInheritedCollections(payload.servicios, payload.barberos, payload.horarios, payload.slot_min);
+        applyPublicLandingBranding(payload);
         renderLandingQr();
         return;
       }
