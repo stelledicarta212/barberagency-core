@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
 
 /*
 =================================
@@ -2334,5 +2334,819 @@ EDITOR MOVIL PREMIUM GLASS
 
   #ba-editor-v2 .ba-dock-btn span {
     font-size: 8.5px;
+  }
+}
+
+/*
+================================================================
+SISTEMA DE DISEÑO ESCRITORIO SAAS PREMIUM DARK
+================================================================
+*/
+@media (min-width: 901px) {
+  #ba-editor-v2 {
+    --ba-desktop-bg: #070A0D;
+    --ba-desktop-bg-2: #0B1117;
+    --ba-desktop-panel: rgba(15, 22, 30, 0.88);
+    --ba-desktop-panel-strong: rgba(18, 26, 36, 0.94);
+    --ba-desktop-border: rgba(255, 255, 255, 0.10);
+    --ba-desktop-border-strong: rgba(255, 255, 255, 0.16);
+    --ba-desktop-gold: #C9A24E;
+    --ba-desktop-gold-soft: #E6C15A;
+    --ba-desktop-text: #F7F7F4;
+    --ba-desktop-muted: #9CA3AF;
+    --ba-desktop-success: #32D583;
+
+    /* Sobreescritura de variables del panel */
+    --panel-bg: var(--ba-desktop-panel) !important;
+    --panel-top: var(--ba-desktop-bg-2) !important;
+    --panel-border: var(--ba-desktop-border) !important;
+    --panel-input: var(--ba-desktop-bg-2) !important;
+    --panel-input-border: var(--ba-desktop-border) !important;
+    --panel-text: var(--ba-desktop-text) !important;
+    --panel-title: var(--ba-desktop-gold-soft) !important;
+    --panel-label: var(--ba-desktop-text) !important;
+    --panel-placeholder: var(--ba-desktop-muted) !important;
+
+    background: var(--ba-desktop-bg) !important;
+    padding: 0 !important;
+    min-height: 100vh !important;
+    border-radius: 0 !important;
+    position: relative !important;
+    padding-top: 68px !important;
+  }
+
+  /* Estilos para Modo Claro */
+  body.light-mode #ba-editor-v2,
+  #ba-editor-v2[data-ui-theme='light'] {
+    --ba-desktop-bg: #F4F1EA;
+    --ba-desktop-bg-2: #ECE7DA;
+    --ba-desktop-panel: rgba(255, 255, 255, 0.88);
+    --ba-desktop-panel-strong: rgba(255, 255, 255, 0.94);
+    --ba-desktop-border: rgba(20, 27, 38, 0.12);
+    --ba-desktop-border-strong: rgba(20, 27, 38, 0.20);
+    --ba-desktop-gold: #B88A22;
+    --ba-desktop-gold-soft: #8B6417;
+    --ba-desktop-text: #151A22;
+    --ba-desktop-muted: #5D6470;
+    --ba-desktop-success: #12B76A;
+
+    --panel-bg: var(--ba-desktop-panel) !important;
+    --panel-top: var(--ba-desktop-bg-2) !important;
+    --panel-border: var(--ba-desktop-border) !important;
+    --panel-input: #FFFFFF !important;
+    --panel-input-border: var(--ba-desktop-border) !important;
+    --panel-text: var(--ba-desktop-text) !important;
+    --panel-title: var(--ba-desktop-gold-soft) !important;
+    --panel-label: var(--ba-desktop-text) !important;
+    --panel-placeholder: var(--ba-desktop-muted) !important;
+  }
+
+  /* Ocultar elementos móviles */
+  #ba-editor-v2 .ba-mobile-dock,
+  #ba-editor-v2 .ba-sheet-handle,
+  #ba-editor-v2 #baMobileScrim {
+    display: none !important;
+  }
+
+  /* Layout de la Fila Principal */
+  #ba-editor-v2 .ba-row {
+    display: grid !important;
+    grid-template-columns: 350px 1fr !important;
+    gap: 0 !important;
+    height: calc(100vh - 68px) !important;
+    max-height: calc(100vh - 68px) !important;
+    align-items: stretch !important;
+  }
+
+  /* 1. TOPBAR DESKTOP (Usando .ba-panel-head) */
+  #ba-editor-v2 .ba-panel-head {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 68px !important;
+    background: var(--ba-desktop-bg-2) !important;
+    border-bottom: 1px solid var(--ba-desktop-border) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 24px !important;
+    z-index: 1000 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 0 !important;
+    width: auto !important;
+  }
+
+  /* Logo y Nombre a la izquierda */
+  #ba-editor-v2 .ba-topbar-brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  #ba-editor-v2 .ba-logo-icon {
+    display: grid !important;
+    place-items: center !important;
+    width: 32px !important;
+    height: 32px !important;
+    background: linear-gradient(135deg, var(--ba-desktop-gold-soft), var(--ba-desktop-gold)) !important;
+    color: #111 !important;
+    font-weight: 800 !important;
+    font-size: 18px !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 10px rgba(201, 162, 78, 0.25) !important;
+  }
+
+  #ba-editor-v2 #biz_name_label {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: var(--ba-desktop-text) !important;
+    margin: 0 !important;
+  }
+
+  /* Estado Borrador Guardado */
+  #ba-editor-v2 .ba-topbar-status {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: rgba(50, 213, 131, 0.08) !important;
+    border: 1px solid rgba(50, 213, 131, 0.16) !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    margin-left: 20px !important;
+  }
+
+  body.light-mode #ba-editor-v2 .ba-topbar-status {
+    background: rgba(18, 183, 106, 0.08) !important;
+    border-color: rgba(18, 183, 106, 0.16) !important;
+  }
+
+  #ba-editor-v2 .ba-status-dot {
+    width: 8px !important;
+    height: 8px !important;
+    background: var(--ba-desktop-success) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 0 8px var(--ba-desktop-success) !important;
+  }
+
+  #ba-editor-v2 .ba-status-text {
+    font-size: 12px !important;
+    color: var(--ba-desktop-success) !important;
+    font-weight: 600 !important;
+  }
+
+  #ba-editor-v2 .ba-biz-slug {
+    display: none !important;
+  }
+
+  /* Botones del Topbar */
+  #ba-editor-v2 .ba-panel-head .ba-btns {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    width: auto !important;
+    margin: 0 !important;
+  }
+
+  /* Ocultar botones no deseados en topbar */
+  #ba-editor-v2 .ba-panel-head .ba-btns #goRegistro,
+  #ba-editor-v2 .ba-panel-head .ba-btns #goSelector,
+  #ba-editor-v2 .ba-panel-head .ba-btns #openFinalPreview {
+    display: none !important;
+  }
+
+  /* Deshacer y Rehacer */
+  #ba-editor-v2 .ba-history-btn {
+    background: transparent !important;
+    border: 1px solid var(--ba-desktop-border) !important;
+    color: var(--ba-desktop-muted) !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  #ba-editor-v2 .ba-history-btn svg {
+    width: 18px !important;
+    height: 18px !important;
+    fill: currentColor !important;
+  }
+
+  /* Guardar Borrador */
+  #ba-editor-v2 #saveDraft {
+    background: var(--ba-desktop-panel-strong) !important;
+    border: 1px solid var(--ba-desktop-border) !important;
+    color: var(--ba-desktop-text) !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    min-height: 38px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-shadow: none !important;
+    transition: background 0.2s, border-color 0.2s !important;
+    transform: none !important;
+  }
+
+  #ba-editor-v2 #saveDraft:hover {
+    background: var(--ba-desktop-bg-2) !important;
+    border-color: var(--ba-desktop-border-strong) !important;
+  }
+
+  #ba-editor-v2 #saveDraft .ba-btn-art {
+    width: 16px !important;
+    height: 16px !important;
+    display: block !important;
+    fill: currentColor !important;
+  }
+
+  #ba-editor-v2 #saveDraft .ba-btn-label {
+    display: inline !important;
+  }
+
+  /* Publicar */
+  #ba-editor-v2 #publish {
+    background: linear-gradient(135deg, var(--ba-desktop-gold-soft), var(--ba-desktop-gold)) !important;
+    border: 1px solid var(--ba-desktop-gold) !important;
+    color: #111 !important;
+    padding: 8px 18px !important;
+    border-radius: 8px !important;
+    min-height: 38px !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-shadow: 0 4px 12px rgba(201, 162, 78, 0.2) !important;
+    transition: opacity 0.2s, transform 0.2s !important;
+    transform: none !important;
+  }
+
+  #ba-editor-v2 #publish:hover {
+    opacity: 0.95 !important;
+    transform: translateY(-1px) !important;
+    border-color: var(--ba-desktop-gold-soft) !important;
+  }
+
+  #ba-editor-v2 #publish:active {
+    transform: translateY(0) !important;
+  }
+
+  #ba-editor-v2 #publish .ba-btn-art {
+    width: 16px !important;
+    height: 16px !important;
+    display: block !important;
+  }
+
+  #ba-editor-v2 #publish .ba-btn-label {
+    display: inline !important;
+  }
+
+  /* 2. SIDEBAR IZQUIERDA */
+  #ba-editor-v2 #ba-left {
+    background: var(--ba-desktop-panel) !important;
+    border-right: 1px solid var(--ba-desktop-border) !important;
+    border-left: none !important;
+    border-top: none !important;
+    border-bottom: none !important;
+    width: 350px !important;
+    max-width: 350px !important;
+    height: calc(100vh - 68px) !important;
+    max-height: calc(100vh - 68px) !important;
+    overflow-y: auto !important;
+    position: static !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 10 !important;
+  }
+
+  /* Scrollbar Fina y Elegante */
+  #ba-editor-v2 #ba-left::-webkit-scrollbar {
+    width: 6px !important;
+  }
+  #ba-editor-v2 #ba-left::-webkit-scrollbar-track {
+    background: transparent !important;
+  }
+  #ba-editor-v2 #ba-left::-webkit-scrollbar-thumb {
+    background: var(--ba-desktop-border) !important;
+    border-radius: 3px !important;
+  }
+  #ba-editor-v2 #ba-left::-webkit-scrollbar-thumb:hover {
+    background: var(--ba-desktop-border-strong) !important;
+  }
+
+  /* Título Sidebar */
+  #ba-editor-v2 .ba-sidebar-header-desktop {
+    padding: 24px 20px 16px !important;
+    border-bottom: 1px solid var(--ba-desktop-border) !important;
+    display: block !important;
+  }
+
+  #ba-editor-v2 .ba-sidebar-title {
+    color: var(--ba-desktop-text) !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    margin: 0 0 6px !important;
+  }
+
+  #ba-editor-v2 .ba-sidebar-subtitle {
+    color: var(--ba-desktop-muted) !important;
+    font-size: 13px !important;
+    margin: 0 !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Secciones Tipo Accordion */
+  #ba-editor-v2 details.ba-section {
+    border: none !important;
+    border-bottom: 1px solid var(--ba-desktop-border) !important;
+    padding: 0 !important;
+    display: block !important;
+    margin: 0 !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+  }
+
+  #ba-editor-v2 details.ba-section summary.ba-section-title {
+    padding: 16px 20px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--ba-desktop-text) !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    list-style: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    outline: none !important;
+    transition: background 0.2s !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+  }
+
+  #ba-editor-v2 details.ba-section summary.ba-section-title::-webkit-details-marker {
+    display: none !important;
+  }
+
+  #ba-editor-v2 details.ba-section summary.ba-section-title::after {
+    content: "" !important;
+    width: 6px !important;
+    height: 6px !important;
+    border-right: 2px solid var(--ba-desktop-muted) !important;
+    border-bottom: 2px solid var(--ba-desktop-muted) !important;
+    transform: rotate(45deg) !important;
+    transition: transform 0.2s !important;
+    display: inline-block !important;
+  }
+
+  #ba-editor-v2 details.ba-section[open] summary.ba-section-title::after {
+    transform: rotate(-135deg) !important;
+  }
+
+  #ba-editor-v2 details.ba-section summary.ba-section-title:hover {
+    background: rgba(255, 255, 255, 0.02) !important;
+  }
+
+  body.light-mode #ba-editor-v2 details.ba-section summary.ba-section-title:hover {
+    background: rgba(0, 0, 0, 0.02) !important;
+  }
+
+  #ba-editor-v2 details.ba-section > div,
+  #ba-editor-v2 details.ba-section > .ba-grid-2,
+  #ba-editor-v2 details.ba-section > .ba-field,
+  #ba-editor-v2 details.ba-section > .ba-upload,
+  #ba-editor-v2 details.ba-section > .ba-palette-actions,
+  #ba-editor-v2 details.ba-section > .ba-seed-group,
+  #ba-editor-v2 details.ba-section > .ba-hint {
+    padding: 0 20px 20px !important;
+  }
+
+  /* Inputs Oscuros Premium */
+  #ba-editor-v2 .ba-field input,
+  #ba-editor-v2 .ba-field select,
+  #ba-editor-v2 .ba-field textarea {
+    background: var(--ba-desktop-bg-2) !important;
+    border: 1px solid var(--ba-desktop-border) !important;
+    color: var(--ba-desktop-text) !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+    transition: border-color 0.2s, box-shadow 0.2s !important;
+  }
+
+  #ba-editor-v2 .ba-field input:focus,
+  #ba-editor-v2 .ba-field select:focus,
+  #ba-editor-v2 .ba-field textarea:focus {
+    border-color: var(--ba-desktop-gold) !important;
+    box-shadow: 0 0 0 2px rgba(201, 162, 78, 0.15) !important;
+  }
+
+  #ba-editor-v2 .ba-field label {
+    color: var(--ba-desktop-muted) !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Subida del Logo (Logo Card) */
+  #ba-editor-v2 .ba-upload {
+    background: var(--ba-desktop-bg-2) !important;
+    border: 1px dashed var(--ba-desktop-border) !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    margin-bottom: 16px !important;
+    transition: border-color 0.2s !important;
+  }
+
+  #ba-editor-v2 .ba-upload:hover {
+    border-color: var(--ba-desktop-gold) !important;
+  }
+
+  #ba-editor-v2 .ba-upload-label {
+    color: var(--ba-desktop-muted) !important;
+    font-size: 13px !important;
+  }
+
+  /* Ayuda Inferior */
+  #ba-editor-v2 .ba-sidebar-help-desktop {
+    margin-top: auto !important;
+    padding: 20px !important;
+    border-top: 1px solid var(--ba-desktop-border) !important;
+    display: block !important;
+  }
+
+  #ba-editor-v2 .ba-help-card {
+    background: var(--ba-desktop-bg-2) !important;
+    border: 1px solid var(--ba-desktop-border) !important;
+    padding: 14px !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    gap: 12px !important;
+  }
+
+  #ba-editor-v2 .ba-help-icon {
+    width: 20px !important;
+    height: 20px !important;
+    fill: var(--ba-desktop-gold-soft) !important;
+    flex-shrink: 0 !important;
+  }
+
+  #ba-editor-v2 .ba-help-content {
+    display: block !important;
+  }
+
+  #ba-editor-v2 .ba-help-title {
+    color: var(--ba-desktop-text) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    margin: 0 0 4px !important;
+  }
+
+  #ba-editor-v2 .ba-help-text {
+    color: var(--ba-desktop-muted) !important;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+  }
+
+  /* 3. ÁREA DE PLANTILLAS Y PREVIEW */
+  #ba-editor-v2 #ba-right {
+    background: var(--ba-desktop-bg) !important;
+    padding: 24px 32px 32px !important;
+    height: calc(100vh - 68px) !important;
+    max-height: calc(100vh - 68px) !important;
+    overflow-y: auto !important;
+    position: static !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+  }
+
+  /* Encabezado Sección Plantillas */
+  #ba-editor-v2 .ba-desktop-templates-section {
+    display: block !important;
+  }
+
+  #ba-editor-v2 .ba-templates-header {
+    margin-bottom: 16px !important;
+    display: block !important;
+  }
+
+  #ba-editor-v2 .ba-templates-title {
+    color: var(--ba-desktop-text) !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    margin: 0 0 4px !important;
+  }
+
+  #ba-editor-v2 .ba-templates-subtitle {
+    color: var(--ba-desktop-muted) !important;
+    font-size: 13px !important;
+    margin: 0 !important;
+  }
+
+  /* Contenedor Horizontal de Cards de Plantilla */
+  #ba-editor-v2 .ba-preview-head {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  #ba-editor-v2 .ba-chips {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    padding: 0 !important;
+    overflow-x: visible !important;
+    width: 100% !important;
+  }
+
+  #ba-editor-v2 .ba-chip {
+    background: var(--ba-desktop-panel) !important;
+    border: 1px solid var(--ba-desktop-border) !important;
+    color: var(--ba-desktop-text) !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    position: relative !important;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s !important;
+    flex: 1 1 calc(25% - 16px) !important;
+    min-width: 160px !important;
+    max-width: 240px !important;
+    height: 64px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: none !important;
+  }
+
+  #ba-editor-v2 .ba-chip:hover {
+    border-color: var(--ba-desktop-border-strong) !important;
+    background: var(--ba-desktop-panel-strong) !important;
+  }
+
+  #ba-editor-v2 .ba-chip.is-active {
+    border-color: var(--ba-desktop-gold) !important;
+    background: var(--ba-desktop-panel-strong) !important;
+    box-shadow: 0 0 0 1px var(--ba-desktop-gold), 0 8px 24px rgba(201, 162, 78, 0.12) !important;
+  }
+
+  /* Check dorado en card activa */
+  #ba-editor-v2 .ba-chip.is-active::after {
+    content: "✓" !important;
+    position: absolute !important;
+    top: 8px !important;
+    right: 12px !important;
+    color: var(--ba-desktop-gold) !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+  }
+
+  /* Card "Explorar más plantillas" con borde dashed */
+  #ba-editor-v2 .ba-chips::after {
+    content: "+ Explorar más" !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: 1px dashed var(--ba-desktop-border) !important;
+    color: var(--ba-desktop-muted) !important;
+    border-radius: 12px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    flex: 1 1 calc(25% - 16px) !important;
+    min-width: 160px !important;
+    max-width: 240px !important;
+    height: 64px !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.2s, color 0.2s !important;
+  }
+
+  #ba-editor-v2 .ba-chips:hover::after {
+    border-color: var(--ba-desktop-gold-soft) !important;
+    color: var(--ba-desktop-gold-soft) !important;
+  }
+
+  /* Toolbar de Previsualización Desktop */
+  #ba-editor-v2 .ba-preview-toolbar-desktop {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 1px solid var(--ba-desktop-border) !important;
+    padding-bottom: 12px !important;
+    margin-top: 8px !important;
+  }
+
+  #ba-editor-v2 .ba-viewport-controls {
+    display: flex !important;
+    gap: 4px !important;
+    background: var(--ba-desktop-bg-2) !important;
+    border: 1px solid var(--ba-desktop-border) !important;
+    padding: 4px !important;
+    border-radius: 8px !important;
+  }
+
+  #ba-editor-v2 .ba-viewport-btn {
+    background: transparent !important;
+    border: none !important;
+    color: var(--ba-desktop-muted) !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    transition: color 0.2s, background 0.2s !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  #ba-editor-v2 .ba-viewport-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+    fill: currentColor !important;
+  }
+
+  #ba-editor-v2 .ba-viewport-btn:hover {
+    color: var(--ba-desktop-text) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+  }
+
+  body.light-mode #ba-editor-v2 .ba-viewport-btn:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+  }
+
+  #ba-editor-v2 .ba-viewport-btn.is-active {
+    color: var(--ba-desktop-gold) !important;
+    background: var(--ba-desktop-panel-strong) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  /* Botón Vista Previa */
+  #ba-editor-v2 .ba-preview-btn-desktop {
+    background: var(--ba-desktop-panel-strong) !important;
+    border: 1px solid var(--ba-desktop-border) !important;
+    color: var(--ba-desktop-text) !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    transition: background 0.2s, border-color 0.2s !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  #ba-editor-v2 .ba-preview-btn-desktop:hover {
+    background: var(--ba-desktop-bg-2) !important;
+    border-color: var(--ba-desktop-border-strong) !important;
+  }
+
+  #ba-editor-v2 .ba-preview-btn-desktop svg {
+    width: 16px !important;
+    height: 16px !important;
+    fill: currentColor !important;
+  }
+
+  /* 4. PREVISUALIZADOR TIPO NAVEGADOR (Mockup) */
+  #ba-editor-v2 .ba-browser-mockup {
+    background: var(--ba-desktop-bg-2) !important;
+    border: 1px solid var(--ba-desktop-border) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-height: 480px !important;
+  }
+
+  body.light-mode #ba-editor-v2 .ba-browser-mockup {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+  }
+
+  /* Barra de Navegador */
+  #ba-editor-v2 .ba-browser-bar {
+    height: 38px !important;
+    background: var(--ba-desktop-panel-strong) !important;
+    border-bottom: 1px solid var(--ba-desktop-border) !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 16px !important;
+    position: relative !important;
+  }
+
+  /* Botones Rojo, Amarillo, Verde */
+  #ba-editor-v2 .ba-browser-dots {
+    display: flex !important;
+    gap: 6px !important;
+  }
+
+  #ba-editor-v2 .ba-dot {
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 50% !important;
+    display: inline-block !important;
+  }
+
+  #ba-editor-v2 .ba-dot.red { background: #FF5F56 !important; }
+  #ba-editor-v2 .ba-dot.yellow { background: #FFBD2E !important; }
+  #ba-editor-v2 .ba-dot.green { background: #27C93F !important; }
+
+  /* URL Fake */
+  #ba-editor-v2 .ba-browser-address {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 280px !important;
+    background: var(--ba-desktop-bg-2) !important;
+    border: 1px solid var(--ba-desktop-border) !important;
+    border-radius: 6px !important;
+    height: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 0 10px !important;
+  }
+
+  #ba-editor-v2 .ba-browser-address svg {
+    display: inline-block !important;
+  }
+
+  #ba-editor-v2 .ba-address-lock {
+    color: var(--ba-desktop-success) !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  #ba-editor-v2 .ba-address-lock svg {
+    width: 12px !important;
+    height: 12px !important;
+    fill: currentColor !important;
+  }
+
+  #ba-editor-v2 .ba-address-text {
+    font-size: 11px !important;
+    color: var(--ba-desktop-muted) !important;
+    font-weight: 500 !important;
+    user-select: none !important;
+  }
+
+  /* Comportamiento del Iframe */
+  #ba-editor-v2 #preview {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    background: #FFFFFF !important;
+    flex: 1 !important;
+    transition: width 0.3s ease, margin 0.3s ease !important;
+  }
+
+  #ba-editor-v2 #preview.view-desktop {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #ba-editor-v2 #preview.view-tablet {
+    width: 768px !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  #ba-editor-v2 #preview.view-mobile {
+    width: 375px !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
   }
 }

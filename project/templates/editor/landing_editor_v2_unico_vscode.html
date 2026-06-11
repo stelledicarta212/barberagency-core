@@ -1,4 +1,4 @@
-
+﻿
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
@@ -188,10 +188,28 @@
       <div class="ba-sheet-handle" id="baSheetHandle" aria-hidden="true">
         <span></span>
       </div>
+      <!-- Header visible only on desktop >= 901px -->
+      <div class="ba-sidebar-header-desktop">
+        <h1 class="ba-sidebar-title">Editar landing</h1>
+        <p class="ba-sidebar-subtitle">Personaliza los textos, imágenes y marca de tu landing page.</p>
+      </div>
       <div class="ba-panel-head">
-        <div class="ba-biz-name" id="biz_name_label">Barber Agency</div>
+        <div class="ba-topbar-brand">
+          <span class="ba-logo-icon">B</span>
+          <div class="ba-biz-name" id="biz_name_label">Barber Agency</div>
+        </div>
+        <div class="ba-topbar-status">
+          <span class="ba-status-dot"></span>
+          <span class="ba-status-text">Borrador guardado</span>
+        </div>
         <div class="ba-biz-slug">slug: <span id="biz_slug">-</span></div>
         <div class="ba-btns">
+          <button type="button" class="ba-btn ba-btn-icon ba-history-btn" id="btnUndo" disabled aria-label="Deshacer" title="Deshacer">
+            <svg viewBox="0 0 24 24" class="ba-btn-art" aria-hidden="true"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+          </button>
+          <button type="button" class="ba-btn ba-btn-icon ba-history-btn" id="btnRedo" disabled aria-label="Rehacer" title="Rehacer">
+            <svg viewBox="0 0 24 24" class="ba-btn-art" aria-hidden="true"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+          </button>
           <button type="button" class="ba-btn" id="goRegistro" aria-label="Editar registro" title="Editar registro">
             <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L19.81 7.94l-3.75-3.75L3 17.25z"></path><path d="M14.06 4.19l3.75 3.75"></path></svg>
             <span class="ba-btn-label">Editar registro</span>
@@ -206,7 +224,7 @@
           </button>
           <button type="button" class="ba-btn" id="saveDraft" aria-label="Guardar borrador" title="Guardar borrador">
             <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h12l2 2v14H5z"></path><path d="M8 4v5h8V4"></path><path d="M8 15h8"></path><path d="M10 18h4"></path></svg>
-            <span class="ba-btn-label">Guardar</span>
+            <span class="ba-btn-label">Guardar borrador</span>
           </button>
           <button type="button" class="ba-btn" id="publish" aria-label="Publicar" title="Publicar">
             <svg class="ba-btn-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 21 3 13 21 11 13 3 11.5Z"></path><path d="M21 3 11 13"></path></svg>
@@ -215,8 +233,8 @@
         </div>
       </div>
 
-      <section class="ba-section" id="ba-section-brand">
-        <p class="ba-section-title">Marca y posicionamiento</p>
+      <details class="ba-section" id="ba-section-brand" open>
+        <summary class="ba-section-title">Marca y posicionamiento</summary>
         <div class="ba-grid-2">
           <div class="ba-field">
             <label for="biz_name">Nombre</label>
@@ -271,10 +289,10 @@
         <input id="palette_text" type="hidden" value="#0f1720" />
         <input type="hidden" id="logo_url" value="" />
         <input type="hidden" id="cover_url" value="" />
-      </section>
+      </details>
 
-      <section class="ba-section" id="ba-section-message">
-        <p class="ba-section-title">Mensaje de venta</p>
+      <details class="ba-section" id="ba-section-message" open>
+        <summary class="ba-section-title">Mensaje de venta</summary>
         <div class="ba-field">
           <label for="hero_kicker">Etiqueta superior</label>
           <input id="hero_kicker" placeholder="Nuevo estilo urbano" />
@@ -297,20 +315,20 @@
             <input id="hero_btn_secondary" placeholder="Conocer equipo" />
           </div>
         </div>
-      </section>
+      </details>
 
-      <section class="ba-section" id="ba-section-seo">
-        <p class="ba-section-title">SEO local</p>
+      <details class="ba-section" id="ba-section-seo" open>
+        <summary class="ba-section-title">SEO local</summary>
         <div class="ba-field">
           <label for="address">dirección</label>
           <input id="address" placeholder="Calle principal" />
         </div>
         <input type="hidden" id="maps_url" value="" />
         <p class="ba-hint">La dirección mejora tu SEO local y se refleja automáticamente en Google Maps.</p>
-      </section>
+      </details>
 
-      <section class="ba-section" id="ba-section-inherited">
-        <p class="ba-section-title">Datos heredados</p>
+      <details class="ba-section" id="ba-section-inherited" open>
+        <summary class="ba-section-title">Datos heredados</summary>
         <p class="ba-hint" id="baSeedMeta">Esperando datos de registrobarberia.</p>
         <div class="ba-seed-group">
           <p class="ba-seed-label">Servicios</p>
@@ -324,7 +342,17 @@
           <p class="ba-seed-label">Horarios</p>
           <div class="ba-seed-list" id="baInheritedHours"></div>
         </div>
-      </section>
+      </details>
+      <!-- Ayuda inferior visible only on desktop >= 901px -->
+      <div class="ba-sidebar-help-desktop">
+        <div class="ba-help-card">
+          <svg viewBox="0 0 24 24" class="ba-help-icon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-6h2v6zm0-8h-2V7h2v3z"/></svg>
+          <div class="ba-help-content">
+            <p class="ba-help-title">¿Necesitas ayuda?</p>
+            <p class="ba-help-text">Sube tu logo en alta resolución y configura tus colores de marca para un resultado profesional.</p>
+          </div>
+        </div>
+      </div>
     </aside>
 
     <!-- 
@@ -333,11 +361,57 @@
       =================================
     -->
     <section id="ba-right" class="ba-preview">
-      <div class="ba-preview-head">
-        <p class="ba-preview-name" id="templateName"></p>
-        <div class="ba-chips" id="tplChips"></div>
+      <!-- Desktop Templates Section Header -->
+      <div class="ba-desktop-templates-section">
+        <div class="ba-templates-header">
+          <h2 class="ba-templates-title">Plantillas</h2>
+          <p class="ba-templates-subtitle">Elige un diseño base para tu landing. Tu contenido y colores se adaptarán automáticamente.</p>
+        </div>
+        <div class="ba-preview-head">
+          <p class="ba-preview-name" id="templateName" style="display: none;"></p>
+          <div class="ba-chips" id="tplChips"></div>
+        </div>
       </div>
-      <iframe id="preview" title="Preview landing"></iframe>
+
+      <!-- Desktop Preview Toolbar -->
+      <div class="ba-preview-toolbar-desktop">
+        <div class="ba-viewport-controls">
+          <button type="button" class="ba-viewport-btn" id="btnViewDesktop" title="Vista Desktop">
+            <svg viewBox="0 0 24 24" class="ba-icon"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+            <span>Desktop</span>
+          </button>
+          <button type="button" class="ba-viewport-btn" id="btnViewTablet" title="Vista Tablet">
+            <svg viewBox="0 0 24 24" class="ba-icon"><path d="M18.5 0h-13C4.03 0 3 1.03 3 2.5v19C3 22.97 4.03 24 5.5 24h13c1.47 0 2.5-1.03 2.5-2.5v-19C21 1.03 19.97 0 18.5 0zm-6 22.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm6.5-4H5V3h14v15.5z"/></svg>
+            <span>Tablet</span>
+          </button>
+          <button type="button" class="ba-viewport-btn" id="btnViewMobile" title="Vista Móvil">
+            <svg viewBox="0 0 24 24" class="ba-icon"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg>
+            <span>Móvil</span>
+          </button>
+        </div>
+        <button type="button" class="ba-preview-btn-desktop" id="btnPreviewDesktopSwitch">
+          <svg viewBox="0 0 24 24" class="ba-icon" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>
+          Vista previa
+        </button>
+      </div>
+
+      <!-- Browser mockup wrapper -->
+      <div class="ba-browser-mockup">
+        <div class="ba-browser-bar">
+          <div class="ba-browser-dots">
+            <span class="ba-dot red"></span>
+            <span class="ba-dot yellow"></span>
+            <span class="ba-dot green"></span>
+          </div>
+          <div class="ba-browser-address">
+            <span class="ba-address-lock">
+              <svg viewBox="0 0 24 24" class="ba-icon"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            </span>
+            <span class="ba-address-text">barberagency.com/mi-barberia</span>
+          </div>
+        </div>
+        <iframe id="preview" title="Preview landing"></iframe>
+      </div>
     </section>
   </div>
 
@@ -2326,7 +2400,10 @@
     return {
       ...payload,
       ...publishedUrls,
-      landing_publish: landingPublish
+      landing_publish: landingPublish,
+      servicios: inheritedCollections.services,
+      barberos: inheritedCollections.barbers,
+      horarios: inheritedCollections.hours
     };
   }
 
@@ -3263,17 +3340,18 @@
         const rightAligned = style.right !== 'auto';
         const bottomAligned = style.bottom !== 'auto';
         const rect = node.getBoundingClientRect();
-        const looksSmallFab = rect.width <= 90 && rect.height <= 90;
+        const looksSmallFab = !(rect.width > 90 || rect.height > 90);
         const rounded = Number.parseFloat(style.borderRadius || '0') >= 20 || /50%|999/.test(style.borderRadius || '');
         const looksThemeFabByShape = false;
         const hasEmojiImage = !!node.querySelector?.('img.emoji');
-        const looksLikeEmojiFixedButton =
-          node.tagName === 'BUTTON' &&
-          isFixed &&
-          rightAligned &&
-          highZ &&
-          looksSmallFab &&
-          hasEmojiImage;
+        const looksLikeEmojiFixedButton = !(
+          node.tagName !== 'BUTTON' ||
+          !isFixed ||
+          !rightAligned ||
+          !highZ ||
+          !looksSmallFab ||
+          !hasEmojiImage
+        );
         const looksLikeTheme = /theme-toggle|tema|dark-mode|modo oscuro/.test(marks) || /theme toggle|tema/.test(text);
         const isOutsideLandingRoot = !node.closest('#landingRoot');
         const looksLikeThemeOrChat =
@@ -3281,7 +3359,7 @@
           /chat/.test(text) ||
           (looksLikeTheme && isOutsideLandingRoot);
         const isWidgetLike = ['BUTTON', 'IFRAME', 'DIV', 'ASIDE'].includes(node.tagName);
-        const looksFloatingWidget = isFixed && isWidgetLike && (rightAligned || bottomAligned || looksSmallFab);
+        const looksFloatingWidget = !(!isFixed || !isWidgetLike || !(rightAligned || bottomAligned || looksSmallFab));
 
         if (looksFloatingWidget && (looksLikeThemeOrChat || looksThemeFabByShape || looksLikeEmojiFixedButton)) {
           node.remove();
@@ -3387,16 +3465,17 @@
           ? node.getBoundingClientRect()
           : { width: 0, height: 0 };
         const highZ = Number.parseInt(style?.zIndex || '0', 10) >= 999;
-        const rightAligned = !!style && style.right !== 'auto';
-        const looksSmallFab = rect.width <= 90 && rect.height <= 90;
+        const rightAligned = !(!style || style.right === 'auto');
+        const looksSmallFab = !(rect.width > 90 || rect.height > 90);
         const hasEmojiImage = !!node.querySelector?.('img.emoji');
-        const looksLikeEmojiFixedButton =
-          node.tagName === 'BUTTON' &&
-          isFixed &&
-          rightAligned &&
-          highZ &&
-          looksSmallFab &&
-          hasEmojiImage;
+        const looksLikeEmojiFixedButton = !(
+          node.tagName !== 'BUTTON' ||
+          !isFixed ||
+          !rightAligned ||
+          !highZ ||
+          !looksSmallFab ||
+          !hasEmojiImage
+        );
         const looksLikeThemeOrChat = /theme|modo oscuro|dark-mode|chat|n8n/.test(marks) || /theme|chat|n8n/.test(text);
         if (looksLikeThemeOrChat || looksLikeEmojiFixedButton) {
           node.style.setProperty('display', 'none', 'important');
@@ -4447,8 +4526,43 @@
           window.addEventListener("load", () => setTimeout(doPublish, 500));
       }
     }
-  } catch(e) {
-    // Silently fail if not in an iframe or cannot access src
+  // Desktop view switchers and click delegates
+  try {
+    const btnDesktop = document.getElementById('btnViewDesktop');
+    const btnTablet = document.getElementById('btnViewTablet');
+    const btnMobile = document.getElementById('btnViewMobile');
+    const frame = document.getElementById('preview');
+
+    if (btnDesktop && btnTablet && btnMobile && frame) {
+      const setViewMode = (mode) => {
+        frame.classList.remove('view-desktop', 'view-tablet', 'view-mobile');
+        frame.classList.add(`view-${mode}`);
+
+        btnDesktop.classList.remove('is-active');
+        btnTablet.classList.remove('is-active');
+        btnMobile.classList.remove('is-active');
+
+        if (mode === 'desktop') btnDesktop.classList.add('is-active');
+        if (mode === 'tablet') btnTablet.classList.add('is-active');
+        if (mode === 'mobile') btnMobile.classList.add('is-active');
+      };
+
+      btnDesktop.addEventListener('click', () => setViewMode('desktop'));
+      btnTablet.addEventListener('click', () => setViewMode('tablet'));
+      btnMobile.addEventListener('click', () => setViewMode('mobile'));
+
+      // Set default active
+      btnDesktop.classList.add('is-active');
+    }
+
+    const btnPreviewDesktopSwitch = document.getElementById('btnPreviewDesktopSwitch');
+    if (btnPreviewDesktopSwitch) {
+      btnPreviewDesktopSwitch.addEventListener('click', () => {
+        document.getElementById('openFinalPreview')?.click();
+      });
+    }
+  } catch(err) {
+    console.error('Desktop UI enhancements error:', err);
   }
 
   if (document.readyState === "complete") {
