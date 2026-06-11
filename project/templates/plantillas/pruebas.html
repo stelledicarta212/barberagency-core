@@ -1487,17 +1487,51 @@
 
     function normalizeSeedHour(item) {
       if (!item || typeof item !== 'object') return null;
-      const dia = normalizeDayLabel(item.dia || item.day || item.nombre_dia);
-      const horaAbre = safeSeedText(item.hora_abre || item.apertura || item.open || item.open_time);
-      const horaCierra = safeSeedText(item.hora_cierra || item.cierre || item.close || item.close_time);
-      if (!dia || !horaAbre || !horaCierra) return null;
+      const dayLabels = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+      const rawDiaSemana = item.dia_semana ?? item.diaSemana ?? item.weekday;
+      const diaSemanaNumber = Number(rawDiaSemana);
+      const hasDiaSemana = Number.isInteger(diaSemanaNumber) && diaSemanaNumber >= 0 && diaSemanaNumber <= 6;
+      const dia = normalizeDayLabel(
+        item.dia ||
+        item.day ||
+        item.nombre_dia ||
+        item.nombreDia ||
+        (hasDiaSemana ? dayLabels[diaSemanaNumber] : '')
+      );
+      const hora_abre = safeSeedText(
+        item.hora_abre ||
+        item.horaAbre ||
+        item.abre ||
+        item.apertura ||
+        item.open ||
+        item.open_time ||
+        item.start ||
+        item.desde
+      );
+      const hora_cierra = safeSeedText(
+        item.hora_cierra ||
+        item.horaCierra ||
+        item.cierra ||
+        item.cierre ||
+        item.close ||
+        item.close_time ||
+        item.end ||
+        item.hasta
+      );
+      if (!dia || !hora_abre || !hora_cierra) return null;
+      const activo = item.activo !== false && item.active !== false && item.cerrado !== true;
       return {
+        ...item,
         dia,
-        activo: item.activo !== false,
-        hora_abre: horaAbre,
-        hora_cierra: horaCierra
+        abre: hora_abre,
+        cierra: hora_cierra,
+        activo,
+        hora_abre,
+        hora_cierra,
+        dia_semana: hasDiaSemana ? diaSemanaNumber : item.dia_semana
       };
     }
+
 
     function timeToMinutes(value) {
       const match = /^(\d{1,2}):(\d{2})$/.exec(safeSeedText(value));
@@ -1665,25 +1699,65 @@
     }
 
     function buildPayload() {
+      const formData = arguments[0] && typeof arguments[0].get === 'function' ? arguments[0] : null;
+      const readFormValue = (id, formKey = id) => {
+        const node = document.getElementById(id);
+        const nodeValue = node && 'value' in node ? safeSeedText(node.value) : '';
+        if (nodeValue) return nodeValue;
+        return formData ? safeSeedText(formData.get(formKey)) : '';
+      };
+
+      const canonicalBarberiaId = typeof getCurrentBarberiaId === 'function' ? getCurrentBarberiaId() : 0;
+      const canonicalSlug = typeof getCanonicalLandingSlug === 'function' ? getCanonicalLandingSlug() : safeSeedText(getLandingSlug && getLandingSlug());
+      const selectedServiceId = Number(serviceSelect?.value || document.getElementById('servicio')?.value || 0);
+      const selectedBarberId = Number(barberSelect?.value || document.getElementById('barbero')?.value || 0);
+      const fecha = safeSeedText(dateInput?.value || document.getElementById('fecha')?.value);
+      const hora = safeSeedText(hourSelect?.value || document.getElementById('hora')?.value);
+      const clienteNombre = readFormValue('nombre', 'nombre');
+      const clienteTelefono = readFormValue('telefono', 'telefono') || readFormValue('telefono', 'Teléfono');
+      const clienteEmail = readFormValue('email', 'email');
+      const documento = readFormValue('documento', 'documento');
+      const notas = readFormValue('notas', 'notas');
+
       return {
+        barberia_id: canonicalBarberiaId,
+        id_barberia: canonicalBarberiaId,
+        slug: canonicalSlug,
+        biz_slug: canonicalSlug,
+        servicio_id: selectedServiceId,
+        id_servicio: selectedServiceId,
+        barbero_id: selectedBarberId,
+        id_barbero: selectedBarberId,
+        fecha,
+        hora,
+        cliente_nombre: clienteNombre,
+        cliente_tel: clienteTelefono,
+        cliente_email: clienteEmail,
         clientes_finales: {
-          documento: document.getElementById('documento').value.trim(),
-          nombre_completo: document.getElementById('nombre').value.trim(),
-          telefono: document.getElementById('telefono').value.trim(),
-          email: document.getElementById('email').value.trim()
+          ...(documento ? { documento } : {}),
+          nombre_completo: clienteNombre,
+          telefono: clienteTelefono,
+          email: clienteEmail
         },
         citas: {
-          id_barberia: getCurrentBarberiaId() || 1,
-          id_servicio: Number(serviceSelect.value),
-          id_barbero: Number(barberSelect.value),
-          fecha: dateInput.value,
-          hora: hourSelect.value,
+          barberia_id: canonicalBarberiaId,
+          id_barberia: canonicalBarberiaId,
+          slug: canonicalSlug,
+          biz_slug: canonicalSlug,
+          servicio_id: selectedServiceId,
+          id_servicio: selectedServiceId,
+          barbero_id: selectedBarberId,
+          id_barbero: selectedBarberId,
+          fecha,
+          hora,
+          hora_inicio: hora,
           estado: 'confirmada',
-          notas: document.getElementById('notas').value.trim(),
+          notas,
           created_at: new Date().toISOString()
         }
       };
     }
+
 
     if (themeToggle) {
       themeToggle.addEventListener('click', () => {
@@ -1799,13 +1873,7 @@
     }
 
     function getCurrentBarberiaId() {
-      const params = getLandingUrlParams();
-      const queryId =
-        Number(params.get('barberia_id')) ||
-        Number(params.get('id_barberia')) ||
-        0;
-      const value =
-        queryId ||
+      const canonicalValue =
         Number(runtimeLandingState.barberia_id) ||
         Number(runtimeLandingState.profile?.barberia_id) ||
         Number(runtimeLandingState.profile?.id) ||
@@ -1817,8 +1885,40 @@
         Number(landingSeed?.barberia?.id) ||
         Number(window.BA_BARBERIA_ID) ||
         0;
-      return Number.isInteger(value) && value > 0 ? value : 0;
+      if (Number.isInteger(canonicalValue) && canonicalValue > 0) return canonicalValue;
+
+      const params = getLandingUrlParams();
+      const queryId =
+        Number(params.get('barberia_id')) ||
+        Number(params.get('id_barberia')) ||
+        0;
+      return Number.isInteger(queryId) && queryId > 0 ? queryId : 0;
     }
+
+    function getCanonicalLandingSlug() {
+      const canonicalSlug = safeSeedText(
+        runtimeLandingState.profile?.slug ||
+        runtimeLandingState.profile?.biz_slug ||
+        runtimeLandingState.inherited?.slug ||
+        runtimeLandingState.inherited?.biz_slug ||
+        landingSeed?.slug ||
+        landingSeed?.biz_slug ||
+        landingSeed?.barberia?.slug ||
+        landingSeed?.barberia?.biz_slug ||
+        landingSeed?.inherited?.slug ||
+        window.BA_BIZ_SLUG ||
+        window.BA_BARBERIA_SLUG
+      );
+      if (canonicalSlug) return canonicalSlug;
+
+      const pathMatch = String(window.location?.pathname || '').match(/^\/b\/([^/]+)\/?$/i);
+      if (pathMatch?.[1]) return safeSeedText(decodeURIComponent(pathMatch[1]));
+
+      const params = getLandingUrlParams();
+      return safeSeedText(params.get('slug') || params.get('barberia_slug') || params.get('business_slug'));
+    }
+
+
 
     function buildRuntimeBranding(raw = {}) {
       return {
@@ -2148,32 +2248,53 @@
       if (!item || typeof item !== 'object') return null;
       const name = safeSeedText(item.nombre || item.nombre_servicio || item.servicio || item.title || item.name);
       if (!name) return null;
+      const serviceId = toSeedNumber(item.id_servicio ?? item.servicio_id ?? item.id ?? item.idServicio, 0);
+      if (!serviceId) return null;
+      const activo = item.activo !== false && item.active !== false && item.deleted !== true && !item.deleted_at;
+      if (!activo) return null;
 
       const iconFallback = DEFAULT_SERVICE_ICONS[idx % DEFAULT_SERVICE_ICONS.length];
       return {
-        id_servicio: toSeedNumber(item.id_servicio ?? item.id ?? item.servicio_id ?? item.idServicio, idx + 1),
+        ...item,
+        id_servicio: serviceId,
+        servicio_id: serviceId,
         nombre: name,
+        name,
+        activo,
         precio: Math.max(0, toSeedNumber(item.precio ?? item.precio_base ?? item.valor ?? item.tarifa ?? item.price, 0)),
         icono: safeSeedText(item.icono || item.icon || iconFallback) || iconFallback,
+        imagen_url: safeSeedText(item.imagen_url || item.image_url || item.foto_url || item.foto || item.imagen || item.image || item.cover_url || item.photo),
         duracion_min: Math.max(15, toSeedNumber(item.duracion_min ?? item.duration_min ?? item.duracion ?? item.duration, 60))
       };
     }
+
 
     function normalizeSeedBarber(item, idx) {
       if (!item || typeof item !== 'object') return null;
       const name = safeSeedText(item.nombre || item.nombre_completo || item.barbero || item.name);
       if (!name) return null;
+      const barberId = toSeedNumber(item.id_barbero ?? item.barbero_id ?? item.id ?? item.idBarbero, 0);
+      if (!barberId) return null;
+      const activo = item.activo !== false && item.active !== false && item.deleted !== true && !item.deleted_at;
+      if (!activo) return null;
 
       const photoFallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
       const exp = safeSeedText(item.experiencia || item.anios_experiencia || item.years_experience || item.years);
+      const foto = safeSeedText(item.foto || item.foto_url || item.avatar_url || item.imagen || item.imagen_url || item.photo) || photoFallback;
       return {
-        id_barbero: toSeedNumber(item.id_barbero ?? item.id ?? item.barbero_id ?? item.idBarbero, idx + 1),
+        ...item,
+        id_barbero: barberId,
+        barbero_id: barberId,
         nombre: name,
-        especialidad: safeSeedText(item.especialidad || item.especialidades || item.descripcion || item.bio) || 'Barbero profesional',
+        name,
+        activo,
+        especialidad: safeSeedText(item.especialidad || item.especialidades || item.rol || item.descripcion || item.bio) || 'Barbero profesional',
         experiencia: exp || 'Experiencia comprobada',
-        foto: safeSeedText(item.foto || item.foto_url || item.avatar_url || item.imagen || item.imagen_url || item.photo) || photoFallback
+        foto,
+        foto_url: safeSeedText(item.foto_url || item.foto || item.avatar_url || item.imagen || item.imagen_url || item.photo) || foto
       };
     }
+
 
     function applyInheritedCollections(rawServices, rawBarbers, rawHours, rawSlotMin) {
       const nextServices = Array.isArray(rawServices)
