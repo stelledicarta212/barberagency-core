@@ -2999,11 +2999,30 @@
       const isEdit = isEditIntent();
       const payload = isEdit ? buildPatchPayload() : buildDraftPayload();
       lastPayload = payload;
-          if (isEdit) {
-        const data = buildEditNavigationData();
-        window.location.href = buildLandingBuilderUrl(payload, data);
-        return;
-      }
+       if (isEdit) {
+  const data = buildEditNavigationData();
+  const seedData = {
+    ...data,
+    barberia: {
+      ...(data && data.barberia ? data.barberia : {}),
+      id: Number(payload?.barberia_id || data?.barberia_id || 0),
+      slug: clean(payload?.slug || data?.slug || "")
+    },
+    servicios: Array.isArray(payload?.collections_patch?.servicios?.upsert)
+      ? payload.collections_patch.servicios.upsert
+      : [],
+    barberos: Array.isArray(payload?.collections_patch?.barberos?.upsert)
+      ? payload.collections_patch.barberos.upsert
+      : [],
+    horarios: Array.isArray(payload?.collections_patch?.horarios?.upsert)
+      ? payload.collections_patch.horarios.upsert
+      : []
+  };
+
+  persistLandingSeed(payload, seedData);
+  window.location.href = buildLandingBuilderUrl(payload, seedData);
+  return;
+}
 
       if (!draft.barberia.nombre) {
         showMessage("error", "Falta el nombre de la barbería.");
