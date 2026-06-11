@@ -2859,10 +2859,41 @@ function normalizeDayLabel(value) {
       if (text) html.style.setProperty('--text', text);
     }
 
-    const landingSeed = readLandingSeed();
-    applyInheritedCollections(landingSeed?.servicios, landingSeed?.barberos, landingSeed?.horarios, landingSeed?.slot_min || landingSeed?.barberia?.slot_min);
-    applyPublicLandingBranding({ profile: landingSeed?.barberia || landingSeed || {}, branding: landingSeed?.branding || {} });
-    hydrateLandingFromPublicEndpoint();
+    async function initLanding() {
+      const landingSeed = readLandingSeed();
+      const initialPayload = extractPublicLandingPayload(landingSeed);
+
+      if (initialPayload.ok) {
+        runtimeLandingState.barberia_id = initialPayload.barberia_id;
+        runtimeLandingState.profile = initialPayload.profile || null;
+        runtimeLandingState.branding = initialPayload.branding || null;
+        runtimeLandingState.inherited = initialPayload.inherited || null;
+
+        if (initialPayload.public_landing_url) window.BA_PUBLIC_LANDING_URL = initialPayload.public_landing_url;
+        if (initialPayload.reservation_url) window.BA_RESERVATION_URL = initialPayload.reservation_url;
+        if (initialPayload.qr_url) window.BA_QR_URL = initialPayload.qr_url;
+
+        applyInheritedCollections(
+          initialPayload.servicios,
+          initialPayload.barberos,
+          initialPayload.horarios,
+          initialPayload.slot_min || landingSeed?.barberia?.slot_min
+        );
+
+        applyPublicLandingBranding(initialPayload);
+      }
+
+      await hydrateLandingFromPublicEndpoint();
+
+      initTheme();
+      stripInjectedUi();
+      new MutationObserver(() => stripInjectedUi()).observe(document.body, { childList: true, subtree: true });
+
+      renderServices();
+      renderBarbers();
+      fillSelects();
+      renderLandingQr();
+    }
 
     window.addEventListener('message', (ev) => {
       const data = ev?.data || {};
@@ -2887,13 +2918,7 @@ function normalizeDayLabel(value) {
       applyPublicLandingBranding({ profile: payload.barberia || payload.profile || {}, branding: payload.branding || payload.config || payload || {} });
       renderLandingQr();
     });
-    initTheme();
-    stripInjectedUi();
-    new MutationObserver(() => stripInjectedUi()).observe(document.body, { childList: true, subtree: true });
-    renderServices();
-    renderBarbers();
-    fillSelects();
-    renderLandingQr();
+    initLanding();
     dateInput.addEventListener('click', setReservationMinDate);
     dateInput.addEventListener('focus', setReservationMinDate);
     dateInput.addEventListener('touchstart', setReservationMinDate, { passive: true });
