@@ -1003,6 +1003,37 @@
     return String(s || '').trim();
   }
 
+  function isKnownPlaceholderImage(url) {
+    const value = safeText(url).toLowerCase();
+    if (!value) return false;
+    return (
+      value.includes('images.unsplash.com/cover.jpg') ||
+      value.includes('images.unsplash.com/logo.jpg') ||
+      (value.endsWith('/cover.jpg') && value.includes('unsplash.com')) ||
+      (value.endsWith('/logo.jpg') && value.includes('unsplash.com'))
+    );
+  }
+
+  function safeImageUrl(url) {
+    const value = safeText(url);
+    return value && !isKnownPlaceholderImage(value) ? value : '';
+  }
+
+  function getCanonicalSeedCoverUrl() {
+    return (
+      safeImageUrl(seedLandingData?.cover_url) ||
+      safeImageUrl(seedLandingData?.barberia?.cover_url) ||
+      safeImageUrl(seedLandingData?.landing?.cover_url) ||
+      safeImageUrl(seedLandingData?.branding?.cover_url) ||
+      safeImageUrl(seedLandingData?.profile?.cover_url) ||
+      safeImageUrl(seedLandingData?.inherited?.cover_url) ||
+      safeImageUrl(seedLandingData?.hero_image_url) ||
+      safeImageUrl(seedLandingData?.branding?.hero_image_url) ||
+      safeImageUrl(seedLandingData?.barberia?.hero_image_url) ||
+      ''
+    );
+  }
+
   function normalizeRpcJsonbPayload(raw) {
     if (!raw || typeof raw !== 'object') return {};
     const source = raw;
@@ -1413,9 +1444,11 @@
       buildMapsEmbedUrl(seedAddress);
 
     const seedLogoUrl =
-      safeText(seedLandingData?.logo_url) ||
-      safeText(seedLandingData?.barberia?.logo_url) ||
-      safeText(seedLandingData?.branding?.logo_url);
+      safeImageUrl(seedLandingData?.logo_url) ||
+      safeImageUrl(seedLandingData?.barberia?.logo_url) ||
+      safeImageUrl(seedLandingData?.branding?.logo_url);
+
+    const seedCoverUrl = getCanonicalSeedCoverUrl();
 
     const seedPrimary =
       safeText(seedLandingData?.palette_primary) ||
@@ -1452,6 +1485,13 @@
       el.logoImg.src = seedLogoUrl;
       el.logoWrap.classList.add('has-image');
       runtimePreview.logo = seedLogoUrl;
+    }
+
+    if (seedCoverUrl && (hasOnboardingContext || !safeText(el.coverUrl.value) || isKnownPlaceholderImage(el.coverUrl.value))) {
+      el.coverUrl.value = seedCoverUrl;
+      el.coverImg.src = seedCoverUrl;
+      el.coverWrap.classList.add('has-image');
+      runtimePreview.cover = seedCoverUrl;
     }
 
     if (seedPrimary && (hasOnboardingContext || !safeText(el.palettePrimary.value))) {
@@ -1576,6 +1616,7 @@
       ? buildMapsEmbedUrl(el.address.value)
       : safeText(el.mapsUrl.value);
     const slotMin = normalizeSlotMin(seedLandingData?.slot_min || seedLandingData?.barberia?.slot_min, 30);
+    const coverUrl = safeImageUrl(el.coverUrl.value) || getCanonicalSeedCoverUrl();
     return {
       biz_name,
       biz_slug: toSlug(biz_name),
@@ -1590,9 +1631,9 @@
       palette_accent: paletteAccent,
       palette_text: el.paletteText.value,
       use_custom_palette: paletteTouched,
-      logo_url: el.logoUrl.value,
+      logo_url: safeImageUrl(el.logoUrl.value),
       logo_width: el.logoWidth?.value || '50',
-      cover_url: el.coverUrl.value,
+      cover_url: coverUrl,
       address: el.address.value,
       maps_url: mapsUrl,
       slot_min: slotMin,
@@ -1869,7 +1910,7 @@
         branding: {
           ...(seedLandingData?.branding || {}),
           logo_url: safeText(data.logo_url),
-          cover_url: safeText(data.cover_url),
+          cover_url: safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl(),
           color_primary: safeText(data.palette_primary),
           color_secondary: safeText(data.palette_secondary),
           color_text: safeText(data.palette_text),
@@ -2163,6 +2204,8 @@
     const normalizedMapsUrl = safeText(data.maps_url) || buildMapsEmbedUrl(normalizedAddress);
     const selectedId = getSelectedId();
     const selectedTemplate = byId[selectedId] || templates[0];
+    const publishCoverUrl = safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl() || undefined;
+    const publishLogoUrl = safeImageUrl(data.logo_url) || undefined;
     const payload = {
       barberia_id: identity.barberia_id,
       site_base_url: getPublicSiteBase(),
@@ -2192,9 +2235,9 @@
         horarios: inheritedCollections.hours
       },
       branding: {
-        logo_url: safeText(data.logo_url),
-        cover_url: safeText(data.cover_url),
-        hero_image_url: safeText(data.cover_url),
+        logo_url: publishLogoUrl,
+        cover_url: publishCoverUrl,
+        hero_image_url: publishCoverUrl,
         color_primary: safeText(data.palette_primary),
         color_secondary: safeText(data.palette_secondary),
         color_background: '',
@@ -2233,8 +2276,8 @@
         ciudad: identity.ciudad || normalizedAddress,
         direccion: normalizedAddress,
         telefono: identity.telefono,
-        logo_url: safeText(data.logo_url),
-        cover_url: safeText(data.cover_url),
+        logo_url: publishLogoUrl,
+        cover_url: publishCoverUrl,
         maps_url: normalizedMapsUrl,
         map_url: normalizedMapsUrl,
         location_map_url: normalizedMapsUrl,
@@ -2255,8 +2298,8 @@
         location_map_url: normalizedMapsUrl,
         location_address: normalizedAddress,
         slot_min: Number(data.slot_min) || 30,
-        logo_url: safeText(data.logo_url),
-        cover_url: safeText(data.cover_url)
+        logo_url: publishLogoUrl,
+        cover_url: publishCoverUrl
       }
     };
 
@@ -2274,8 +2317,8 @@
       palette_primary: safeText(data.palette_primary),
       palette_secondary: safeText(data.palette_secondary),
       color_text: safeText(data.palette_text),
-      logo_url: safeText(data.logo_url),
-      cover_url: safeText(data.cover_url),
+      logo_url: publishLogoUrl,
+      cover_url: publishCoverUrl,
       hero_title: safeText(data.hero_title),
       hero_subtitle: safeText(data.hero_subtitle)
     };
@@ -2498,7 +2541,7 @@
       return;
     }
 
-    const coverUrl = safeText(data.cover_url);
+    const coverUrl = safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl();
     if (coverUrl && !isHttpUrl(coverUrl)) {
       alert('La portada aun no tiene URL pública valida. Revisa el upload antes de publicar.');
       return;
@@ -2665,6 +2708,8 @@
 
   function buildEditorMessagePayload(data, extra = {}) {
     const qrContext = getQrContext();
+    const coverUrl = safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl();
+    const logoUrl = safeImageUrl(data.logo_url);
     const payload = {
       ...extra,
       source: 'ba-editor',
@@ -2676,9 +2721,9 @@
       hero_subtitle: data.hero_subtitle,
       hero_btn_primary: data.hero_btn_primary,
       hero_btn_secondary: data.hero_btn_secondary,
-      logo_url: data.logo_url,
+      logo_url: logoUrl,
       logo_width: data.logo_width,
-      cover_url: data.cover_url,
+      cover_url: coverUrl,
       address: data.address,
       maps_url: data.maps_url,
       slot_min: data.slot_min,
@@ -2689,8 +2734,8 @@
       force_pool_photos: true,
       use_custom_palette: data.use_custom_palette,
       fonts: FONT_PRESETS[data.font_pair] || FONT_PRESETS.dm_plusjakarta,
-      logo: runtimePreview.logo || data.logo_url,
-      cover: runtimePreview.cover || data.cover_url
+      logo: runtimePreview.logo || logoUrl,
+      cover: runtimePreview.cover || coverUrl
     };
 
     if (data.use_custom_palette) {
@@ -2705,6 +2750,8 @@
 
   function buildBrandingUpdatePayload(data, extra = {}) {
     const qrContext = getQrContext();
+    const coverUrl = safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl();
+    const logoUrl = safeImageUrl(data.logo_url);
     const payload = {
       ...extra,
       biz_name: data.biz_name,
@@ -2715,9 +2762,9 @@
       hero_subtitle: data.hero_subtitle,
       hero_btn_primary: data.hero_btn_primary,
       hero_btn_secondary: data.hero_btn_secondary,
-      logo_url: data.logo_url,
+      logo_url: logoUrl,
       logo_width: data.logo_width,
-      cover_url: data.cover_url,
+      cover_url: coverUrl,
       address: data.address,
       maps_url: data.maps_url,
       slot_min: data.slot_min,
@@ -2727,8 +2774,8 @@
       barber_photos: DEFAULT_BARBER_PHOTOS.slice(),
       force_pool_photos: true,
       use_custom_palette: data.use_custom_palette,
-      logo: runtimePreview.logo || data.logo_url,
-      cover: runtimePreview.cover || data.cover_url,
+      logo: runtimePreview.logo || logoUrl,
+      cover: runtimePreview.cover || coverUrl,
       services: inheritedCollections.services,
       barbers: inheritedCollections.barbers,
       hours: inheritedCollections.hours

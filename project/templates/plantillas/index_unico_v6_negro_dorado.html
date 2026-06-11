@@ -1006,7 +1006,7 @@
       const serviceColClass = totalServices <= 2 ? 'col-md-6 col-lg-5' : 'col-md-6 col-lg-4';
 
       servicesGrid.innerHTML = services.map(s => {
-        const image = safeSeedText(s.imagen_url || s.image_url);
+        const image = resolveServiceImage(s);
         const media = image
           ? `<img class="service-photo mb-3" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.remove();" style="width:100%;height:150px;object-fit:cover;border-radius:18px;" />`
           : `<div class="icon-chip mb-3"><i class="bi ${s.icono}"></i></div>`;
@@ -1623,6 +1623,37 @@ function normalizeDayLabel(value) {
       return String(v || '').trim();
     }
 
+    function isKnownPlaceholderImage(url) {
+      const value = safeSeedText(url).toLowerCase();
+      if (!value) return false;
+      return (
+        value.includes('images.unsplash.com/cover.jpg') ||
+        value.includes('images.unsplash.com/logo.jpg') ||
+        (value.endsWith('/cover.jpg') && value.includes('unsplash.com')) ||
+        (value.endsWith('/logo.jpg') && value.includes('unsplash.com'))
+      );
+    }
+
+    function safeImageUrl(url) {
+      const value = safeSeedText(url);
+      return value && !isKnownPlaceholderImage(value) ? value : '';
+    }
+
+    function resolveServiceImage(item) {
+      if (!item || typeof item !== 'object') return '';
+      return safeImageUrl(
+        item.foto_url ||
+        item.foto ||
+        item.imagen ||
+        item.image_url ||
+        item.image ||
+        item.cover_url ||
+        item.media_url ||
+        item.photo ||
+        item.imagen_url
+      );
+    }
+
     function buildMapsEmbedUrl(value) {
       const clean = safeSeedText(value);
       if (!clean) return '';
@@ -1705,8 +1736,8 @@ function normalizeDayLabel(value) {
     function buildRuntimeBranding(raw = {}) {
       return {
         logo_url: safeSeedText(raw.logo_url),
-        cover_url: safeSeedText(raw.cover_url || raw.hero_image_url),
-        hero_image_url: safeSeedText(raw.hero_image_url || raw.cover_url),
+        cover_url: safeImageUrl(raw.cover_url || raw.hero_image_url),
+        hero_image_url: safeImageUrl(raw.hero_image_url || raw.cover_url),
         logo_width: Number(raw.logo_width || 0) || 0,
         hero_badge: safeSeedText(raw.hero_badge || raw.hero_kicker || raw.kicker),
         hero_title: safeSeedText(raw.hero_title || raw.title),
@@ -1737,7 +1768,7 @@ function normalizeDayLabel(value) {
       const branding = payload.branding || payload.config || {};
       const publicName = safeSeedText(profile.nombre_publico || profile.nombre || branding.biz_name);
       const logoUrl = safeSeedText(profile.logo_url || branding.logo_url);
-      const coverUrl = safeSeedText(profile.cover_url || branding.cover_url || branding.hero_image_url);
+      const coverUrl = safeImageUrl(profile.cover_url || branding.cover_url || branding.hero_image_url);
       const logoWidth = Number(branding.logo_width || 0) || 0;
       const kicker = safeSeedText(branding.hero_badge || branding.hero_kicker);
       const title = safeSeedText(branding.hero_title);
@@ -2054,7 +2085,9 @@ function normalizeDayLabel(value) {
         activo,
         precio: Math.max(0, toSeedNumber(item.precio ?? item.precio_base ?? item.valor ?? item.tarifa ?? item.price, 0)),
         icono: safeSeedText(item.icono || item.icon || iconFallback) || iconFallback,
-        imagen_url: safeSeedText(item.imagen_url || item.image_url || item.foto_url || item.foto || item.imagen || item.image || item.cover_url || item.photo),
+        imagen_url: resolveServiceImage(item),
+        image_url: resolveServiceImage(item),
+        foto_url: safeImageUrl(item.foto_url || item.foto || item.imagen || item.image_url || item.image || item.cover_url || item.media_url || item.photo || item.imagen_url),
         duracion_min: Math.max(15, toSeedNumber(item.duracion_min ?? item.duration_min ?? item.duracion ?? item.duration, 60))
       };
     }
