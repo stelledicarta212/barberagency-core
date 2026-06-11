@@ -3150,3 +3150,45 @@ SISTEMA DE DISEÑO ESCRITORIO SAAS PREMIUM DARK
     margin: 0 auto !important;
   }
 }
+
+/*
+================================================================
+FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
+================================================================
+*/
+@media (max-width: 900px) {
+  /* Ocultar elementos exclusivos de escritorio */
+  #ba-editor-v2 .ba-desktop-only,
+  #ba-editor-v2 .ba-sidebar-header-desktop,
+  #ba-editor-v2 .ba-sidebar-help-desktop,
+  #ba-editor-v2 .ba-desktop-templates-section,
+  #ba-editor-v2 .ba-preview-toolbar-desktop,
+  #ba-editor-v2 .ba-browser-bar {
+    display: none !important;
+  }
+
+  /* El wrapper del previsualizador en móvil se comporta como contenedor pasante */
+  #ba-editor-v2 .ba-browser-mockup {
+    display: contents !important;
+  }
+
+  /* Posicionamiento del Dock Móvil en el pie de página */
+  #ba-editor-v2 .ba-mobile-dock {
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    top: auto !important;
+    transform: none !important;
+    flex-direction: row !important;
+    z-index: 9999 !important;
+  }
+
+  /* Asegurar espacio para el Dock en la parte inferior */
+  #ba-editor-v2,
+  #ba-editor-v2 .ba-editor-shell,
+  #ba-editor-v2 .ba-row,
+  #ba-editor-v2 #ba-right.ba-preview {
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}

@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet"
- href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=130">
+ href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=133">
 
 <style>
   #ba-editor-v2[data-ui-theme='dark'] {
@@ -189,25 +189,25 @@
         <span></span>
       </div>
       <!-- Header visible only on desktop >= 901px -->
-      <div class="ba-sidebar-header-desktop">
+      <div class="ba-sidebar-header-desktop ba-desktop-only">
         <h1 class="ba-sidebar-title">Editar landing</h1>
         <p class="ba-sidebar-subtitle">Personaliza los textos, imágenes y marca de tu landing page.</p>
       </div>
       <div class="ba-panel-head">
-        <div class="ba-topbar-brand">
+        <div class="ba-topbar-brand ba-desktop-only">
           <span class="ba-logo-icon">B</span>
           <div class="ba-biz-name" id="biz_name_label">Barber Agency</div>
         </div>
-        <div class="ba-topbar-status">
+        <div class="ba-topbar-status ba-desktop-only">
           <span class="ba-status-dot"></span>
           <span class="ba-status-text">Borrador guardado</span>
         </div>
         <div class="ba-biz-slug">slug: <span id="biz_slug">-</span></div>
         <div class="ba-btns">
-          <button type="button" class="ba-btn ba-btn-icon ba-history-btn" id="btnUndo" disabled aria-label="Deshacer" title="Deshacer">
+          <button type="button" class="ba-btn ba-btn-icon ba-history-btn ba-desktop-only" id="btnUndo" disabled aria-label="Deshacer" title="Deshacer">
             <svg viewBox="0 0 24 24" class="ba-btn-art" aria-hidden="true"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
           </button>
-          <button type="button" class="ba-btn ba-btn-icon ba-history-btn" id="btnRedo" disabled aria-label="Rehacer" title="Rehacer">
+          <button type="button" class="ba-btn ba-btn-icon ba-history-btn ba-desktop-only" id="btnRedo" disabled aria-label="Rehacer" title="Rehacer">
             <svg viewBox="0 0 24 24" class="ba-btn-art" aria-hidden="true"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
           </button>
           <button type="button" class="ba-btn" id="goRegistro" aria-label="Editar registro" title="Editar registro">
@@ -344,7 +344,7 @@
         </div>
       </details>
       <!-- Ayuda inferior visible only on desktop >= 901px -->
-      <div class="ba-sidebar-help-desktop">
+      <div class="ba-sidebar-help-desktop ba-desktop-only">
         <div class="ba-help-card">
           <svg viewBox="0 0 24 24" class="ba-help-icon"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-6h2v6zm0-8h-2V7h2v3z"/></svg>
           <div class="ba-help-content">
@@ -362,19 +362,19 @@
     -->
     <section id="ba-right" class="ba-preview">
       <!-- Desktop Templates Section Header -->
-      <div class="ba-desktop-templates-section">
+      <div class="ba-desktop-templates-section ba-desktop-only">
         <div class="ba-templates-header">
           <h2 class="ba-templates-title">Plantillas</h2>
           <p class="ba-templates-subtitle">Elige un diseño base para tu landing. Tu contenido y colores se adaptarán automáticamente.</p>
         </div>
-        <div class="ba-preview-head">
-          <p class="ba-preview-name" id="templateName" style="display: none;"></p>
-          <div class="ba-chips" id="tplChips"></div>
-        </div>
+      </div>
+      <div class="ba-preview-head">
+        <p class="ba-preview-name" id="templateName"></p>
+        <div class="ba-chips" id="tplChips"></div>
       </div>
 
       <!-- Desktop Preview Toolbar -->
-      <div class="ba-preview-toolbar-desktop">
+      <div class="ba-preview-toolbar-desktop ba-desktop-only">
         <div class="ba-viewport-controls">
           <button type="button" class="ba-viewport-btn" id="btnViewDesktop" title="Vista Desktop">
             <svg viewBox="0 0 24 24" class="ba-icon"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
@@ -397,7 +397,7 @@
 
       <!-- Browser mockup wrapper -->
       <div class="ba-browser-mockup">
-        <div class="ba-browser-bar">
+        <div class="ba-browser-bar ba-desktop-only">
           <div class="ba-browser-dots">
             <span class="ba-dot red"></span>
             <span class="ba-dot yellow"></span>
