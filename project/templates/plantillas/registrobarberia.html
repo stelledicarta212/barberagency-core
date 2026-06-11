@@ -2061,9 +2061,7 @@
       }
 
       if (!Array.isArray(data.barberos)) {
-        data.barberos = Array.isArray(payload?.collections_patch?.barberos?.upsert)
-          ? payload.collections_patch.barberos.upsert
-          : [];
+        data.barberos = [];
       }
 
       if (!Array.isArray(data.horarios)) {
@@ -2081,20 +2079,56 @@
       const barberProfiles = Array.isArray(sourceDraft.barberos)
         ? sourceDraft.barberos
         : [];
+      const sourceBarberProfiles = Array.isArray(sourceDraft.barberProfiles)
+        ? sourceDraft.barberProfiles
+        : [];
+      const dataBarberProfiles = Array.isArray(data?.barberProfiles)
+        ? data.barberProfiles
+        : [];
+      const patchBarbers = Array.isArray(payload?.collections_patch?.barberos?.upsert)
+        ? payload.collections_patch.barberos.upsert
+        : [];
+      const hasPublicBarbers = (items) =>
+        Array.isArray(items) && items.some((item) => clean(item?.nombre || item?.name));
+      const normalizeSeedBarber = (item, index) => {
+        const nombre = clean(item?.nombre || item?.name);
+        const foto = normalizeBarberPhoto(item?.foto_url || item?.foto || item?.photo || item?.picture_url || item?.avatar_url || item?.image_url);
+        return {
+          id: Number(item?.id || 0) || undefined,
+          usuario_id: Number(item?.usuario_id || item?.user_id || 0) || undefined,
+          nombre,
+          name: nombre,
+          activo: item?.activo !== undefined ? Boolean(item.activo) : true,
+          foto,
+          foto_url: foto,
+          photo: foto,
+          picture_url: foto,
+          especialidad: clean(item?.especialidad || item?.rol || item?.role),
+          rol: clean(item?.rol || item?.role || item?.especialidad)
+        };
+      };
       const finalServices = Array.isArray(data?.servicios) && data.servicios.length
         ? data.servicios
         : (Array.isArray(sourceDraft.servicios) ? sourceDraft.servicios : []);
       const finalHours = Array.isArray(data?.horarios) && data.horarios.length
         ? data.horarios
         : (Array.isArray(sourceDraft.horarios) ? sourceDraft.horarios : []);
-      const finalBarbers = Array.isArray(data?.barberos) && data.barberos.length
-        ? data.barberos
-        : (barberProfiles.length ? barberProfiles : barberAccesses);
+      const finalBarberSource =
+        (hasPublicBarbers(data.barberos) && data.barberos) ||
+        (hasPublicBarbers(dataBarberProfiles) && dataBarberProfiles) ||
+        (hasPublicBarbers(barberProfiles) && barberProfiles) ||
+        (hasPublicBarbers(sourceBarberProfiles) && sourceBarberProfiles) ||
+        (hasPublicBarbers(barberAccesses) && barberAccesses) ||
+        (hasPublicBarbers(patchBarbers) && patchBarbers) ||
+        [];
+      const finalBarbers = finalBarberSource
+        .map(normalizeSeedBarber)
+        .filter((item) => clean(item.nombre));
       data.servicios = finalServices;
       data.horarios = finalHours;
       data.barberos = finalBarbers;
-      const inheritedPhotos = barberProfiles
-        .map((item) => normalizeBarberPhoto(item && (item.foto_url || item.foto)))
+      const inheritedPhotos = finalBarbers
+        .map((item) => normalizeBarberPhoto(item && (item.foto_url || item.foto || item.photo)))
         .filter(Boolean);
 
       const landingSeed = {

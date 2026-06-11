@@ -1218,8 +1218,13 @@
       id: Number(item?.id) || null,
       name: safeText(item?.name || item?.nombre),
       nombre: safeText(item?.nombre || item?.name),
-      photo: safeText(item?.photo || item?.foto || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
-      foto: safeText(item?.foto || item?.photo || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length])
+      activo: item?.activo !== undefined ? Boolean(item.activo) : true,
+      especialidad: safeText(item?.especialidad || item?.rol || item?.role),
+      rol: safeText(item?.rol || item?.role || item?.especialidad),
+      photo: safeText(item?.photo || item?.foto || item?.foto_url || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
+      foto: safeText(item?.foto || item?.photo || item?.foto_url || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
+      foto_url: safeText(item?.foto_url || item?.foto || item?.photo || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
+      picture_url: safeText(item?.picture_url || item?.foto_url || item?.foto || item?.photo || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length])
     }))
       .filter((item) => safeText(item.name) || safeText(item.nombre));
   }
