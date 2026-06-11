@@ -1560,8 +1560,8 @@ EDITOR MOVIL PREMIUM GLASS
   #ba-editor-v2 {
     --ba-mobile-bg: #070A0D;
     --ba-mobile-bg-2: #0B1117;
-    --ba-mobile-surface: rgba(17, 24, 32, 0.72);
-    --ba-mobile-surface-strong: rgba(20, 28, 36, 0.86);
+    --ba-mobile-surface: rgba(17, 24, 32, 0.76);
+    --ba-mobile-surface-strong: rgba(20, 28, 36, 0.90);
     --ba-mobile-border: rgba(255, 255, 255, 0.12);
     --ba-mobile-border-gold: rgba(201, 162, 78, 0.35);
     --ba-mobile-gold: #C9A24E;
@@ -1576,14 +1576,53 @@ EDITOR MOVIL PREMIUM GLASS
     width: 100%;
     min-height: 100svh;
     margin: 0;
-    padding: 16px 14px calc(124px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 118px 14px calc(124px + env(safe-area-inset-bottom, 0px)) !important;
     border-radius: 0;
     overflow-x: hidden;
     background:
-      radial-gradient(circle at 8% 0%, rgba(201, 162, 78, 0.16), transparent 34%),
-      radial-gradient(circle at 96% 14%, rgba(255, 255, 255, 0.06), transparent 32%),
-      linear-gradient(180deg, var(--ba-mobile-bg) 0%, var(--ba-mobile-bg-2) 100%) !important;
+      radial-gradient(circle at 18% 0%, rgba(201, 162, 78, 0.16), transparent 34%),
+      radial-gradient(circle at 80% 100%, rgba(201, 162, 78, 0.08), transparent 32%),
+      linear-gradient(180deg, #070A0D 0%, #0B1117 48%, #050607 100%) !important;
     color: var(--ba-mobile-text);
+  }
+
+  #ba-editor-v2::before {
+    content: "B";
+    position: absolute;
+    top: calc(22px + env(safe-area-inset-top, 0px));
+    left: 22px;
+    z-index: 8;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    border: 1px solid rgba(201, 162, 78, 0.38);
+    background:
+      linear-gradient(180deg, rgba(201, 162, 78, 0.22), rgba(201, 162, 78, 0.08)),
+      rgba(10, 14, 18, 0.62);
+    color: var(--ba-mobile-gold);
+    font-size: 34px;
+    font-weight: 900;
+    line-height: 1;
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(16px) saturate(1.35);
+    -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  }
+
+  #ba-editor-v2::after {
+    content: "BarberAgency\A Editor movil";
+    position: absolute;
+    top: calc(24px + env(safe-area-inset-top, 0px));
+    left: 92px;
+    right: 86px;
+    z-index: 8;
+    color: var(--ba-mobile-text);
+    white-space: pre-line;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: 0;
   }
 
   body.light-mode #ba-editor-v2,
@@ -1610,6 +1649,29 @@ EDITOR MOVIL PREMIUM GLASS
     gap: 16px;
     width: 100%;
     min-width: 0;
+    position: relative;
+  }
+
+  #ba-editor-v2 .ba-row::before {
+    content: "...";
+    position: absolute;
+    top: calc(-92px - env(safe-area-inset-top, 0px));
+    right: 12px;
+    z-index: 9;
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 162, 78, 0.46);
+    background: rgba(8, 12, 16, 0.46);
+    color: var(--ba-mobile-gold-soft);
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px) saturate(1.25);
+    -webkit-backdrop-filter: blur(16px) saturate(1.25);
   }
 
   #ba-editor-v2 #ba-right.ba-preview,
@@ -1633,7 +1695,7 @@ EDITOR MOVIL PREMIUM GLASS
   #ba-editor-v2 #ba-right.ba-preview {
     order: 1;
     min-height: auto;
-    padding: 12px;
+    padding: 82px 12px 16px;
     border-radius: 30px;
     border: 1px solid var(--ba-mobile-border);
     background: var(--ba-mobile-surface);
@@ -1644,24 +1706,36 @@ EDITOR MOVIL PREMIUM GLASS
   }
 
   #ba-editor-v2 #ba-right.ba-preview::before {
-    content: "Vista";
+    content: "Tu landing";
+    position: absolute;
+    left: 20px;
+    top: 22px;
+    z-index: 2;
     display: inline-flex;
     align-items: center;
     width: auto;
-    margin: 0 0 10px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    border: 1px solid var(--ba-mobile-border-gold);
-    background: rgba(201, 162, 78, 0.12);
-    color: var(--ba-mobile-gold-soft);
-    text-transform: uppercase;
-    font-size: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ba-mobile-text);
+    text-transform: none;
+    font-size: 26px;
     font-weight: 900;
-    letter-spacing: 0.12em;
+    letter-spacing: 0;
   }
 
   #ba-editor-v2 #ba-right.ba-preview::after {
-    display: none !important;
+    content: "● Guardado";
+    position: absolute;
+    right: 20px;
+    top: 25px;
+    z-index: 2;
+    display: block !important;
+    color: var(--ba-mobile-text);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0;
   }
 
   #ba-editor-v2 #preview {
@@ -1681,43 +1755,31 @@ EDITOR MOVIL PREMIUM GLASS
   #ba-editor-v2 #ba-left {
     order: 2;
     max-height: none !important;
-    border-radius: 30px;
-    border: 1px solid var(--ba-mobile-border);
-    background: var(--ba-mobile-surface);
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
-    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: visible;
   }
 
   #ba-editor-v2 .ba-panel-head {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    padding: 16px;
-    border-bottom: 1px solid var(--ba-mobile-border);
-    border-radius: 30px 30px 18px 18px;
+    position: relative;
+    top: auto;
+    z-index: 2;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
     background: var(--ba-mobile-surface-strong);
-    backdrop-filter: blur(18px) saturate(1.35);
-    -webkit-backdrop-filter: blur(18px) saturate(1.35);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   #ba-editor-v2 .ba-biz-name {
-    color: var(--ba-mobile-text);
-    font-size: clamp(26px, 8vw, 36px);
-    line-height: 1.02;
-    margin-bottom: 14px;
-  }
-
-  #ba-editor-v2 .ba-biz-name::before {
-    content: "BarberAgency";
-    display: block;
-    margin: 0 0 6px;
-    color: var(--ba-mobile-muted);
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    display: none;
   }
 
   #ba-editor-v2 .ba-section {
@@ -1729,10 +1791,55 @@ EDITOR MOVIL PREMIUM GLASS
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
 
+  #ba-editor-v2 #ba-section-brand {
+    margin: 10px 0 0;
+    padding: 54px 16px 10px;
+    border-radius: 28px;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035)),
+      var(--ba-mobile-surface);
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+    backdrop-filter: blur(20px) saturate(1.35);
+    -webkit-backdrop-filter: blur(20px) saturate(1.35);
+    position: relative;
+  }
+
+  #ba-editor-v2 #ba-section-brand::before {
+    content: "Editar contenido";
+    position: absolute;
+    left: 18px;
+    top: 18px;
+    color: var(--ba-mobile-text);
+    font-size: 23px;
+    font-weight: 900;
+    letter-spacing: 0;
+  }
+
+  #ba-editor-v2 #ba-section-brand::after {
+    content: "^";
+    position: absolute;
+    right: 22px;
+    top: 18px;
+    color: var(--ba-mobile-text);
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  #ba-editor-v2 #ba-section-message,
+  #ba-editor-v2 #ba-section-seo,
+  #ba-editor-v2 #ba-section-inherited {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   #ba-editor-v2 .ba-section-title {
     color: var(--ba-mobile-gold-soft);
     font-size: 12px;
     letter-spacing: 0.11em;
+  }
+
+  #ba-editor-v2 #ba-section-brand > .ba-section-title {
+    display: none;
   }
 
   #ba-editor-v2 .ba-field label,
@@ -1750,6 +1857,80 @@ EDITOR MOVIL PREMIUM GLASS
     border-radius: 16px;
   }
 
+  #ba-editor-v2 #ba-section-brand .ba-field,
+  #ba-editor-v2 #ba-section-brand .ba-upload,
+  #ba-editor-v2 #ba-section-brand .ba-palette-actions {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(112px, 0.8fr) minmax(0, 1.2fr) 20px;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    margin: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  #ba-editor-v2 #ba-section-brand .ba-field::after,
+  #ba-editor-v2 #ba-section-brand .ba-upload::after {
+    content: "›";
+    color: var(--ba-mobile-muted);
+    font-size: 28px;
+    line-height: 1;
+    text-align: right;
+  }
+
+  #ba-editor-v2 #ba-section-brand .ba-field label,
+  #ba-editor-v2 #ba-section-brand .ba-upload .ba-upload-label {
+    color: var(--ba-mobile-text);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  #ba-editor-v2 #ba-section-brand .ba-field input,
+  #ba-editor-v2 #ba-section-brand .ba-field select {
+    min-height: 36px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ba-mobile-text);
+    text-align: right;
+    box-shadow: none;
+  }
+
+  #ba-editor-v2 #ba-section-brand .ba-field input[type="color"] {
+    justify-self: end;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  #ba-editor-v2 #ba-section-brand .ba-upload {
+    min-height: 58px;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 0;
+    background: transparent;
+    place-items: stretch;
+    overflow: visible;
+  }
+
+  #ba-editor-v2 #ba-section-brand .ba-upload img {
+    position: static;
+    display: block;
+    justify-self: end;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 1px solid var(--ba-mobile-border-gold);
+  }
+
   #ba-editor-v2 .ba-field input::placeholder,
   #ba-editor-v2 .ba-field textarea::placeholder {
     color: rgba(165, 167, 173, 0.72);
@@ -1762,9 +1943,10 @@ EDITOR MOVIL PREMIUM GLASS
 
   #ba-editor-v2 .ba-btns {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
     width: 100%;
+    margin: 0 0 10px;
   }
 
   #ba-editor-v2 .ba-btn {
@@ -1778,6 +1960,7 @@ EDITOR MOVIL PREMIUM GLASS
     background: var(--ba-mobile-surface-strong) !important;
     color: var(--ba-mobile-text) !important;
     box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+    flex-direction: column;
   }
 
   #ba-editor-v2 .ba-btn .ba-btn-art {
@@ -1787,9 +1970,36 @@ EDITOR MOVIL PREMIUM GLASS
   }
 
   #ba-editor-v2 .ba-btn .ba-btn-label {
-    display: inline-block !important;
+    display: none !important;
     font-size: 15px;
     font-weight: 900;
+  }
+
+  #ba-editor-v2 #goRegistro::after {
+    content: "Editar landing";
+  }
+
+  #ba-editor-v2 #goSelector::after {
+    content: "Cambiar plantilla";
+  }
+
+  #ba-editor-v2 #publish::after {
+    content: "Publicar";
+  }
+
+  #ba-editor-v2 #goRegistro::after,
+  #ba-editor-v2 #goSelector::after,
+  #ba-editor-v2 #publish::after {
+    display: block;
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  #ba-editor-v2 #openFinalPreview,
+  #ba-editor-v2 #saveDraft {
+    display: none !important;
   }
 
   #ba-editor-v2 #publish {
@@ -1799,6 +2009,10 @@ EDITOR MOVIL PREMIUM GLASS
     box-shadow:
       0 16px 36px rgba(201, 162, 78, 0.28),
       inset 0 1px 0 rgba(255, 255, 255, 0.42) !important;
+  }
+
+  #ba-editor-v2 #publish .ba-btn-art {
+    display: block !important;
   }
 
   #ba-editor-v2 #goSelector {
@@ -1855,11 +2069,14 @@ EDITOR MOVIL PREMIUM GLASS
     align-items: center !important;
     gap: 8px !important;
     z-index: 9999;
+    min-height: 76px;
     padding: 10px 12px;
     border-radius: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     background: rgba(18, 24, 31, 0.72) !important;
-    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45) !important;
+    box-shadow:
+      0 18px 60px rgba(0, 0, 0, 0.50),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
     backdrop-filter: blur(22px) saturate(1.45);
     -webkit-backdrop-filter: blur(22px) saturate(1.45);
     animation: none;
@@ -1894,6 +2111,39 @@ EDITOR MOVIL PREMIUM GLASS
     background: rgba(255, 255, 255, 0.045) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn:nth-child(4) {
+    display: none !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn:nth-child(1) span,
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn:nth-child(2) span,
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn:nth-child(3) span,
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn:nth-child(5) span {
+    font-size: 0;
+  }
+
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn:nth-child(1) span::after {
+    content: "Vista";
+  }
+
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn:nth-child(2) span::after {
+    content: "Editar";
+  }
+
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn:nth-child(3) span::after {
+    content: "Diseno";
+  }
+
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn:nth-child(5) span::after {
+    content: "Publicar";
+  }
+
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn span::after {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0;
   }
 
   #ba-editor-v2 .ba-dock-ico {
@@ -1965,6 +2215,21 @@ EDITOR MOVIL PREMIUM GLASS
     box-shadow: 0 24px 70px rgba(48, 42, 30, 0.16);
   }
 
+  body.light-mode #ba-editor-v2::before,
+  #ba-editor-v2[data-ui-theme='light']::before {
+    background:
+      linear-gradient(180deg, rgba(201, 162, 78, 0.24), rgba(201, 162, 78, 0.1)),
+      rgba(255, 255, 255, 0.68);
+    box-shadow: 0 16px 34px rgba(48, 42, 30, 0.16);
+  }
+
+  body.light-mode #ba-editor-v2::after,
+  #ba-editor-v2[data-ui-theme='light']::after,
+  body.light-mode #ba-editor-v2 .ba-row::before,
+  #ba-editor-v2[data-ui-theme='light'] .ba-row::before {
+    color: var(--ba-mobile-text);
+  }
+
   body.light-mode #ba-editor-v2 .ba-section,
   #ba-editor-v2[data-ui-theme='light'] .ba-section {
     background: rgba(255, 255, 255, 0.62);
@@ -2023,8 +2288,29 @@ EDITOR MOVIL PREMIUM GLASS
 
 @media (max-width: 430px) {
   #ba-editor-v2 {
-    padding: 12px 10px calc(120px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 108px 10px calc(120px + env(safe-area-inset-bottom, 0px)) !important;
     --work-height: clamp(500px, 68svh, 720px);
+  }
+
+  #ba-editor-v2::before {
+    left: 18px;
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    font-size: 30px;
+  }
+
+  #ba-editor-v2::after {
+    left: 82px;
+    right: 72px;
+    font-size: 24px;
+  }
+
+  #ba-editor-v2 .ba-row::before {
+    top: calc(-84px - env(safe-area-inset-top, 0px));
+    right: 8px;
+    width: 50px;
+    height: 50px;
   }
 
   #ba-editor-v2 .ba-mobile-dock {
