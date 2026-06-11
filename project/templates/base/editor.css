@@ -3243,6 +3243,7 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
     padding-left: 0 !important;
     padding-right: 0 !important;
     border-radius: 0 !important;
+    overflow-x: hidden !important;
     background:
       radial-gradient(circle at 20% 0%, rgba(201,162,78,.14), transparent 34%),
       linear-gradient(180deg, #070A0D 0%, #0B1117 100%) !important;
@@ -3251,44 +3252,49 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
   #ba-editor-v2 .ba-row {
     width: 100% !important;
     max-width: 100% !important;
+    display: block !important;
     margin: 0 !important;
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-    gap: 16px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
+  /* Contenedores en móvil: sin enmarcado artificial */
   #ba-editor-v2 #ba-left,
-  #ba-editor-v2 #ba-right.ba-preview {
+  #ba-editor-v2 #ba-right,
+  #ba-editor-v2 .ba-preview,
+  #ba-editor-v2 .ba-preview-shell,
+  #ba-editor-v2 .ba-browser-mockup {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
-  /* Card Tu Landing */
-  #ba-editor-v2 #ba-right.ba-preview {
-    padding-top: 54px !important;
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-    padding-bottom: 14px !important;
-    border-radius: 24px !important;
-    border: 1px solid var(--ba-mobile-border, rgba(255, 255, 255, 0.12)) !important;
-    background: var(--ba-mobile-surface, rgba(17, 24, 32, 0.72)) !important;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35) !important;
-    backdrop-filter: blur(20px) saturate(1.35) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(1.35) !important;
+  /* Desactivar cualquier pseudo-elemento de cabecera en el preview */
+  #ba-editor-v2 #ba-right.ba-preview::before,
+  #ba-editor-v2 #ba-right.ba-preview::after {
+    display: none !important;
+    content: none !important;
   }
 
-  /* Estilo del Iframe en móvil: Sin bordes de mockup de celular ni sombras internas */
+  /* Estilo del Iframe en móvil: Sin chasis ni límites de ancho */
   #ba-editor-v2 #preview {
     width: 100% !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
     margin: 0 !important;
     border: none !important;
     box-shadow: none !important;
-    border-radius: 18px !important;
+    border-radius: 0 !important;
     background: #ffffff !important;
     height: var(--work-height) !important;
+    outline: none !important;
   }
 
   /* Desactivar cualquier shadow o borde en modo claro para preview */
@@ -3479,11 +3485,27 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
     color: var(--ba-mobile-text) !important;
   }
 
+  #ba-editor-v2 .ba-btns {
+    margin: 16px 14px !important;
+    width: calc(100% - 28px) !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  #ba-editor-v2 .ba-preview-head {
+    margin: 16px 14px !important;
+    width: calc(100% - 28px) !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
   /* Card de configuracion movil */
   #ba-editor-v2 .ba-section {
-    margin: 16px 0 !important;
+    margin: 16px 14px !important;
     padding: 16px !important;
-    border-radius: 24px !important;
+    border-radius: 20px !important;
     background: rgba(17, 24, 32, 0.72) !important;
     border: 1px solid var(--ba-mobile-border, rgba(255, 255, 255, 0.12)) !important;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.24) !important;
