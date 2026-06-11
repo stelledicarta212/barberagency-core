@@ -2999,6 +2999,12 @@
       const isEdit = isEditIntent();
       const payload = isEdit ? buildPatchPayload() : buildDraftPayload();
       lastPayload = payload;
+            if (isEdit) {
+        const data = buildEditNavigationData();
+        persistLandingSeed(payload, data);
+        window.location.href = buildLandingBuilderUrl(payload, data);
+        return;
+      }
 
       if (!draft.barberia.nombre) {
         showMessage("error", "Falta el nombre de la barbería.");
