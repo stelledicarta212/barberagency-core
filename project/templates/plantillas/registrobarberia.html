@@ -1,4 +1,4 @@
-<section class="ba-wizard" id="baWizardApp" data-theme="dark">
+﻿<section class="ba-wizard" id="baWizardApp" data-theme="dark">
   <div class="ba-shell">
     <style>
       /* SECCION: Ajustes visuales propios del registro pegado en WP */
@@ -2040,7 +2040,10 @@
         data = {};
       }
 
-      const sourceDraft = (payload && payload.draft) || draft || {};
+      const sourceDraft =
+        (payload && payload.draft && typeof payload.draft === "object" ? payload.draft : null) ||
+        (typeof draft !== "undefined" && draft && typeof draft === "object" ? draft : null) ||
+        {};
 
       if (!data.barberia) {
         data.barberia = {
@@ -2054,20 +2057,53 @@
         };
       }
 
-      if (!Array.isArray(data.servicios)) {
-        data.servicios = Array.isArray(payload?.collections_patch?.servicios?.upsert)
-          ? payload.collections_patch.servicios.upsert
-          : [];
-      }
+      const firstArray = (...candidates) => {
+        let firstEmpty = null;
+        for (const candidate of candidates) {
+          if (!Array.isArray(candidate)) continue;
+          if (candidate.length > 0) return candidate;
+          if (firstEmpty === null) firstEmpty = candidate;
+        }
+        return firstEmpty || [];
+      };
+
+      const finalServices = firstArray(
+        data?.servicios,
+        data?.services,
+        sourceDraft?.servicios,
+        sourceDraft?.services,
+        sourceDraft?.serviceProfiles,
+        payload?.collections?.servicios,
+        payload?.collections?.servicios?.upsert,
+        payload?.collections_patch?.servicios?.upsert
+      );
+
+      const finalHours = firstArray(
+        data?.horarios,
+        data?.hours,
+        data?.schedule,
+        sourceDraft?.horarios,
+        sourceDraft?.hours,
+        sourceDraft?.schedule,
+        payload?.collections?.horarios,
+        payload?.collections?.horarios?.upsert,
+        payload?.collections_patch?.horarios?.upsert
+      );
+
+      const finalBarberSource = firstArray(
+        data?.barberos,
+        data?.barberProfiles,
+        sourceDraft?.barberos,
+        sourceDraft?.barberProfiles,
+        sourceDraft?.staff,
+        sourceDraft?.team,
+        payload?.collections?.barberos,
+        payload?.collections?.barberos?.upsert,
+        payload?.collections_patch?.barberos?.upsert
+      );
 
       if (!Array.isArray(data.barberos)) {
         data.barberos = [];
-      }
-
-      if (!Array.isArray(data.horarios)) {
-        data.horarios = Array.isArray(payload?.collections_patch?.horarios?.upsert)
-          ? payload.collections_patch.horarios.upsert
-          : [];
       }
 
       const adminAccess = sourceDraft.accesos && sourceDraft.accesos.admin
@@ -2076,15 +2112,6 @@
       const barberAccesses = sourceDraft.accesos && Array.isArray(sourceDraft.accesos.barberos)
         ? sourceDraft.accesos.barberos
         : [];
-      const barberProfiles = Array.isArray(sourceDraft.barberos)
-        ? sourceDraft.barberos
-        : [];
-      const sourceBarberProfiles = Array.isArray(sourceDraft.barberProfiles)
-        ? sourceDraft.barberProfiles
-        : [];
-      const dataBarberProfiles = Array.isArray(data?.barberProfiles)
-        ? data.barberProfiles
-        : [];
       const patchBarbers = Array.isArray(payload?.collections_patch?.barberos?.upsert)
         ? payload.collections_patch.barberos.upsert
         : [];
@@ -2092,8 +2119,9 @@
         Array.isArray(items) && items.some((item) => clean(item?.nombre || item?.name));
       const normalizeSeedBarber = (item, index) => {
         const nombre = clean(item?.nombre || item?.name);
-        const foto = normalizeBarberPhoto(item?.foto_url || item?.foto || item?.photo || item?.picture_url || item?.avatar_url || item?.image_url);
+        const foto = normalizeBarberPhoto(item?.foto_url || item?.foto || item?.photo || item?.picture_url || item?.avatar_url || item?.image_url || item?.image);
         return {
+          ...item,
           id: Number(item?.id || 0) || undefined,
           usuario_id: Number(item?.usuario_id || item?.user_id || 0) || undefined,
           nombre,
@@ -2107,21 +2135,7 @@
           rol: clean(item?.rol || item?.role || item?.especialidad)
         };
       };
-      const finalServices = Array.isArray(data?.servicios) && data.servicios.length
-        ? data.servicios
-        : (Array.isArray(sourceDraft.servicios) ? sourceDraft.servicios : []);
-      const finalHours = Array.isArray(data?.horarios) && data.horarios.length
-        ? data.horarios
-        : (Array.isArray(sourceDraft.horarios) ? sourceDraft.horarios : []);
-      const finalBarberSource =
-        (hasPublicBarbers(barberProfiles) && barberProfiles) ||
-        (hasPublicBarbers(sourceBarberProfiles) && sourceBarberProfiles) ||
-        (hasPublicBarbers(data.barberos) && data.barberos) ||
-        (hasPublicBarbers(dataBarberProfiles) && dataBarberProfiles) ||
-        (hasPublicBarbers(patchBarbers) && patchBarbers) ||
-        (hasPublicBarbers(barberAccesses) && barberAccesses) ||
-        [];
-      const finalBarbers = finalBarberSource
+      const finalBarbers = (Array.isArray(finalBarberSource) ? finalBarberSource : [])
         .map(normalizeSeedBarber)
         .filter((item) => clean(item.nombre));
       data.servicios = finalServices;
@@ -2138,22 +2152,22 @@
         id_barberia: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
         id: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
         slug: (data && data.barberia ? clean(data.barberia.slug) : "") || clean(data && data.slug) || clean(sourceDraft?.barberia?.slug),
-        nombre: clean(sourceDraft?.barberia?.nombre),
-        ciudad: clean(sourceDraft?.barberia?.ciudad),
-        direccion: clean(sourceDraft?.barberia?.direccion),
-        maps_url: clean(sourceDraft?.barberia?.maps_url),
-        telefono: clean(sourceDraft?.barberia?.telefono),
-        slot_min: Number(sourceDraft?.barberia?.slot_min || 15),
+        nombre: clean(data?.barberia?.nombre || sourceDraft?.barberia?.nombre),
+        ciudad: clean(data?.barberia?.ciudad || sourceDraft?.barberia?.ciudad),
+        direccion: clean(data?.barberia?.direccion || sourceDraft?.barberia?.direccion),
+        maps_url: clean(data?.barberia?.maps_url || sourceDraft?.barberia?.maps_url),
+        telefono: clean(data?.barberia?.telefono || sourceDraft?.barberia?.telefono),
+        slot_min: Number(data?.barberia?.slot_min || sourceDraft?.barberia?.slot_min || 15),
         barberia: {
           id: data && data.barberia ? data.barberia.id : null,
           slug: data && data.barberia ? data.barberia.slug : (sourceDraft?.barberia?.slug || ""),
-          nombre: sourceDraft?.barberia?.nombre || "",
-          ciudad: sourceDraft?.barberia?.ciudad || "",
-          direccion: sourceDraft?.barberia?.direccion || "",
-          maps_url: sourceDraft?.barberia?.maps_url || "",
-          telefono: sourceDraft?.barberia?.telefono || "",
-          timezone: sourceDraft?.barberia?.timezone || "America/Bogotá",
-          slot_min: sourceDraft?.barberia?.slot_min || 15
+          nombre: data && data.barberia ? data.barberia.nombre : (sourceDraft?.barberia?.nombre || ""),
+          ciudad: data && data.barberia ? data.barberia.ciudad : (sourceDraft?.barberia?.ciudad || ""),
+          direccion: data && data.barberia ? data.barberia.direccion : (sourceDraft?.barberia?.direccion || ""),
+          maps_url: data && data.barberia ? data.barberia.maps_url : (sourceDraft?.barberia?.maps_url || ""),
+          telefono: data && data.barberia ? data.barberia.telefono : (sourceDraft?.barberia?.telefono || ""),
+          timezone: data && data.barberia ? data.barberia.timezone : (sourceDraft?.barberia?.timezone || "America/Bogotá"),
+          slot_min: data && data.barberia ? data.barberia.slot_min : (sourceDraft?.barberia?.slot_min || 15)
         },
         servicios: finalServices,
         horarios: finalHours,
