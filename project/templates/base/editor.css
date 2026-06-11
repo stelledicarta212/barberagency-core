@@ -3200,11 +3200,24 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
     position: fixed !important;
     left: 16px !important;
     right: 16px !important;
-    bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
     top: auto !important;
-    transform: none !important;
-    flex-direction: row !important;
+    height: 72px !important;
+    border-radius: 26px !important;
+    background: rgba(22, 28, 34, 0.72) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.48),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+    backdrop-filter: blur(22px) saturate(1.45) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(1.45) !important;
     z-index: 9999 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0 !important;
+    padding: 0 12px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
   }
 
   /* Asegurar espacio para el Dock en la parte inferior */
@@ -3253,14 +3266,16 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
 
   /* Card Tu Landing */
   #ba-editor-v2 #ba-right.ba-preview {
-    padding-top: 68px !important;
-    padding-left: 12px !important;
-    padding-right: 12px !important;
-    padding-bottom: 12px !important;
+    padding-top: 54px !important;
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+    padding-bottom: 14px !important;
     border-radius: 24px !important;
-    border: 1px solid var(--ba-mobile-border) !important;
-    background: var(--ba-mobile-surface) !important;
+    border: 1px solid var(--ba-mobile-border, rgba(255, 255, 255, 0.12)) !important;
+    background: var(--ba-mobile-surface, rgba(17, 24, 32, 0.72)) !important;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35) !important;
+    backdrop-filter: blur(20px) saturate(1.35) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.35) !important;
   }
 
   /* Estilo del Iframe en móvil: Sin bordes de mockup de celular ni sombras internas */
@@ -3271,7 +3286,7 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
     margin: 0 !important;
     border: none !important;
     box-shadow: none !important;
-    border-radius: 16px !important;
+    border-radius: 18px !important;
     background: #ffffff !important;
     height: var(--work-height) !important;
   }
@@ -3348,15 +3363,45 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
   }
 
   #ba-editor-v2 .ba-mobile-brand-title {
-    color: var(--ba-mobile-text) !important;
+    color: #ffffff !important;
     font-size: 16px !important;
     font-weight: 800 !important;
   }
 
   #ba-editor-v2 .ba-mobile-brand-sub {
-    color: var(--ba-mobile-muted) !important;
+    color: var(--ba-mobile-muted, #A5A7AD) !important;
     font-size: 11px !important;
     font-weight: 600 !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-options-btn {
+    display: grid !important;
+    place-items: center !important;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--ba-mobile-text, #ffffff) !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    transition: background 0.2s ease, border-color 0.2s ease !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-options-btn:active {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-options-btn svg {
+    width: 18px !important;
+    height: 18px !important;
   }
 
   #ba-editor-v2 .ba-mobile-status {
@@ -3388,5 +3433,183 @@ FIX DE REGRESIÓN MÓVIL (RESTABLECER INTERFAZ PREMIUM MÓVIL)
     font-size: 11px !important;
     font-weight: 700 !important;
     color: var(--ba-mobile-text) !important;
+  }
+
+  /* Items del Dock en móvil */
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn {
+    flex: 1 1 0% !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--ba-mobile-muted, #A5A7AD) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    height: 100% !important;
+    max-height: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  #ba-editor-v2 .ba-mobile-dock .ba-dock-btn.is-active {
+    color: var(--ba-mobile-gold, #C9A24E) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Estilos de botones de accion */
+  #ba-editor-v2 #goRegistro,
+  #ba-editor-v2 #goSelector {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: rgba(22, 28, 34, 0.6) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    color: var(--ba-mobile-text) !important;
+  }
+
+  body.light-mode #ba-editor-v2 #goRegistro,
+  body.light-mode #ba-editor-v2 #goSelector,
+  #ba-editor-v2[data-ui-theme='light'] #goRegistro,
+  #ba-editor-v2[data-ui-theme='light'] #goSelector {
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-color: rgba(20, 27, 38, 0.1) !important;
+    color: var(--ba-mobile-text) !important;
+  }
+
+  /* Card de configuracion movil */
+  #ba-editor-v2 .ba-section {
+    margin: 16px 0 !important;
+    padding: 16px !important;
+    border-radius: 24px !important;
+    background: rgba(17, 24, 32, 0.72) !important;
+    border: 1px solid var(--ba-mobile-border, rgba(255, 255, 255, 0.12)) !important;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.24) !important;
+    backdrop-filter: blur(20px) saturate(1.35) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(1.35) !important;
+  }
+
+  body.light-mode #ba-editor-v2 .ba-section,
+  #ba-editor-v2[data-ui-theme='light'] .ba-section {
+    background: rgba(255, 255, 255, 0.62) !important;
+    border-color: var(--ba-mobile-border, rgba(20, 27, 38, 0.12)) !important;
+  }
+
+  /* Quitar triangulos de accordion y titulos de summary */
+  #ba-editor-v2 .ba-section summary::-webkit-details-marker {
+    display: none !important;
+  }
+  #ba-editor-v2 .ba-section summary {
+    list-style: none !important;
+    outline: none !important;
+    cursor: default !important;
+  }
+
+  #ba-editor-v2 .ba-section-title {
+    display: block !important;
+    font-size: 18px !important;
+    font-weight: 900 !important;
+    color: var(--ba-mobile-text, #ffffff) !important;
+    margin-bottom: 16px !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+  }
+
+  /* Filas limpias tipo iOS settings */
+  #ba-editor-v2 .ba-section .ba-field,
+  #ba-editor-v2 .ba-section .ba-upload,
+  #ba-editor-v2 .ba-section .ba-palette-actions {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: minmax(112px, 0.8fr) minmax(0, 1.2fr) 20px !important;
+    align-items: center !important;
+    gap: 12px !important;
+    min-height: 58px !important;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-top: none !important;
+    background: transparent !important;
+  }
+
+  body.light-mode #ba-editor-v2 .ba-section .ba-field,
+  body.light-mode #ba-editor-v2 .ba-section .ba-upload,
+  body.light-mode #ba-editor-v2 .ba-section .ba-palette-actions,
+  #ba-editor-v2[data-ui-theme='light'] .ba-section .ba-field,
+  #ba-editor-v2[data-ui-theme='light'] .ba-section .ba-upload,
+  #ba-editor-v2[data-ui-theme='light'] .ba-section .ba-palette-actions {
+    border-bottom-color: rgba(20, 27, 38, 0.08) !important;
+  }
+
+  #ba-editor-v2 .ba-section .ba-field::after,
+  #ba-editor-v2 .ba-section .ba-upload::after {
+    content: "›" !important;
+    color: var(--ba-mobile-muted, #A5A7AD) !important;
+    font-size: 28px !important;
+    line-height: 1 !important;
+    text-align: right !important;
+  }
+
+  #ba-editor-v2 .ba-section .ba-field label,
+  #ba-editor-v2 .ba-section .ba-upload .ba-upload-label {
+    color: var(--ba-mobile-text, #ffffff) !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+  }
+
+  #ba-editor-v2 .ba-section .ba-field input,
+  #ba-editor-v2 .ba-section .ba-field select,
+  #ba-editor-v2 .ba-section .ba-field textarea {
+    min-height: 36px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--ba-mobile-text) !important;
+    text-align: right !important;
+    box-shadow: none !important;
+    resize: none !important;
+    outline: none !important;
+    font-size: 14px !important;
+  }
+
+  /* Shorten logo upload text on mobile */
+  #ba-editor-v2 .ba-section .ba-upload .ba-upload-label {
+    font-size: 0 !important;
+  }
+  #ba-editor-v2 .ba-section .ba-upload .ba-upload-label::after {
+    content: "Logo" !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+  }
+
+  /* Iconos en labels */
+  #ba-editor-v2 label[for="biz_name"]::before { content: "👤 "; }
+  #ba-editor-v2 label[for="logo_width"]::before { content: "📐 "; }
+  #ba-editor-v2 .ba-upload .ba-upload-label::before { content: "🖼️ "; }
+  #ba-editor-v2 label[for="font_pair"]::before { content: "🔤 "; }
+  #ba-editor-v2 label[for="palette_primary"]::before { content: "🎨 "; }
+  #ba-editor-v2 label[for="palette_secondary"]::before { content: "✨ "; }
+  #ba-editor-v2 label[for="hero_kicker"]::before { content: "🏷️ "; }
+  #ba-editor-v2 label[for="hero_title"]::before { content: "📢 "; }
+  #ba-editor-v2 label[for="hero_subtitle"]::before { content: "✍️ "; }
+  #ba-editor-v2 label[for="hero_btn_primary"]::before { content: "🔘 "; }
+  #ba-editor-v2 label[for="hero_btn_secondary"]::before { content: "🔗 "; }
+  #ba-editor-v2 label[for="address"]::before { content: "📍 "; }
+
+  /* Input color circular */
+  #ba-editor-v2 .ba-section .ba-field input[type="color"] {
+    justify-self: end !important;
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    overflow: hidden !important;
+    cursor: pointer !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
   }
 }
