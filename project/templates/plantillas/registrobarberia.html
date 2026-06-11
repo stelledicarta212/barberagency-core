@@ -1,4 +1,4 @@
-<section class="ba-wizard" id="baWizardApp" data-theme="dark">
+﻿<section class="ba-wizard" id="baWizardApp" data-theme="dark">
   <div class="ba-shell">
     <style>
       /* SECCION: Ajustes visuales propios del registro pegado en WP */
@@ -2833,15 +2833,23 @@
       );
     }
 
-    async function postOnboardingPayload(payload) {
-      if (isEditIntent() || clean(payload?.mode) === "edit") {
-        return postConfiguracionUpdate(payload);
+
+  async function postOnboardingPayload(payload) {
+    if (isEditIntent() || clean(payload?.mode) === "edit") {
+      if (!patchPayloadHasChanges(payload)) {
+        return {
+          response: null,
+          data: buildEditNavigationData(),
+          endpoint: "local-empty-patch"
+        };
       }
 
-      const endpoints = getOnboardingEndpointCandidates();
-      let lastError = null;
-      const requestPayload = buildOnboardingRequestPayload(payload);
+      return postConfiguracionUpdate(payload);
+    }
 
+    const endpoints = getOnboardingEndpointCandidates();
+    let lastError = null;
+    const requestPayload = buildOnboardingRequestPayload(payload);
       for (const endpoint of endpoints) {
         try {
           const response = await fetch(endpoint, {
@@ -2944,12 +2952,12 @@
       }
 
       try {
-        if (isEdit && !patchPayloadHasChanges(payload)) {
-          const data = buildEditNavigationData();
-          persistLandingSeed(payload, data);
-          window.location.href = buildLandingBuilderUrl(payload, data);
-          return;
-        }
+     if (isEdit) {
+  const data = buildEditNavigationData();
+  persistLandingSeed(payload, data);
+  window.location.href = buildLandingBuilderUrl(payload, data);
+  return;
+}
 
         const { data } = await postOnboardingPayload(payload);
 
