@@ -1,4 +1,4 @@
-﻿<section class="ba-wizard" id="baWizardApp" data-theme="dark">
+<section class="ba-wizard" id="baWizardApp" data-theme="dark">
   <div class="ba-shell">
     <style>
       /* SECCION: Ajustes visuales propios del registro pegado en WP */
@@ -2036,77 +2036,81 @@
 
     // SECCION: Seed y URL para abrir el editor de plantillas.
     function persistLandingSeed(payload, data) {
-        if (!data || typeof data !== "object") {
-    data = {};
-  }
+      if (!data || typeof data !== "object") {
+        data = {};
+      }
 
-  if (!data.barberia) {
-    data.barberia = {
-      id: Number(payload?.barberia_id || 0),
-      slug: clean(payload?.slug || ""),
-      nombre: clean(payload?.draft?.barberia?.nombre || ""),
-      ciudad: clean(payload?.draft?.barberia?.ciudad || ""),
-      direccion: clean(payload?.draft?.barberia?.direccion || ""),
-      maps_url: clean(payload?.draft?.barberia?.maps_url || ""),
-      telefono: clean(payload?.draft?.barberia?.telefono || "")
-    };
-  }
+      const sourceDraft = (payload && payload.draft) || window.draft || {};
 
-  if (!Array.isArray(data.servicios)) {
-    data.servicios = Array.isArray(payload?.collections_patch?.servicios?.upsert)
-      ? payload.collections_patch.servicios.upsert
-      : [];
-  }
+      if (!data.barberia) {
+        data.barberia = {
+          id: Number(payload?.barberia_id || data?.barberia_id || 0),
+          slug: clean(payload?.slug || data?.slug || ""),
+          nombre: clean(sourceDraft?.barberia?.nombre || ""),
+          ciudad: clean(sourceDraft?.barberia?.ciudad || ""),
+          direccion: clean(sourceDraft?.barberia?.direccion || ""),
+          maps_url: clean(sourceDraft?.barberia?.maps_url || ""),
+          telefono: clean(sourceDraft?.barberia?.telefono || "")
+        };
+      }
 
-  if (!Array.isArray(data.barberos)) {
-    data.barberos = Array.isArray(payload?.collections_patch?.barberos?.upsert)
-      ? payload.collections_patch.barberos.upsert
-      : [];
-  }
+      if (!Array.isArray(data.servicios)) {
+        data.servicios = Array.isArray(payload?.collections_patch?.servicios?.upsert)
+          ? payload.collections_patch.servicios.upsert
+          : [];
+      }
 
-  if (!Array.isArray(data.horarios)) {
-    data.horarios = Array.isArray(payload?.collections_patch?.horarios?.upsert)
-      ? payload.collections_patch.horarios.upsert
-      : [];
-  }
-      const adminAccess = payload && payload.draft && payload.draft.accesos && payload.draft.accesos.admin
-        ? payload.draft.accesos.admin
+      if (!Array.isArray(data.barberos)) {
+        data.barberos = Array.isArray(payload?.collections_patch?.barberos?.upsert)
+          ? payload.collections_patch.barberos.upsert
+          : [];
+      }
+
+      if (!Array.isArray(data.horarios)) {
+        data.horarios = Array.isArray(payload?.collections_patch?.horarios?.upsert)
+          ? payload.collections_patch.horarios.upsert
+          : [];
+      }
+
+      const adminAccess = sourceDraft.accesos && sourceDraft.accesos.admin
+        ? sourceDraft.accesos.admin
         : {};
-      const barberAccesses = payload && payload.draft && payload.draft.accesos && Array.isArray(payload.draft.accesos.barberos)
-        ? payload.draft.accesos.barberos
+      const barberAccesses = sourceDraft.accesos && Array.isArray(sourceDraft.accesos.barberos)
+        ? sourceDraft.accesos.barberos
         : [];
-      const barberProfiles = payload && payload.draft && Array.isArray(payload.draft.barberos)
-        ? payload.draft.barberos
+      const barberProfiles = Array.isArray(sourceDraft.barberos)
+        ? sourceDraft.barberos
         : [];
       const inheritedPhotos = barberProfiles
         .map((item) => normalizeBarberPhoto(item && (item.foto_url || item.foto)))
         .filter(Boolean);
+
       const landingSeed = {
         source: "onboarding_complete",
         created_at: new Date().toISOString(),
         barberia_id: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
         id_barberia: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
         id: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
-        slug: (data && data.barberia ? clean(data.barberia.slug) : "") || clean(data && data.slug) || clean(payload?.draft?.barberia?.slug),
-        nombre: clean(payload?.draft?.barberia?.nombre),
-        ciudad: clean(payload?.draft?.barberia?.ciudad),
-        direccion: clean(payload?.draft?.barberia?.direccion),
-        maps_url: clean(payload?.draft?.barberia?.maps_url),
-        telefono: clean(payload?.draft?.barberia?.telefono),
-        slot_min: Number(payload?.draft?.barberia?.slot_min || 15),
+        slug: (data && data.barberia ? clean(data.barberia.slug) : "") || clean(data && data.slug) || clean(sourceDraft?.barberia?.slug),
+        nombre: clean(sourceDraft?.barberia?.nombre),
+        ciudad: clean(sourceDraft?.barberia?.ciudad),
+        direccion: clean(sourceDraft?.barberia?.direccion),
+        maps_url: clean(sourceDraft?.barberia?.maps_url),
+        telefono: clean(sourceDraft?.barberia?.telefono),
+        slot_min: Number(sourceDraft?.barberia?.slot_min || 15),
         barberia: {
           id: data && data.barberia ? data.barberia.id : null,
-          slug: data && data.barberia ? data.barberia.slug : (payload.draft.barberia.slug || ""),
-          nombre: payload.draft.barberia.nombre || "",
-          ciudad: payload.draft.barberia.ciudad || "",
-          direccion: payload.draft.barberia.direccion || "",
-          maps_url: payload.draft.barberia.maps_url || "",
-          telefono: payload.draft.barberia.telefono || "",
-          timezone: payload.draft.barberia.timezone || "America/Bogotá",
-          slot_min: payload.draft.barberia.slot_min || 15
+          slug: data && data.barberia ? data.barberia.slug : (sourceDraft?.barberia?.slug || ""),
+          nombre: sourceDraft?.barberia?.nombre || "",
+          ciudad: sourceDraft?.barberia?.ciudad || "",
+          direccion: sourceDraft?.barberia?.direccion || "",
+          maps_url: sourceDraft?.barberia?.maps_url || "",
+          telefono: sourceDraft?.barberia?.telefono || "",
+          timezone: sourceDraft?.barberia?.timezone || "America/Bogotá",
+          slot_min: sourceDraft?.barberia?.slot_min || 15
         },
-        servicios: payload.draft.servicios || [],
-        horarios: payload.draft.horarios || [],
+        servicios: sourceDraft.servicios || [],
+        horarios: sourceDraft.horarios || [],
         barberos: barberProfiles.length ? barberProfiles : barberAccesses,
         barber_photos: inheritedPhotos.length ? inheritedPhotos : BARBER_PHOTO_OPTIONS.slice(),
         accesos: {
