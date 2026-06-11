@@ -2114,12 +2114,12 @@
         ? data.horarios
         : (Array.isArray(sourceDraft.horarios) ? sourceDraft.horarios : []);
       const finalBarberSource =
-        (hasPublicBarbers(data.barberos) && data.barberos) ||
-        (hasPublicBarbers(dataBarberProfiles) && dataBarberProfiles) ||
         (hasPublicBarbers(barberProfiles) && barberProfiles) ||
         (hasPublicBarbers(sourceBarberProfiles) && sourceBarberProfiles) ||
-        (hasPublicBarbers(barberAccesses) && barberAccesses) ||
+        (hasPublicBarbers(data.barberos) && data.barberos) ||
+        (hasPublicBarbers(dataBarberProfiles) && dataBarberProfiles) ||
         (hasPublicBarbers(patchBarbers) && patchBarbers) ||
+        (hasPublicBarbers(barberAccesses) && barberAccesses) ||
         [];
       const finalBarbers = finalBarberSource
         .map(normalizeSeedBarber)
