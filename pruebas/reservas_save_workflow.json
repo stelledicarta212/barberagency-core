@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-04T23:12:14.573Z",
+  "updatedAt": "2026-06-05T01:26:51.212Z",
   "createdAt": "2026-03-16T20:50:12.426Z",
   "id": "bl8JLdC5VOsC9zdu",
   "name": "BarberAgency - Reservas Save v1",
@@ -130,18 +130,26 @@
     },
     {
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "language": "javaScript",
-        "jsCode": "return $input.all();"
+        "operation": "executeQuery",
+        "query": "SELECT \n  c.id as cita_id,\n  c.barberia_id,\n  b.slug,\n  c.cliente_nombre,\n  c.cliente_tel,\n  to_char(c.fecha, 'YYYY-MM-DD') as fecha,\n  to_char(c.hora_inicio, 'HH24:MI') as hora_inicio,\n  to_char(c.hora_fin, 'HH24:MI') as hora_fin,\n  s.id as servicio_id,\n  s.nombre as servicio_nombre,\n  s.precio as servicio_precio,\n  s.duracion_min as servicio_duracion_min,\n  bar.id as barbero_id,\n  bar.nombre as barbero_nombre,\n  b.nombre as barberia_nombre,\n  b.direccion as barberia_direccion,\n  b.ciudad as barberia_ciudad,\n  p.maps_url as barberia_maps_url\nFROM public.citas c\nJOIN public.barberias b ON c.barberia_id = b.id\nLEFT JOIN public.barberia_public_profiles p ON c.barberia_id = p.barberia_id\nLEFT JOIN public.servicios s ON c.servicio_id = s.id\nLEFT JOIN public.barberos bar ON c.barbero_id = bar.id\nWHERE c.id = $1;",
+        "options": {
+          "queryReplacement": "={{ [$json.data.cita_id] }}"
+        }
       },
       "id": "c0387aa3-2463-47f6-b201-b86de4b78633",
-      "name": "Pass RPC result",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "name": "PG - obtener cita confirmada",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
       "position": [
         3360,
         400
-      ]
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
     },
     {
       "parameters": {
@@ -172,7 +180,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        3600,
+        3840,
         400
       ]
     },
@@ -208,6 +216,21 @@
         3360,
         624
       ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const first = $input.first().json || {};\nreturn [{\n  json: {\n    ok: true,\n    cita_confirmada: {\n      cita_id: Number(first.cita_id),\n      barberia_id: Number(first.barberia_id),\n      slug: first.slug || '',\n      cliente_nombre: first.cliente_nombre || '',\n      cliente_tel: first.cliente_tel || '',\n      fecha: first.fecha || '',\n      hora_inicio: first.hora_inicio || '',\n      hora_fin: first.hora_fin || '',\n      servicio: {\n        id: Number(first.servicio_id),\n        nombre: first.servicio_nombre || '',\n        precio: Number(first.servicio_precio || 0),\n        duracion_min: Number(first.servicio_duracion_min || 0)\n      },\n      barbero: {\n        id: Number(first.barbero_id),\n        nombre: first.barbero_nombre || ''\n      },\n      barberia: {\n        nombre: first.barberia_nombre || '',\n        direccion: first.barberia_direccion || '',\n        ciudad: first.barberia_ciudad || '',\n        maps_url: first.barberia_maps_url || null\n      }\n    }\n  }\n}];"
+      },
+      "id": "6f2c3d5a-1a2b-3c4d-5e6f-7a8b9c0d1e2f",
+      "name": "Format Cita Confirmada",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3600,
+        400
+      ]
     }
   ],
   "connections": {
@@ -237,7 +260,7 @@
       "main": [
         [
           {
-            "node": "PG - schema reservas",
+            "node": "PG - RPC crear reserva",
             "type": "main",
             "index": 0
           }
@@ -251,33 +274,33 @@
         ]
       ]
     },
-    "PG - schema reservas": {
+    "PG - RPC crear reserva": {
       "main": [
         [
           {
-            "node": "Build SQL dinamico",
+            "node": "Format RPC reserva",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Build SQL dinamico": {
+    "Format RPC reserva": {
       "main": [
         [
           {
-            "node": "IF - SQL listo",
+            "node": "IF - RPC ok",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "IF - SQL listo": {
+    "IF - RPC ok": {
       "main": [
         [
           {
-            "node": "PG - guardar reserva",
+            "node": "PG - obtener cita confirmada",
             "type": "main",
             "index": 0
           }
@@ -291,7 +314,18 @@
         ]
       ]
     },
-    "PG - guardar reserva": {
+    "PG - obtener cita confirmada": {
+      "main": [
+        [
+          {
+            "node": "Format Cita Confirmada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Cita Confirmada": {
       "main": [
         [
           {
@@ -310,11 +344,13 @@
   },
   "staticData": null,
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
-  "versionId": "d5e65eab-c3b0-4b68-b120-b715ad3bfe9c",
-  "activeVersionId": "d5e65eab-c3b0-4b68-b120-b715ad3bfe9c",
-  "versionCounter": 1018,
+  "versionId": "d8db2870-9851-48a3-bf8c-8cd81bee849a",
+  "activeVersionId": "d8db2870-9851-48a3-bf8c-8cd81bee849a",
+  "versionCounter": 1026,
   "triggerCount": 1,
+  "sourceWorkflowId": null,
   "shared": [
     {
       "updatedAt": "2026-03-16T20:50:12.431Z",
@@ -330,15 +366,16 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
       }
     }
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-06-04T23:12:14.574Z",
-    "createdAt": "2026-06-04T23:12:14.574Z",
-    "versionId": "d5e65eab-c3b0-4b68-b120-b715ad3bfe9c",
+    "updatedAt": "2026-06-05T01:26:51.213Z",
+    "createdAt": "2026-06-05T01:26:51.213Z",
+    "versionId": "d8db2870-9851-48a3-bf8c-8cd81bee849a",
     "workflowId": "bl8JLdC5VOsC9zdu",
     "nodes": [
       {
@@ -360,7 +397,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const src = $json && typeof $json === 'object' ? $json : {};\nlet body = src.body && typeof src.body === 'object' ? src.body : src;\nif (typeof body.payload === 'string') {\n  try { body = JSON.parse(body.payload); } catch (e) {}\n}\nif (body.payload && typeof body.payload === 'object') body = body.payload;\n\nconst clean = (v) => (v ?? '').toString().trim();\nconst toInt = (v) => {\n  const n = Number(v);\n  return Number.isFinite(n) ? Math.trunc(n) : null;\n};\n\nconst cf = body.clientes_finales && typeof body.clientes_finales === 'object' ? body.clientes_finales : {};\nconst c = body.citas && typeof body.citas === 'object' ? body.citas : {};\n\nconst out = {\n  documento: clean(cf.documento),\n  nombre_completo: clean(cf.nombre_completo || cf.nombre),\n  telefono: clean(cf.telefono || cf.celular),\n  email: clean(cf.email),\n  id_barberia: toInt(c.id_barberia) || 1,\n  id_barbero: toInt(c.id_barbero),\n  id_servicio: toInt(c.id_servicio),\n  fecha: clean(c.fecha),\n  hora: clean(c.hora),\n  estado: clean(c.estado || 'confirmada'),\n  notas: clean(c.notas),\n  created_at: new Date().toISOString()\n};\n\nif (!out.nombre_completo || !out.telefono || !out.fecha || !out.hora) {\n  return [{ json: { ok: \"false\", status_code: 400, message: 'Faltan campos obligatorios para reservar.', payload: out } }];\n}\n\nreturn [{ json: { ok: \"true\", payload: out } }];"
+          "jsCode": "const src = $json && typeof $json === 'object' ? $json : {};\nlet body = src.body && typeof src.body === 'object' ? src.body : src;\nif (typeof body.payload === 'string') {\n  try { body = JSON.parse(body.payload); } catch (_) {}\n}\nif (body.payload && typeof body.payload === 'object') body = body.payload;\n\nconst clean = (value) => String(value ?? '').trim();\nconst toInt = (value) => {\n  const n = Number(value);\n  return Number.isFinite(n) && n > 0 ? Math.trunc(n) : null;\n};\n\nconst cf = body.clientes_finales && typeof body.clientes_finales === 'object' ? body.clientes_finales : {};\nconst c = body.citas && typeof body.citas === 'object' ? body.citas : {};\n\nconst payload = {\n  barberia_id: toInt(c.barberia_id || c.id_barberia || body.barberia_id || body.id_barberia),\n  slug: clean(c.slug || body.slug),\n  servicio_id: toInt(c.servicio_id || c.id_servicio || body.servicio_id || body.id_servicio),\n  barbero_id: toInt(c.barbero_id || c.id_barbero || body.barbero_id || body.id_barbero),\n  fecha: clean(c.fecha || body.fecha),\n  hora: clean(c.hora || c.hora_inicio || body.hora || body.hora_inicio),\n  cliente_nombre: clean(cf.nombre || cf.nombre_completo || body.cliente_nombre || body.nombre),\n  cliente_tel: clean(cf.telefono || cf.celular || body.cliente_tel || body.telefono),\n  cliente_email: clean(cf.email || body.cliente_email || body.email),\n  notas: clean(c.notas || body.notas)\n};\n\nif ((!payload.barberia_id && !payload.slug) || !payload.servicio_id || !payload.barbero_id || !payload.fecha || !payload.hora || !payload.cliente_nombre || !payload.cliente_tel) {\n  return [{\n    json: {\n      ok: false,\n      code: 'datos_invalidos',\n      status_code: 400,\n      message: 'Faltan datos obligatorios para reservar.',\n      data: payload\n    }\n  }];\n}\n\nreturn [{ json: { ok: true, payload } }];"
         },
         "id": "f9a43487-4789-493a-ba47-5df7160b4808",
         "name": "Normalize payload",
@@ -378,16 +415,15 @@
             "conditions": [
               {
                 "leftValue": "={{ $json.ok }}",
-                "rightValue": "true",
-                "caseSensitive": true,
+                "rightValue": true,
                 "operator": {
-                  "type": "string",
-                  "operation": "equals"
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
                 }
               }
             ]
           },
-          "looseTypeValidation": true,
           "options": {}
         },
         "id": "a1ef2199-0e9b-404a-8222-ea1b94c36f87",
@@ -402,11 +438,13 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "SELECT table_name, column_name FROM information_schema.columns WHERE table_schema='public' AND table_name IN ('clientes_finales','citas') ORDER BY table_name, ordinal_position;",
-          "options": {}
+          "query": "SELECT public.ba_reservas_public_create(\n  $1::int,\n  $2::text,\n  $3::int,\n  $4::int,\n  $5::date,\n  $6::time,\n  $7::text,\n  $8::text,\n  $9::text,\n  $10::text\n) AS result;",
+          "options": {
+            "queryReplacement": "={{ [$json.payload.barberia_id, $json.payload.slug || null, $json.payload.servicio_id, $json.payload.barbero_id, $json.payload.fecha, $json.payload.hora, $json.payload.cliente_nombre, $json.payload.cliente_tel, $json.payload.cliente_email || null, $json.payload.notas || null] }}"
+          }
         },
         "id": "babf106a-364c-4f96-8c8d-6755bbdc1aca",
-        "name": "PG - schema reservas",
+        "name": "PG - RPC crear reserva",
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.4,
         "position": [
@@ -418,14 +456,15 @@
             "id": "SOV6oSyuHI9cxgLF",
             "name": "Postgres account"
           }
-        }
+        },
+        "continueOnFail": true
       },
       {
         "parameters": {
-          "jsCode": "const schemaRows = $input.all().map(i => i.json);\nconst normalized = $('Normalize payload').first().json;\nconst p = normalized.payload || {};\n\nconst colsCF = new Set(schemaRows.filter(r => r.table_name === 'clientes_finales').map(r => r.column_name));\nconst colsCitas = new Set(schemaRows.filter(r => r.table_name === 'citas').map(r => r.column_name));\n\nconst pick = (set, list) => list.find(c => set.has(c)) || null;\nconst params = [];\nconst add = (v) => { params.push(v); return `$${params.length}`; };\n\nconst cfNombreCol = pick(colsCF, ['nombre_completo', 'nombre']);\nconst cfTelCol = pick(colsCF, ['telefono', 'celular']);\nif (!cfNombreCol || !cfTelCol) {\n  return [{ json: { ok: \"false\", status_code:500, message:'No se encontraron columnas m?nimas en clientes_finales.', debug:{cfNombreCol, cfTelCol} } }];\n}\n\nconst cfPairs = [];\nif (colsCF.has('documento')) cfPairs.push(['documento', p.documento || null]);\ncfPairs.push([cfNombreCol, p.nombre_completo]);\ncfPairs.push([cfTelCol, p.telefono]);\nif (colsCF.has('email')) cfPairs.push(['email', p.email || null]);\nif (colsCF.has('id_barberia')) cfPairs.push(['id_barberia', p.id_barberia || 1]);\nif (colsCF.has('barberia_id')) cfPairs.push(['barberia_id', p.id_barberia || 1]);\nif (colsCF.has('created_at')) cfPairs.push(['created_at', p.created_at]);\n\nconst cfPk = pick(colsCF, ['id', 'cliente_id', 'id_cliente', 'id_cliente_final']);\nconst cfCols = cfPairs.map(x => x[0]).join(', ');\nconst cfVals = cfPairs.map(x => add(x[1])).join(', ');\nconst cfReturning = cfPk ? ` RETURNING ${cfPk}` : '';\n\nconst citaPairs = [];\nconst citaBarberiaCol = pick(colsCitas, ['id_barberia', 'barberia_id']);\nif (citaBarberiaCol) citaPairs.push([citaBarberiaCol, p.id_barberia || 1]);\n\nconst citaBarberoCol = pick(colsCitas, ['id_barbero', 'barbero_id']);\nif (citaBarberoCol) citaPairs.push([citaBarberoCol, p.id_barbero]);\n\nconst citaServicioCol = pick(colsCitas, ['id_servicio', 'servicio_id']);\nif (citaServicioCol) citaPairs.push([citaServicioCol, p.id_servicio]);\n\nconst citaClienteCol = pick(colsCitas, ['id_cliente_final', 'cliente_final_id', 'id_cliente', 'cliente_id']);\n\n\nconst clienteNombreCol = pick(colsCitas, ['cliente_nombre', 'nombre_cliente']);\nif (clienteNombreCol) citaPairs.push([clienteNombreCol, p.nombre_completo]);\n\nconst clienteTelCol = pick(colsCitas, ['cliente_tel', 'telefono_cliente']);\nif (clienteTelCol) citaPairs.push([clienteTelCol, p.telefono]);\n\nconst fechaCol = pick(colsCitas, ['fecha', 'fecha_cita']);\nconst horaCol = pick(colsCitas, ['hora_inicio', 'hora', 'hora_cita']);\nconst fechaHoraCol = pick(colsCitas, ['fecha_hora', 'fecha_hora_cita', 'inicio', 'scheduled_at']);\nif (fechaHoraCol) {\n  const dt = (p.fecha && p.hora) ? `${p.fecha}T${p.hora}:00` : null;\n  citaPairs.push([fechaHoraCol, dt]);\n} else {\n  if (fechaCol) citaPairs.push([fechaCol, p.fecha]);\n  if (horaCol) citaPairs.push([horaCol, p.hora]);\n}\n\nconst estadoCol = pick(colsCitas, ['estado', 'status']);\nif (estadoCol) citaPairs.push([estadoCol, p.estado || 'confirmada']);\n\nconst notasCol = pick(colsCitas, ['notas', 'nota', 'observaciones', 'observacion']);\nif (notasCol) citaPairs.push([notasCol, p.notas || null]);\n\nif (colsCitas.has('created_at')) citaPairs.push(['created_at', p.created_at]);\n\nif (!citaPairs.length) {\n  return [{ json: { ok: \"false\", status_code:500, message:'No fue posible mapear columnas de citas.', debug:{ colsCitas:[...colsCitas] } } }];\n}\n\nconst citaCols = [];\nconst citaVals = [];\nfor (const [col, val] of citaPairs) {\n  citaCols.push(col);\n  citaVals.push(add(val));\n}\n\nif (citaClienteCol && cfPk) {\n  citaCols.push(citaClienteCol);\n  citaVals.push(`(SELECT ${cfPk} FROM ins_cliente LIMIT 1)`);\n}\n\nconst citaPk = pick(colsCitas, ['id', 'cita_id']);\nconst citaReturning = citaPk ? ` RETURNING ${citaPk} AS cita_id` : ' RETURNING *';\n\nconst query = `WITH ins_cliente AS (INSERT INTO clientes_finales (${cfCols}) VALUES (${cfVals})${cfReturning}) INSERT INTO citas (${citaCols.join(', ')}) VALUES (${citaVals.join(', ')})${citaReturning};`;\n\nreturn [{ json: { ok: \"true\", query, params } }];"
+          "jsCode": "const first = $input.first().json || {};\nif (first.error) {\n  return [{\n    json: {\n      ok: false,\n      code: 'error_postgres',\n      message: first.error.message || 'Error creando reserva en PostgreSQL.',\n      data: { error: first.error.message || first.error },\n      status_code: 500\n    }\n  }];\n}\nconst result = first.result || first.ba_reservas_public_create || first;\nreturn [{\n  json: {\n    ok: Boolean(result.ok),\n    code: result.code || (result.ok ? 'reserva_creada' : 'datos_invalidos'),\n    message: result.message || '',\n    data: result.data || {},\n    status_code: result.ok ? 200 : 400\n  }\n}];"
         },
         "id": "e5d21c06-26e6-4cec-871f-3f93541ff336",
-        "name": "Build SQL dinamico",
+        "name": "Format RPC reserva",
         "type": "n8n-nodes-base.code",
         "typeVersion": 2,
         "position": [
@@ -440,20 +479,19 @@
             "conditions": [
               {
                 "leftValue": "={{ $json.ok }}",
-                "rightValue": "true",
-                "caseSensitive": true,
+                "rightValue": true,
                 "operator": {
-                  "type": "string",
-                  "operation": "equals"
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
                 }
               }
             ]
           },
-          "looseTypeValidation": true,
           "options": {}
         },
         "id": "6f1bb8dc-f93a-4cba-adff-18d60af059a1",
-        "name": "IF - SQL listo",
+        "name": "IF - RPC ok",
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2,
         "position": [
@@ -464,13 +502,13 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "{{ $json.query }}",
+          "query": "SELECT \n  c.id as cita_id,\n  c.barberia_id,\n  b.slug,\n  c.cliente_nombre,\n  c.cliente_tel,\n  to_char(c.fecha, 'YYYY-MM-DD') as fecha,\n  to_char(c.hora_inicio, 'HH24:MI') as hora_inicio,\n  to_char(c.hora_fin, 'HH24:MI') as hora_fin,\n  s.id as servicio_id,\n  s.nombre as servicio_nombre,\n  s.precio as servicio_precio,\n  s.duracion_min as servicio_duracion_min,\n  bar.id as barbero_id,\n  bar.nombre as barbero_nombre,\n  b.nombre as barberia_nombre,\n  b.direccion as barberia_direccion,\n  b.ciudad as barberia_ciudad,\n  p.maps_url as barberia_maps_url\nFROM public.citas c\nJOIN public.barberias b ON c.barberia_id = b.id\nLEFT JOIN public.barberia_public_profiles p ON c.barberia_id = p.barberia_id\nLEFT JOIN public.servicios s ON c.servicio_id = s.id\nLEFT JOIN public.barberos bar ON c.barbero_id = bar.id\nWHERE c.id = $1;",
           "options": {
-            "queryReplacement": "={{ $json.params }}"
+            "queryReplacement": "={{ [$json.data.cita_id] }}"
           }
         },
         "id": "c0387aa3-2463-47f6-b201-b86de4b78633",
-        "name": "PG - guardar reserva",
+        "name": "PG - obtener cita confirmada",
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.4,
         "position": [
@@ -487,9 +525,9 @@
       {
         "parameters": {
           "respondWith": "json",
-          "responseBody": "={{ { ok:true, message:'Reserva guardada correctamente.', data:$json } }}",
+          "responseBody": "={{ $json }}",
           "options": {
-            "responseCode": 200,
+            "responseCode": "={{ $json.status_code || ($json.ok ? 200 : 400) }}",
             "responseHeaders": {
               "entries": [
                 {
@@ -513,14 +551,14 @@
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.1,
         "position": [
-          3600,
+          3840,
           400
         ]
       },
       {
         "parameters": {
           "respondWith": "json",
-          "responseBody": "={{ { ok:false, message: $json.message || 'Error procesando reserva.', debug: $json.debug || null } }}",
+          "responseBody": "={{ $json }}",
           "options": {
             "responseCode": "={{ Number($json.status_code || 400) }}",
             "responseHeaders": {
@@ -548,6 +586,21 @@
         "position": [
           3360,
           624
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "runOnceForAllItems",
+          "language": "javaScript",
+          "jsCode": "const first = $input.first().json || {};\nreturn [{\n  json: {\n    ok: true,\n    cita_confirmada: {\n      cita_id: Number(first.cita_id),\n      barberia_id: Number(first.barberia_id),\n      slug: first.slug || '',\n      cliente_nombre: first.cliente_nombre || '',\n      cliente_tel: first.cliente_tel || '',\n      fecha: first.fecha || '',\n      hora_inicio: first.hora_inicio || '',\n      hora_fin: first.hora_fin || '',\n      servicio: {\n        id: Number(first.servicio_id),\n        nombre: first.servicio_nombre || '',\n        precio: Number(first.servicio_precio || 0),\n        duracion_min: Number(first.servicio_duracion_min || 0)\n      },\n      barbero: {\n        id: Number(first.barbero_id),\n        nombre: first.barbero_nombre || ''\n      },\n      barberia: {\n        nombre: first.barberia_nombre || '',\n        direccion: first.barberia_direccion || '',\n        ciudad: first.barberia_ciudad || '',\n        maps_url: first.barberia_maps_url || null\n      }\n    }\n  }\n}];"
+        },
+        "id": "6f2c3d5a-1a2b-3c4d-5e6f-7a8b9c0d1e2f",
+        "name": "Format Cita Confirmada",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3600,
+          400
         ]
       }
     ],
@@ -578,7 +631,7 @@
         "main": [
           [
             {
-              "node": "PG - schema reservas",
+              "node": "PG - RPC crear reserva",
               "type": "main",
               "index": 0
             }
@@ -592,33 +645,33 @@
           ]
         ]
       },
-      "PG - schema reservas": {
+      "PG - RPC crear reserva": {
         "main": [
           [
             {
-              "node": "Build SQL dinamico",
+              "node": "Format RPC reserva",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Build SQL dinamico": {
+      "Format RPC reserva": {
         "main": [
           [
             {
-              "node": "IF - SQL listo",
+              "node": "IF - RPC ok",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "IF - SQL listo": {
+      "IF - RPC ok": {
         "main": [
           [
             {
-              "node": "PG - guardar reserva",
+              "node": "PG - obtener cita confirmada",
               "type": "main",
               "index": 0
             }
@@ -632,7 +685,18 @@
           ]
         ]
       },
-      "PG - guardar reserva": {
+      "PG - obtener cita confirmada": {
+        "main": [
+          [
+            {
+              "node": "Format Cita Confirmada",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Cita Confirmada": {
         "main": [
           [
             {
@@ -644,24 +708,25 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Carlos a Alvis",
     "name": null,
     "description": null,
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-04T23:12:14.618Z",
-        "id": 1540,
+        "createdAt": "2026-06-05T01:26:51.250Z",
+        "id": 1633,
         "workflowId": "bl8JLdC5VOsC9zdu",
-        "versionId": "d5e65eab-c3b0-4b68-b120-b715ad3bfe9c",
+        "versionId": "d8db2870-9851-48a3-bf8c-8cd81bee849a",
         "event": "activated",
         "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
       },
       {
-        "createdAt": "2026-06-04T23:12:14.608Z",
-        "id": 1539,
+        "createdAt": "2026-06-05T01:26:51.242Z",
+        "id": 1632,
         "workflowId": "bl8JLdC5VOsC9zdu",
-        "versionId": "d5e65eab-c3b0-4b68-b120-b715ad3bfe9c",
+        "versionId": "d8db2870-9851-48a3-bf8c-8cd81bee849a",
         "event": "deactivated",
         "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
       }
