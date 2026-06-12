@@ -1580,27 +1580,28 @@ function ensureReservationSuccessActions(overlay, urls) {
   }
 
 
+  const card = overlay.querySelector('.reservation-success-card, .success-card, #successCard');
+  if (!card) return;
+
   const reset = document.getElementById('successBtnReset');
-
-
+  const resetAnchor = reset && card.contains(reset)
+    ? (reset.parentElement === card ? reset : reset.parentElement)
+    : null;
   let actions = overlay.querySelector('.reservation-success-actions');
 
-
   if (!actions) {
-
-
     actions = document.createElement('div');
-
-
     actions.className = 'reservation-success-actions';
+  }
 
-
-    const anchor = reset?.parentElement || reset || overlay.querySelector('.reservation-success-card, #successCard');
-
-
-    anchor?.parentNode?.insertBefore(actions, anchor);
-
-
+  if (actions.parentElement !== card) {
+    if (resetAnchor) {
+      card.insertBefore(actions, resetAnchor);
+    } else {
+      card.appendChild(actions);
+    }
+  } else if (resetAnchor && actions.nextElementSibling !== resetAnchor) {
+    card.insertBefore(actions, resetAnchor);
   }
 
 
@@ -3015,7 +3016,6 @@ reservationForm.addEventListener('submit', async (event) => {
   </script>
 </body>
 </html>
-
 
 
 
