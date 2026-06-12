@@ -1048,20 +1048,540 @@
       if (node) node.textContent = safeSeedText(value) || '-';
     }
 
-    function showReservationSuccessCard(payload) {
-      const overlay = document.getElementById('reservationSuccessOverlay');
+
+
+    function showReservationSuccessCard(reservationTruth, fallbackPayload) {
+
+
+      const overlay = document.getElementById('reservationSuccessOverlay') || document.getElementById('successOverlay');
+
+
       if (!overlay) return;
-      const serviceObj = services.find((item) => Number(item.id_servicio) === Number(payload.citas.id_servicio));
-      const barberObj = barbers.find((item) => Number(item.id_barbero) === Number(payload.citas.id_barbero));
-      const serviceLabel = serviceObj ? `${serviceObj.nombre} (${cop(serviceObj.precio)})` : 'Servicio seleccionado';
-      const barberLabel = barberObj ? barberObj.nombre : 'Barbero seleccionado';
-      setSuccessText('successClient', payload.clientes_finales.nombre_completo);
-      setSuccessText('successService', serviceLabel);
-      setSuccessText('successBarber', barberLabel);
-      setSuccessText('successDate', formatReservationDate(payload.citas.fecha));
-      setSuccessText('successTime', `${payload.citas.hora} hrs`);
+
+
+
+      const truth = reservationTruth && typeof reservationTruth === 'object' ? reservationTruth : null;
+
+
+      const payload = fallbackPayload || {};
+
+
+      const localCita = payload.citas || {};
+
+
+      const localCliente = payload.clientes_finales || {};
+
+
+      const serviceObj = Array.isArray(services)
+
+
+        ? services.find((item) => Number(item.id_servicio) === Number(localCita.id_servicio))
+
+
+        : null;
+
+
+      const barberObj = Array.isArray(barbers)
+
+
+        ? barbers.find((item) => Number(item.id_barbero) === Number(localCita.id_barbero))
+
+
+        : null;
+
+
+      const barberia = truth?.barberia || truth?.business || {};
+
+
+      const cliente = truth?.cliente || truth?.clientes_finales || {};
+
+
+      const servicio = truth?.servicio || {};
+
+
+      const barbero = truth?.barbero || {};
+
+
+      const ciudad = safeSeedText(barberia.ciudad || truth?.ciudad || truth?.barberia_ciudad || '');
+
+
+      const direccion = safeSeedText(barberia.direccion || truth?.direccion || truth?.barberia_direccion || '');
+
+
+      const ubicacion = [direccion, ciudad].filter(Boolean).join(', ');
+
+
+      const fecha = safeSeedText(truth?.fecha || truth?.fecha_cita || truth?.cita?.fecha || localCita.fecha);
+
+
+      const horaInicio = safeSeedText(truth?.hora_inicio || truth?.hora || truth?.cita?.hora_inicio || localCita.hora);
+
+
+      const horaFin = safeSeedText(truth?.hora_fin || truth?.cita?.hora_fin || '');
+
+
+      const details = {
+
+
+        cliente: safeSeedText(cliente.nombre_completo || cliente.nombre || truth?.cliente_nombre || truth?.nombre_cliente || localCliente.nombre_completo),
+
+
+        barberia: safeSeedText(barberia.nombre || truth?.barberia_nombre || truth?.nombre_barberia || window.BA_BUSINESS_NAME || 'Barberia'),
+
+
+        servicio: safeSeedText(servicio.nombre || truth?.servicio_nombre || truth?.nombre_servicio || serviceObj?.nombre || 'Servicio seleccionado'),
+
+
+        barbero: safeSeedText(barbero.nombre || truth?.barbero_nombre || truth?.nombre_barbero || barberObj?.nombre || 'Barbero seleccionado'),
+
+
+        fecha: typeof formatReservationDate === 'function' ? formatReservationDate(fecha) : formatReservationSuccessDate(fecha),
+
+
+        hora: horaFin ? `${horaInicio} - ${horaFin}` : `${horaInicio} hrs`,
+
+
+        direccion: ubicacion || 'Direccion no disponible',
+
+
+        mapsUrl: buildReservationMapsUrl(truth, direccion, ciudad),
+
+
+        calendarUrl: buildReservationCalendarUrl({
+
+
+          barberia: safeSeedText(barberia.nombre || truth?.barberia_nombre || truth?.nombre_barberia || window.BA_BUSINESS_NAME || 'Barberia'),
+
+
+          servicio: safeSeedText(servicio.nombre || truth?.servicio_nombre || truth?.nombre_servicio || serviceObj?.nombre),
+
+
+          barbero: safeSeedText(barbero.nombre || truth?.barbero_nombre || truth?.nombre_barbero || barberObj?.nombre),
+
+
+          cliente: safeSeedText(cliente.nombre_completo || cliente.nombre || truth?.cliente_nombre || truth?.nombre_cliente || localCliente.nombre_completo),
+
+
+          fecha,
+
+
+          horaInicio,
+
+
+          horaFin,
+
+
+          ubicacion
+
+
+        })
+
+
+      };
+
+
+      const detailsBox = overlay.querySelector('.reservation-success-details, .success-details');
+
+
+      const isLegacyCard = !!overlay.querySelector('.success-details');
+
+
+      const rowClass = isLegacyCard ? 'detail-item' : 'reservation-success-row';
+
+
+      const labelClass = isLegacyCard ? 'detail-label' : 'reservation-success-label';
+
+
+      const valueClass = isLegacyCard ? 'detail-value' : 'reservation-success-value';
+
+
+      if (detailsBox) {
+
+
+        detailsBox.innerHTML = [
+
+
+          ['bi-person-fill', 'Cliente', details.cliente],
+
+
+          ['bi-shop', 'Barberia', details.barberia],
+
+
+          ['bi-scissors', 'Servicio', details.servicio],
+
+
+          ['bi-person-badge', 'Barbero', details.barbero],
+
+
+          ['bi-calendar-event', 'Fecha', details.fecha],
+
+
+          ['bi-clock', 'Hora', details.hora],
+
+
+          ['bi-geo-alt-fill', 'Direccion', details.direccion],
+
+
+        ].map(([icon, label, value]) => (
+
+
+          `<div class="${rowClass}"><span class="${labelClass}"><i class="bi ${icon}"></i> ${label}</span><span class="${valueClass}">${escapeReservationHtml(value || '-')}</span></div>`
+
+
+        )).join('');
+
+
+      }
+
+
+
+      const whatsAppUrl = buildReservationWhatsAppUrl(details);
+
+
+      ensureReservationSuccessActions(overlay, {
+
+
+        whatsAppUrl,
+
+
+        mapsUrl: details.mapsUrl,
+
+
+        calendarUrl: details.calendarUrl
+
+
+      });
+
+
+
       overlay.classList.remove('d-none');
+
+
       requestAnimationFrame(() => overlay.classList.add('show'));
+
+
+    }
+
+
+
+    function escapeReservationHtml(value) {
+
+
+      return String(value || '')
+
+
+        .replace(/&/g, '&amp;')
+
+
+        .replace(/</g, '&lt;')
+
+
+        .replace(/>/g, '&gt;')
+
+
+        .replace(/"/g, '&quot;')
+
+
+        .replace(/'/g, '&#39;');
+
+
+    }
+
+
+
+    function formatReservationSuccessDate(value) {
+
+
+      const raw = safeSeedText(value);
+
+
+      if (!raw) return '-';
+
+
+      try {
+
+
+        const parts = raw.split('-').map((part) => Number(part));
+
+
+        if (parts.length >= 3 && parts.every(Number.isFinite)) {
+
+
+          const date = new Date(parts[0], parts[1] - 1, parts[2]);
+
+
+          return new Intl.DateTimeFormat('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+
+
+        }
+
+
+      } catch (error) {
+
+
+        console.warn('No se pudo formatear la fecha de reserva', error);
+
+
+      }
+
+
+      return raw;
+
+
+    }
+
+
+
+    function buildReservationMapsUrl(truth, direccion, ciudad) {
+
+
+      const mapsUrl = safeSeedText(truth?.barberia?.maps_url || truth?.maps_url || truth?.barberia_maps_url);
+
+
+      if (mapsUrl) return mapsUrl;
+
+
+      const query = [safeSeedText(direccion), safeSeedText(ciudad)].filter(Boolean).join(', ');
+
+
+      return query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : '';
+
+
+    }
+
+
+
+    function toGoogleCalendarDate(fecha, hora) {
+
+
+      const rawFecha = safeSeedText(fecha);
+
+
+      const rawHora = safeSeedText(hora || '00:00').slice(0, 5);
+
+
+      if (!rawFecha) return '';
+
+
+      const date = new Date(`${rawFecha}T${rawHora || '00:00'}:00`);
+
+
+      if (Number.isNaN(date.getTime())) return '';
+
+
+      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+
+
+    }
+
+
+
+    function buildReservationCalendarUrl(info) {
+
+
+      const start = toGoogleCalendarDate(info.fecha, info.horaInicio);
+
+
+      if (!start) return '';
+
+
+      let end = toGoogleCalendarDate(info.fecha, info.horaFin);
+
+
+      if (!end) {
+
+
+        const fallbackEnd = new Date(`${safeSeedText(info.fecha)}T${safeSeedText(info.horaInicio || '00:00').slice(0, 5)}:00`);
+
+
+        if (!Number.isNaN(fallbackEnd.getTime())) {
+
+
+          fallbackEnd.setMinutes(fallbackEnd.getMinutes() + 30);
+
+
+          end = fallbackEnd.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+
+
+        }
+
+
+      }
+
+
+      const params = new URLSearchParams({
+
+
+        action: 'TEMPLATE',
+
+
+        text: `Cita en ${safeSeedText(info.barberia) || 'barberia'}`,
+
+
+        dates: `${start}/${end || start}`,
+
+
+        details: [`Servicio: ${info.servicio}`, `Barbero: ${info.barbero}`, `Cliente: ${info.cliente}`].filter(Boolean).join('\n'),
+
+
+        location: safeSeedText(info.ubicacion)
+
+
+      });
+
+
+      return `https://calendar.google.com/calendar/render?${params.toString()}`;
+
+
+    }
+
+
+
+    function buildReservationWhatsAppUrl(details) {
+
+
+      const text = [
+
+
+        'Cita confirmada',
+
+
+        `Barberia: ${details.barberia}`,
+
+
+        `Servicio: ${details.servicio}`,
+
+
+        `Barbero: ${details.barbero}`,
+
+
+        `Fecha: ${details.fecha}`,
+
+
+        `Hora: ${details.hora}`,
+
+
+        `Direccion: ${details.direccion}`,
+
+
+        details.mapsUrl ? `Ubicacion: ${details.mapsUrl}` : ''
+
+
+      ].filter(Boolean).join('\n');
+
+
+      return `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+
+    }
+
+
+
+    function ensureReservationSuccessActions(overlay, urls) {
+
+
+      if (!document.getElementById('reservationSuccessPremiumStyle')) {
+
+
+        const style = document.createElement('style');
+
+
+        style.id = 'reservationSuccessPremiumStyle';
+
+
+        style.textContent = `
+
+
+          .reservation-success-actions{display:grid;grid-template-columns:1fr;gap:.65rem;margin:.25rem 0 1rem}
+
+
+          .reservation-success-actions a,.reservation-success-actions button{width:100%;text-decoration:none}
+
+
+          @media (min-width:576px){.reservation-success-actions{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+
+        `;
+
+
+        document.head.appendChild(style);
+
+
+      }
+
+
+      const reset = document.getElementById('successBtnReset');
+
+
+      let actions = overlay.querySelector('.reservation-success-actions');
+
+
+      if (!actions) {
+
+
+        actions = document.createElement('div');
+
+
+        actions.className = 'reservation-success-actions';
+
+
+        const anchor = reset?.parentElement || reset || overlay.querySelector('.reservation-success-card, #successCard');
+
+
+        anchor?.parentNode?.insertBefore(actions, anchor);
+
+
+      }
+
+
+      actions.innerHTML = '';
+
+
+      const items = [
+
+
+        { label: 'Enviarme por WhatsApp', icon: 'bi-whatsapp', href: urls.whatsAppUrl },
+
+
+        { label: 'Ver ubicacion', icon: 'bi-geo-alt-fill', href: urls.mapsUrl },
+
+
+        { label: 'Agregar a Google Calendar', icon: 'bi-calendar-plus', href: urls.calendarUrl },
+
+
+      ];
+
+
+      items.forEach((item) => {
+
+
+        if (!item.href) return;
+
+
+        const link = document.createElement('a');
+
+
+        link.className = 'btn btn-outline-primary';
+
+
+        link.href = item.href;
+
+
+        link.target = '_blank';
+
+
+        link.rel = 'noopener';
+
+
+        link.innerHTML = `<i class="bi ${item.icon}"></i> ${item.label}`;
+
+
+        actions.appendChild(link);
+
+
+      });
+
+
     }
 
     function hideReservationSuccessCard() {
@@ -1663,7 +2183,8 @@ function normalizeDayLabel(value) {
         }
 
         alertBox.classList.add('d-none');
-        showReservationSuccessCard(payload);
+        const reservationTruth = data.cita_confirmada || null;
+        showReservationSuccessCard(reservationTruth, payload);
         form.reset();
         form.classList.remove('was-validated');
         setReservationMinDate();
