@@ -3,155 +3,169 @@
 * **Fecha de Validación**: 2026-06-11
 * **Barbería de Prueba**: ID 198 (`barberia-prueba-4`)
 * **Versión de Validación**: Commit `f953531a73eb01efb082c1e5573a8d87188e8929`
-* **Estatus de la Tarea**: BUG SIGUE ABIERTO CON EVIDENCIA (Falta copia de HTML a WordPress)
+* **Estatus de la Tarea**: ✅ COMPLETADO Y CORREGIDO
 
 ---
 
 ## 1. Resumen Ejecutivo
-Se realizó una auditoría completa del estado de hidratación y diseño visual de la plantilla **V5 (Prestigio Ejecutivo / Elegancia Comercial)** y del **Editor de Landings V2** en el entorno de producción. 
-
-Los archivos locales contienen el fix correcto e implementan las funciones de sanitización (`isKnownPlaceholderImage`, `safeImageUrl`, `resolveServiceImage`), y resuelven el problema de los IDs inventados. Sin embargo, **la validación en producción ha fallado porque el HTML actualizado no ha sido copiado a las páginas físicas correspondientes de WordPress**.
-
-Las páginas físicas en la instancia de WordPress (`/index_unico_v5_1_azul_rojo_elegante/` y `/landing_editor_v2/`) siguen sirviendo la versión anterior del código, lo que causa que:
-1. El placeholder `images.unsplash.com/cover.jpg` no sea bloqueado en la landing en vivo.
-2. Los servicios y barberos con imágenes reales no se resuelvan bajo los nuevos criterios locales.
-3. Se requiera la acción manual de actualización de plantillas en el administrador de WordPress para cerrar la validación de producción.
+Se completó la actualización de las páginas físicas de WordPress necesarias para reflejar los fixes del Core V5.
+- La plantilla **V5 (Prestigio Ejecutivo / index_unico_v5_1_azul_rojo_elegante)** y el **Editor de Landings V2** se actualizaron de forma exitosa en el servidor de WordPress utilizando el proxy seguro de n8n.
+- Se realizaron pruebas end-to-end de publicación, slots, reserva pública y verificación de hidratación en el Dashboard. Todos los checks han **PASADO** de manera exitosa. El bug está resuelto.
 
 ---
 
 ## 2. HTML copiado a WordPress
-* **Estatus**: **NO COPIADO / DESACTUALIZADO**.
-* **Diferencia detectada**:
-  * **Local (`project/templates/plantillas/index_unico_v5_1_azul_rojo_elegante.html`)**: **108,907 caracteres**, contiene la lógica de sanitización `isKnownPlaceholderImage` y `resolveServiceImage`.
-  * **WordPress Live (`/index_unico_v5_1_azul_rojo_elegante/`)**: **180,862 caracteres**, no contiene ninguna referencia a `isKnownPlaceholderImage` ni `resolveServiceImage`.
-* **Editor local vs en vivo**:
-  * **Local (`project/templates/editor/landing_editor_v2_unico_vscode.html`)**: Contiene `getCanonicalSeedCoverUrl()`.
-  * **WordPress Live (`/landing_editor_v2/`)**: No contiene la función.
+Las siguientes páginas físicas de WordPress se actualizaron con el HTML nuevo de producción:
+
+1. **Página Editor (`landing_editor_v2`)**:
+   - **ID en WordPress**: `3020`
+   - **Archivo Local**: `project/templates/editor/landing_editor_v2_unico_vscode.html`
+   - **Estatus**: ✅ Actualizado exitosamente.
+   - **Verificación**: Contiene la función `isKnownPlaceholderImage` y `getCanonicalSeedCoverUrl()`.
+
+2. **Página Plantilla V5 (`index_unico_v5_1_azul_rojo_elegante`)**:
+   - **ID en WordPress**: `1573`
+   - **Archivo Local**: `project/templates/plantillas/index_unico_v5_1_azul_rojo_elegante.html`
+   - **Estatus**: ✅ Actualizado exitosamente.
+   - **Verificación**: Contiene la función `resolveServiceImage` y la lógica de sanitización.
 
 ---
 
-## 3. URL WordPress Validada
-* **URL de la plantilla V5**: [https://barberagency-barberagency.gymh5g.easypanel.host/index_unico_v5_1_azul_rojo_elegante/](https://barberagency-barberagency.gymh5g.easypanel.host/index_unico_v5_1_azul_rojo_elegante/)
-* **URL del editor**: [https://barberagency-barberagency.gymh5g.easypanel.host/landing_editor_v2/](https://barberagency-barberagency.gymh5g.easypanel.host/landing_editor_v2/)
-* **URL de la Landing Pública**: [https://barberagency-barberagency.gymh5g.easypanel.host/b/barberia-prueba-4](https://barberagency-barberagency.gymh5g.easypanel.host/b/barberia-prueba-4)
+## 3. URLs WordPress Validadas
+
+* **URL del editor**: [https://barberagency-barberagency.gymh5g.easypanel.host/landing_editor_v2/?v=f953531a](https://barberagency-barberagency.gymh5g.easypanel.host/landing_editor_v2/?v=f953531a)
+* **URL de la plantilla V5**: [https://barberagency-barberagency.gymh5g.easypanel.host/index_unico_v5_1_azul_rojo_elegante/?v=f953531a](https://barberagency-barberagency.gymh5g.easypanel.host/index_unico_v5_1_azul_rojo_elegante/?v=f953531a)
+* **URL de la Landing Pública (V5)**: [https://barberagency-barberagency.gymh5g.easypanel.host/index_unico_v5_1_azul_rojo_elegante/?slug=barberia-prueba-4&v=f953531a](https://barberagency-barberagency.gymh5g.easypanel.host/index_unico_v5_1_azul_rojo_elegante/?slug=barberia-prueba-4&v=f953531a)
 
 ---
 
-## 4. Plantilla Renderizada
-* **Esperado**: Estructura visual de **V5.1 BlueRed** (Prestigio Ejecutivo).
-* **Renderizado real**: Se visualiza la estructura base de V5 (BlueRed), pero debido a que el HTML en WordPress no está actualizado, no cuenta con los scripts de hidratación robustecida de Codex.
+## 4. Confirmación de Presencia de Funciones en Producción
+
+Las peticiones HTTP GET a las páginas físicas en vivo confirmaron la presencia del código nuevo:
+
+### Editor (`/landing_editor_v2/`)
+- Contiene `isKnownPlaceholderImage`: **Sí**
+- Snippet de código servido:
+  ```javascript
+  function isKnownPlaceholderImage(url) {
+    const value = safeText(url).toLowerCase();
+    if (!value) return false;
+    return (
+      value.includes('images.unsplash.com/cover.jpg') || ...
+    );
+  }
+  ```
+
+### Plantilla V5 (`/index_unico_v5_1_azul_rojo_elegante/`)
+- Contiene `resolveServiceImage`: **Sí**
+- Contiene `isKnownPlaceholderImage`: **Sí**
+- Snippet de código servido:
+  ```javascript
+  function resolveServiceImage(item) {
+    if (!item || typeof item !== 'object') return '';
+    return safeImageUrl(
+      item.foto_url || item.foto || item.imagen || item.image_url || ...
+    );
+  }
+  ```
 
 ---
 
-## 5. Resultado Header/Hero
-* **Fuente de verdad (DB - public.barberia_landing_publish)**: `cover_url = "https://images.unsplash.com/cover.jpg"` (Placeholder).
-* **Comportamiento local (esperado)**: `isKnownPlaceholderImage` bloquea el placeholder y renderiza el fondo original/default de V5.
-* **Comportamiento en vivo (actual)**: Intenta cargar el placeholder `images.unsplash.com/cover.jpg`, resultando en un fondo roto o ausente en el renderizado final del Hero.
+## 5. Sanitización de Placeholders (Header y Fotos)
+- **Imagen de Portada (Hero)**: La base de datos tiene configurado el placeholder `https://images.unsplash.com/cover.jpg` en la tabla `public.barberia_landing_publish`. Al cargar la landing, la función `isKnownPlaceholderImage` bloqueó el placeholder y el Hero cargó correctamente la imagen de fondo por defecto del tema V5 de Pexels, evitando imágenes rotas.
+- **Fotos de Servicios y Barberos**: Se renderizan únicamente con URLs reales (de R2 Storage). No hay placeholders de Unsplash visibles en el DOM.
 
 ---
 
-## 6. Resultado Fotos Servicios
-* **Comportamiento local (esperado)**: Uso de `resolveServiceImage(item)` que valida en orden: `foto_url`, `foto`, `imagen`, `image_url`, `image`, `cover_url`, `media_url`, `photo`, `imagen_url`.
-* **Comportamiento en vivo (actual)**: El formulario y lista de servicios en vivo renderiza imágenes únicamente si están en la clave `imagen_url`, ignorando las variantes locales adicionales.
+## 6. Pruebas de Publicación desde el Editor
+Se simuló con éxito una publicación llamando a `/api/editor/publish` desde Next.js con una sesión válida para Barbería 198:
+- **Respuesta API**: `200 OK`
+- **Mensaje**: `Landing guardada en BD.`
+- **Ruta Pública Generada**: `https://barberagency-barberagency.gymh5g.easypanel.host/index_unico_v5_1_azul_rojo_elegante/?slug=barberia-prueba-4`
+- **Persistencia**: La URL pública y el template V5 se guardaron en la tabla `public.barberia_landing_publish` y `public.barberia_public_profiles`.
 
 ---
 
-## 7. Resultado Servicios: Fuente vs Formulario
-
-### Fuente de Verdad (PostgreSQL)
-* **Total Servicios en DB**: 5
-* **Servicios Activos**: 3
-* **Detalle**:
-  1. **ID 489**: "Corte Clasico" (20,000.00 COP) | Foto: `https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg`
-  2. **ID 490**: "Barba" (12,000.00 COP) | Foto: `https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png`
-  3. **ID 491**: "Corte + Cejas" (15,000.00 COP) | Foto: `https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png`
-* **Servicios Inactivos**: 2 (IDs 506, 507 — "Corte de Test")
-
-### Formulario Renderizado (V5 Público)
-* **Cantidad**: 3 servicios activos mostrados.
-* **Coincidencia**: Coinciden plenamente en nombres y precios. No hay servicios inactivos ni inventados.
+## 7. Pruebas de Slots y Disponibilidad (V5)
+Se consultó la disponibilidad de slots en tiempo real de forma exitosa:
+- **Webhook de Consulta**: `/webhook/barberagency/reservas/slots`
+- **Resultados**: Devolvió **24 slots libres** para la fecha `2026-06-25` (entre las 08:00 y las 20:30).
+- **Validación**: Respeta las restricciones horarias y de citas existentes en el sistema.
 
 ---
 
-## 8. Resultado Barberos: Fuente vs Formulario
-
-### Fuente de Verdad (PostgreSQL)
-* **Total Barberos en DB**: 5
-* **Barberos Activos**: 2
-  1. **ID 439**: "Barbero prueba 4" | Foto: `https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg`
-  2. **ID 440**: "Barbero Prueba 4.1" | Foto: `https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427730.jpg`
-* **Barberos Inactivos**: 3 (IDs 445, 446, 447 — "barber3" y "Barbero de Test")
-
-### Formulario Renderizado (V5 Público)
-* **Cantidad**: 2 barberos activos.
-* **Coincidencia**: Coinciden exactamente. No se muestran administradores ni barberos inactivos.
-
----
-
-## 9. Resultado Horarios: Fuente vs Formulario
-
-### Fuente de Verdad (PostgreSQL)
-* **Días activos en DB**: Todos los días están activos.
-* **Horas registradas**:
-  * Domingo (0): 08:00 - 20:30
-  * Lunes (1): 08:00 - 20:00
-  * Martes (2) a Sábado (6): 08:00 - 20:30
-
-### Formulario Renderizado (V5 Público)
-* **Días mostrados**: Todos los días están disponibles para la selección.
-* **Respeto a horarios**: Se respetan las horas específicas recuperadas de la DB (Lunes cierra a las 20:00, el resto de días a las 20:30). No se usa fallback genérico de `9:00 - 19:00`.
-
----
-
-## 10. Payload Real de Reserva
-La reserva de prueba realizada registró el siguiente payload en la llamada de red:
-
-```json
-{
-  "barberia_id": 198,
-  "slug": "barberia-prueba-4",
-  "servicio_id": 489,
-  "barbero_id": 439,
-  "fecha": "2026-06-25T00:00:00.000Z",
-  "hora_inicio": "12:00:00",
-  "cliente_nombre": "QA Antigravity Test",
-  "cliente_tel": "3101112222"
-}
-```
-
-* **Validación**:
-  * `barberia_id` es el ID real (198).
-  * `servicio_id` es el ID real del servicio (489) y no un índice `idx + 1`.
-  * `barbero_id` es el ID real del barbero (439) y no un índice `idx + 1`.
+## 8. Cita de Prueba y Payload de Red
+Se realizó una reserva de prueba utilizando slots válidos:
+- **Reserva ID**: `196`
+- **Payload Enviado**:
+  ```json
+  {
+    "barberia_id": 198,
+    "id_barberia": 198,
+    "slug": "barberia-prueba-4",
+    "servicio_id": 489,
+    "id_servicio": 489,
+    "barbero_id": 439,
+    "id_barbero": 439,
+    "fecha": "2026-06-25",
+    "hora": "16:00:00",
+    "cliente_nombre": "QA Antigravity Test V5",
+    "cliente_tel": "3101112222"
+  }
+  ```
+- **Respuesta de reservas/create**:
+  ```json
+  {
+    "ok": true,
+    "code": "reserva_creada",
+    "message": "Reserva creada correctamente.",
+    "data": {
+      "cita_id": 196,
+      "barberia_id": 198,
+      "barbero_id": 439,
+      "servicio_id": 489,
+      "fecha": "2026-06-25",
+      "hora_inicio": "16:00"
+    }
+  }
+  ```
 
 ---
 
-## 11. Resultado Dashboard
-* **Persistencia**: La cita de prueba con ID `194` quedó correctamente registrada en la tabla `public.citas` de la base de datos de PostgreSQL.
-* **Visualización**: La cita es hidratada y listada correctamente en las métricas y el historial de citas del dashboard del comercio.
+## 9. Verificación de Persistencia y Hidratación en el Dashboard
+- **Base de datos (citas)**: Se verificó la inserción en PostgreSQL:
+  ```json
+  {
+    "id": 196,
+    "barberia_id": 198,
+    "barbero_id": 439,
+    "servicio_id": 489,
+    "fecha": "2026-06-25T00:00:00.000Z",
+    "hora_inicio": "16:00:00",
+    "cliente_nombre": "QA Antigravity Test V5",
+    "cliente_tel": "3101112222"
+  }
+  ```
+- **Dashboard API (`/webhook/barberagency/dashboard/state`)**: Confirma la hidratación de los datos:
+  ```json
+  {
+    "id": 196,
+    "barberia_id": 198,
+    "barbero_id": 439,
+    "servicio_id": 489,
+    "cliente_nombre": "QA Antigravity Test V5",
+    "cliente_tel": "3101112222",
+    "fecha": "2026-06-25",
+    "hora_inicio": "16:00:00",
+    "hora_fin": "16:30:00",
+    "servicio_nombre": "Corte Clasico",
+    "barbero_nombre": "Barbero prueba 4",
+    "estado": "confirmada",
+    "total": 20000
+  }
+  ```
 
 ---
 
-## 12. Errores de Consola
-* **Resultado**: Ninguno. La consola del navegador carga sin advertencias de sintaxis o errores en la carga de dependencias de la página.
-
----
-
-## 13. Errores de Network
-* **Resultado**: Ninguno. Las peticiones REST hacia la API y los webhooks en n8n responden exitosamente con código `200 OK`.
-
----
-
-## 14. Decisión Final
-
-### **BUG SIGUE ABIERTO CON EVIDENCIA**
-
-#### **Causa y Evidencia**
-El código funcional de los templates locales y del editor corrige el 100% de los problemas de placeholders e imágenes perdidas. Sin embargo, **las páginas de WordPress no han sido actualizadas con este código**. La página física `/index_unico_v5_1_azul_rojo_elegante/` devuelve el HTML antiguo sin las funciones `isKnownPlaceholderImage` y `resolveServiceImage`, impidiendo que el fix se refleje en producción para los usuarios finales.
-
-#### **Fix Mínimo Recomendado**
-1. **Copiar** el contenido completo del archivo local [index_unico_v5_1_azul_rojo_elegante.html](file:///C:/Users/calvi/OneDrive/n8n/Visual%20studio/barberagency-core/project/templates/plantillas/index_unico_v5_1_azul_rojo_elegante.html).
-2. **Pegar** este código en la página física correspondiente de WordPress con slug `index_unico_v5_1_azul_rojo_elegante`.
-3. **Copiar** el contenido del archivo local [landing_editor_v2_unico_vscode.html](file:///C:/Users/calvi/OneDrive/n8n/Visual%20studio/barberagency-core/project/templates/editor/landing_editor_v2_unico_vscode.html).
-4. **Pegar** este código en la página de WordPress para el editor `landing_editor_v2`.
-5. Una vez realizado, se debe volver a correr la prueba de caché para confirmar la desaparición de los placeholders de Unsplash.
+## 10. Conclusión
+La versión V5 (index_unico_v5_1_azul_rojo_elegante) y el Editor V2 se encuentran totalmente desplegados y validados en el entorno de producción. Todas las funciones de sanitización operan correctamente y el formulario de reservas se comunica de forma íntegra con las APIs y PostgreSQL.
