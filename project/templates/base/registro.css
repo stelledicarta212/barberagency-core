@@ -892,7 +892,8 @@ html[data-theme="dark"] #baWizardApp {
     min-height: 84px;
   }
 
-  #baWizardApp .ba-card .ba-grid-2 > :nth-child(4) img {
+  /* Target only the direct child preview image */
+  #baWizardApp .ba-card .ba-grid-2 > :nth-child(4) > img {
     position: absolute;
     right: 0;
     bottom: 0;
@@ -900,21 +901,45 @@ html[data-theme="dark"] #baWizardApp {
     height: 64px !important;
     object-fit: cover;
     border-radius: 12px;
-    border: 1px solid rgba(223, 196, 131, 0.45);
-    box-shadow: 0 0 10px rgba(223, 196, 131, 0.15);
+    border: 1.5px solid var(--gold) !important;
+    box-shadow: 0 0 12px rgba(223, 196, 131, 0.35) !important;
+  }
+
+  /* Specific circular preview image for barbers list on desktop */
+  #baWizardApp #baBarbersList .ba-card .ba-grid-2 > :nth-child(4) {
+    padding-right: 84px;
+  }
+
+  #baWizardApp #baBarbersList .ba-card .ba-grid-2 > :nth-child(4) > img {
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 50% !important;
+    border: 2px solid var(--gold) !important;
+    box-shadow: 0 0 14px rgba(223, 196, 131, 0.6) !important;
   }
 }
 
 @media (max-width: 768px) {
-  #baWizardApp .ba-card .ba-grid-2 > :nth-child(4) img {
+  #baWizardApp .ba-card .ba-grid-2 > :nth-child(4) > img {
     position: static !important;
     width: 100% !important;
     height: 120px !important;
     object-fit: cover;
     border-radius: 12px;
-    border: 1px solid rgba(223, 196, 131, 0.45);
+    border: 1.5px solid var(--gold) !important;
+    box-shadow: 0 0 12px rgba(223, 196, 131, 0.35) !important;
     margin-top: 10px;
     display: block;
+  }
+
+  /* Specific mobile style for barbers preview image */
+  #baWizardApp #baBarbersList .ba-card .ba-grid-2 > :nth-child(4) > img {
+    width: 64px !important;
+    height: 64px !important;
+    border-radius: 50% !important;
+    margin: 10px auto 0 auto;
+    border: 2px solid var(--gold) !important;
+    box-shadow: 0 0 14px rgba(223, 196, 131, 0.6) !important;
   }
 }
 
