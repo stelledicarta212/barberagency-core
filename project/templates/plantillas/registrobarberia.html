@@ -1325,13 +1325,6 @@
 
       responseArea.innerHTML = `
         <div class="ba-composer">
-          <div class="ba-grid">
-            <label class="ba-label" id="baLocationCard">
-              Dirección
-              <input class="ba-input" id="baAddressInput" type="text" value="${escapeHtml(address)}" placeholder="${escapeHtml(step.placeholder || "")}" />
-            </label>
-          </div>
-
           <p class="ba-helper">
             <a class="ba-maps-cta" href="https://maps.google.com" target="_blank" rel="noopener">Haz clic aquí para abrir Google Maps</a>
             Si no ves el punto correcto, abre el mapa, busca el local y pega aquí la ubicación exacta.
@@ -1345,7 +1338,9 @@
             <iframe id="baLocationMap" src="${escapeHtml(initialPreview)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Vista previa de Google Maps"></iframe>
           </div>
 
-          <div class="ba-actions-row">
+          <div class="ba-input-shell">
+            <button class="ba-plus" type="button" disabled>+</button>
+            <input class="ba-input" id="baAddressInput" type="text" value="${escapeHtml(address)}" placeholder="${escapeHtml(step.placeholder || "")}" />
             <button class="ba-action-secondary" type="button" id="baPreviewLocationBtn">Ver mapa</button>
             <button class="ba-action" type="button" id="baLocationNextBtn">Confirmar ubicación</button>
           </div>
@@ -1405,12 +1400,15 @@
 
       responseArea.innerHTML = `
         <div class="ba-composer">
-          <div class="ba-options">
-            ${step.options.map((option) => `
-              <button type="button" class="ba-option ${selected === String(option.value) ? "is-active" : ""}" data-value="${escapeHtml(String(option.value))}">
-                ${escapeHtml(option.label)}
-              </button>
-            `).join("")}
+          <div class="ba-input-shell">
+            <button class="ba-plus" type="button" disabled>+</button>
+            <div class="ba-options">
+              ${step.options.map((option) => `
+                <button type="button" class="ba-option ${selected === String(option.value) ? "is-active" : ""}" data-value="${escapeHtml(String(option.value))}">
+                  ${escapeHtml(option.label)}
+                </button>
+              `).join("")}
+            </div>
           </div>
         </div>
       `;

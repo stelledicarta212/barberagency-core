@@ -375,32 +375,38 @@ html[data-theme="dark"] #baWizardApp {
   justify-content: flex-end;
 }
 
-#baWizardApp .ba-input-shell {
+#baWizardApp .ba-input-shell,
+#baWizardApp .ba-composer-shell {
   display: flex;
   align-items: center;
   gap: 12px;
   background: var(--bg-soft);
   border: 1px solid var(--panel-stroke);
-  border-radius: 16px;
-  padding: 8px 12px 8px 18px;
+  border-radius: 999px;
+  padding: 8px 10px 8px 24px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.25s ease;
   position: relative;
   width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
   box-sizing: border-box;
+  min-height: 60px;
 }
 
-#baWizardApp .ba-input-shell:focus-within {
+#baWizardApp .ba-input-shell:focus-within,
+#baWizardApp .ba-composer-shell:focus-within {
   border-color: var(--gold);
-  box-shadow: 0 4px 24px rgba(223, 196, 131, 0.12);
+  box-shadow: 0 4px 24px rgba(223, 196, 131, 0.15);
   background: rgba(15, 19, 26, 0.95);
 }
 
-#baWizardApp .ba-input-shell .ba-plus {
+#baWizardApp .ba-input-shell .ba-plus,
+#baWizardApp .ba-composer-icon {
   background: transparent;
   border: none;
   color: var(--gold);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 500;
   padding: 0;
   margin: 0;
@@ -410,7 +416,8 @@ html[data-theme="dark"] #baWizardApp {
   opacity: 0.7;
 }
 
-#baWizardApp .ba-input-shell .ba-input {
+#baWizardApp .ba-input-shell .ba-input,
+#baWizardApp .ba-composer-input {
   flex-grow: 1;
   background: transparent !important;
   border: none !important;
@@ -428,26 +435,45 @@ html[data-theme="dark"] #baWizardApp {
   opacity: 0.65;
 }
 
-#baWizardApp .ba-input-shell .ba-action {
-  padding: 8px 20px;
+#baWizardApp .ba-input-shell .ba-action,
+#baWizardApp .ba-composer-btn-primary {
+  all: unset;
+  cursor: pointer;
   font-size: 13px;
-  border-radius: 10px;
-  height: 38px;
+  font-weight: 600;
+  height: 44px;
+  border-radius: 999px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   white-space: nowrap;
+  transition: var(--transition);
+  padding: 0 24px;
+  color: #07090d !important;
+  background: linear-gradient(180deg, #f0dfb5, #cfb073);
+  border: 1px solid rgba(247, 221, 167, 0.7);
+  box-shadow: 0 2px 8px rgba(207, 176, 115, 0.2);
+  box-sizing: border-box;
 }
 
-#baWizardApp .ba-input-shell .ba-action-secondary {
-  padding: 8px 16px;
+#baWizardApp .ba-input-shell .ba-action-secondary,
+#baWizardApp .ba-composer-btn-secondary {
+  all: unset;
+  cursor: pointer;
   font-size: 13px;
-  border-radius: 10px;
-  height: 38px;
+  font-weight: 600;
+  height: 44px;
+  border-radius: 999px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   white-space: nowrap;
+  transition: var(--transition);
+  padding: 0 20px;
+  color: var(--text) !important;
+  border: 1px solid var(--panel-stroke);
   background: rgba(255, 255, 255, 0.05);
-  border-color: var(--panel-stroke);
+  box-sizing: border-box;
 }
 
 #baWizardApp .ba-input-shell .ba-action {
@@ -462,34 +488,90 @@ html[data-theme="dark"] #baWizardApp {
   margin-left: 0;
 }
 
+/* Choice pills embedded in composer shell override */
+#baWizardApp .ba-input-shell .ba-options {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-grow: 1;
+  align-items: center;
+}
+
+#baWizardApp .ba-input-shell .ba-option {
+  all: unset;
+  cursor: pointer;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 999px;
+  border: 1px solid var(--panel-stroke);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  transition: var(--transition);
+  text-align: center;
+  white-space: nowrap;
+}
+
+#baWizardApp .ba-input-shell .ba-option:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+#baWizardApp .ba-input-shell .ba-option.is-active {
+  border-color: var(--gold) !important;
+  background: rgba(223, 196, 131, 0.15) !important;
+  color: var(--gold) !important;
+}
+
 @media (max-width: 576px) {
-  #baWizardApp .ba-input-shell {
+  #baWizardApp .ba-input-shell,
+  #baWizardApp .ba-composer-shell {
     flex-wrap: wrap;
-    padding: 10px 14px;
-    gap: 8px;
-    border-radius: 14px;
+    padding: 14px 18px;
+    gap: 12px;
+    border-radius: 24px;
+    min-height: auto;
   }
-  #baWizardApp .ba-input-shell .ba-input {
+  #baWizardApp .ba-input-shell .ba-input,
+  #baWizardApp .ba-composer-input {
     width: 100%;
     flex: none;
     order: 1;
     padding: 6px 0;
   }
-  #baWizardApp .ba-input-shell .ba-plus {
+  #baWizardApp .ba-input-shell .ba-plus,
+  #baWizardApp .ba-composer-icon {
     order: 2;
-    font-size: 18px;
+    font-size: 20px;
   }
-  #baWizardApp .ba-input-shell .ba-action-secondary {
+  #baWizardApp .ba-input-shell .ba-action-secondary,
+  #baWizardApp .ba-composer-btn-secondary {
     order: 3;
-    padding: 6px 12px;
-    font-size: 12px;
-    height: 32px;
+    padding: 0 16px;
+    font-size: 13px;
+    height: 38px;
+    flex-grow: 1;
+    text-align: center;
+    margin-left: 0;
   }
-  #baWizardApp .ba-input-shell .ba-action {
+  #baWizardApp .ba-input-shell .ba-action,
+  #baWizardApp .ba-composer-btn-primary {
     order: 4;
-    padding: 6px 14px;
-    font-size: 12px;
-    height: 32px;
+    padding: 0 20px;
+    font-size: 13px;
+    height: 38px;
+    flex-grow: 1;
+    text-align: center;
+    margin-left: 0;
+  }
+  #baWizardApp .ba-input-shell .ba-options {
+    flex-wrap: wrap;
+    width: 100%;
+    order: 1;
+  }
+  #baWizardApp .ba-input-shell .ba-option {
+    flex-grow: 1;
+    text-align: center;
   }
 }
 
@@ -644,6 +726,28 @@ html[data-theme="dark"] #baWizardApp {
   flex-wrap: wrap;
   gap: 16px;
   align-items: center;
+  margin-top: 24px;
+  padding: 16px 24px;
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 16px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 576px) {
+  #baWizardApp .ba-inline {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  #baWizardApp .ba-inline > button,
+  #baWizardApp .ba-inline > a {
+    width: 100%;
+    margin: 0;
+  }
 }
 
 /* Choice Step Options */
