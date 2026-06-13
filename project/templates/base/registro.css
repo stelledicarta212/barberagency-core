@@ -734,6 +734,32 @@ html[data-theme="dark"] #baWizardApp {
   border-color: rgba(239, 68, 68, 0.4);
 }
 
+#baWizardApp .ba-card-head .ba-action-danger {
+  all: unset;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  color: #07090d !important;
+  background: linear-gradient(180deg, #f4e7c7, #dfc085);
+  border: 1px solid rgba(247, 221, 167, 0.7);
+  box-shadow: 0 2px 6px rgba(207, 176, 115, 0.2);
+  transition: var(--transition);
+  font-family: var(--font-family);
+  box-sizing: border-box;
+}
+
+#baWizardApp .ba-card-head .ba-action-danger:hover {
+  background: linear-gradient(180deg, #f9eed5, #cfa85f);
+  box-shadow: 0 4px 10px rgba(207, 176, 115, 0.35);
+  transform: translateY(-1px);
+}
+
 #baWizardApp .ba-inline {
   display: flex;
   flex-wrap: wrap;
@@ -799,46 +825,97 @@ html[data-theme="dark"] #baWizardApp {
 
 /* Card layout: services, hours, barbers */
 #baWizardApp .ba-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  #baWizardApp .ba-list {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 #baWizardApp .ba-card {
-  border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--panel-stroke));
+  border: 1px solid color-mix(in srgb, var(--gold) 75%, transparent);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--gold) 10%, transparent),
-    0 12px 34px rgba(0,0,0,.28),
-    0 0 24px color-mix(in srgb, var(--gold) 8%, transparent);
-  background: color-mix(in srgb, var(--panel) 88%, #05070b 12%);
-  border-radius: 20px;
-  padding: 20px;
+    0 18px 44px rgba(0,0,0,.28),
+    0 0 26px color-mix(in srgb, var(--gold) 8%, transparent);
+  background: color-mix(in srgb, var(--panel) 88%, var(--bg) 12%);
+  border-radius: 22px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   transition: all 0.3s ease;
+  position: relative;
+  box-sizing: border-box;
 }
 
 #baWizardApp .ba-card:hover {
   transform: translateY(-2px);
   border-color: var(--gold);
-  background: color-mix(in srgb, var(--panel) 92%, #05070b 8%);
+  background: color-mix(in srgb, var(--panel) 92%, var(--bg) 8%);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--gold) 20%, transparent),
-    0 16px 40px rgba(0,0,0,.35),
-    0 0 32px color-mix(in srgb, var(--gold) 15%, transparent);
+    0 24px 50px rgba(0,0,0,.35),
+    0 0 36px color-mix(in srgb, var(--gold) 15%, transparent);
 }
 
-/* Compact inputs inside cards */
-#baWizardApp #baServicesList .ba-input,
-#baWizardApp #baServicesList .ba-select,
-#baWizardApp #baServicesList .ba-number,
-#baWizardApp #baBarbersList .ba-input,
-#baWizardApp #baBarbersList .ba-select,
-#baWizardApp #baBarbersList .ba-number {
-  padding: 8px 12px;
-  font-size: 13px;
-  border-radius: 8px;
+/* Grid adjustments to map visual reference of cards in desktop */
+@media (min-width: 769px) {
+  #baWizardApp .ba-card .ba-grid-2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* Nombre (1st element) spans full width */
+  #baWizardApp .ba-card .ba-grid-2 > :nth-child(1) {
+    grid-column: span 2;
+  }
+
+  /* Duracion and Precio side-by-side (column 1 and column 2) */
+  #baWizardApp .ba-card .ba-grid-2 > :nth-child(2),
+  #baWizardApp .ba-card .ba-grid-2 > :nth-child(3) {
+    grid-column: span 1;
+  }
+
+  /* Imagen upload wrapper spans full width */
+  #baWizardApp .ba-card .ba-grid-2 > :nth-child(4) {
+    grid-column: span 2;
+    position: relative;
+    padding-right: 120px;
+    box-sizing: border-box;
+    min-height: 84px;
+  }
+
+  #baWizardApp .ba-card .ba-grid-2 > :nth-child(4) img {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 100px !important;
+    height: 64px !important;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(223, 196, 131, 0.45);
+    box-shadow: 0 0 10px rgba(223, 196, 131, 0.15);
+  }
+}
+
+@media (max-width: 768px) {
+  #baWizardApp .ba-card .ba-grid-2 > :nth-child(4) img {
+    position: static !important;
+    width: 100% !important;
+    height: 120px !important;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(223, 196, 131, 0.45);
+    margin-top: 10px;
+    display: block;
+  }
 }
 
 /* Password row inside barber cards */
