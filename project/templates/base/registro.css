@@ -1,0 +1,1081 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+#baWizardApp {
+  /* Color System (Dark Mode Default) */
+  --bg: #07090d;
+  --bg-soft: #0f131a;
+  --panel: rgba(18, 23, 33, 0.82);
+  --panel-stroke: rgba(255, 255, 255, 0.1);
+  --text: #eef2fb;
+  --muted: #9ca6b8;
+  --gold: #dfc483;
+  --gold-strong: #c8a85f;
+  --ok: #6de19e;
+  --danger: #ff7e7e;
+
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --font-family: "Poppins", "Segoe UI", Tahoma, sans-serif;
+  --radius: 20px;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  font-family: var(--font-family);
+  color: var(--text);
+  background: 
+    radial-gradient(1200px circle at 20% -10%, rgba(66, 85, 127, 0.42), transparent 48%),
+    radial-gradient(900px circle at 90% 12%, rgba(133, 104, 44, 0.26), transparent 52%),
+    linear-gradient(180deg, var(--bg-soft), var(--bg));
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+/* Light Theme Adaptations */
+#baWizardApp[data-theme="light"],
+body.light-mode #baWizardApp,
+html[data-theme="light"] #baWizardApp {
+  --bg: #eef2f8;
+  --bg-soft: #dde4ef;
+  --panel: rgba(255, 255, 255, 0.87);
+  --panel-stroke: rgba(30, 50, 90, 0.14);
+  --text: #101828;
+  --muted: #5b687f;
+  --gold: #a97f28;
+  --gold-strong: #8c6718;
+  --ok: #0f9d58;
+  --danger: #cc3c3c;
+  --shadow: 0 12px 40px rgba(30, 50, 90, 0.08);
+}
+
+/* Explicit Dark Mode Overrides */
+#baWizardApp[data-theme="dark"],
+body.dark-mode #baWizardApp,
+html[data-theme="dark"] #baWizardApp {
+  --bg: #07090d;
+  --bg-soft: #0f131a;
+  --panel: rgba(18, 23, 33, 0.82);
+  --panel-stroke: rgba(255, 255, 255, 0.1);
+  --text: #eef2fb;
+  --muted: #9ca6b8;
+  --gold: #dfc483;
+  --gold-strong: #c8a85f;
+  --ok: #6de19e;
+  --danger: #ff7e7e;
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+#baWizardApp .ba-shell {
+  width: 100%;
+  max-width: 1100px;
+  background: var(--panel);
+  border: 1px solid var(--panel-stroke);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+#baWizardApp .ba-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--panel-stroke);
+  background: rgba(0, 0, 0, 0.12);
+  gap: 16px;
+}
+
+#baWizardApp .ba-progress-track {
+  flex-grow: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 0 20px;
+}
+
+#baWizardApp .ba-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-strong));
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 8px var(--gold);
+}
+
+#baWizardApp .ba-icon-btn {
+  all: unset;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--panel-stroke);
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+  transition: var(--transition);
+}
+
+#baWizardApp .ba-icon-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+#baWizardApp .ba-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+#baWizardApp .ba-icon-btn.ba-ghost {
+  border-color: transparent;
+  background: transparent;
+}
+
+#baWizardApp .ba-icon-btn.ba-ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--danger);
+  border-color: transparent;
+}
+
+#baWizardApp .ba-body {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 620px;
+}
+
+@media (max-width: 992px) {
+  #baWizardApp .ba-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+#baWizardApp .ba-sidebar {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent), rgba(0, 0, 0, 0.15);
+  border-right: 1px solid var(--panel-stroke);
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+@media (max-width: 992px) {
+  #baWizardApp .ba-sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--panel-stroke);
+    padding: 28px;
+  }
+}
+
+#baWizardApp .ba-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  margin: 0;
+}
+
+#baWizardApp .ba-sidebar-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.35;
+}
+
+#baWizardApp .ba-sidebar-copy {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+#baWizardApp .ba-live-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#baWizardApp .ba-summary-item {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: var(--transition);
+}
+
+#baWizardApp .ba-summary-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+#baWizardApp .ba-summary-item small {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+#baWizardApp .ba-summary-item strong {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+  word-break: break-all;
+}
+
+#baWizardApp .ba-stage {
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+@media (max-width: 768px) {
+  #baWizardApp .ba-stage {
+    padding: 28px 24px;
+  }
+}
+
+#baWizardApp .ba-question-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-left: 3px solid var(--gold);
+  padding-left: 18px;
+}
+
+#baWizardApp .ba-step-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gold);
+  margin: 0;
+}
+
+#baWizardApp .ba-question {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.3;
+}
+
+#baWizardApp .ba-helper {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.45;
+}
+
+#baWizardApp .ba-response-area {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+#baWizardApp .ba-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+#baWizardApp .ba-input-shell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 12px;
+  padding: 6px 14px;
+  transition: var(--transition);
+}
+
+#baWizardApp .ba-input-shell:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(223, 196, 131, 0.15);
+}
+
+#baWizardApp .ba-input-shell .ba-plus {
+  background: transparent;
+  border: none;
+  color: var(--gold);
+  font-size: 20px;
+  font-weight: 500;
+  padding: 0;
+  margin: 0;
+  cursor: default;
+  display: flex;
+  align-items: center;
+}
+
+#baWizardApp .ba-input-shell .ba-input {
+  flex-grow: 1;
+  background: transparent;
+  border: none !important;
+  outline: none !important;
+  color: var(--text) !important;
+  font-size: 16px;
+  padding: 10px 4px;
+  font-family: var(--font-family);
+  width: 100%;
+  box-shadow: none !important;
+}
+
+#baWizardApp .ba-input-shell .ba-input::placeholder {
+  color: var(--muted);
+  opacity: 0.65;
+}
+
+#baWizardApp .ba-input,
+#baWizardApp .ba-select,
+#baWizardApp .ba-number,
+#baWizardApp .ba-time {
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--panel-stroke) !important;
+  border-radius: 12px;
+  color: var(--text) !important;
+  padding: 12px 16px;
+  font-size: 14px;
+  outline: none;
+  transition: var(--transition);
+  width: 100%;
+  font-family: var(--font-family);
+  box-sizing: border-box;
+}
+
+#baWizardApp .ba-input:focus,
+#baWizardApp .ba-select:focus,
+#baWizardApp .ba-number:focus,
+#baWizardApp .ba-time:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 12px rgba(223, 196, 131, 0.15);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+#baWizardApp .ba-label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Buttons & Actions Layout */
+#baWizardApp .ba-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;
+  margin-top: 12px;
+}
+
+@media (max-width: 768px) {
+  #baWizardApp .ba-actions-row {
+    display: grid !important;
+    gap: 12px !important;
+    width: 100%;
+  }
+  #baWizardApp .ba-actions-row > .ba-action,
+  #baWizardApp .ba-actions-row > .ba-action-secondary {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+#baWizardApp .ba-action {
+  all: unset;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #07090d !important;
+  background: linear-gradient(180deg, #f0dfb5, #cfb073);
+  border: 1px solid rgba(247, 221, 167, 0.7);
+  box-shadow: 0 2px 8px rgba(207, 176, 115, 0.2);
+  transition: var(--transition);
+  font-family: var(--font-family);
+}
+
+#baWizardApp .ba-action:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f4e7c7, #dfc085);
+  box-shadow: 0 4px 12px rgba(207, 176, 115, 0.35);
+  transform: translateY(-1px);
+}
+
+#baWizardApp .ba-action:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+#baWizardApp .ba-action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+#baWizardApp .ba-action-secondary {
+  all: unset;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text) !important;
+  border: 1px solid var(--panel-stroke);
+  background: rgba(255, 255, 255, 0.03);
+  transition: var(--transition);
+  font-family: var(--font-family);
+}
+
+#baWizardApp .ba-action-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--gold);
+  color: var(--gold) !important;
+}
+
+#baWizardApp .ba-action-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+#baWizardApp .ba-action-danger {
+  all: unset;
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #fff !important;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  transition: var(--transition);
+  font-family: var(--font-family);
+}
+
+#baWizardApp .ba-action-danger:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+#baWizardApp .ba-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Choice Step Options */
+#baWizardApp .ba-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 16px;
+}
+
+#baWizardApp .ba-option {
+  all: unset;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 12px;
+  padding: 20px 16px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  transition: var(--transition);
+}
+
+#baWizardApp .ba-option:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+#baWizardApp .ba-option.is-active {
+  background: rgba(223, 196, 131, 0.1);
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 16px rgba(223, 196, 131, 0.15);
+}
+
+/* Card layout: services, hours, barbers */
+#baWizardApp .ba-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#baWizardApp .ba-card {
+  background: rgba(255, 255, 255, 0.012);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: var(--transition);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+#baWizardApp .ba-card:hover {
+  background: rgba(255, 255, 255, 0.022);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
+}
+
+#baWizardApp .ba-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--panel-stroke);
+  padding-bottom: 14px;
+  gap: 12px;
+}
+
+#baWizardApp .ba-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+#baWizardApp .ba-grid {
+  display: grid;
+  gap: 20px;
+}
+
+#baWizardApp .ba-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 768px) {
+  #baWizardApp .ba-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Switch Component Replacement */
+#baWizardApp .ba-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+}
+
+#baWizardApp .ba-switch input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 38px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 99px;
+  position: relative;
+  outline: none;
+  cursor: pointer;
+  transition: var(--transition);
+  margin: 0;
+}
+
+#baWizardApp .ba-switch input:checked {
+  background: var(--gold);
+  border-color: var(--gold-strong);
+}
+
+#baWizardApp .ba-switch input::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 99px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+#baWizardApp .ba-switch input:checked::before {
+  left: 20px;
+  background: #07090d;
+}
+
+/* Avatar and Photo picker styles */
+#baWizardApp .ba-photo-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+#baWizardApp .ba-photo-option {
+  position: relative;
+  cursor: pointer;
+  display: inline-flex !important;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 !important;
+}
+
+#baWizardApp .ba-photo-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+#baWizardApp .ba-photo-option img {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  transition: var(--transition) !important;
+  object-fit: cover;
+}
+
+#baWizardApp .ba-photo-option input[type="radio"]:checked + img {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 12px rgba(223, 196, 131, 0.5);
+  transform: scale(1.08);
+}
+
+#baWizardApp .ba-photo-option:hover img {
+  border-color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Native file selector styling */
+#baWizardApp input[type="file"]::file-selector-button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-stroke);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-right: 12px;
+}
+
+#baWizardApp input[type="file"]::file-selector-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* Google maps location preview */
+#baWizardApp .ba-location-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+#baWizardApp .ba-location-preview-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#baWizardApp .ba-location-preview-copy strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+#baWizardApp .ba-location-preview-copy span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+#baWizardApp #baLocationMap {
+  width: 100%;
+  height: 250px;
+  border-radius: 8px;
+  border: 1px solid var(--panel-stroke);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+#baWizardApp .ba-maps-cta {
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 600;
+  margin-right: 6px;
+  border-bottom: 1px dashed var(--gold);
+  transition: var(--transition);
+}
+
+#baWizardApp .ba-maps-cta:hover {
+  color: var(--gold-strong);
+  border-color: var(--gold-strong);
+}
+
+/* Message banner styles */
+#baWizardApp .ba-message {
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  transition: var(--transition);
+}
+
+#baWizardApp .ba-message.is-success {
+  background: rgba(109, 225, 158, 0.1);
+  border: 1px solid rgba(109, 225, 158, 0.3);
+  color: var(--ok);
+}
+
+#baWizardApp .ba-message.is-error {
+  background: rgba(255, 126, 126, 0.15);
+  border: 1px solid rgba(255, 126, 126, 0.3);
+  color: var(--danger);
+}
+
+#baWizardApp .ba-message.is-info {
+  background: rgba(223, 196, 131, 0.1);
+  border: 1px solid rgba(223, 196, 131, 0.3);
+  color: var(--gold);
+}
+
+/* Deep-link highlight */
+#baWizardApp .ba-deep-link-target {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(223, 196, 131, 0.35) !important;
+}
+
+/* SECCION: Resumen final Review */
+#baWizardApp .ba-review-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+#baWizardApp .ba-review-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-bottom: 1px solid var(--panel-stroke);
+  padding-bottom: 20px;
+}
+
+#baWizardApp .ba-review-header-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  background: rgba(223, 196, 131, 0.1);
+  color: var(--gold);
+  border: 1px solid rgba(223, 196, 131, 0.3);
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#baWizardApp .ba-review-header-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+#baWizardApp .ba-review-header-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+#baWizardApp .ba-review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  #baWizardApp .ba-review-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+#baWizardApp .ba-review-card-large {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  #baWizardApp .ba-review-card-large {
+    grid-column: span 1;
+  }
+}
+
+#baWizardApp .ba-review-card {
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: var(--transition);
+}
+
+#baWizardApp .ba-review-card:hover {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+#baWizardApp .ba-review-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(223, 196, 131, 0.1);
+  color: var(--gold);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+#baWizardApp .ba-review-card-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+#baWizardApp .ba-review-card-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#baWizardApp .ba-review-card-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+#baWizardApp .ba-review-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 8px 0;
+}
+
+#baWizardApp .ba-review-detail-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  #baWizardApp .ba-review-detail-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+#baWizardApp .ba-review-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#baWizardApp .ba-detail-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+#baWizardApp .ba-detail-val {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+#baWizardApp .ba-detail-badge {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-stroke);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--gold);
+  font-family: monospace;
+}
+
+#baWizardApp .ba-detail-link {
+  font-size: 12px;
+  color: var(--gold);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+#baWizardApp .ba-detail-link:hover {
+  color: var(--gold-strong);
+}
+
+/* Services preview inside review */
+#baWizardApp .ba-review-services-list,
+#baWizardApp .ba-review-hours-list,
+#baWizardApp .ba-review-barbers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+#baWizardApp .ba-review-service-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+#baWizardApp .ba-review-service-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--panel-stroke);
+}
+
+#baWizardApp .ba-review-service-info {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#baWizardApp .ba-review-service-info strong {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+#baWizardApp .ba-review-service-info span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+#baWizardApp .ba-review-service-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+/* Hours preview inside review */
+#baWizardApp .ba-review-hours-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+#baWizardApp .ba-hours-day {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+#baWizardApp .ba-hours-time {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Barbers preview inside review */
+#baWizardApp .ba-review-barber-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--panel-stroke);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+#baWizardApp .ba-review-barber-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--panel-stroke);
+}
+
+#baWizardApp .ba-review-barber-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#baWizardApp .ba-review-barber-info strong {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+#baWizardApp .ba-review-barber-info span {
+  font-size: 11px;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+#baWizardApp .ba-empty-text {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 8px 0 0 0;
+}
