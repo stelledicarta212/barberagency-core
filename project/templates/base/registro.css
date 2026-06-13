@@ -69,7 +69,7 @@ html[data-theme="dark"] #baWizardApp {
 
 #baWizardApp .ba-shell {
   width: 100%;
-  max-width: 1100px;
+  max-width: 1480px;
   background: var(--panel);
   border: 1px solid var(--panel-stroke);
   backdrop-filter: blur(24px);
@@ -148,7 +148,7 @@ html[data-theme="dark"] #baWizardApp {
 
 #baWizardApp .ba-body {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 360px 1fr;
   min-height: 620px;
 }
 
@@ -836,6 +836,12 @@ html[data-theme="dark"] #baWizardApp {
 @media (max-width: 768px) {
   #baWizardApp .ba-review-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1200px) {
+  #baWizardApp .ba-review-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
