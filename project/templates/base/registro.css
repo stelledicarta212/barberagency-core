@@ -635,26 +635,28 @@ html[data-theme="dark"] #baWizardApp {
 #baWizardApp .ba-action {
   all: unset;
   cursor: pointer;
-  border-radius: 10px;
-  padding: 12px 24px;
   font-size: 13px;
   font-weight: 600;
-  text-align: center;
+  height: 52px;
+  border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  color: #07090d !important;
-  background: linear-gradient(180deg, #f0dfb5, #cfb073);
-  border: 1px solid rgba(247, 221, 167, 0.7);
-  box-shadow: 0 2px 8px rgba(207, 176, 115, 0.2);
+  white-space: nowrap;
   transition: var(--transition);
+  padding: 0 28px;
+  color: #07090d !important;
+  background: linear-gradient(180deg, #f4e7c7, #dfc085);
+  border: 1px solid rgba(247, 221, 167, 0.7);
+  box-shadow: 0 4px 14px rgba(207, 176, 115, 0.25);
+  box-sizing: border-box;
   font-family: var(--font-family);
+  text-align: center;
 }
 
 #baWizardApp .ba-action:hover:not(:disabled) {
-  background: linear-gradient(180deg, #f4e7c7, #dfc085);
-  box-shadow: 0 4px 12px rgba(207, 176, 115, 0.35);
+  background: linear-gradient(180deg, #f9eed5, #cfa85f);
+  box-shadow: 0 6px 18px rgba(207, 176, 115, 0.4);
   transform: translateY(-1px);
 }
 
@@ -665,29 +667,32 @@ html[data-theme="dark"] #baWizardApp {
 #baWizardApp .ba-action:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 #baWizardApp .ba-action-secondary {
   all: unset;
   cursor: pointer;
-  border-radius: 10px;
-  padding: 12px 24px;
   font-size: 13px;
   font-weight: 600;
-  text-align: center;
+  height: 52px;
+  border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  color: var(--text) !important;
-  border: 1px solid var(--panel-stroke);
-  background: rgba(255, 255, 255, 0.03);
+  white-space: nowrap;
   transition: var(--transition);
+  padding: 0 24px;
+  color: var(--text) !important;
+  border: 1px solid rgba(223, 196, 131, 0.45);
+  background: rgba(255, 255, 255, 0.04);
+  box-sizing: border-box;
   font-family: var(--font-family);
+  text-align: center;
 }
 
 #baWizardApp .ba-action-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(223, 196, 131, 0.08);
   border-color: var(--gold);
   color: var(--gold) !important;
 }
@@ -701,24 +706,24 @@ html[data-theme="dark"] #baWizardApp {
   all: unset;
   cursor: pointer;
   border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 12px;
+  padding: 6px 12px;
+  font-size: 11px;
   font-weight: 600;
   text-align: center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   color: #fff !important;
-  background: rgba(239, 68, 68, 0.15);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   transition: var(--transition);
   font-family: var(--font-family);
 }
 
 #baWizardApp .ba-action-danger:hover {
-  background: rgba(239, 68, 68, 0.3);
-  border-color: rgba(239, 68, 68, 0.6);
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 #baWizardApp .ba-inline {
@@ -792,21 +797,105 @@ html[data-theme="dark"] #baWizardApp {
 }
 
 #baWizardApp .ba-card {
-  background: rgba(255, 255, 255, 0.012);
-  border: 1px solid var(--panel-stroke);
-  border-radius: 16px;
-  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--panel-stroke));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold) 10%, transparent),
+    0 12px 34px rgba(0,0,0,.28),
+    0 0 24px color-mix(in srgb, var(--gold) 8%, transparent);
+  background: color-mix(in srgb, var(--panel) 88%, #05070b 12%);
+  border-radius: 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  transition: var(--transition);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  gap: 16px;
+  transition: all 0.3s ease;
 }
 
 #baWizardApp .ba-card:hover {
-  background: rgba(255, 255, 255, 0.022);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.22);
+  transform: translateY(-2px);
+  border-color: var(--gold);
+  background: color-mix(in srgb, var(--panel) 92%, #05070b 8%);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold) 20%, transparent),
+    0 16px 40px rgba(0,0,0,.35),
+    0 0 32px color-mix(in srgb, var(--gold) 15%, transparent);
+}
+
+/* Compact inputs inside cards */
+#baWizardApp #baServicesList .ba-input,
+#baWizardApp #baServicesList .ba-select,
+#baWizardApp #baServicesList .ba-number,
+#baWizardApp #baBarbersList .ba-input,
+#baWizardApp #baBarbersList .ba-select,
+#baWizardApp #baBarbersList .ba-number {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+/* Password row inside barber cards */
+#baWizardApp .ba-password-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#baWizardApp .ba-password-row .ba-input {
+  flex-grow: 1;
+}
+
+#baWizardApp .ba-password-row .ba-action-secondary {
+  height: 38px;
+  padding: 0 12px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+
+/* Avatar selector styles */
+#baWizardApp .ba-photo-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 10px 0;
+  align-items: center;
+}
+
+#baWizardApp .ba-photo-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  margin: 0 !important;
+}
+
+#baWizardApp .ba-photo-option img {
+  width: 56px !important;
+  height: 56px !important;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--panel-stroke);
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+#baWizardApp .ba-photo-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+#baWizardApp .ba-photo-option input[type="radio"]:checked + img {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 12px rgba(223, 196, 131, 0.4);
+  transform: scale(1.05);
+}
+
+#baWizardApp .ba-photo-option:hover img {
+  border-color: rgba(223, 196, 131, 0.5);
+  transform: scale(1.03);
 }
 
 #baWizardApp .ba-card-head {
