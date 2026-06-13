@@ -381,24 +381,30 @@ html[data-theme="dark"] #baWizardApp {
   align-items: center;
   gap: 12px;
   background: var(--bg-soft);
-  border: 1px solid var(--panel-stroke);
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--panel-stroke));
   border-radius: 999px;
-  padding: 8px 10px 8px 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 10px 12px 10px 28px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--gold) 10%, transparent),
+    0 18px 44px rgba(0,0,0,.28),
+    0 0 26px color-mix(in srgb, var(--gold) 8%, transparent);
   transition: all 0.25s ease;
   position: relative;
   width: 100%;
   max-width: 980px;
   margin: 0 auto;
   box-sizing: border-box;
-  min-height: 60px;
+  min-height: 76px;
 }
 
 #baWizardApp .ba-input-shell:focus-within,
 #baWizardApp .ba-composer-shell:focus-within {
-  border-color: var(--gold);
-  box-shadow: 0 4px 24px rgba(223, 196, 131, 0.15);
-  background: rgba(15, 19, 26, 0.95);
+  border-color: color-mix(in srgb, var(--gold) 75%, transparent);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--gold) 20%, transparent),
+    0 24px 50px rgba(0,0,0,.35),
+    0 0 36px color-mix(in srgb, var(--gold) 15%, transparent);
+  background: rgba(15, 19, 26, 0.96);
 }
 
 #baWizardApp .ba-input-shell .ba-plus,
@@ -579,26 +585,28 @@ html[data-theme="dark"] #baWizardApp {
 #baWizardApp .ba-select,
 #baWizardApp .ba-number,
 #baWizardApp .ba-time {
-  background: rgba(0, 0, 0, 0.18);
-  border: 1px solid var(--panel-stroke) !important;
-  border-radius: 12px;
+  height: 52px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--panel-stroke)) !important;
+  background: var(--bg-soft);
   color: var(--text) !important;
-  padding: 12px 16px;
+  padding: 0 20px;
   font-size: 14px;
   outline: none;
   transition: var(--transition);
   width: 100%;
   font-family: var(--font-family);
   box-sizing: border-box;
+  display: block;
 }
 
 #baWizardApp .ba-input:focus,
 #baWizardApp .ba-select:focus,
 #baWizardApp .ba-number:focus,
 #baWizardApp .ba-time:focus {
-  border-color: var(--gold) !important;
-  box-shadow: 0 0 12px rgba(223, 196, 131, 0.15);
-  background: rgba(0, 0, 0, 0.25);
+  border-color: color-mix(in srgb, var(--gold) 75%, transparent) !important;
+  box-shadow: 0 0 0 1px var(--gold), 0 0 12px rgba(223, 196, 131, 0.15);
+  background: rgba(15, 19, 26, 0.95);
 }
 
 #baWizardApp .ba-label {
@@ -1023,22 +1031,37 @@ html[data-theme="dark"] #baWizardApp {
 }
 
 /* Native file selector styling */
+#baWizardApp input[type="file"] {
+  height: 52px;
+  line-height: 50px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--panel-stroke)) !important;
+  background: var(--bg-soft);
+  color: var(--muted) !important;
+  font-size: 13px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
 #baWizardApp input[type="file"]::file-selector-button {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--panel-stroke);
-  color: var(--text);
-  padding: 6px 12px;
-  border-radius: 8px;
+  background: rgba(223, 196, 131, 0.1);
+  border: 1px solid rgba(223, 196, 131, 0.3);
+  color: var(--gold);
+  padding: 0 16px;
+  border-radius: 999px;
   font-size: 12px;
+  font-weight: 600;
+  margin-right: 12px;
+  height: 34px;
+  line-height: 32px;
   cursor: pointer;
   transition: var(--transition);
-  margin-right: 12px;
 }
 
 #baWizardApp input[type="file"]::file-selector-button:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(223, 196, 131, 0.2);
   border-color: var(--gold);
-  color: var(--gold);
 }
 
 /* Google maps location preview */
@@ -1429,4 +1452,30 @@ html[data-theme="dark"] #baWizardApp {
   color: var(--muted);
   font-style: italic;
   margin: 8px 0 0 0;
+}
+
+/* Services step layout overrides on desktop */
+@media (min-width: 769px) {
+  #baWizardApp #baServicesList .ba-grid-2 {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+  }
+  #baWizardApp #baServicesList .ba-grid-2 > :nth-child(4) {
+    grid-column: span 3;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  #baWizardApp #baServicesList .ba-grid-2 > :nth-child(4) > input[type="file"] {
+    flex-grow: 1;
+  }
+  #baWizardApp #baServicesList .ba-grid-2 > :nth-child(4) img {
+    width: 180px !important;
+    height: 100px !important;
+    object-fit: cover;
+    margin-top: 24px;
+    flex-shrink: 0;
+  }
 }
