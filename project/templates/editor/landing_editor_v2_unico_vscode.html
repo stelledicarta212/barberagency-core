@@ -1,9 +1,9 @@
-
+﻿
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet"
- href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=144">
+ href="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/editor.css?v=142">
 
 <style>
   #ba-editor-v2[data-ui-theme='dark'] {
@@ -539,7 +539,7 @@
 -->
 <script id="ba-templates-json" type="application/json">
 [
-  {"id":"v2","name":"Esencia Premium","file":"index_unico_v2.html","cover":"https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg"},
+  {"id":"v2","name":"Distrito Urbano","file":"index_unico_v2.html","cover":"https://images.pexels.com/photos/3998417/pexels-photo-3998417.jpeg?auto=compress&cs=tinysrgb&w=900"},
   {"id":"v3","name":"Impacto Comercial","file":"index_unico_v3_nueva.html","cover":"https://images.pexels.com/photos/3992879/pexels-photo-3992879.jpeg?auto=compress&cs=tinysrgb&w=900"},
   {"id":"v4","name":"Editorial Elite","file":"index_unico_v4_editorial.html","cover":"https://images.pexels.com/photos/2076932/pexels-photo-2076932.jpeg?auto=compress&cs=tinysrgb&w=900"},
   {"id":"v5","name":"Prestigio Ejecutivo","file":"index_unico_v5_1_azul_rojo_elegante.html","cover":"https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=900"},
@@ -752,10 +752,7 @@
     'index_unico_v4_editorial': '/index_unico_v4_editorial/',
     'index_unico_v5_1_azul_rojo_elegante': '/index_unico_v5_1_azul_rojo_elegante/',
     'index_unico_v6_negro_dorado': '/index_unico_v6_negro_dorado/',
-    'index_unicov7': '/index_unicov7/',
-    'EsenciaPremiun': '/index_unico_v2/',
-    'esencia_premium': '/index_unico_v2/',
-    'esencia-premium': '/index_unico_v2/'
+    'index_unicov7': '/index_unicov7/'
   };
 
   const el = {
@@ -817,32 +814,12 @@
   const themeDockIcon = document.getElementById('baThemeDockIcon');
 
   const templates = (() => {
-    const defaultTemplates = [
-      {"id":"v2","name":"Esencia Premium","file":"index_unico_v2.html","cover":"https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg"},
-      {"id":"v3","name":"Impacto Comercial","file":"index_unico_v3_nueva.html","cover":"https://images.pexels.com/photos/3992879/pexels-photo-3992879.jpeg?auto=compress&cs=tinysrgb&w=900"},
-      {"id":"v4","name":"Editorial Elite","file":"index_unico_v4_editorial.html","cover":"https://images.pexels.com/photos/2076932/pexels-photo-2076932.jpeg?auto=compress&cs=tinysrgb&w=900"},
-      {"id":"v5","name":"Prestigio Ejecutivo","file":"index_unico_v5_1_azul_rojo_elegante.html","cover":"https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=900"},
-      {"id":"v6","name":"Noir Dorado","file":"index_unico_v6_negro_dorado.html","cover":"https://images.pexels.com/photos/1570807/pexels-photo-1570807.jpeg?auto=compress&cs=tinysrgb&w=900"},
-      {"id":"v7","name":"Moderna","file":"index_unicov7.html","cover":"https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80"}
-    ];
     try {
-      const el = document.getElementById('ba-templates-json');
-      if (!el) return defaultTemplates;
-      let raw = el.textContent || '';
-      if (!raw.trim() || raw.trim() === '[]') return defaultTemplates;
-      raw = raw
-        .replace(/&quot;/g, '"')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>');
-      raw = raw
-        .replace(/[\u201c\u201d\u2033]/g, '"')
-        .replace(/[\u2018\u2019]/g, "'");
+      const raw = document.getElementById('ba-templates-json')?.textContent || '[]';
       const arr = JSON.parse(raw);
-      return Array.isArray(arr) && arr.length ? arr : defaultTemplates;
-    } catch (err) {
-      console.warn('Templates JSON parse failed, falling back to defaults:', err);
-      return defaultTemplates;
+      return Array.isArray(arr) ? arr : [];
+    } catch (_) {
+      return [];
     }
   })();
 
@@ -1097,7 +1074,7 @@
   }
 
   function getCanonicalSeedCoverUrl() {
-    const raw = (
+    return (
       safeImageUrl(seedLandingData?.cover_url) ||
       safeImageUrl(seedLandingData?.barberia?.cover_url) ||
       safeImageUrl(seedLandingData?.landing?.cover_url) ||
@@ -1109,10 +1086,6 @@
       safeImageUrl(seedLandingData?.barberia?.hero_image_url) ||
       ''
     );
-    if (!raw && getSelectedId() === 'v2') {
-      return 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg';
-    }
-    return raw;
   }
 
   function normalizeRpcJsonbPayload(raw) {
@@ -3626,7 +3599,7 @@
 
     const brandName = safeText(data.biz_name);
     const logoUrl = safeText(runtimePreview.logo || data.logo_url);
-    const coverUrl = safeText(runtimePreview.cover || data.cover_url) || (getSelectedId() === 'v2' ? 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg' : '');
+    const coverUrl = safeText(runtimePreview.cover || data.cover_url);
     const primaryBtn = safeText(data.hero_btn_primary);
     const secondaryBtn = safeText(data.hero_btn_secondary);
     const secondaryColor = safeText(data.palette_secondary) || '#075985';
@@ -4122,32 +4095,8 @@
     }
   }
 
-  function renderTemplateSelector() {
-    const selectedId = getSelectedId();
-    const selectedTpl = byId[selectedId] || templates[0];
-
-    if (el.chips) {
-      el.chips.innerHTML = templates.map(t => {
-        const cover = safeImageUrl(t.cover);
-        return `<div class="ba-chip ${t.id === selectedId ? 'is-active' : ''}" data-id="${t.id}">
-          ${cover ? `<img class="ba-chip-thumb" src="${escapeHtml(cover)}" alt="" loading="lazy" decoding="async">` : ''}
-          <span class="ba-chip-label">${escapeHtml(t.name)}</span>
-        </div>`;
-      }).join('');
-    }
-
-    if (el.templateName && selectedTpl) {
-      el.templateName.textContent = selectedTpl.name;
-    }
-
-    if (el.frame && selectedTpl) {
-      el.frame.src = fileToUrl(selectedTpl.file);
-    }
-  }
-
   async function init() {
     applyHostUiCleanup();
-    renderTemplateSelector();
     await loadDraft();
     const cameFromRegistroEdit =
       getQueryParam('source') === 'editor' ||
@@ -4195,6 +4144,14 @@
     }
     refreshDashboardButtonState();
     
+    el.chips.innerHTML = templates.map(t => {
+      const cover = safeImageUrl(t.cover);
+      return `<div class="ba-chip ${t.id === selectedId ? 'is-active' : ''}" data-id="${t.id}">${cover ? `<img class="ba-chip-thumb" src="${escapeHtml(cover)}" alt="" loading="lazy" decoding="async">` : ''}<span class="ba-chip-label">${escapeHtml(t.name)}</span></div>`;
+    }).join('');
+    
+    el.templateName.textContent = selectedTpl.name;
+    el.frame.src = fileToUrl(selectedTpl.file);
+
     const debouncedUpdate = debounce(updatePreview, 250);
     const quickUpdate = debounce(updatePreview, 50);
 
@@ -4213,41 +4170,37 @@
       }
     });
 
-    if (el.frame) {
-      el.frame.addEventListener('load', () => {
-        try {
-          updatePaletteFromTemplate(el.frame.contentDocument);
-          syncBrandingRuntime(el.frame.contentDocument, getFormData());
-          applyEditorPreviewCleanup(el.frame.contentDocument);
-          enforceHeroTextWhite(el.frame.contentDocument);
-          syncHeroContent(el.frame.contentDocument, getFormData());
-          syncReservationMarketingCopy(el.frame.contentDocument);
-          syncV1ContrastFixes(el.frame.contentDocument);
-          setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 120);
-          setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 400);
-          updatePreview();
-        } catch(e) {
-          console.warn('Cross-origin frame error:', e);
-        }
-      });
-    }
+    el.frame.addEventListener('load', () => {
+      try {
+        updatePaletteFromTemplate(el.frame.contentDocument);
+        syncBrandingRuntime(el.frame.contentDocument, getFormData());
+        applyEditorPreviewCleanup(el.frame.contentDocument);
+        enforceHeroTextWhite(el.frame.contentDocument);
+        syncHeroContent(el.frame.contentDocument, getFormData());
+        syncReservationMarketingCopy(el.frame.contentDocument);
+        syncV1ContrastFixes(el.frame.contentDocument);
+        setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 120);
+        setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 400);
+        updatePreview();
+      } catch(e) {
+        console.warn('Cross-origin frame error:', e);
+      }
+    });
 
-    if (el.chips) {
-      el.chips.addEventListener('click', e => {
-        const chip = e.target.closest('.ba-chip');
-        if (!chip) return;
-        const { id } = chip.dataset;
-        if (id && id !== getSelectedId()) {
-          persistPaletteForTemplate(getSelectedId(), paletteTouched);
-          setSelectedId(id);
-          const newTpl = byId[id];
-          if (el.frame && newTpl) el.frame.src = fileToUrl(newTpl.file);
-          if (el.templateName && newTpl) el.templateName.textContent = newTpl.name;
-          document.querySelector('.ba-chip.is-active')?.classList.remove('is-active');
-          chip.classList.add('is-active');
-        }
-      });
-    }
+    el.chips.addEventListener('click', e => {
+      const chip = e.target.closest('.ba-chip');
+      if (!chip) return;
+      const { id } = chip.dataset;
+      if (id && id !== getSelectedId()) {
+        persistPaletteForTemplate(getSelectedId(), paletteTouched);
+        setSelectedId(id);
+        const newTpl = byId[id];
+        el.frame.src = fileToUrl(newTpl.file);
+        el.templateName.textContent = newTpl.name;
+        document.querySelector('.ba-chip.is-active')?.classList.remove('is-active');
+        chip.classList.add('is-active');
+      }
+    });
 
     ['logo', 'cover'].forEach(target => {
       const wrap = target === 'logo' ? el.logoWrap : el.coverWrap;
