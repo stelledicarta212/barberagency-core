@@ -212,3 +212,30 @@ graph TD
     *   Varias llamadas RPC directas en base de datos (como `ba_sync_registro_collections`, `ba_sync_registro_horarios`, `ba_publicar_barberia` y `ba_publicar_landing_completa`) son de tipo **LEGACY** y deben reemplazarse a medio plazo por las llamadas canónicas a través del proxy de Next.js y los flujos integrados de n8n.
 5.  **Endpoints de Productos e Inventarios**:
     *   Las rutas `/api/productos` y `/api/gastos` se encuentran planificadas en el *roadmap* técnico pero actualmente están pendientes de implementación completa y validación transaccional.
+
+---
+
+## 🔑 10. Fuente de Verdad Canónica
+
+De acuerdo con el manifiesto oficial del proyecto en [FuenteDeVerdad_PRODUCCION.md](file:///root/github/barberagency-core/ContextoGeneral/docs/FuenteDeVerdad_PRODUCCION.md), **PostgreSQL es la única fuente de verdad del sistema**.
+
+WordPress, dashboard, n8n, PostgREST y los agentes IA no deben inventar, duplicar ni mantener estados paralelos. Todo dato real de barberías, servicios, barberos, horarios, citas, clientes, URL pública, QR, temas, assets y reservas debe persistirse y leerse desde PostgreSQL bajo RLS y usando `barberia_id`.
+
+### Dominios Canónicos en PostgreSQL:
+*   **Identidad y permisos**: Tablas `usuarios`, `barberia_miembros` y `barberias.owner_id`.
+*   **Configuración del negocio**: Tablas `barberias`, `servicios`, `barberos` y `horarios`.
+*   **Reservas de citas**: Tablas `clientes_finales` y `citas`.
+*   **Finanzas**: Tablas `pagos`, `productos` y `gastos`.
+*   **Publicación pública**: Tablas `barberia_public_profiles`, `barberia_theme` y `barberia_assets`.
+
+### Elementos que NUNCA son Fuente de Verdad:
+*   `localStorage` o `sessionStorage`.
+*   `seedLandingData` o `ba_landing_seed`.
+*   Cachés locales o fallbacks visuales de React.
+*   Parámetros de consulta (Query params) o slugs sin validar.
+*   Direcciones de correo de contacto (`email_contacto`).
+
+### Jerarquía de Hidratación Autorizada:
+*   **Dashboard**: Debe consultar obligatoriamente `GET /api/session/me` y `GET /api/dashboard/state` para obtener datos validados directamente de la base de datos con políticas RLS activas.
+*   **Sitio Público**: WordPress y las landings deben consultar la RPC `ba_get_landing_publica(slug)` para obtener el estado publicado de forma segura y en tiempo real.
+
