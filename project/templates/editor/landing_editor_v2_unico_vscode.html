@@ -4127,8 +4127,32 @@
     }
   }
 
+  function renderTemplateSelector() {
+    const selectedId = getSelectedId();
+    const selectedTpl = byId[selectedId] || templates[0];
+
+    if (el.chips) {
+      el.chips.innerHTML = templates.map(t => {
+        const cover = safeImageUrl(t.cover);
+        return `<div class="ba-chip ${t.id === selectedId ? 'is-active' : ''}" data-id="${t.id}">
+          ${cover ? `<img class="ba-chip-thumb" src="${escapeHtml(cover)}" alt="" loading="lazy" decoding="async">` : ''}
+          <span class="ba-chip-label">${escapeHtml(t.name)}</span>
+        </div>`;
+      }).join('');
+    }
+
+    if (el.templateName && selectedTpl) {
+      el.templateName.textContent = selectedTpl.name;
+    }
+
+    if (el.frame && selectedTpl) {
+      el.frame.src = fileToUrl(selectedTpl.file);
+    }
+  }
+
   async function init() {
     applyHostUiCleanup();
+    renderTemplateSelector();
     await loadDraft();
     const cameFromRegistroEdit =
       getQueryParam('source') === 'editor' ||
@@ -4176,14 +4200,6 @@
     }
     refreshDashboardButtonState();
     
-    el.chips.innerHTML = templates.map(t => {
-      const cover = safeImageUrl(t.cover);
-      return `<div class="ba-chip ${t.id === selectedId ? 'is-active' : ''}" data-id="${t.id}">${cover ? `<img class="ba-chip-thumb" src="${escapeHtml(cover)}" alt="" loading="lazy" decoding="async">` : ''}<span class="ba-chip-label">${escapeHtml(t.name)}</span></div>`;
-    }).join('');
-    
-    el.templateName.textContent = selectedTpl.name;
-    el.frame.src = fileToUrl(selectedTpl.file);
-
     const debouncedUpdate = debounce(updatePreview, 250);
     const quickUpdate = debounce(updatePreview, 50);
 
@@ -4202,37 +4218,41 @@
       }
     });
 
-    el.frame.addEventListener('load', () => {
-      try {
-        updatePaletteFromTemplate(el.frame.contentDocument);
-        syncBrandingRuntime(el.frame.contentDocument, getFormData());
-        applyEditorPreviewCleanup(el.frame.contentDocument);
-        enforceHeroTextWhite(el.frame.contentDocument);
-        syncHeroContent(el.frame.contentDocument, getFormData());
-        syncReservationMarketingCopy(el.frame.contentDocument);
-        syncV1ContrastFixes(el.frame.contentDocument);
-        setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 120);
-        setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 400);
-        updatePreview();
-      } catch(e) {
-        console.warn('Cross-origin frame error:', e);
-      }
-    });
+    if (el.frame) {
+      el.frame.addEventListener('load', () => {
+        try {
+          updatePaletteFromTemplate(el.frame.contentDocument);
+          syncBrandingRuntime(el.frame.contentDocument, getFormData());
+          applyEditorPreviewCleanup(el.frame.contentDocument);
+          enforceHeroTextWhite(el.frame.contentDocument);
+          syncHeroContent(el.frame.contentDocument, getFormData());
+          syncReservationMarketingCopy(el.frame.contentDocument);
+          syncV1ContrastFixes(el.frame.contentDocument);
+          setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 120);
+          setTimeout(() => syncV1ContrastFixes(el.frame.contentDocument), 400);
+          updatePreview();
+        } catch(e) {
+          console.warn('Cross-origin frame error:', e);
+        }
+      });
+    }
 
-    el.chips.addEventListener('click', e => {
-      const chip = e.target.closest('.ba-chip');
-      if (!chip) return;
-      const { id } = chip.dataset;
-      if (id && id !== getSelectedId()) {
-        persistPaletteForTemplate(getSelectedId(), paletteTouched);
-        setSelectedId(id);
-        const newTpl = byId[id];
-        el.frame.src = fileToUrl(newTpl.file);
-        el.templateName.textContent = newTpl.name;
-        document.querySelector('.ba-chip.is-active')?.classList.remove('is-active');
-        chip.classList.add('is-active');
-      }
-    });
+    if (el.chips) {
+      el.chips.addEventListener('click', e => {
+        const chip = e.target.closest('.ba-chip');
+        if (!chip) return;
+        const { id } = chip.dataset;
+        if (id && id !== getSelectedId()) {
+          persistPaletteForTemplate(getSelectedId(), paletteTouched);
+          setSelectedId(id);
+          const newTpl = byId[id];
+          if (el.frame && newTpl) el.frame.src = fileToUrl(newTpl.file);
+          if (el.templateName && newTpl) el.templateName.textContent = newTpl.name;
+          document.querySelector('.ba-chip.is-active')?.classList.remove('is-active');
+          chip.classList.add('is-active');
+        }
+      });
+    }
 
     ['logo', 'cover'].forEach(target => {
       const wrap = target === 'logo' ? el.logoWrap : el.coverWrap;
