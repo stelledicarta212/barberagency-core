@@ -2907,15 +2907,27 @@ function normalizeDayLabel(value) {
 
     function extractPublicLandingPayload(raw) {
       const source = raw?.data && typeof raw.data === 'object' ? raw.data : raw;
-      const profile = source?.profile && typeof source.profile === 'object'
-        ? source.profile
-        : source?.barberia && typeof source.barberia === 'object'
-          ? source.barberia
-          : source?.public_profile && typeof source.public_profile === 'object'
-            ? source.public_profile
-            : source && typeof source === 'object'
-              ? source
-              : {};
+      let profile = {};
+      if (source?.profile && typeof source.profile === 'object') {
+        profile = { ...source.profile };
+      } else if (source?.perfil_publico && typeof source.perfil_publico === 'object') {
+        profile = { ...source.perfil_publico };
+      } else if (source?.public_profile && typeof source.public_profile === 'object') {
+        profile = { ...source.public_profile };
+      } else if (source?.barberia && typeof source.barberia === 'object') {
+        profile = { ...source.barberia };
+      } else if (source && typeof source === 'object') {
+        profile = { ...source };
+      }
+      if (source?.barberia && typeof source.barberia === 'object') {
+        profile = { ...source.barberia, ...profile };
+      }
+      if (source?.perfil_publico && typeof source.perfil_publico === 'object') {
+        profile = { ...profile, ...source.perfil_publico };
+      }
+      if (source?.public_profile && typeof source.public_profile === 'object') {
+        profile = { ...profile, ...source.public_profile };
+      }
       const brandingSource = source?.branding && typeof source.branding === 'object'
         ? source.branding
         : source?.config && typeof source.config === 'object'
