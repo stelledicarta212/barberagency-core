@@ -9,7 +9,8 @@ const templates = [
   'index_unico_v4_editorial.html',
   'index_unico_v5_1_azul_rojo_elegante.html',
   'index_unico_v6_negro_dorado.html',
-  'index_unicov7.html'
+  'index_unicov7.html',
+  'EsenciaPremiun.html'
 ];
 
 let allPassed = true;
