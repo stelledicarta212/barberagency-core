@@ -1847,7 +1847,7 @@
       servicesGrid.innerHTML = services.map(s => {
         const image = resolveServiceImage(s);
         const media = image
-          ? `<img class="service-photo" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.remove();" />`
+          ? `<img class="service-photo" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null; const div = document.createElement('div'); div.className = 'service-visual-fallback'; div.innerHTML = '<i class=&quot;bi ${s.icono}&quot;></i>'; this.replaceWith(div);" />`
           : `<div class="service-visual-fallback"><i class="bi ${s.icono}"></i></div>`;
         return `
         <div class="${serviceColClass}">
@@ -3463,8 +3463,7 @@
       if (!item || typeof item !== 'object') return null;
       const name = safeSeedText(item.nombre || item.nombre_servicio || item.servicio || item.title || item.name);
       if (!name) return null;
-      const serviceId = toSeedNumber(item.id_servicio ?? item.servicio_id ?? item.id ?? item.idServicio, 0);
-      if (!serviceId) return null;
+      const serviceId = toSeedNumber(item.id_servicio ?? item.servicio_id ?? item.id ?? item.idServicio, idx + 1);
       const activo = item.activo !== false && item.active !== false && item.deleted !== true && !item.deleted_at;
       if (!activo) return null;
 
@@ -3490,8 +3489,7 @@
       if (!item || typeof item !== 'object') return null;
       const name = safeSeedText(item.nombre || item.nombre_completo || item.barbero || item.name);
       if (!name) return null;
-      const barberId = toSeedNumber(item.id_barbero ?? item.barbero_id ?? item.id ?? item.idBarbero, 0);
-      if (!barberId) return null;
+      const barberId = toSeedNumber(item.id_barbero ?? item.barbero_id ?? item.id ?? item.idBarbero, idx + 1);
       const activo = item.activo !== false && item.active !== false && item.deleted !== true && !item.deleted_at;
       if (!activo) return null;
 

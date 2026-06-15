@@ -1556,7 +1556,7 @@
       servicesStrip.innerHTML = services.map(s => {
         const image = resolveServiceImage(s);
         const media = image
-          ? `<img class="service-photo mb-3" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.remove();" style="width:100%;height:128px;object-fit:cover;border-radius:16px;" />`
+          ? `<img class="service-photo mb-3" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null; const iconEl = document.createElement('i'); iconEl.className = 'bi ${s.icono}'; this.replaceWith(iconEl);" style="width:100%;height:128px;object-fit:cover;border-radius:16px;" />`
           : `<i class="bi ${s.icono}"></i>`;
         return `
         <article class="panel service-card">
@@ -2554,8 +2554,7 @@ function normalizeDayLabel(value) {
       if (!item || typeof item !== 'object') return null;
       const name = safeSeedText(item.nombre || item.nombre_servicio || item.servicio || item.title || item.name);
       if (!name) return null;
-      const serviceId = toSeedNumber(item.id_servicio ?? item.servicio_id ?? item.id ?? item.idServicio, 0);
-      if (!serviceId) return null;
+      const serviceId = toSeedNumber(item.id_servicio ?? item.servicio_id ?? item.id ?? item.idServicio, idx + 1);
       const activo = item.activo !== false && item.active !== false && item.deleted !== true && !item.deleted_at;
       if (!activo) return null;
 
@@ -2581,8 +2580,7 @@ function normalizeDayLabel(value) {
       if (!item || typeof item !== 'object') return null;
       const name = safeSeedText(item.nombre || item.nombre_completo || item.barbero || item.name);
       if (!name) return null;
-      const barberId = toSeedNumber(item.id_barbero ?? item.barbero_id ?? item.id ?? item.idBarbero, 0);
-      if (!barberId) return null;
+      const barberId = toSeedNumber(item.id_barbero ?? item.barbero_id ?? item.id ?? item.idBarbero, idx + 1);
       const activo = item.activo !== false && item.active !== false && item.deleted !== true && !item.deleted_at;
       if (!activo) return null;
 
