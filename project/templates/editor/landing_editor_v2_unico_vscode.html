@@ -754,8 +754,8 @@
     'index_unico_v5_1_azul_rojo_elegante': '/index_unico_v5_1_azul_rojo_elegante/',
     'index_unico_v6_negro_dorado': '/index_unico_v6_negro_dorado/',
     'index_unicov7': '/index_unicov7/',
-    'EsenciaPremiun': '/esencia_premium/',
-    'esencia_premium': '/esencia_premium/'
+    'EsenciaPremiun': '/project/templates/plantillas/EsenciaPremiun.html',
+    'esencia_premium': '/project/templates/plantillas/EsenciaPremiun.html'
   };
 
   const el = {
@@ -867,7 +867,8 @@
     v4: 'Tu imagen decide por ti',
     v5: 'Reserva hoy, luce impecable',
     v6: 'Exclusividad que si se nota',
-    v7: 'Nueva propuesta para reservar mejor'
+    v7: 'Nueva propuesta para reservar mejor',
+    'esencia-premium': 'Tu mejor versión empieza hoy'
   };
   const TEMPLATE_HERO_TITLES = {
     v2: 'Tu look empieza con una cita bien hecha',
@@ -875,7 +876,8 @@
     v4: 'Imagen cuidada desde la primera visita',
     v5: 'Estilo sobrio con presencia impecable',
     v6: 'Elegancia premium en cada detalle',
-    v7: 'Landing nueva lista para convertir citas'
+    v7: 'Landing nueva lista para convertir citas',
+    'esencia-premium': 'Tu look empieza con una cita bien hecha'
   };
   const TEMPLATE_HERO_SUBTITLES = {
     v2: 'Cortes premium, barberos expertos y reserva en menos de un minuto.',
@@ -883,7 +885,8 @@
     v4: 'Una propuesta clara, elegante y lista para convertir reservas.',
     v5: 'Una imagen refinada con una reserva simple y sin friccion.',
     v6: 'Una experiencia exclusiva con estilo fuerte y reserva inmediata.',
-    v7: 'Diseno actualizado, mensaje claro y reserva en segundos.'
+    v7: 'Diseno actualizado, mensaje claro y reserva en segundos.',
+    'esencia-premium': 'Cortes premium, barberos expertos y reserva en menos de un minuto.'
   };
   const TEMPLATE_HERO_KICKER_VALUES = Object.values(TEMPLATE_HERO_KICKERS).map((v) => safeText(v).toLowerCase());
   const TEMPLATE_HERO_TITLE_VALUES = Object.values(TEMPLATE_HERO_TITLES).map((v) => safeText(v).toLowerCase());
@@ -1077,7 +1080,7 @@
   }
 
   function getCanonicalSeedCoverUrl() {
-    return (
+    const raw = (
       safeImageUrl(seedLandingData?.cover_url) ||
       safeImageUrl(seedLandingData?.barberia?.cover_url) ||
       safeImageUrl(seedLandingData?.landing?.cover_url) ||
@@ -1089,6 +1092,10 @@
       safeImageUrl(seedLandingData?.barberia?.hero_image_url) ||
       ''
     );
+    if (!raw && getSelectedId() === 'esencia-premium') {
+      return 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg';
+    }
+    return raw;
   }
 
   function normalizeRpcJsonbPayload(raw) {
@@ -3602,7 +3609,7 @@
 
     const brandName = safeText(data.biz_name);
     const logoUrl = safeText(runtimePreview.logo || data.logo_url);
-    const coverUrl = safeText(runtimePreview.cover || data.cover_url);
+    const coverUrl = safeText(runtimePreview.cover || data.cover_url) || (getSelectedId() === 'esencia-premium' ? 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg' : '');
     const primaryBtn = safeText(data.hero_btn_primary);
     const secondaryBtn = safeText(data.hero_btn_secondary);
     const secondaryColor = safeText(data.palette_secondary) || '#075985';

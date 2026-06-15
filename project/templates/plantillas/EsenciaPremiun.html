@@ -3130,7 +3130,7 @@
       const branding = payload.branding || payload.config || {};
       const publicName = safeSeedText(profile.nombre_publico || profile.nombre || branding.biz_name);
       const logoUrl = safeSeedText(profile.logo_url || branding.logo_url);
-      const coverUrl = safeImageUrl(profile.cover_url || branding.cover_url || branding.hero_image_url);
+      const coverUrl = safeImageUrl(profile.cover_url || branding.cover_url || branding.hero_image_url) || 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg';
       const logoWidth = Number(branding.logo_width || 0) || 0;
       const kicker = safeSeedText(branding.hero_badge || branding.hero_kicker);
       const title = safeSeedText(branding.hero_title);
