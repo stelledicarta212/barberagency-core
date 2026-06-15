@@ -1056,6 +1056,14 @@
 
       const card = overlay.querySelector('.reservation-success-card, .success-card, #successCard');
       if (!card) return;
+      const activeTheme = safeSeedText(
+        document.getElementById('landingRoot')?.getAttribute('data-theme') ||
+        document.body?.getAttribute('data-theme') ||
+        document.documentElement?.getAttribute('data-theme') ||
+        'dark'
+      ) || 'dark';
+      overlay.setAttribute('data-theme', activeTheme);
+      card.setAttribute('data-theme', activeTheme);
 
       const truth = reservationTruth && typeof reservationTruth === 'object' ? reservationTruth : null;
       const payload = fallbackPayload || {};
@@ -1077,8 +1085,19 @@
       const fecha = safeSeedText(truth?.fecha || truth?.fecha_cita || truth?.cita?.fecha || localCita.fecha);
       const horaInicio = safeSeedText(truth?.hora_inicio || truth?.hora || truth?.cita?.hora_inicio || localCita.hora);
       const horaFin = safeSeedText(truth?.hora_fin || truth?.cita?.hora_fin || '');
+      const telefonoCliente = safeSeedText(
+        cliente.telefono ||
+        cliente.whatsapp ||
+        truth?.cliente_tel ||
+        truth?.cliente_telefono ||
+        truth?.telefono_cliente ||
+        truth?.whatsapp_cliente ||
+        localCliente.telefono
+      );
       const details = {
+        citaId: safeSeedText(truth?.cita_id || truth?.id || truth?.cita?.id || ''),
         cliente: safeSeedText(cliente.nombre_completo || cliente.nombre || truth?.cliente_nombre || truth?.nombre_cliente || localCliente.nombre_completo),
+        telefono: telefonoCliente,
         barberia: safeSeedText(barberia.nombre || truth?.barberia_nombre || truth?.nombre_barberia || window.BA_BUSINESS_NAME || 'Barberia'),
         servicio: safeSeedText(servicio.nombre || truth?.servicio_nombre || truth?.nombre_servicio || serviceObj?.nombre || 'Servicio seleccionado'),
         barbero: safeSeedText(barbero.nombre || truth?.barbero_nombre || truth?.nombre_barbero || barberObj?.nombre || 'Barbero seleccionado'),
@@ -1123,6 +1142,8 @@
       const whatsAppUrl = buildReservationWhatsAppUrl(details);
       ensureReservationSuccessActions(overlay, {
         whatsAppUrl,
+        whatsAppText: buildReservationWhatsAppText(details),
+        phone: details.telefono,
         mapsUrl: details.mapsUrl,
         calendarUrl: details.calendarUrl
       });
@@ -1159,8 +1180,34 @@
       return raw;
     }
 
+    function normalizeReservationMapsUrl(value) {
+      const raw = safeSeedText(value);
+      if (!raw) return '';
+      try {
+        const url = new URL(raw, window.location.origin);
+        const query = url.searchParams.get('q') || url.searchParams.get('query');
+        if (query) {
+          return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+        }
+        url.searchParams.delete('output');
+        return url.toString();
+      } catch (error) {
+        return raw;
+      }
+    }
+
     function buildReservationMapsUrl(truth, direccion, ciudad) {
-      const mapsUrl = safeSeedText(truth?.barberia?.maps_url || truth?.maps_url || truth?.barberia_maps_url);
+      const mapsUrl = normalizeReservationMapsUrl(
+        truth?.barberia?.maps_url ||
+        truth?.barberia?.map_url ||
+        truth?.barberia?.location_map_url ||
+        truth?.barberia?.google_maps_url ||
+        truth?.maps_url ||
+        truth?.map_url ||
+        truth?.location_map_url ||
+        truth?.google_maps_url ||
+        truth?.barberia_maps_url
+      );
       if (mapsUrl) return mapsUrl;
       const query = [safeSeedText(direccion), safeSeedText(ciudad)].filter(Boolean).join(', ');
       return query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : '';
@@ -1196,18 +1243,51 @@
       return `https://calendar.google.com/calendar/render?${params.toString()}`;
     }
 
-    function buildReservationWhatsAppUrl(details) {
-      const text = [
-        'Cita confirmada',
-        `Barberia: ${details.barberia}`,
-        `Servicio: ${details.servicio}`,
-        `Barbero: ${details.barbero}`,
-        `Fecha: ${details.fecha}`,
-        `Hora: ${details.hora}`,
-        details.direccion ? `Direccion: ${details.direccion}` : '',
-        details.mapsUrl ? `Ubicacion: ${details.mapsUrl}` : ''
+    function normalizeReservationWhatsAppPhone(value) {
+      let digits = safeSeedText(value).replace(/\D/g, '');
+      if (!digits) return '';
+      if (digits.length === 10 && digits.startsWith('3')) digits = `57${digits}`;
+      return digits;
+    }
+
+    function buildReservationWhatsAppText(details) {
+      const ticketId = details.citaId ? `\n🧾 *Reserva:* #${details.citaId}` : '';
+      const locationText = details.direccion
+        ? `\n📍 *Dirección:* ${details.direccion}`
+        : '';
+      return [
+        `💈 *${safeSeedText(details.barberia || 'Barbería').toUpperCase()}* 💈`,
+        '================================',
+        '✅ *COMPROBANTE DE RESERVA*',
+        '--------------------------------',
+        `👤 *Cliente:* ${details.cliente || '-'}`,
+        `✂️ *Servicio:* ${details.servicio || '-'}`,
+        `💈 *Barbero:* ${details.barbero || '-'}`,
+        ticketId,
+        '================================',
+        `📅 *Fecha:* ${details.fecha || '-'}`,
+        `⏰ *Hora:* ${details.hora || '-'}`,
+        locationText,
+        '--------------------------------',
+        'Tu cita quedó confirmada.',
+        'Te esperamos puntual. ✂️🔥'
       ].filter(Boolean).join('\n');
-      return `https://wa.me/?text=${encodeURIComponent(text)}`;
+    }
+
+    function buildReservationWhatsAppUrl(details, phoneOverride) {
+      const phone = normalizeReservationWhatsAppPhone(phoneOverride || details.telefono);
+      const text = buildReservationWhatsAppText(details);
+      return phone
+        ? `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`
+        : `https://web.whatsapp.com/send?text=${encodeURIComponent(text)}`;
+    }
+
+    function buildReservationWhatsAppAppUrl(phone, text) {
+      const normalizedPhone = normalizeReservationWhatsAppPhone(phone);
+      const encodedText = encodeURIComponent(text || 'Cita confirmada');
+      return normalizedPhone
+        ? `whatsapp://send?phone=${normalizedPhone}&text=${encodedText}`
+        : `whatsapp://send?text=${encodedText}`;
     }
 
     function ensureReservationBusinessSummary(card, details, detailsBox) {
@@ -1245,44 +1325,54 @@
       const style = document.createElement('style');
       style.id = 'reservationSuccessPremiumStyle';
       style.textContent = `
-        .reservation-success-overlay,.success-overlay{background:radial-gradient(circle at 50% 18%,rgba(26,80,135,.36),transparent 34%),rgba(3,12,24,.78)!important;backdrop-filter:blur(18px) saturate(145%)!important;-webkit-backdrop-filter:blur(18px) saturate(145%)!important}
-        .reservation-success-card,#successCard{width:min(94vw,760px)!important;max-height:92vh!important;overflow:auto!important;border-radius:34px!important;padding:28px!important;background:linear-gradient(180deg,rgba(10,31,54,.96),rgba(5,20,36,.98))!important;border:1px solid rgba(153,190,230,.25)!important;box-shadow:0 34px 100px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08)!important;color:#f8fbff!important}
-        .reservation-success-icon,.success-icon-wrap{width:82px!important;height:82px!important;margin:0 auto 18px!important;border-radius:50%!important;background:#fff!important;color:#09844c!important;border:10px solid rgba(20,154,91,.20)!important;box-shadow:0 0 0 1px rgba(255,255,255,.85),0 16px 42px rgba(12,180,101,.28)!important}
+        .reservation-success-overlay,.success-overlay{background:var(--rs-overlay-bg,radial-gradient(circle at 50% 18%,rgba(26,80,135,.36),transparent 34%),rgba(3,12,24,.78))!important;backdrop-filter:blur(18px) saturate(145%)!important;-webkit-backdrop-filter:blur(18px) saturate(145%)!important}
+        .reservation-success-card,.success-card,#successCard{--rs-shell-bg:linear-gradient(100deg,rgba(222,176,153,.58),rgba(255,255,255,.24) 42%,rgba(160,151,145,.46));--rs-shell-text:#0b0b0d;--rs-muted:#2d3035;--rs-summary-bg:transparent;--rs-summary-text:#09090b;--rs-summary-muted:#25272b;--rs-panel-bg:transparent;--rs-panel-text:#0b0b0d;--rs-panel-muted:#20242a;--rs-dash:rgba(10,10,12,.18);--rs-border:rgba(255,255,255,.40);--rs-shadow:0 26px 80px rgba(15,23,42,.22),inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(255,255,255,.16);font-family:inherit!important;width:min(94vw,620px)!important;max-height:92vh!important;overflow:auto!important;border-radius:30px!important;padding:22px!important;background:var(--rs-shell-bg)!important;border:1px solid var(--rs-border)!important;box-shadow:var(--rs-shadow)!important;color:var(--rs-shell-text)!important;backdrop-filter:blur(34px) saturate(155%)!important;-webkit-backdrop-filter:blur(34px) saturate(155%)!important}
+        .reservation-success-overlay[data-theme='light'],.success-overlay[data-theme='light']{--rs-overlay-bg:radial-gradient(circle at 50% 18%,rgba(39,71,143,.18),transparent 34%),rgba(245,248,252,.52)}
+        .reservation-success-card[data-theme='light'],.success-card[data-theme='light'],#successCard[data-theme='light']{--rs-shell-bg:linear-gradient(100deg,rgba(222,176,153,.58),rgba(255,255,255,.24) 42%,rgba(160,151,145,.46));--rs-shell-text:#0b0b0d;--rs-muted:#2d3035;--rs-summary-bg:transparent;--rs-summary-text:#09090b;--rs-summary-muted:#25272b;--rs-panel-bg:transparent;--rs-panel-text:#0b0b0d;--rs-panel-muted:#20242a;--rs-border:rgba(255,255,255,.44);--rs-shadow:0 26px 72px rgba(15,23,42,.16),inset 0 1px 0 rgba(255,255,255,.58)}
+        #landingRoot[data-theme='light'] .reservation-success-card,#landingRoot[data-theme='light'] .success-card,#landingRoot[data-theme='light'] #successCard,body[data-theme='light'] .reservation-success-card,body[data-theme='light'] .success-card,body[data-theme='light'] #successCard{--rs-overlay-bg:radial-gradient(circle at 50% 18%,rgba(39,71,143,.18),transparent 34%),rgba(245,248,252,.42);--rs-shell-bg:linear-gradient(100deg,rgba(222,176,153,.58),rgba(255,255,255,.24) 42%,rgba(160,151,145,.46));--rs-shell-text:#0b0b0d;--rs-muted:#2d3035;--rs-summary-bg:transparent;--rs-summary-text:#09090b;--rs-summary-muted:#25272b;--rs-panel-bg:transparent;--rs-panel-text:#0b0b0d;--rs-panel-muted:#20242a;--rs-border:rgba(255,255,255,.44);--rs-shadow:0 26px 72px rgba(15,23,42,.16),inset 0 1px 0 rgba(255,255,255,.58)}
+        #landingRoot[data-theme='light'] .reservation-success-overlay,#landingRoot[data-theme='light'] .success-overlay,body[data-theme='light'] .reservation-success-overlay,body[data-theme='light'] .success-overlay{--rs-overlay-bg:radial-gradient(circle at 50% 18%,rgba(39,71,143,.16),transparent 34%),rgba(245,248,252,.76)}
+        #landingRoot[data-theme='dark'] .reservation-success-card,#landingRoot[data-theme='dark'] .success-card,#landingRoot[data-theme='dark'] #successCard,body[data-theme='dark'] .reservation-success-card,body[data-theme='dark'] .success-card,body[data-theme='dark'] #successCard,.reservation-success-card[data-theme='dark'],.success-card[data-theme='dark'],#successCard[data-theme='dark']{--rs-overlay-bg:radial-gradient(circle at 50% 18%,rgba(26,80,135,.36),transparent 34%),rgba(3,12,24,.74);--rs-shell-bg:linear-gradient(100deg,rgba(222,176,153,.60),rgba(255,255,255,.22) 42%,rgba(110,104,101,.52));--rs-shell-text:#0b0b0d;--rs-muted:#2d3035;--rs-summary-bg:transparent;--rs-summary-text:#09090b;--rs-summary-muted:#25272b;--rs-panel-bg:transparent;--rs-panel-text:#0b0b0d;--rs-panel-muted:#20242a;--rs-border:rgba(255,255,255,.36);--rs-shadow:0 34px 100px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.54),inset 0 -1px 0 rgba(255,255,255,.12)}
+        .reservation-success-icon,.success-icon-wrap{width:70px!important;height:70px!important;margin:0 auto 14px!important;border-radius:50%!important;background:#fff!important;color:#09844c!important;border:8px solid rgba(20,154,91,.20)!important;box-shadow:0 0 0 1px rgba(255,255,255,.85),0 14px 34px rgba(12,180,101,.24)!important}
         .reservation-success-icon i,.success-icon-wrap i{font-size:2.25rem!important}
-        .reservation-success-title,.success-title{margin:0 0 10px!important;color:#fff!important;font-size:clamp(2rem,4vw,3rem)!important;font-weight:900!important;line-height:1.05!important;letter-spacing:0!important}
-        .reservation-success-copy,.success-card-header .text-secondary{margin:0 0 28px!important;color:rgba(248,251,255,.78)!important;font-size:1.2rem!important}
-        .reservation-business-summary{position:relative;display:flex!important;align-items:center!important;gap:22px!important;min-height:148px!important;padding:28px!important;border-radius:24px 24px 0 0!important;overflow:hidden!important;background:linear-gradient(90deg,rgba(22,48,82,.98),rgba(18,41,70,.86))!important;color:#fff!important;text-align:left!important}
+        .reservation-success-title,.success-title{margin:0 0 8px!important;color:var(--rs-shell-text)!important;font-size:clamp(1.75rem,3vw,2.35rem)!important;font-weight:900!important;line-height:1.05!important;letter-spacing:0!important}
+        .reservation-success-copy,.success-card-header .text-secondary{margin:0 0 20px!important;color:var(--rs-muted)!important;font-size:1.02rem!important}
+        .reservation-business-summary{position:relative;display:flex!important;align-items:center!important;gap:18px!important;min-height:104px!important;padding:16px 18px!important;border:0!important;border-radius:22px 22px 0 0!important;overflow:hidden!important;background:transparent!important;color:var(--rs-summary-text)!important;text-align:left!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
         .reservation-business-summary::after{content:"";position:absolute;inset:0 0 0 auto;width:42%;background:linear-gradient(90deg,rgba(20,45,76,.94),rgba(20,45,76,.20)),var(--ba-confirmation-cover);background-size:cover;background-position:center;opacity:.9}
-        .reservation-business-logo{position:relative;z-index:1;display:grid!important;place-items:center!important;width:92px!important;height:92px!important;flex:0 0 92px!important;border-radius:50%!important;background:#fff!important;border:3px solid #f0bd70!important;color:#0f2745!important;box-shadow:0 16px 30px rgba(0,0,0,.22)!important}
+        #landingRoot[data-theme='light'] .reservation-business-summary::after,body[data-theme='light'] .reservation-business-summary::after{background:linear-gradient(90deg,rgba(239,246,255,.98),rgba(239,246,255,.36)),var(--ba-confirmation-cover)}
+        .reservation-business-logo{position:relative;z-index:1;display:grid!important;place-items:center!important;width:68px!important;height:68px!important;flex:0 0 68px!important;border-radius:16px!important;background:rgba(255,255,255,.28)!important;border:1px solid rgba(255,255,255,.38)!important;color:#0f2745!important;box-shadow:0 12px 22px rgba(0,0,0,.10),inset 0 1px 0 rgba(255,255,255,.52)!important;backdrop-filter:blur(12px) saturate(140%)!important;-webkit-backdrop-filter:blur(12px) saturate(140%)!important}
         .reservation-business-logo img{width:70%!important;height:70%!important;object-fit:contain!important;border-radius:50%!important}
         .reservation-business-logo i{font-size:2.35rem!important}
         .reservation-business-copy{position:relative;z-index:1;min-width:0!important}
-        .reservation-business-copy h4{margin:0 0 8px!important;color:#fff!important;font-size:clamp(1.65rem,3vw,2.25rem)!important;font-weight:900!important;line-height:1.05!important}
-        .reservation-business-copy p{margin:0!important;color:rgba(255,255,255,.86)!important;font-size:1.05rem!important}
+        .reservation-business-copy h4{margin:0 0 7px!important;color:var(--rs-summary-text)!important;font-size:clamp(1.35rem,2.4vw,1.8rem)!important;font-weight:900!important;line-height:1.05!important}
+        .reservation-business-copy p{margin:0!important;color:var(--rs-summary-muted)!important;font-size:.95rem!important}
         .reservation-business-copy i{margin-right:.45rem!important}
-        .reservation-success-details,.success-details{display:grid!important;gap:0!important;margin:0!important;padding:24px 28px!important;border:0!important;border-radius:0!important;background:#fff!important;color:#0f172a!important;box-shadow:none!important}
-        .reservation-success-row,.detail-item{display:grid!important;grid-template-columns:minmax(120px,.72fr) minmax(0,1fr)!important;align-items:center!important;gap:16px!important;min-height:62px!important;padding:13px 0!important;border-bottom:1px dashed rgba(80,110,150,.24)!important}
+        .reservation-success-details,.success-details{display:grid!important;gap:0!important;margin:0!important;padding:4px 18px 10px!important;border:0!important;border-radius:0!important;background:transparent!important;color:var(--rs-panel-text)!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+        .reservation-success-row,.detail-item{display:grid!important;grid-template-columns:minmax(110px,.7fr) minmax(0,1fr)!important;align-items:center!important;gap:14px!important;min-height:54px!important;padding:10px 0!important;border-bottom:1px dashed var(--rs-dash)!important}
         .reservation-success-row:last-child,.detail-item:last-child{border-bottom:0!important}
-        .reservation-success-label,.detail-label{display:inline-flex!important;align-items:center!important;gap:14px!important;color:#111827!important;font-size:1.05rem!important;font-weight:700!important}
-        .reservation-success-label i,.detail-label i{display:grid!important;place-items:center!important;width:38px!important;height:38px!important;border-radius:10px!important;background:#eef5ff!important;color:#0b6fe8!important;font-size:1.15rem!important}
-        .reservation-success-row:nth-child(2) i,.detail-item:nth-child(2) i{background:#fff0f1!important;color:#df1d38!important}
-        .reservation-success-row:nth-child(3) i,.detail-item:nth-child(3) i{background:#f1edff!important;color:#6f45d8!important}
-        .reservation-success-row:nth-child(4) i,.detail-item:nth-child(4) i{background:#eafaf1!important;color:#15803d!important}
-        .reservation-success-row:nth-child(5) i,.detail-item:nth-child(5) i{background:#fff5ea!important;color:#f97316!important}
-        .reservation-success-value,.detail-value{text-align:right!important;color:#0f172a!important;font-size:1.05rem!important;font-weight:900!important;line-height:1.25!important}
-        .reservation-success-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important;margin:0!important;padding:0 28px 22px!important;background:#fff!important}
-        .reservation-success-actions a{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;min-height:94px!important;padding:16px 12px!important;border-radius:14px!important;background:#fff!important;text-decoration:none!important;box-shadow:none!important;font-weight:800!important;line-height:1.2!important}
-        .reservation-success-actions a:nth-child(1){border:1px solid rgba(22,163,74,.28)!important;color:#12843e!important}
-        .reservation-success-actions a:nth-child(2){border:1px solid rgba(37,99,235,.28)!important;color:#0b65d8!important}
-        .reservation-success-actions a:nth-child(3){border:1px solid rgba(109,69,216,.28)!important;color:#6842d9!important}
-        .reservation-success-actions a i{font-size:2rem!important;flex:0 0 auto!important}
-        .reservation-success-actions a span{display:grid!important;gap:5px!important}
-        .reservation-success-actions a strong{display:block!important;font-size:1rem!important}
-        .reservation-success-actions a small{display:block!important;color:#64748b!important;font-size:.88rem!important;font-weight:500!important}
-        #successBtnReset{display:flex!important;align-items:center!important;justify-content:center!important;gap:14px!important;width:calc(100% - 56px)!important;min-height:76px!important;margin:0 28px!important;border:0!important;border-radius:14px!important;background:linear-gradient(100deg,#ef123c,#7c3ed8 52%,#006ff2)!important;color:#fff!important;font-size:0!important;font-weight:900!important;box-shadow:0 14px 28px rgba(37,99,235,.22)!important}
-        #successBtnReset::before{content:"\\F1E2";font-family:"bootstrap-icons";font-size:1.7rem!important}
-        #successBtnReset::after{content:"Nueva reserva\\A Agendar otra cita";white-space:pre-line;font-size:1.45rem!important;line-height:1.25!important;text-align:left!important}
-        @media (max-width:640px){.reservation-success-card,#successCard{width:min(94vw,440px)!important;padding:18px!important;border-radius:26px!important}.reservation-success-title,.success-title{font-size:2rem!important}.reservation-success-copy,.success-card-header .text-secondary{font-size:1rem!important}.reservation-business-summary{min-height:auto!important;padding:20px!important;gap:14px!important}.reservation-business-summary::after{display:none!important}.reservation-business-logo{width:64px!important;height:64px!important;flex-basis:64px!important}.reservation-business-copy h4{font-size:1.45rem!important}.reservation-business-copy p{font-size:.92rem!important}.reservation-success-details,.success-details{padding:18px!important}.reservation-success-row,.detail-item{grid-template-columns:1fr!important;gap:6px!important;min-height:auto!important}.reservation-success-value,.detail-value{text-align:left!important}.reservation-success-actions{grid-template-columns:1fr!important;padding:0 18px 18px!important}.reservation-success-actions a{min-height:70px!important;justify-content:flex-start!important}#successBtnReset{width:calc(100% - 36px)!important;margin:0 18px!important;min-height:68px!important}}
+        .reservation-success-label,.detail-label{display:inline-flex!important;align-items:center!important;gap:12px!important;color:var(--rs-panel-muted)!important;font-size:.98rem!important;font-weight:700!important}
+        .reservation-success-label i,.detail-label i{display:grid!important;place-items:center!important;width:30px!important;height:30px!important;border-radius:8px!important;background:rgba(255,255,255,.18)!important;border:1px solid rgba(255,255,255,.30)!important;color:#0b6fe8!important;font-size:1rem!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.40)!important;backdrop-filter:blur(8px) saturate(140%)!important;-webkit-backdrop-filter:blur(8px) saturate(140%)!important}
+        .reservation-success-row:nth-child(2) i,.detail-item:nth-child(2) i{background:rgba(255,240,241,.54)!important;color:#df1d38!important}
+        .reservation-success-row:nth-child(3) i,.detail-item:nth-child(3) i{background:rgba(241,237,255,.56)!important;color:#6f45d8!important}
+        .reservation-success-row:nth-child(4) i,.detail-item:nth-child(4) i{background:rgba(234,250,241,.56)!important;color:#15803d!important}
+        .reservation-success-row:nth-child(5) i,.detail-item:nth-child(5) i{background:rgba(255,245,234,.58)!important;color:#f97316!important}
+        .reservation-success-value,.detail-value{text-align:right!important;color:var(--rs-panel-text)!important;font-size:.98rem!important;font-weight:900!important;line-height:1.25!important}
+        .reservation-success-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;margin:0!important;padding:0 18px 16px!important;background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+        .reservation-whatsapp-target{display:grid!important;gap:7px!important;padding:0 18px 14px!important;background:transparent!important;color:var(--rs-panel-text)!important;text-align:left!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+        .reservation-whatsapp-target label{margin:0!important;color:var(--rs-panel-muted)!important;font-size:.88rem!important;font-weight:800!important}
+        .reservation-whatsapp-target input{width:100%!important;height:42px!important;border:1px solid rgba(255,255,255,.32)!important;border-radius:12px!important;background:rgba(255,255,255,.20)!important;color:#0f172a!important;padding:0 13px!important;font:inherit!important;font-weight:800!important;outline:0!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.42)!important;backdrop-filter:blur(10px) saturate(140%)!important;-webkit-backdrop-filter:blur(10px) saturate(140%)!important}
+        .reservation-whatsapp-target input:focus{border-color:rgba(22,163,74,.50)!important;box-shadow:0 0 0 3px rgba(22,163,74,.12)!important}
+        .reservation-success-actions a{display:grid!important;visibility:visible!important;opacity:1!important;place-items:center!important;width:58px!important;height:58px!important;min-height:58px!important;margin:0 auto!important;padding:0!important;border-radius:16px!important;background:rgba(255,255,255,.18)!important;text-decoration:none!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.38)!important;font-weight:800!important;line-height:1!important;backdrop-filter:blur(10px) saturate(140%)!important;-webkit-backdrop-filter:blur(10px) saturate(140%)!important}
+        .reservation-success-actions a.is-whatsapp-action{border:1px solid rgba(22,163,74,.26)!important;color:#12843e!important}
+        .reservation-success-actions a.is-maps-action{border:1px solid rgba(37,99,235,.26)!important;color:#0b65d8!important}
+        .reservation-success-actions a.is-calendar-action{border:1px solid rgba(109,69,216,.26)!important;color:#6842d9!important}
+        .reservation-success-actions a i{font-size:1.8rem!important;flex:0 0 auto!important}
+        .reservation-success-actions a span{display:none!important}
+        .reservation-success-actions a strong{display:block!important;font-size:.9rem!important}
+        .reservation-success-actions a small{display:block!important;color:#64748b!important;font-size:.78rem!important;font-weight:500!important}
+        #successBtnReset{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;width:calc(100% - 36px)!important;min-height:60px!important;margin:0 18px!important;border:1px solid rgba(255,224,139,.62)!important;border-radius:13px!important;background:linear-gradient(135deg,rgba(245,196,73,.92),rgba(210,145,35,.88))!important;color:#0b0b0d!important;font-size:0!important;font-weight:900!important;box-shadow:0 16px 34px rgba(199,139,28,.24),inset 0 1px 0 rgba(255,255,255,.46)!important;backdrop-filter:blur(12px) saturate(140%)!important;-webkit-backdrop-filter:blur(12px) saturate(140%)!important}
+        #successBtnReset::before{content:"\\F1E2";font-family:"bootstrap-icons";font-size:1.35rem!important}
+        #successBtnReset::after{content:"Nueva reserva\\A Agendar otra cita";white-space:pre-line;font-size:1.18rem!important;line-height:1.22!important;text-align:left!important}
+        @media (max-width:640px){.reservation-success-overlay,.success-overlay{align-items:flex-start!important;padding:14px!important;overflow:auto!important}.reservation-success-card,.success-card,#successCard{width:100%!important;max-width:430px!important;max-height:none!important;margin:10px auto!important;padding:14px!important;border-radius:24px!important}.reservation-success-icon,.success-icon-wrap{width:58px!important;height:58px!important;border-width:6px!important;margin-bottom:10px!important}.reservation-success-title,.success-title{font-size:1.65rem!important}.reservation-success-copy,.success-card-header .text-secondary{font-size:.92rem!important;margin-bottom:14px!important}.reservation-business-summary{min-height:auto!important;padding:16px!important;gap:12px!important;border-radius:18px 18px 0 0!important}.reservation-business-summary::after{display:none!important}.reservation-business-logo{width:56px!important;height:56px!important;flex-basis:56px!important}.reservation-business-copy h4{font-size:1.2rem!important}.reservation-business-copy p{font-size:.82rem!important}.reservation-success-details,.success-details{padding:14px 16px!important}.reservation-success-row,.detail-item{grid-template-columns:1fr!important;gap:5px!important;min-height:auto!important;padding:9px 0!important}.reservation-success-label,.detail-label{font-size:.9rem!important}.reservation-success-label i,.detail-label i{width:30px!important;height:30px!important}.reservation-success-value,.detail-value{text-align:left!important;font-size:.95rem!important}.reservation-whatsapp-target{padding:0 16px 12px!important}.reservation-whatsapp-target input{height:42px!important}.reservation-success-actions{display:grid!important;grid-template-columns:repeat(3,1fr)!important;padding:0 16px 14px!important;gap:9px!important}.reservation-success-actions a,.reservation-success-actions a.is-whatsapp-action{display:grid!important;visibility:visible!important;opacity:1!important;width:54px!important;height:54px!important;min-height:54px!important;place-items:center!important;justify-content:center!important;padding:0!important}.reservation-success-actions a i{font-size:1.55rem!important}.reservation-success-actions a span{display:none!important}#successBtnReset{width:calc(100% - 32px)!important;margin:0 16px!important;min-height:58px!important}#successBtnReset::after{font-size:1rem!important}}
       `;
       document.head.appendChild(style);
     }
@@ -1313,26 +1403,62 @@
         card.insertBefore(actions, resetAnchor);
       }
 
+      let phoneBox = card.querySelector('.reservation-whatsapp-target');
+      if (!phoneBox) {
+        phoneBox = document.createElement('div');
+        phoneBox.className = 'reservation-whatsapp-target';
+        card.insertBefore(phoneBox, actions);
+      } else if (phoneBox.nextElementSibling !== actions) {
+        card.insertBefore(phoneBox, actions);
+      }
+      phoneBox.innerHTML = `
+        <label for="reservationWhatsAppPhone">Numero para enviar el comprobante</label>
+        <input id="reservationWhatsAppPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ej: 3001234567" value="${escapeReservationAttr(urls.phone || '')}">
+      `;
+      const phoneInput = phoneBox.querySelector('#reservationWhatsAppPhone');
+
       actions.innerHTML = '';
       const items = [
-        { label: 'Enviarme por WhatsApp', sub: 'Recibe los detalles', icon: 'bi-whatsapp', href: urls.whatsAppUrl },
-        { label: 'Ver ubicacion', sub: 'Como llegar', icon: 'bi-geo-alt-fill', href: urls.mapsUrl },
-        { label: 'Agregar a Google Calendar', sub: 'No olvides tu cita', icon: 'bi-calendar-plus', href: urls.calendarUrl },
+        { label: 'Enviar comprobante por WhatsApp', sub: 'Usa el numero escrito arriba', icon: 'bi-whatsapp', href: urls.whatsAppUrl || 'https://web.whatsapp.com/send?text=Cita%20confirmada', className: 'is-whatsapp-action', required: true },
+        { label: 'Ver ubicacion', sub: 'Como llegar', icon: 'bi-geo-alt-fill', href: urls.mapsUrl, className: 'is-maps-action' },
+        { label: 'Agregar a Google Calendar', sub: 'No olvides tu cita', icon: 'bi-calendar-plus', href: urls.calendarUrl, className: 'is-calendar-action' },
       ];
       items.forEach((item) => {
-        if (!item.href) return;
+        if (!item.href && !item.required) return;
         const link = document.createElement('a');
-        link.className = 'btn btn-outline-primary';
+        link.className = `btn btn-outline-primary ${item.className || ''}`.trim();
         link.href = item.href;
         link.target = '_blank';
         link.rel = 'noopener';
+        link.setAttribute('aria-label', item.label);
+        link.setAttribute('title', item.label);
         link.innerHTML = `<i class="bi ${item.icon}"></i><span><strong>${item.label}</strong><small>${item.sub}</small></span>`;
+        if (item.className === 'is-whatsapp-action') {
+          link.addEventListener('click', (event) => {
+            const phone = normalizeReservationWhatsAppPhone(phoneInput?.value || '');
+            if (!phone) {
+              event.preventDefault();
+              phoneInput?.focus();
+              return;
+            }
+            event.preventDefault();
+            const message = urls.whatsAppText || 'Cita confirmada';
+            const isMobile = /Android|iPhone|iPad|iPod|Windows Phone|Mobile/i.test(navigator.userAgent || '');
+            const appUrl = buildReservationWhatsAppAppUrl(phone, message);
+            const webUrl = `https://web.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`;
+            if (isMobile) {
+              window.location.href = appUrl;
+            } else {
+              window.open(webUrl, '_blank', 'noopener');
+            }
+          });
+        }
         actions.appendChild(link);
       });
     }
 
     function hideReservationSuccessCard() {
-      const overlay = document.getElementById('reservationSuccessOverlay');
+      const overlay = document.getElementById('reservationSuccessOverlay') || document.getElementById('successOverlay');
       if (!overlay) return;
       overlay.classList.remove('show');
       window.setTimeout(() => overlay.classList.add('d-none'), 320);
@@ -2576,7 +2702,7 @@ function normalizeDayLabel(value) {
     window.addEventListener('pageshow', setReservationMinDate);
     const successBtnReset = document.getElementById('successBtnReset');
     if (successBtnReset) successBtnReset.addEventListener('click', hideReservationSuccessCard);
-    const reservationSuccessOverlay = document.getElementById('reservationSuccessOverlay');
+    const reservationSuccessOverlay = document.getElementById('reservationSuccessOverlay') || document.getElementById('successOverlay');
     if (reservationSuccessOverlay) {
       reservationSuccessOverlay.addEventListener('click', (event) => {
         if (event.target === reservationSuccessOverlay) hideReservationSuccessCard();

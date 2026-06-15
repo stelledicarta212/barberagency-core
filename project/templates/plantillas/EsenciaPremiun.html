@@ -207,6 +207,25 @@
       color: #fff;
     }
 
+    #themeToggle {
+      min-width: 42px;
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-color: rgba(24, 196, 200, 0.58) !important;
+      background: rgba(24, 196, 200, 0.14) !important;
+      color: #18c4c8 !important;
+      box-shadow: 0 0 20px rgba(24, 196, 200, 0.14);
+    }
+
+    #themeToggle:hover {
+      border-color: rgba(24, 196, 200, 0.9) !important;
+      background: rgba(24, 196, 200, 0.22) !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 24px rgba(24, 196, 200, 0.22);
+    }
+
     .hero {
       width: 100%;
       height: 500px;
@@ -227,7 +246,8 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(115deg, rgba(2, 10, 22, 0.85), rgba(3, 13, 27, 0.42));
+      background: rgba(0, 0, 0, 0.62);
+      z-index: 1;
     }
 
     .hero .content {
@@ -240,6 +260,12 @@
 
     .hero-title,
     .hero-subtitle {
+      color: #ffffff !important;
+    }
+
+    #landingRoot .hero .content,
+    #landingRoot .hero .content p,
+    #landingRoot .hero .content h1 {
       color: #ffffff !important;
     }
 
@@ -263,26 +289,108 @@
 
     #landingRoot[data-theme='dark'] .section-muted { background: rgba(7, 19, 31, 0.35); }
 
-    .reserve-card { padding: 1.5rem; }
-
-    .form-control, .form-select {
-      border: 1px solid var(--card-border);
-      background: color-mix(in srgb, var(--surface) 90%, #fff);
-      color: var(--text);
+    #landingRoot .reserve-card {
+      position: relative;
+      overflow: hidden;
+      padding: 2rem;
+      border: 1px solid rgba(24, 196, 200, 0.35) !important;
+      border-radius: 1.25rem;
+      background:
+        linear-gradient(180deg, rgba(16, 24, 32, 0.96), rgba(7, 16, 20, 0.98)),
+        #071014 !important;
+      box-shadow:
+        0 0 0 1px rgba(24, 196, 200, 0.08),
+        0 22px 55px rgba(0, 0, 0, 0.34),
+        0 0 34px rgba(24, 196, 200, 0.12) !important;
+      color: #ffffff !important;
     }
 
-    .form-control:focus, .form-select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 .2rem var(--ring);
+    #landingRoot .reserve-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(24, 196, 200, 0.14), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(214, 170, 45, 0.10), transparent 28%);
+      pointer-events: none;
+    }
+
+    #landingRoot .reserve-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    #landingRoot .reserve-card h2 {
+      color: #ffffff !important;
+      font-size: clamp(2rem, 3vw, 2.7rem);
+      font-weight: 800;
+      margin-bottom: 1.25rem !important;
+    }
+
+    #landingRoot .reserve-card .form-label {
+      color: #e5edf5 !important;
+      font-weight: 800;
+      margin-bottom: 0.45rem;
+    }
+
+    #landingRoot .reserve-card .form-control,
+    #landingRoot .reserve-card .form-select {
+      min-height: 52px;
+      border: 1px solid rgba(24, 196, 200, 0.42) !important;
+      border-radius: 0.45rem;
+      background: rgba(24, 196, 200, 0.06) !important;
+      color: #ffffff !important;
+      box-shadow:
+        0 0 0 1px rgba(24, 196, 200, 0.08),
+        0 0 20px rgba(24, 196, 200, 0.10) !important;
+    }
+
+    #landingRoot .reserve-card .form-control:focus,
+    #landingRoot .reserve-card .form-select:focus {
+      border-color: var(--primary) !important;
+      background: rgba(24, 196, 200, 0.10) !important;
+      color: #ffffff !important;
+      box-shadow:
+        0 0 0 .2rem rgba(24, 196, 200, 0.20),
+        0 0 28px rgba(24, 196, 200, 0.18) !important;
+    }
+
+    #landingRoot .reserve-card .form-control::placeholder {
+      color: rgba(229, 237, 245, 0.68) !important;
+    }
+
+    #landingRoot .reserve-card .form-select option {
+      color: #071014;
+    }
+
+    #landingRoot .reserve-card input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: 0.78;
+    }
+
+    #landingRoot .reserve-card textarea.form-control {
+      min-height: 108px;
     }
 
     .service-item, .barber-item {
       padding: 1.2rem;
       height: 100%;
-      transition: transform .25s ease;
+      border: 1px solid rgba(24, 196, 200, 0.35);
+      box-shadow:
+        0 0 0 1px rgba(24, 196, 200, 0.08),
+        0 18px 45px rgba(0, 0, 0, 0.28),
+        0 0 24px rgba(24, 196, 200, 0.10);
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
     }
 
-    .service-item:hover, .barber-item:hover { transform: translateY(-5px); }
+    .service-item:hover, .barber-item:hover {
+      border-color: rgba(24, 196, 200, 0.72);
+      box-shadow:
+        0 0 0 1px rgba(24, 196, 200, 0.18),
+        0 22px 55px rgba(0, 0, 0, 0.34),
+        0 0 34px rgba(24, 196, 200, 0.18);
+      transform: translateY(-4px);
+    }
 
     .icon-dot {
       width: 44px;
@@ -295,18 +403,689 @@
       background: rgba(14, 165, 164, 0.16);
     }
 
-    .barber-photo {
-      width: 110px !important;
-      height: 110px !important;
-      min-width: 110px;
-      min-height: 110px;
+    #landingRoot .service-item {
+      position: relative;
+      min-height: 430px;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 1rem;
+      background: #071014 !important;
+      color: #ffffff !important;
+      isolation: isolate;
+    }
+
+    .service-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(7, 16, 20, 0.08) 0%, rgba(7, 16, 20, 0.24) 38%, rgba(7, 16, 20, 0.92) 75%, #071014 100%),
+        linear-gradient(90deg, rgba(24, 196, 200, 0.10), transparent 45%, rgba(214, 170, 45, 0.06));
+      pointer-events: none;
+    }
+
+    .service-photo {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
       display: block;
-      margin-inline: auto;
-      border-radius: 999px !important;
       object-fit: cover !important;
-      object-position: center top !important;
-      border: 3px solid rgba(14, 165, 164, 0.35) !important;
+      object-position: center;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: #071014;
+    }
+
+    .service-visual-fallback {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(24, 196, 200, 0.22), transparent 32%),
+        linear-gradient(145deg, rgba(16, 24, 32, 0.96), rgba(7, 16, 20, 1));
+      color: rgba(24, 196, 200, 0.74);
+      font-size: 5rem;
+    }
+
+    .service-card-body {
+      position: relative;
+      z-index: 2;
+      min-height: 430px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 2rem 1.65rem 1.6rem;
+      text-align: center;
+    }
+
+    #landingRoot .service-item h3 {
+      color: #ffffff !important;
+      font-size: clamp(1.35rem, 2vw, 1.65rem);
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+    }
+
+    #landingRoot .service-copy {
+      color: #18c4c8 !important;
+      font-weight: 800;
+      margin-bottom: 0.9rem;
+    }
+
+    .service-price-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-height: 30px;
+      padding: 0.3rem 0.75rem;
+      margin-bottom: 1.55rem;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 0.45rem;
+      background: rgba(5, 13, 17, 0.62);
+      color: #ffffff;
+      font-size: 0.9rem;
+      font-weight: 800;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .service-price-chip i {
+      color: #d6aa2d;
+    }
+
+    .service-reserve-btn {
+      width: 100%;
+      border: 1px solid rgba(24, 196, 200, 0.58);
+      border-radius: 999px;
+      color: #18c4c8;
+      background: rgba(24, 196, 200, 0.04);
+      font-weight: 800;
+      padding: 0.78rem 1rem;
+      text-decoration: none;
+      transition: background .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease;
+    }
+
+    .service-reserve-btn:hover {
+      border-color: rgba(24, 196, 200, 0.9);
+      background: rgba(24, 196, 200, 0.12);
+      color: #ffffff;
+      box-shadow: 0 0 24px rgba(24, 196, 200, 0.16);
+    }
+
+    .barber-photo {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+      object-fit: cover !important;
+      object-position: center top;
+      border: 0 !important;
+      border-radius: 0 !important;
       background: #d9e4f0;
+    }
+
+    #landingRoot .barber-item {
+      position: relative;
+      min-height: 515px;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 1rem;
+      background: #071014 !important;
+      color: #ffffff !important;
+      isolation: isolate;
+    }
+
+    .barber-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(180deg, rgba(7, 16, 20, 0.02) 0%, rgba(7, 16, 20, 0.18) 40%, rgba(7, 16, 20, 0.92) 75%, #071014 100%),
+        linear-gradient(90deg, rgba(24, 196, 200, 0.08), transparent 42%, rgba(214, 170, 45, 0.05));
+      pointer-events: none;
+    }
+
+    .barber-card-body {
+      position: relative;
+      z-index: 2;
+      min-height: 515px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 2rem 1.65rem 1.6rem;
+      text-align: center;
+    }
+
+    #landingRoot .barber-item h3 {
+      color: #ffffff !important;
+      font-size: clamp(1.45rem, 2.2vw, 1.75rem);
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55);
+    }
+
+    #landingRoot .barber-specialty {
+      color: #18c4c8 !important;
+      font-weight: 800;
+      margin-bottom: 0.85rem;
+    }
+
+    .barber-meta {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.7rem;
+    }
+
+    .barber-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-height: 30px;
+      padding: 0.3rem 0.65rem;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 0.45rem;
+      background: rgba(5, 13, 17, 0.62);
+      color: #ffffff;
+      font-size: 0.86rem;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .barber-chip i {
+      color: #d6aa2d;
+      font-size: 0.9rem;
+    }
+
+    .barber-reserve-btn {
+      width: 100%;
+      border: 1px solid rgba(24, 196, 200, 0.58);
+      border-radius: 999px;
+      color: #18c4c8;
+      background: rgba(24, 196, 200, 0.04);
+      font-weight: 800;
+      padding: 0.78rem 1rem;
+      text-decoration: none;
+      transition: background .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease;
+    }
+
+    .barber-reserve-btn:hover {
+      border-color: rgba(24, 196, 200, 0.9);
+      background: rgba(24, 196, 200, 0.12);
+      color: #ffffff;
+      box-shadow: 0 0 24px rgba(24, 196, 200, 0.16);
+    }
+
+    #landingRoot[data-theme='light'] .reserve-card {
+      border-color: rgba(14, 165, 164, 0.28) !important;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 251, 252, 0.96)),
+        #ffffff !important;
+      box-shadow:
+        0 0 0 1px rgba(14, 165, 164, 0.06),
+        0 22px 55px rgba(15, 35, 53, 0.14),
+        0 0 34px rgba(14, 165, 164, 0.10) !important;
+      color: #0f1720 !important;
+    }
+
+    #landingRoot[data-theme='light'] .reserve-card::before {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(14, 165, 164, 0.10), transparent 30%),
+        radial-gradient(circle at 88% 12%, rgba(249, 115, 22, 0.08), transparent 28%);
+    }
+
+    #landingRoot[data-theme='light'] .reserve-card h2,
+    #landingRoot[data-theme='light'] .reserve-card .form-label {
+      color: #0f1720 !important;
+    }
+
+    #landingRoot[data-theme='light'] .reserve-card .form-control,
+    #landingRoot[data-theme='light'] .reserve-card .form-select {
+      border-color: rgba(14, 165, 164, 0.35) !important;
+      background: rgba(14, 165, 164, 0.08) !important;
+      color: #0f1720 !important;
+      box-shadow:
+        0 0 0 1px rgba(14, 165, 164, 0.06),
+        0 0 18px rgba(14, 165, 164, 0.08) !important;
+    }
+
+    #landingRoot[data-theme='light'] .reserve-card .form-control:focus,
+    #landingRoot[data-theme='light'] .reserve-card .form-select:focus {
+      border-color: var(--primary) !important;
+      background: rgba(14, 165, 164, 0.12) !important;
+      color: #0f1720 !important;
+      box-shadow:
+        0 0 0 .2rem rgba(14, 165, 164, 0.18),
+        0 0 22px rgba(14, 165, 164, 0.10) !important;
+    }
+
+    #landingRoot[data-theme='light'] .reserve-card .form-control::placeholder {
+      color: rgba(15, 23, 32, 0.55) !important;
+    }
+
+    #landingRoot[data-theme='light'] .reserve-card input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: none;
+      opacity: 0.82;
+    }
+
+    #landingRoot[data-theme='light'] .service-item,
+    #landingRoot[data-theme='light'] .barber-item {
+      background: #ffffff !important;
+      color: #0f1720 !important;
+      border-color: rgba(14, 165, 164, 0.28) !important;
+      box-shadow:
+        0 0 0 1px rgba(14, 165, 164, 0.06),
+        0 18px 45px rgba(15, 35, 53, 0.14),
+        0 0 24px rgba(14, 165, 164, 0.08) !important;
+    }
+
+    #landingRoot[data-theme='light'] .service-item:hover,
+    #landingRoot[data-theme='light'] .barber-item:hover {
+      border-color: rgba(14, 165, 164, 0.54) !important;
+      box-shadow:
+        0 0 0 1px rgba(14, 165, 164, 0.12),
+        0 22px 55px rgba(15, 35, 53, 0.18),
+        0 0 30px rgba(14, 165, 164, 0.14) !important;
+    }
+
+    #landingRoot[data-theme='light'] .service-item::after,
+    #landingRoot[data-theme='light'] .barber-item::after {
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.20) 38%, rgba(255, 255, 255, 0.90) 75%, #ffffff 100%),
+        linear-gradient(90deg, rgba(14, 165, 164, 0.08), transparent 45%, rgba(249, 115, 22, 0.06));
+    }
+
+    #landingRoot[data-theme='light'] .service-visual-fallback {
+      background:
+        radial-gradient(circle at 50% 38%, rgba(14, 165, 164, 0.16), transparent 32%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(238, 243, 249, 1));
+      color: rgba(14, 165, 164, 0.68);
+    }
+
+    #landingRoot[data-theme='light'] .service-item h3,
+    #landingRoot[data-theme='light'] .barber-item h3 {
+      color: #0f1720 !important;
+      text-shadow: none;
+    }
+
+    #landingRoot[data-theme='light'] .service-copy,
+    #landingRoot[data-theme='light'] .barber-specialty {
+      color: #0ea5a4 !important;
+    }
+
+    #landingRoot[data-theme='light'] .service-price-chip,
+    #landingRoot[data-theme='light'] .barber-chip {
+      border-color: rgba(12, 68, 97, 0.14);
+      background: rgba(255, 255, 255, 0.72);
+      color: #0f1720;
+      box-shadow: 0 10px 22px rgba(15, 35, 53, 0.08);
+    }
+
+    #landingRoot[data-theme='light'] .service-reserve-btn,
+    #landingRoot[data-theme='light'] .barber-reserve-btn {
+      border-color: rgba(14, 165, 164, 0.48);
+      background: rgba(14, 165, 164, 0.08);
+      color: #075985;
+    }
+
+    #landingRoot[data-theme='light'] .service-reserve-btn:hover,
+    #landingRoot[data-theme='light'] .barber-reserve-btn:hover {
+      border-color: rgba(14, 165, 164, 0.78);
+      background: rgba(14, 165, 164, 0.15);
+      color: #0f1720;
+      box-shadow: 0 0 24px rgba(14, 165, 164, 0.14);
+    }
+
+    #landingRoot #mapa .block {
+      border: 1px solid rgba(24, 196, 200, 0.42) !important;
+      box-shadow:
+        0 0 0 1px rgba(24, 196, 200, 0.08),
+        0 18px 45px rgba(0, 0, 0, 0.28),
+        0 0 24px rgba(24, 196, 200, 0.10) !important;
+    }
+
+    #landingRoot[data-theme='dark'] #mapa .block {
+      background: rgba(16, 24, 32, 0.92) !important;
+    }
+
+    #landingRoot[data-theme='light'] #mapa .block {
+      border-color: rgba(14, 165, 164, 0.35) !important;
+      background: rgba(255, 255, 255, 0.92) !important;
+      box-shadow:
+        0 0 0 1px rgba(14, 165, 164, 0.06),
+        0 18px 45px rgba(15, 35, 53, 0.14),
+        0 0 24px rgba(14, 165, 164, 0.08) !important;
+    }
+
+    .hours-premium-card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 560px;
+      padding: 1.35rem;
+      border: 1px solid rgba(24, 196, 200, 0.58);
+      border-radius: 1.25rem;
+      background:
+        linear-gradient(180deg, rgba(7, 16, 20, 0.68), rgba(7, 16, 20, 0.96)),
+        radial-gradient(circle at 72% 10%, rgba(24, 196, 200, 0.16), transparent 32%),
+        #071014;
+      color: #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(24, 196, 200, 0.12),
+        0 24px 60px rgba(0, 0, 0, 0.38),
+        0 0 34px rgba(24, 196, 200, 0.18);
+      text-align: center;
+      isolation: isolate;
+    }
+
+    .hours-premium-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(7, 16, 20, 0.80), rgba(7, 16, 20, 0.58)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.38;
+      filter: saturate(0.75);
+    }
+
+    .hours-premium-icon {
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      margin-bottom: 0.8rem;
+      border: 1px solid rgba(24, 196, 200, 0.58);
+      border-radius: 1.25rem;
+      background: rgba(24, 196, 200, 0.10);
+      color: #18c4c8;
+      font-size: 2.2rem;
+      box-shadow: 0 0 26px rgba(24, 196, 200, 0.20);
+    }
+
+    .hours-premium-card h2 {
+      margin: 0 0 0.35rem;
+      color: #ffffff;
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(2.25rem, 4vw, 3.2rem);
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .hours-premium-card p {
+      margin: 0 0 0.85rem;
+      color: rgba(255, 255, 255, 0.72);
+      font-weight: 600;
+    }
+
+    .hours-status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      margin-bottom: 1rem;
+      padding: 0.25rem 0.85rem;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f6d47a, #d6aa2d);
+      color: #071014;
+      font-size: 0.86rem;
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(214, 170, 45, 0.20);
+    }
+
+    .hours-premium-mark {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      width: min(280px, 76%);
+      margin-top: 1.05rem;
+      color: #d6aa2d;
+    }
+
+    .hours-premium-mark span {
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, transparent, rgba(214, 170, 45, 0.78), transparent);
+    }
+
+    .hours-premium-card small {
+      margin-top: 0.35rem;
+      color: #18c4c8;
+      text-transform: uppercase;
+      letter-spacing: 0.45em;
+      font-size: 0.7rem;
+    }
+
+    .location-info-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      min-height: 130px;
+      padding: 1.25rem;
+    }
+
+    .location-info-card > div:last-child {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .location-info-icon {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      border-radius: 14px;
+      border: 1px solid rgba(24, 196, 200, 0.42);
+      background: rgba(24, 196, 200, 0.10);
+      color: #18c4c8;
+      font-size: 1.35rem;
+      box-shadow: 0 0 18px rgba(24, 196, 200, 0.12);
+    }
+
+    .location-info-card h3 {
+      margin: 0 0 0.35rem;
+      color: var(--text);
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
+
+    .location-info-card p {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .location-hours-table {
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid rgba(24, 196, 200, 0.28);
+      border-radius: 0.85rem;
+      background: rgba(24, 196, 200, 0.05);
+    }
+
+    .location-hours-table table {
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--text);
+      font-size: 0.98rem;
+    }
+
+    .location-hours-table td {
+      padding: 0.72rem 0.9rem;
+      border-bottom: 1px solid rgba(24, 196, 200, 0.16);
+      vertical-align: middle;
+    }
+
+    .location-hours-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .location-hours-table td:first-child {
+      color: var(--text);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .location-hours-table td:last-child {
+      color: var(--muted);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .location-hours-empty {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .hours-premium-card .location-hours-table {
+      width: min(100%, 460px);
+      border-color: rgba(24, 196, 200, 0.22);
+      background: rgba(7, 16, 20, 0.56);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .hours-premium-card .location-hours-table table {
+      color: #ffffff;
+    }
+
+    .hours-premium-card .location-hours-table td:first-child {
+      color: #ffffff;
+    }
+
+    .hours-premium-card .location-hours-table td:last-child {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .hours-premium-card .location-hours-table tr.is-today {
+      background: linear-gradient(90deg, rgba(214, 170, 45, 0.24), rgba(214, 170, 45, 0.08));
+      box-shadow: inset 3px 0 0 #d6aa2d;
+    }
+
+    .hours-premium-card .location-hours-table tr.is-today td {
+      color: #f6d47a;
+    }
+
+    .hours-premium-card .location-hours-empty {
+      color: rgba(255, 255, 255, 0.74);
+    }
+
+    #landingRoot[data-theme='light'] .location-info-card h3 {
+      color: #0f1720;
+    }
+
+    #landingRoot[data-theme='light'] .location-info-card p {
+      color: #556273;
+    }
+
+    #landingRoot[data-theme='light'] .location-hours-table {
+      border-color: rgba(14, 165, 164, 0.24);
+      background: rgba(14, 165, 164, 0.06);
+    }
+
+    #landingRoot[data-theme='light'] .location-hours-table table,
+    #landingRoot[data-theme='light'] .location-hours-table td:first-child {
+      color: #0f1720;
+    }
+
+    #landingRoot[data-theme='light'] .location-hours-table td {
+      border-bottom-color: rgba(14, 165, 164, 0.14);
+    }
+
+    #landingRoot[data-theme='light'] .location-hours-table td:last-child,
+    #landingRoot[data-theme='light'] .location-hours-empty {
+      color: #556273;
+    }
+
+    #landingRoot[data-theme='light'] .location-info-icon {
+      border-color: rgba(14, 165, 164, 0.35);
+      background: rgba(14, 165, 164, 0.08);
+      color: #0ea5a4;
+      box-shadow: 0 0 18px rgba(14, 165, 164, 0.08);
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card {
+      border-color: rgba(14, 165, 164, 0.42);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(238, 243, 249, 0.98)),
+        #ffffff;
+      color: #0f1720;
+      box-shadow:
+        0 0 0 1px rgba(14, 165, 164, 0.08),
+        0 24px 60px rgba(15, 35, 53, 0.16),
+        0 0 30px rgba(14, 165, 164, 0.12);
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card::before {
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.78), rgba(238, 243, 249, 0.54)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg');
+      opacity: 0.22;
+      filter: saturate(0.65) brightness(1.04);
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card h2 {
+      color: #0f1720;
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card p {
+      color: #556273;
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card .location-hours-table {
+      border-color: rgba(14, 165, 164, 0.22);
+      background: rgba(14, 165, 164, 0.06);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card .location-hours-table table,
+    #landingRoot[data-theme='light'] .hours-premium-card .location-hours-table td:first-child {
+      color: #0f1720;
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card .location-hours-table td:last-child {
+      color: #334155;
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card .location-hours-table tr.is-today {
+      background: linear-gradient(90deg, rgba(214, 170, 45, 0.18), rgba(214, 170, 45, 0.06));
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card .location-hours-table tr.is-today td {
+      color: #8a6400;
+    }
+
+    #landingRoot[data-theme='light'] .hours-premium-card .location-hours-empty {
+      color: #556273;
+    }
+
+    @media (max-width: 575px) {
+      .service-item,
+      .service-card-body {
+        min-height: 410px;
+      }
+
+      .barber-item,
+      .barber-card-body {
+        min-height: 470px;
+      }
     }
 
     .pill {
@@ -337,14 +1116,67 @@
     }
 
     .qr-share-card {
-      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(24, 196, 200, 0.42);
       border-radius: 1.5rem;
-      background: color-mix(in srgb, var(--surface) 88%, transparent);
-      box-shadow: var(--shadow);
+      background:
+        linear-gradient(90deg, rgba(7, 16, 20, 0.92), rgba(7, 16, 20, 0.74)),
+        #071014;
+      box-shadow:
+        0 0 0 1px rgba(24, 196, 200, 0.08),
+        0 18px 45px rgba(0, 0, 0, 0.28),
+        0 0 24px rgba(24, 196, 200, 0.10);
+      color: #ffffff;
+      isolation: isolate;
+    }
+
+    .qr-share-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(7, 16, 20, 0.82), rgba(7, 16, 20, 0.42)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv6.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.42;
+      filter: saturate(0.78);
+    }
+
+    .qr-share-card h2 {
+      color: #ffffff;
     }
 
     #landingRoot[data-theme='dark'] .qr-share-card {
-      background: rgba(26, 30, 42, 0.92);
+      background:
+        linear-gradient(90deg, rgba(7, 16, 20, 0.92), rgba(7, 16, 20, 0.74)),
+        #071014;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-card {
+      border-color: rgba(14, 165, 164, 0.35);
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.94), rgba(238, 243, 249, 0.84)),
+        #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(14, 165, 164, 0.06),
+        0 18px 45px rgba(15, 35, 53, 0.14),
+        0 0 24px rgba(14, 165, 164, 0.08);
+      color: #0f1720;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-card::before {
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.82), rgba(238, 243, 249, 0.56)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv6.jpg');
+      opacity: 0.22;
+      filter: saturate(0.62) brightness(1.04);
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-card h2 {
+      color: #0f1720;
     }
 
     .qr-share-kicker {
@@ -357,15 +1189,23 @@
     }
 
     .qr-share-text {
-      color: var(--muted);
+      color: rgba(255, 255, 255, 0.76);
     }
 
     .qr-share-link {
       display: inline-block;
-      color: var(--text);
+      color: #ffffff;
       font-weight: 700;
       text-decoration: none;
       word-break: break-all;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-text {
+      color: #556273;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-link {
+      color: #0f1720;
     }
 
     .qr-share-link:hover {
@@ -377,11 +1217,23 @@
       aspect-ratio: 1;
       padding: 14px;
       border-radius: 1.25rem;
+      border: 1px solid rgba(24, 196, 200, 0.42);
       background: #fff;
-      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+      box-shadow:
+        0 0 0 1px rgba(24, 196, 200, 0.08),
+        0 14px 32px rgba(15, 23, 42, 0.12),
+        0 0 24px rgba(24, 196, 200, 0.12);
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-frame {
+      border-color: rgba(14, 165, 164, 0.35);
+      box-shadow:
+        0 0 0 1px rgba(14, 165, 164, 0.06),
+        0 14px 32px rgba(15, 35, 53, 0.12),
+        0 0 22px rgba(14, 165, 164, 0.10);
     }
 
     .qr-share-frame img {
@@ -697,7 +1549,7 @@
           <li class="nav-item"><a class="nav-link" href="#barberos">Barberos</a></li>
           <li class="nav-item"><a class="nav-link" href="#mapa">Mapa</a></li>
         </ul>
-        <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i> Tema</button>
+        <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i></button>
       </div>
     </div>
   </nav>
@@ -706,7 +1558,7 @@
     <img
       id="heroImage"
       class="hero-img"
-      src="https://images.pexels.com/photos/3998417/pexels-photo-3998417.jpeg?auto=compress&cs=tinysrgb&w=1920"
+      src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg"
       alt="Interior moderno de barberia"
       loading="eager"
       decoding="async"
@@ -729,13 +1581,16 @@
       <div class="container">
         <div class="row g-4 align-items-stretch">
           <div class="col-lg-6">
-            <div class="block p-4 h-100 d-flex flex-column justify-content-center">
-              <h2 class="mb-3">Tu cita lista en menos tiempo</h2>
-              <p class="text-secondary">Elige el servicio que quieres, reserva con tu barbero ideal y asegura un espacio cómodo para verte impecable.</p>
-              <div class="d-grid gap-2">
-                <a href="#inicio" class="btn btn-main">Ver estilo de la barbería</a>
-                <button id="toMap" class="btn btn-ghost" type="button">Ver Ubicación y llegar fácil</button>
+            <div class="hours-premium-card h-100">
+              <div class="hours-premium-icon" aria-hidden="true"><i class="bi bi-clock"></i></div>
+              <h2>Horarios</h2>
+              <p>Agenda tu cita dentro del horario disponible.</p>
+              <span class="hours-status-pill">Abierto hoy</span>
+              <div id="landingHoursText" class="location-hours-empty">Cargando horarios...</div>
+              <div class="hours-premium-mark" aria-hidden="true">
+                <span></span><i class="bi bi-scissors"></i><span></span>
               </div>
+              <small>Barbería premium</small>
             </div>
           </div>
           <div class="col-lg-6">
@@ -745,9 +1600,9 @@
                 <div class="col-12"><label class="form-label" for="nombre">Nombre y apellido</label><input id="nombre" name="nombre" class="form-control" type="text" required></div>
                 <div class="col-md-6"><label class="form-label" for="telefono">Teléfono</label><input id="telefono" name="telefono" class="form-control" type="tel" required></div>
                 <div class="col-md-6"><label class="form-label" for="email">Correo opcional</label><input id="email" name="email" class="form-control" type="email"></div>
-                <div class="col-md-6"><label class="form-label" for="servicio">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
-                <div class="col-md-6"><label class="form-label" for="barbero">Barbero</label><select id="barbero" name="barbero" class="form-select" required></select></div>
                 <div class="col-md-6"><label class="form-label" for="fecha">Fecha</label><input id="fecha" name="fecha" class="form-control" type="date" required></div>
+                <div class="col-md-6"><label class="form-label" for="barbero">Barbero</label><select id="barbero" name="barbero" class="form-select" required></select></div>
+                <div class="col-md-6"><label class="form-label" for="servicio">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
                 <div class="col-md-6"><label class="form-label" for="hora">Hora</label><select id="hora" name="hora" class="form-select" required></select></div>
                 <div class="col-12"><label class="form-label" for="notas">Notas</label><textarea id="notas" name="notas" class="form-control" rows="3" placeholder="Detalle de preferencia"></textarea></div>
                 <div class="col-12 d-grid"><button type="submit" class="btn btn-main btn-lg">Confirmar reserva</button></div>
@@ -912,6 +1767,7 @@
     const dateInput = document.getElementById('fecha');
     const form = document.getElementById('reservationForm');
     const alertBox = document.getElementById('reservationAlert');
+    const landingHoursText = document.getElementById('landingHoursText');
     const N8N_RESERVA_WEBHOOK = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/reservas/create';
     const N8N_SLOTS_WEBHOOK = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/reservas/slots';
     const DEFAULT_PUBLIC_PROFILE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public';
@@ -993,15 +1849,18 @@
       servicesGrid.innerHTML = services.map(s => {
         const image = resolveServiceImage(s);
         const media = image
-          ? `<img class="service-photo mb-3" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.remove();" style="width:100%;height:140px;object-fit:cover;border-radius:12px;" />`
-          : `<div class="icon-dot mb-3"><i class="bi ${s.icono}"></i></div>`;
+          ? `<img class="service-photo" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.remove();" />`
+          : `<div class="service-visual-fallback"><i class="bi ${s.icono}"></i></div>`;
         return `
         <div class="${serviceColClass}">
           <article class="block service-item">
             ${media}
-            <h3 class="h5">${s.nombre}</h3>
-            <p class="text-secondary mb-2">Trabajo preciso, asesoria y acabado premium.</p>
-            <span class="pill">${cop(s.precio)}</span>
+            <div class="service-card-body">
+              <h3 class="mb-2">${s.nombre}</h3>
+              <p class="service-copy">Servicio profesional premium</p>
+              <span class="service-price-chip"><i class="bi bi-tag-fill"></i>${cop(s.precio)}</span>
+              <a class="service-reserve-btn" href="#reservar">Reservar servicio</a>
+            </div>
           </article>
         </div>
       `;
@@ -1023,18 +1882,23 @@
     function renderBarbers() {
       const totalBarbers = barbers.length;
       barbersGrid.classList.toggle('justify-content-center', totalBarbers <= 2);
-      const barberColClass = totalBarbers <= 2 ? 'col-md-6 col-lg-4' : 'col-md-6 col-lg-3';
+      const barberColClass = totalBarbers <= 2 ? 'col-md-6 col-lg-4' : 'col-md-6 col-lg-4';
 
       barbersGrid.innerHTML = barbers.map((b, idx) => {
         const fallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
         const photo = safeSeedText(b.foto) || fallback;
         return `
         <div class="${barberColClass}">
-          <article class="block barber-item text-center">
-            <img class="barber-photo mb-3" src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';">
-            <h3 class="h5 mb-1">${b.nombre}</h3>
-            <p class="text-secondary mb-1">${b.especialidad}</p>
-            <small class="text-secondary">${b.experiencia}</small>
+          <article class="block barber-item">
+            <img class="barber-photo" src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';">
+            <div class="barber-card-body">
+              <h3 class="mb-2">${b.nombre}</h3>
+              <p class="barber-specialty">Especialidad: ${b.especialidad}</p>
+              <div class="barber-meta">
+                <span class="barber-chip"><i class="bi bi-star-fill"></i>Perfil premium</span>
+              </div>
+              <a class="barber-reserve-btn" href="#reservar">Reservar con ${safeSeedText(b.nombre).split(' ')[0] || 'barbero'}</a>
+            </div>
           </article>
         </div>
       `;
@@ -1090,6 +1954,66 @@
         hora_cierra,
         dia_semana: hasDiaSemana ? diaSemanaNumber : item.dia_semana
       };
+    }
+
+    function formatDayName(value) {
+      const normalized = normalizeDayLabel(value);
+      const labels = {
+        domingo: 'Domingo',
+        lunes: 'Lunes',
+        martes: 'Martes',
+        miercoles: 'Miércoles',
+        jueves: 'Jueves',
+        viernes: 'Viernes',
+        sabado: 'Sábado'
+      };
+      return labels[normalized] || safeSeedText(value);
+    }
+
+    function formatLandingHours(hours = inheritedHours) {
+      const activeHours = Array.isArray(hours) ? hours.filter((item) => item?.activo !== false) : [];
+      if (!activeHours.length) return '';
+      return activeHours
+        .map((item) => {
+          const day = formatDayName(item.dia || item.day || item.nombre_dia);
+          const open = safeSeedText(item.hora_abre || item.abre || item.open);
+          const close = safeSeedText(item.hora_cierra || item.cierra || item.close);
+          return day && open && close ? `${day}: ${open} - ${close}` : '';
+        })
+        .filter(Boolean)
+        .join(' · ');
+    }
+
+    function formatLandingHoursTable(hours = inheritedHours) {
+      const activeHours = Array.isArray(hours) ? hours.filter((item) => item?.activo !== false) : [];
+      const todayName = getDayNameFromDate(getBogotaDateValue());
+      const rows = activeHours
+        .map((item) => {
+          const normalizedDay = normalizeDayLabel(item.dia || item.day || item.nombre_dia);
+          const day = formatDayName(item.dia || item.day || item.nombre_dia);
+          const open = safeSeedText(item.hora_abre || item.abre || item.open);
+          const close = safeSeedText(item.hora_cierra || item.cierra || item.close);
+          return day && open && close ? { day, range: `${open} - ${close}`, isToday: normalizedDay === todayName } : null;
+        })
+        .filter(Boolean);
+      if (!rows.length) return '';
+      return `
+        <div class="location-hours-table">
+          <table aria-label="Horarios de atención">
+            <tbody>
+              ${rows.map((row) => `<tr class="${row.isToday ? 'is-today' : ''}"><td>${row.day}</td><td>${row.range}</td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderLocationInfo(payload = {}) {
+      if (landingHoursText) {
+        const tableMarkup = formatLandingHoursTable(inheritedHours);
+        landingHoursText.className = tableMarkup ? '' : 'location-hours-empty';
+        landingHoursText.innerHTML = tableMarkup || 'Horarios no disponibles';
+      }
     }
 
 
@@ -1418,8 +2342,8 @@
       localStorage.setItem('barber_theme_v2', theme);
       if (themeToggle) {
         themeToggle.innerHTML = theme === 'dark'
-          ? '<i class="bi bi-sun-fill"></i> Tema'
-          : '<i class="bi bi-moon-stars-fill"></i> Tema';
+          ? '<i class="bi bi-sun-fill"></i>'
+          : '<i class="bi bi-moon-stars-fill"></i>';
       }
     }
 
@@ -2280,6 +3204,8 @@
         }
       });
 
+      renderLocationInfo(payload);
+
       if (branding && (branding.use_custom_palette || branding.palette_primary || branding.palette_secondary || branding.palette_text)) {
         applyBrandingPalette({ ...branding, use_custom_palette: true });
       }
@@ -2508,7 +3434,10 @@
       );
       applyPublicLandingBranding({
         profile: routeContext.barberia || routeContext,
-        branding: routeContext.branding || {}
+        branding: routeContext.branding || {},
+        inherited: routeContext.inherited || {},
+        direccion: routeContext.direccion,
+        location_address: routeContext.location_address
       });
       renderLandingQr();
       return true;
@@ -2606,6 +3535,10 @@
       if (typeof renderBarbers === 'function') renderBarbers();
       if (typeof fillSelects === 'function') fillSelects();
       if (typeof populateSelects === 'function') populateSelects();
+      if (typeof renderLocationInfo === 'function') renderLocationInfo({
+        profile: runtimeLandingState.profile || landingSeed?.barberia || landingSeed || {},
+        inherited: runtimeLandingState.inherited || landingSeed?.inherited || {}
+      });
     }
 
     function applyBrandingPalette(payload) {
@@ -2635,7 +3568,13 @@
 
     const landingSeed = readLandingSeed();
     applyInheritedCollections(landingSeed?.servicios, landingSeed?.barberos, landingSeed?.horarios, landingSeed?.slot_min || landingSeed?.barberia?.slot_min);
-    applyPublicLandingBranding({ profile: landingSeed?.barberia || landingSeed || {}, branding: landingSeed?.branding || {} });
+    applyPublicLandingBranding({
+      profile: landingSeed?.barberia || landingSeed || {},
+      branding: landingSeed?.branding || {},
+      inherited: landingSeed?.inherited || {},
+      direccion: landingSeed?.direccion,
+      location_address: landingSeed?.location_address
+    });
     hydrateLandingFromPublicEndpoint();
     if (!hydrateCanonicalRouteContextIfReady()) {
       window.addEventListener('load', () => hydrateCanonicalRouteContextIfReady(), { once: true });
@@ -2661,7 +3600,13 @@
         payload.hours || payload.inherited_hours || payload.horarios,
         payload.slot_min || payload.barberia?.slot_min
       );
-      applyPublicLandingBranding({ profile: payload.barberia || payload.profile || {}, branding: payload.branding || payload.config || payload || {} });
+      applyPublicLandingBranding({
+        profile: payload.barberia || payload.profile || {},
+        branding: payload.branding || payload.config || payload || {},
+        inherited: payload.inherited || {},
+        direccion: payload.direccion,
+        location_address: payload.location_address
+      });
       renderLandingQr();
     });
     initTheme();
@@ -2727,18 +3672,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
