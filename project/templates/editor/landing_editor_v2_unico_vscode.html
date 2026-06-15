@@ -539,13 +539,12 @@
 -->
 <script id="ba-templates-json" type="application/json">
 [
-  {"id":"v2","name":"Distrito Urbano","file":"index_unico_v2.html","cover":"https://images.pexels.com/photos/3998417/pexels-photo-3998417.jpeg?auto=compress&cs=tinysrgb&w=900"},
+  {"id":"v2","name":"Esencia Premium","file":"index_unico_v2.html","cover":"https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg"},
   {"id":"v3","name":"Impacto Comercial","file":"index_unico_v3_nueva.html","cover":"https://images.pexels.com/photos/3992879/pexels-photo-3992879.jpeg?auto=compress&cs=tinysrgb&w=900"},
   {"id":"v4","name":"Editorial Elite","file":"index_unico_v4_editorial.html","cover":"https://images.pexels.com/photos/2076932/pexels-photo-2076932.jpeg?auto=compress&cs=tinysrgb&w=900"},
   {"id":"v5","name":"Prestigio Ejecutivo","file":"index_unico_v5_1_azul_rojo_elegante.html","cover":"https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=900"},
   {"id":"v6","name":"Noir Dorado","file":"index_unico_v6_negro_dorado.html","cover":"https://images.pexels.com/photos/1570807/pexels-photo-1570807.jpeg?auto=compress&cs=tinysrgb&w=900"},
-  {"id":"v7","name":"Moderna","file":"index_unicov7.html","cover":"https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80"},
-  {"id":"esencia-premium","name":"Esencia Premium","file":"EsenciaPremiun.html","cover":"https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg"}
+  {"id":"v7","name":"Moderna","file":"index_unicov7.html","cover":"https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80"}
 ]
 </script>
 
@@ -754,9 +753,9 @@
     'index_unico_v5_1_azul_rojo_elegante': '/index_unico_v5_1_azul_rojo_elegante/',
     'index_unico_v6_negro_dorado': '/index_unico_v6_negro_dorado/',
     'index_unicov7': '/index_unicov7/',
-    'EsenciaPremiun': '/esencia-premium/',
-    'esencia_premium': '/esencia-premium/',
-    'esencia-premium': '/esencia-premium/'
+    'EsenciaPremiun': '/index_unico_v2/',
+    'esencia_premium': '/index_unico_v2/',
+    'esencia-premium': '/index_unico_v2/'
   };
 
   const el = {
@@ -819,13 +818,12 @@
 
   const templates = (() => {
     const defaultTemplates = [
-      {"id":"v2","name":"Distrito Urbano","file":"index_unico_v2.html","cover":"https://images.pexels.com/photos/3998417/pexels-photo-3998417.jpeg?auto=compress&cs=tinysrgb&w=900"},
+      {"id":"v2","name":"Esencia Premium","file":"index_unico_v2.html","cover":"https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg"},
       {"id":"v3","name":"Impacto Comercial","file":"index_unico_v3_nueva.html","cover":"https://images.pexels.com/photos/3992879/pexels-photo-3992879.jpeg?auto=compress&cs=tinysrgb&w=900"},
       {"id":"v4","name":"Editorial Elite","file":"index_unico_v4_editorial.html","cover":"https://images.pexels.com/photos/2076932/pexels-photo-2076932.jpeg?auto=compress&cs=tinysrgb&w=900"},
       {"id":"v5","name":"Prestigio Ejecutivo","file":"index_unico_v5_1_azul_rojo_elegante.html","cover":"https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=900"},
       {"id":"v6","name":"Noir Dorado","file":"index_unico_v6_negro_dorado.html","cover":"https://images.pexels.com/photos/1570807/pexels-photo-1570807.jpeg?auto=compress&cs=tinysrgb&w=900"},
-      {"id":"v7","name":"Moderna","file":"index_unicov7.html","cover":"https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80"},
-      {"id":"esencia-premium","name":"Esencia Premium","file":"EsenciaPremiun.html","cover":"https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg"}
+      {"id":"v7","name":"Moderna","file":"index_unicov7.html","cover":"https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80"}
     ];
     try {
       const el = document.getElementById('ba-templates-json');
@@ -889,8 +887,7 @@
     v4: 'Tu imagen decide por ti',
     v5: 'Reserva hoy, luce impecable',
     v6: 'Exclusividad que si se nota',
-    v7: 'Nueva propuesta para reservar mejor',
-    'esencia-premium': 'Tu mejor versión empieza hoy'
+    v7: 'Nueva propuesta para reservar mejor'
   };
   const TEMPLATE_HERO_TITLES = {
     v2: 'Tu look empieza con una cita bien hecha',
@@ -898,8 +895,7 @@
     v4: 'Imagen cuidada desde la primera visita',
     v5: 'Estilo sobrio con presencia impecable',
     v6: 'Elegancia premium en cada detalle',
-    v7: 'Landing nueva lista para convertir citas',
-    'esencia-premium': 'Tu look empieza con una cita bien hecha'
+    v7: 'Landing nueva lista para convertir citas'
   };
   const TEMPLATE_HERO_SUBTITLES = {
     v2: 'Cortes premium, barberos expertos y reserva en menos de un minuto.',
@@ -907,8 +903,7 @@
     v4: 'Una propuesta clara, elegante y lista para convertir reservas.',
     v5: 'Una imagen refinada con una reserva simple y sin friccion.',
     v6: 'Una experiencia exclusiva con estilo fuerte y reserva inmediata.',
-    v7: 'Diseno actualizado, mensaje claro y reserva en segundos.',
-    'esencia-premium': 'Cortes premium, barberos expertos y reserva en menos de un minuto.'
+    v7: 'Diseno actualizado, mensaje claro y reserva en segundos.'
   };
   const TEMPLATE_HERO_KICKER_VALUES = Object.values(TEMPLATE_HERO_KICKERS).map((v) => safeText(v).toLowerCase());
   const TEMPLATE_HERO_TITLE_VALUES = Object.values(TEMPLATE_HERO_TITLES).map((v) => safeText(v).toLowerCase());
@@ -1114,7 +1109,7 @@
       safeImageUrl(seedLandingData?.barberia?.hero_image_url) ||
       ''
     );
-    if (!raw && getSelectedId() === 'esencia-premium') {
+    if (!raw && getSelectedId() === 'v2') {
       return 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg';
     }
     return raw;
@@ -3631,7 +3626,7 @@
 
     const brandName = safeText(data.biz_name);
     const logoUrl = safeText(runtimePreview.logo || data.logo_url);
-    const coverUrl = safeText(runtimePreview.cover || data.cover_url) || (getSelectedId() === 'esencia-premium' ? 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg' : '');
+    const coverUrl = safeText(runtimePreview.cover || data.cover_url) || (getSelectedId() === 'v2' ? 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/Imagenv2.jpg' : '');
     const primaryBtn = safeText(data.hero_btn_primary);
     const secondaryBtn = safeText(data.hero_btn_secondary);
     const secondaryColor = safeText(data.palette_secondary) || '#075985';

@@ -172,7 +172,7 @@ final class BarberAgency_Public_Router {
             'v5' => '/index_unico_v5_1_azul_rojo_elegante/',
             'v6' => '/index_unico_v6_negro_dorado/',
             'v7' => '/index_unicov7/',
-            'esencia-premium' => '/esencia-premium/',
+            'esencia-premium' => '/index_unico_v2/',
         ]);
     }
 
