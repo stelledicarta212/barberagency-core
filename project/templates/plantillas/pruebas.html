@@ -2435,22 +2435,80 @@
       };
     }
 
-    async function hydrateLandingFromPublicEndpoint() {
-      if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || '')) &&
-          window.BA_LANDING_ROUTE_CONTEXT &&
-          typeof window.BA_LANDING_ROUTE_CONTEXT === 'object') {
-        renderLandingQr();
-        return;
+    async function enrichPayloadServicesWithDbImages(payload, bId) {
+      if (bId && payload && Array.isArray(payload.servicios) && payload.servicios.length > 0) {
+        try {
+          const dbRes = await fetch(`https://api.agencia2c.cloud/servicios?barberia_id=eq.${bId}`, {
+            headers: { Accept: 'application/json' }
+          });
+          if (dbRes.ok) {
+            const dbServices = await dbRes.json().catch(() => []);
+            if (Array.isArray(dbServices) && dbServices.length > 0) {
+              payload.servicios = payload.servicios.map(s => {
+                const sId = Number(s.id_servicio || s.servicio_id || s.id);
+                const match = dbServices.find(ds => Number(ds.id) === sId);
+                if (match && match.imagen_url) {
+                  return {
+                    ...s,
+                    imagen_url: match.imagen_url,
+                    image_url: match.imagen_url,
+                    foto_url: match.imagen_url,
+                    image: match.imagen_url
+                  };
+                }
+                return s;
+              });
+            }
+          }
+        } catch (e) {
+          console.warn('Error enriching services:', e);
+        }
       }
+    }
+
+    async function hydrateLandingFromPublicEndpoint() {
       const slug = getLandingSlug();
       const barberiaId = getCurrentBarberiaId();
       const endpoint = getPublicProfileEndpoint();
+
+      if (/^\/b\/[^/]+\/?$/i.test(String(window.location?.pathname || '')) &&
+          window.BA_LANDING_ROUTE_CONTEXT &&
+          typeof window.BA_LANDING_ROUTE_CONTEXT === 'object') {
+        const payload = extractPublicLandingPayload(window.BA_LANDING_ROUTE_CONTEXT);
+        if (payload.ok) {
+          runtimeLandingState.barberia_id = payload.barberia_id;
+          runtimeLandingState.profile = payload.profile || null;
+          runtimeLandingState.branding = payload.branding || null;
+          runtimeLandingState.inherited = payload.inherited || null;
+
+          if (payload.public_landing_url) window.BA_PUBLIC_LANDING_URL = payload.public_landing_url;
+          if (payload.reservation_url) window.BA_RESERVATION_URL = payload.reservation_url;
+          if (payload.qr_url) window.BA_QR_URL = payload.qr_url;
+
+          enrichPayloadServicesWithDbImages(payload, payload.barberia_id || barberiaId).then(() => {
+            applyInheritedCollections(payload.servicios, payload.barberos, payload.horarios, payload.slot_min);
+            if (typeof applyPublicLandingBranding === 'function') {
+              applyPublicLandingBranding(payload);
+            } else if (typeof applyLandingBranding === 'function') {
+              applyLandingBranding(payload.profile || payload.inherited || {}, payload.branding || {});
+            }
+          });
+
+          applyInheritedCollections(payload.servicios, payload.barberos, payload.horarios, payload.slot_min);
+          if (typeof applyPublicLandingBranding === 'function') {
+            applyPublicLandingBranding(payload);
+          } else if (typeof applyLandingBranding === 'function') {
+            applyLandingBranding(payload.profile || payload.inherited || {}, payload.branding || {});
+          }
+        }
+        renderLandingQr();
+        return;
+      }
+
       if ((!slug && !barberiaId) || !endpoint) return;
 
       try {
-        const query = slug
-          ? `slug=${encodeURIComponent(slug)}`
-          : `barberia_id=${encodeURIComponent(String(barberiaId))}`;
+        const query = slug ? `slug=${encodeURIComponent(slug)}` : `barberia_id=${encodeURIComponent(String(barberiaId))}`;
         const requestUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${query}`;
         const response = await fetch(requestUrl, {
           method: 'GET',
@@ -2458,7 +2516,6 @@
         });
         const json = await response.json().catch(() => ({}));
         if (!response.ok || json?.ok === false) return;
-
         const payload = extractPublicLandingPayload(json);
         if (!payload.ok) return;
 
@@ -2471,13 +2528,20 @@
         if (payload.reservation_url) window.BA_RESERVATION_URL = payload.reservation_url;
         if (payload.qr_url) window.BA_QR_URL = payload.qr_url;
 
+        await enrichPayloadServicesWithDbImages(payload, payload.barberia_id || barberiaId);
+
         applyInheritedCollections(payload.servicios, payload.barberos, payload.horarios, payload.slot_min);
-        applyPublicLandingBranding(payload);
+        if (typeof applyPublicLandingBranding === 'function') {
+          applyPublicLandingBranding(payload);
+        } else if (typeof applyLandingBranding === 'function') {
+          applyLandingBranding(payload.profile || payload.inherited || {}, payload.branding || {});
+        }
         renderLandingQr();
       } catch (error) {
         console.warn('No se pudo hidratar la landing publica por slug:', error);
       }
     }
+
 
     function getLandingUrlParams() {
       try {
