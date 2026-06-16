@@ -62,7 +62,7 @@
     // SECCION: Configuracion de endpoints y llaves de storage.
     window.BA_PANEL_API_BASE_URL =
       (window.BA_PANEL_API_BASE_URL && String(window.BA_PANEL_API_BASE_URL).trim()) ||
-      "https://barberagency-app.gymh5g.easypanel.host";
+      "";
 
     const DEFAULT_ONBOARDING_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/registro-barberia";
     const DEFAULT_ONBOARDING_ENDPOINT_ALT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/onboarding/complete";
@@ -3381,7 +3381,8 @@
             throw new Error("Falta identidad de barbería (barberia_id o slug) en la URL.");
           }
           
-          const stateUrl = window.BA_PANEL_API_BASE_URL + `/api/dashboard/state?barberia_id=${identity.barberia_id}&slug=${identity.slug}`;
+          const PANEL_API_BASE = (window.BA_PANEL_API_BASE_URL || "").replace(/\/+$/, "");
+          const stateUrl = `${PANEL_API_BASE}/api/dashboard/state?barberia_id=${encodeURIComponent(identity.barberia_id)}&slug=${encodeURIComponent(identity.slug)}`;
           const res = await fetch(stateUrl, { credentials: "include" });
           if (!res.ok) {
             throw new Error(`HTTP ${res.status} al obtener configuración.`);
