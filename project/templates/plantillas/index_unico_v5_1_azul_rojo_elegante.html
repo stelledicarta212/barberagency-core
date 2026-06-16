@@ -2960,6 +2960,9 @@ function normalizeDayLabel(value) {
 
     async function enrichPayloadServicesWithDbImages(payload, bId) {
       if (bId && payload && Array.isArray(payload.servicios) && payload.servicios.length > 0) {
+        // Fallback defensivo: si ya vienen imágenes, no consultar a PostgREST
+        const alreadyHasImages = payload.servicios.some(s => s.imagen_url || s.image_url || s.foto_url || s.image);
+        if (alreadyHasImages) return;
         try {
           const dbRes = await fetch(`https://api.agencia2c.cloud/servicios?barberia_id=eq.${bId}`, {
             headers: { Accept: 'application/json' }
