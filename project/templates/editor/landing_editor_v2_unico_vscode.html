@@ -1314,61 +1314,168 @@
     }
   }
 
+  function firstDefined(...values) {
+    return values.find(v => v !== undefined && v !== null && v !== '');
+  }
+
+  function normalizeServiceForPublish(service, index) {
+    let seedService = null;
+    if (typeof seedLandingData !== 'undefined' && seedLandingData && Array.isArray(seedLandingData.servicios)) {
+      const nameToMatch = safeText(service?.name || service?.nombre).toLowerCase().trim();
+      if (nameToMatch) {
+        seedService = seedLandingData.servicios.find(s => 
+          safeText(s?.nombre || s?.name || s?.title).toLowerCase().trim() === nameToMatch
+        );
+      }
+      if (!seedService && index !== undefined && seedLandingData.servicios[index]) {
+        seedService = seedLandingData.servicios[index];
+      }
+    }
+
+    const id =
+      firstDefined(
+        service?.id_servicio,
+        service?.servicio_id,
+        service?.service_id,
+        service?.id,
+        service?.raw?.id_servicio,
+        service?.raw?.servicio_id,
+        service?.raw?.id,
+        service?.source?.id_servicio,
+        service?.source?.servicio_id,
+        service?.source?.id,
+        seedService?.id_servicio,
+        seedService?.servicio_id,
+        seedService?.id
+      );
+
+    const media =
+      firstDefined(
+        service?.imagen_url,
+        service?.image_url,
+        service?.foto_url,
+        service?.image,
+        service?.imagen,
+        service?.raw?.imagen_url,
+        service?.raw?.image_url,
+        service?.raw?.foto_url,
+        service?.source?.imagen_url,
+        service?.source?.image_url,
+        service?.source?.foto_url,
+        seedService?.imagen_url,
+        seedService?.image_url,
+        seedService?.foto_url
+      );
+
+    const iconFallback = DEFAULT_SERVICE_ICONS[index % DEFAULT_SERVICE_ICONS.length];
+    const resolvedId = Number(id) || null;
+
+    return {
+      ...service,
+      id: resolvedId,
+      id_servicio: resolvedId,
+      servicio_id: resolvedId,
+      name: firstDefined(service?.name, service?.nombre, service?.title, `Servicio ${index + 1}`),
+      nombre: firstDefined(service?.nombre, service?.name, service?.title, `Servicio ${index + 1}`),
+      description: safeText(service?.description || service?.descripcion || 'Trabajo profesional con acabados premium.'),
+      descripcion: safeText(service?.descripcion || service?.description || 'Trabajo profesional con acabados premium.'),
+      icon: safeText(service?.icon || service?.icono || iconFallback),
+      icono: safeText(service?.icono || service?.icon || iconFallback),
+      image: media || '',
+      imagen_url: media || '',
+      image_url: media || '',
+      foto_url: media || '',
+      precio: Number(firstDefined(service?.precio, service?.price, 0)) || 0,
+      price: Number(firstDefined(service?.price, service?.precio, 0)) || 0,
+      duracion_min: Number(firstDefined(service?.duracion_min, service?.duration_min, service?.duration, 30)) || 30,
+      duration_min: Number(firstDefined(service?.duration_min, service?.duration_min, service?.duration, 30)) || 30
+    };
+  }
+
+  function normalizeBarberForPublish(barber, index) {
+    let seedBarber = null;
+    if (typeof seedLandingData !== 'undefined' && seedLandingData && Array.isArray(seedLandingData.barberos)) {
+      const nameToMatch = safeText(barber?.name || barber?.nombre).toLowerCase().trim();
+      if (nameToMatch) {
+        seedBarber = seedLandingData.barberos.find(b => 
+          safeText(b?.nombre || b?.name).toLowerCase().trim() === nameToMatch
+        );
+      }
+      if (!seedBarber && index !== undefined && seedLandingData.barberos[index]) {
+        seedBarber = seedLandingData.barberos[index];
+      }
+    }
+
+    const id =
+      firstDefined(
+        barber?.id_barbero,
+        barber?.barbero_id,
+        barber?.barber_id,
+        barber?.id,
+        barber?.raw?.id_barbero,
+        barber?.raw?.barbero_id,
+        barber?.raw?.id,
+        barber?.source?.id_barbero,
+        barber?.source?.barbero_id,
+        barber?.source?.id,
+        seedBarber?.id_barbero,
+        seedBarber?.barbero_id,
+        seedBarber?.id
+      );
+
+    const photo =
+      firstDefined(
+        barber?.foto_url,
+        barber?.foto,
+        barber?.imagen_url,
+        barber?.avatar_url,
+        barber?.image_url,
+        barber?.photo,
+        barber?.raw?.foto_url,
+        barber?.raw?.foto,
+        barber?.raw?.imagen_url,
+        barber?.source?.foto_url,
+        barber?.source?.foto,
+        barber?.source?.imagen_url,
+        seedBarber?.foto_url,
+        seedBarber?.foto,
+        seedBarber?.imagen_url
+      );
+
+    const photoFallback = DEFAULT_BARBER_PHOTOS[index % DEFAULT_BARBER_PHOTOS.length];
+    const resolvedPhoto = photo || photoFallback;
+    const resolvedId = Number(id) || null;
+
+    return {
+      ...barber,
+      id: resolvedId,
+      id_barbero: resolvedId,
+      barbero_id: resolvedId,
+      name: firstDefined(barber?.name, barber?.nombre, `Barbero ${index + 1}`),
+      nombre: firstDefined(barber?.nombre, barber?.name, `Barbero ${index + 1}`),
+      activo: barber?.activo !== undefined ? Boolean(barber.activo) : true,
+      especialidad: firstDefined(barber?.especialidad, barber?.rol, barber?.role, 'Barbero profesional'),
+      rol: firstDefined(barber?.rol, barber?.role, barber?.especialidad, 'Barbero profesional'),
+      experiencia: firstDefined(barber?.experiencia, 'Experiencia comprobada'),
+      foto: resolvedPhoto,
+      foto_url: resolvedPhoto,
+      imagen_url: resolvedPhoto,
+      photo: resolvedPhoto,
+      picture_url: resolvedPhoto
+    };
+  }
+
   function normalizeInheritedServices(items) {
     const safe = Array.isArray(items) ? items : [];
     return safe
-      .map((item, i) => {
-        const idVal = Number(item?.id || item?.id_servicio || item?.servicio_id) || null;
-        const nameVal = safeText(item?.name || item?.nombre || item?.nombre_servicio || item?.servicio);
-        const iconFallback = DEFAULT_SERVICE_ICONS[i % DEFAULT_SERVICE_ICONS.length];
-        const imgVal = safeImageUrl(pickFirstImage(item?.imagen_url, item?.image_url, item?.foto_url, item?.image, item?.foto, item?.icon_url, item?.imagen)) || '';
-        return {
-          id: idVal,
-          id_servicio: idVal,
-          servicio_id: idVal,
-          name: nameVal,
-          nombre: nameVal,
-          description: safeText(item?.description || item?.descripcion || 'Trabajo profesional con acabados premium.'),
-          descripcion: safeText(item?.descripcion || item?.description || 'Trabajo profesional con acabados premium.'),
-          icon: safeText(item?.icon || item?.icono || iconFallback),
-          icono: safeText(item?.icono || item?.icon || iconFallback),
-          image: imgVal,
-          image_url: imgVal,
-          imagen_url: imgVal,
-          foto_url: imgVal,
-          duration_min: Number(item?.duration_min || item?.duracion_min || 45),
-          duracion_min: Number(item?.duracion_min || item?.duration_min || 45),
-          price: Math.max(0, Number(item?.price || item?.precio || 0)),
-          precio: Math.max(0, Number(item?.precio || item?.price || 0))
-        };
-      })
+      .map((item, i) => normalizeServiceForPublish(item, i))
       .filter((item) => safeText(item.name) || safeText(item.nombre));
   }
 
   function normalizeInheritedBarbers(items) {
     const safe = Array.isArray(items) ? items : [];
-    return safe.map((item, i) => {
-      const idVal = Number(item?.id || item?.id_barbero || item?.barbero_id) || null;
-      const nameVal = safeText(item?.name || item?.nombre);
-      const photoFallback = DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length];
-      const photoVal = safeImageUrl(pickFirstImage(item?.foto, item?.photo, item?.foto_url, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url, item?.picture_url)) || photoFallback;
-      return {
-        id: idVal,
-        id_barbero: idVal,
-        barbero_id: idVal,
-        name: nameVal,
-        nombre: nameVal,
-        activo: item?.activo !== undefined ? Boolean(item.activo) : true,
-        especialidad: safeText(item?.especialidad || item?.rol || item?.role || 'Barbero profesional'),
-        rol: safeText(item?.rol || item?.role || item?.especialidad || 'Barbero profesional'),
-        experiencia: safeText(item?.experiencia || 'Experiencia comprobada'),
-        photo: photoVal,
-        foto: photoVal,
-        foto_url: photoVal,
-        imagen_url: photoVal,
-        picture_url: photoVal
-      };
-    })
+    return safe
+      .map((item, i) => normalizeBarberForPublish(item, i))
       .filter((item) => safeText(item.name) || safeText(item.nombre));
   }
 
@@ -2357,6 +2464,12 @@
     const selectedTemplate = byId[selectedId] || templates[0];
     const publishCoverUrl = safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl() || undefined;
     const publishLogoUrl = safeImageUrl(data.logo_url) || undefined;
+
+    const normalizedServices = (Array.isArray(inheritedCollections.services) ? inheritedCollections.services : [])
+      .map((s, idx) => normalizeServiceForPublish(s, idx));
+    const normalizedBarbers = (Array.isArray(inheritedCollections.barbers) ? inheritedCollections.barbers : [])
+      .map((b, idx) => normalizeBarberForPublish(b, idx));
+
     const payload = {
       barberia_id: identity.barberia_id,
       site_base_url: getPublicSiteBase(),
@@ -2381,8 +2494,8 @@
         map_url: normalizedMapsUrl,
         telefono: identity.telefono,
         slot_min: Number(data.slot_min) || 30,
-        servicios: inheritedCollections.services,
-        barberos: inheritedCollections.barbers,
+        servicios: normalizedServices,
+        barberos: normalizedBarbers,
         horarios: inheritedCollections.hours
       },
       branding: {
@@ -2478,8 +2591,8 @@
       ...payload,
       ...publishedUrls,
       landing_publish: landingPublish,
-      servicios: inheritedCollections.services,
-      barberos: inheritedCollections.barbers,
+      servicios: normalizedServices,
+      barberos: normalizedBarbers,
       horarios: inheritedCollections.hours
     };
   }
