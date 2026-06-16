@@ -1934,6 +1934,19 @@
       return String(v || '').trim();
     }
 
+    function pickFirstImage(...values) {
+      return values.find((value) => typeof value === 'string' && value.trim().length > 0) || '';
+    }
+
+    function normalizeImageUrl(value) {
+      const raw = safeSeedText(value);
+      if (!raw) return '';
+      if (/^(https?:\/\/|data:image\/)/i.test(raw)) return raw;
+      if (raw.startsWith('/wp-content/')) return `${window.location.origin}${raw}`;
+      if (raw.startsWith('wp-content/')) return `${window.location.origin}/${raw}`;
+      return raw;
+    }
+
     function isKnownPlaceholderImage(url) {
       const value = safeSeedText(url).toLowerCase();
       if (!value) return false;
@@ -1946,23 +1959,24 @@
     }
 
     function safeImageUrl(url) {
-      const value = safeSeedText(url);
+      const value = normalizeImageUrl(url);
       return value && !isKnownPlaceholderImage(value) ? value : '';
     }
 
     function resolveServiceImage(item) {
       if (!item || typeof item !== 'object') return '';
-      return safeImageUrl(
-        item.foto_url ||
-        item.foto ||
-        item.imagen ||
-        item.image_url ||
-        item.image ||
-        item.cover_url ||
-        item.media_url ||
-        item.photo ||
-        item.imagen_url
-      );
+      return safeImageUrl(pickFirstImage(
+        item.imagen_url,
+        item.foto_url,
+        item.image,
+        item.image_url,
+        item.icon_url,
+        item.foto,
+        item.imagen,
+        item.cover_url,
+        item.media_url,
+        item.photo
+      ));
     }
 
     function buildMapsEmbedUrl(value) {
@@ -2079,8 +2093,25 @@
       const profile = payload.profile || payload.barberia || {};
       const branding = payload.branding || payload.config || {};
       const publicName = safeSeedText(profile.nombre_publico || profile.nombre || branding.biz_name);
-      const logoUrl = safeSeedText(profile.logo_url || branding.logo_url);
-      const coverUrl = safeImageUrl(profile.cover_url || branding.cover_url || branding.hero_image_url);
+      const logoUrl = safeImageUrl(pickFirstImage(profile.logo_url, profile.logo, profile.logoUrl, profile.logoURL, branding.logo_url, branding.logo, branding.logoUrl, branding.logoURL));
+      const coverUrl = safeImageUrl(pickFirstImage(
+        profile.cover_url,
+        profile.cover,
+        profile.coverUrl,
+        profile.hero_url,
+        profile.hero,
+        profile.hero_image_url,
+        profile.imagen_portada,
+        profile.portada_url,
+        branding.cover_url,
+        branding.cover,
+        branding.coverUrl,
+        branding.hero_url,
+        branding.hero,
+        branding.hero_image_url,
+        branding.imagen_portada,
+        branding.portada_url
+      ));
       const logoWidth = Number(branding.logo_width || 0) || 0;
       const kicker = safeSeedText(branding.hero_badge || branding.hero_kicker);
       const title = safeSeedText(branding.hero_title);
@@ -2415,7 +2446,7 @@
         icono: safeSeedText(item.icono || item.icon || iconFallback) || iconFallback,
         imagen_url: resolveServiceImage(item),
         image_url: resolveServiceImage(item),
-        foto_url: safeImageUrl(item.foto_url || item.foto || item.imagen || item.image_url || item.image || item.cover_url || item.media_url || item.photo || item.imagen_url),
+        foto_url: resolveServiceImage(item),
         duracion_min: Math.max(15, toSeedNumber(item.duracion_min ?? item.duration_min ?? item.duracion ?? item.duration, 60))
       };
     }
@@ -2432,7 +2463,7 @@
 
       const photoFallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
       const exp = safeSeedText(item.experiencia || item.anios_experiencia || item.years_experience || item.years);
-      const foto = safeSeedText(item.foto || item.foto_url || item.avatar_url || item.imagen || item.imagen_url || item.photo) || photoFallback;
+      const foto = safeImageUrl(pickFirstImage(item.foto_url, item.avatar_url, item.imagen_url, item.foto, item.avatar, item.image, item.image_url, item.photo, item.picture_url)) || photoFallback;
       return {
         ...item,
         id_barbero: barberId,
@@ -2443,7 +2474,7 @@
         especialidad: safeSeedText(item.especialidad || item.especialidades || item.rol || item.descripcion || item.bio) || 'Barbero profesional',
         experiencia: exp || 'Experiencia comprobada',
         foto,
-        foto_url: safeSeedText(item.foto_url || item.foto || item.avatar_url || item.imagen || item.imagen_url || item.photo) || foto
+        foto_url: safeImageUrl(pickFirstImage(item.foto_url, item.avatar_url, item.imagen_url, item.foto, item.avatar, item.image, item.image_url, item.photo, item.picture_url)) || foto
       };
     }
 
@@ -2522,6 +2553,12 @@
       if (data?.qr_url) window.BA_QR_URL = safeSeedText(data.qr_url);
       if (Array.isArray(data?.barber_photos)) window.BA_BARBER_PHOTOS = data.barber_photos.map((item) => safeSeedText(item)).filter(Boolean);
       if (typeof data?.force_pool_photos === 'boolean') window.BA_FORCE_POOL_PHOTOS = data.force_pool_photos;
+      applyInheritedCollections(
+        data.services || data.inherited_services || data.servicios,
+        data.barbers || data.inherited_barbers || data.barberos,
+        data.hours || data.inherited_hours || data.horarios,
+        data.slot_min || data.barberia?.slot_min
+      );
       if (data.type !== 'BA_BRANDING_UPDATE') return;
       const payload = data.payload || {};
       if (payload?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(payload.public_landing_url);

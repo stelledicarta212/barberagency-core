@@ -1057,6 +1057,19 @@
     return String(s || '').trim();
   }
 
+  function pickFirstImage(...values) {
+    return values.find((value) => typeof value === 'string' && value.trim().length > 0) || '';
+  }
+
+  function normalizeImageUrl(value) {
+    const raw = safeText(value);
+    if (!raw) return '';
+    if (/^(https?:\/\/|data:image\/)/i.test(raw)) return raw;
+    if (raw.startsWith('/wp-content/')) return `${window.location.origin}${raw}`;
+    if (raw.startsWith('wp-content/')) return `${window.location.origin}/${raw}`;
+    return raw;
+  }
+
   function isKnownPlaceholderImage(url) {
     const value = safeText(url).toLowerCase();
     if (!value) return false;
@@ -1069,22 +1082,47 @@
   }
 
   function safeImageUrl(url) {
-    const value = safeText(url);
+    const value = normalizeImageUrl(url);
     return value && !isKnownPlaceholderImage(value) ? value : '';
   }
 
   function getCanonicalSeedCoverUrl() {
-    return (
-      safeImageUrl(seedLandingData?.cover_url) ||
-      safeImageUrl(seedLandingData?.barberia?.cover_url) ||
-      safeImageUrl(seedLandingData?.landing?.cover_url) ||
-      safeImageUrl(seedLandingData?.branding?.cover_url) ||
-      safeImageUrl(seedLandingData?.profile?.cover_url) ||
-      safeImageUrl(seedLandingData?.inherited?.cover_url) ||
-      safeImageUrl(seedLandingData?.hero_image_url) ||
-      safeImageUrl(seedLandingData?.branding?.hero_image_url) ||
-      safeImageUrl(seedLandingData?.barberia?.hero_image_url) ||
-      ''
+    return safeImageUrl(
+      pickFirstImage(
+        seedLandingData?.cover_url,
+        seedLandingData?.cover,
+        seedLandingData?.coverUrl,
+        seedLandingData?.hero_url,
+        seedLandingData?.hero,
+        seedLandingData?.hero_image_url,
+        seedLandingData?.imagen_portada,
+        seedLandingData?.portada_url,
+        seedLandingData?.barberia?.cover_url,
+        seedLandingData?.barberia?.cover,
+        seedLandingData?.barberia?.coverUrl,
+        seedLandingData?.barberia?.hero_url,
+        seedLandingData?.barberia?.hero,
+        seedLandingData?.barberia?.hero_image_url,
+        seedLandingData?.barberia?.imagen_portada,
+        seedLandingData?.barberia?.portada_url,
+        seedLandingData?.landing?.cover_url,
+        seedLandingData?.branding?.cover_url,
+        seedLandingData?.branding?.cover,
+        seedLandingData?.branding?.coverUrl,
+        seedLandingData?.branding?.hero_url,
+        seedLandingData?.branding?.hero,
+        seedLandingData?.branding?.hero_image_url,
+        seedLandingData?.branding?.imagen_portada,
+        seedLandingData?.branding?.portada_url,
+        seedLandingData?.profile?.cover_url,
+        seedLandingData?.profile?.cover,
+        seedLandingData?.profile?.coverUrl,
+        seedLandingData?.profile?.hero_url,
+        seedLandingData?.profile?.hero,
+        seedLandingData?.profile?.imagen_portada,
+        seedLandingData?.profile?.portada_url,
+        seedLandingData?.inherited?.cover_url
+      )
     );
   }
 
@@ -1286,9 +1324,9 @@
       description: safeText(item?.description || item?.descripcion || 'Trabajo profesional con acabados premium.'),
       descripcion: safeText(item?.descripcion || item?.description || 'Trabajo profesional con acabados premium.'),
       icon: safeText(item?.icon || DEFAULT_SERVICE_ICONS[i % DEFAULT_SERVICE_ICONS.length]),
-      image: safeText(item?.image || item?.image_url || item?.imagen_url || item?.foto_url || item?.foto || item?.imagen),
-      image_url: safeText(item?.image_url || item?.imagen_url || item?.image || item?.foto_url || item?.foto || item?.imagen),
-      imagen_url: safeText(item?.imagen_url || item?.image_url || item?.image || item?.foto_url || item?.foto || item?.imagen),
+      image: safeImageUrl(pickFirstImage(item?.image, item?.image_url, item?.imagen_url, item?.foto_url, item?.icon_url, item?.foto, item?.imagen)),
+      image_url: safeImageUrl(pickFirstImage(item?.image_url, item?.imagen_url, item?.image, item?.foto_url, item?.icon_url, item?.foto, item?.imagen)),
+      imagen_url: safeImageUrl(pickFirstImage(item?.imagen_url, item?.image_url, item?.image, item?.foto_url, item?.icon_url, item?.foto, item?.imagen)),
       duration_min: Number(item?.duration_min || item?.duracion_min || 45),
       duracion_min: Number(item?.duracion_min || item?.duration_min || 45),
       price: Math.max(0, Number(item?.price || item?.precio || 0)),
@@ -1306,10 +1344,10 @@
       activo: item?.activo !== undefined ? Boolean(item.activo) : true,
       especialidad: safeText(item?.especialidad || item?.rol || item?.role),
       rol: safeText(item?.rol || item?.role || item?.especialidad),
-      photo: safeText(item?.photo || item?.foto || item?.foto_url || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
-      foto: safeText(item?.foto || item?.photo || item?.foto_url || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
-      foto_url: safeText(item?.foto_url || item?.foto || item?.photo || item?.picture_url || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]),
-      picture_url: safeText(item?.picture_url || item?.foto_url || item?.foto || item?.photo || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length])
+      photo: safeImageUrl(pickFirstImage(item?.photo, item?.foto, item?.foto_url, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url, item?.picture_url)) || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length],
+      foto: safeImageUrl(pickFirstImage(item?.foto, item?.photo, item?.foto_url, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url, item?.picture_url)) || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length],
+      foto_url: safeImageUrl(pickFirstImage(item?.foto_url, item?.foto, item?.photo, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url, item?.picture_url)) || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length],
+      picture_url: safeImageUrl(pickFirstImage(item?.picture_url, item?.foto_url, item?.foto, item?.photo, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url)) || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]
     }))
       .filter((item) => safeText(item.name) || safeText(item.nombre));
   }
@@ -1335,20 +1373,43 @@
 
   function applyInheritedCollectionsFromPayload(payload) {
     const source = payload && typeof payload === 'object' ? payload : {};
+    const data = source?.data && typeof source.data === 'object' ? source.data : {};
+    const inherited = source?.inherited && typeof source.inherited === 'object' ? source.inherited : {};
     const nextServices = normalizeInheritedServices(
       source?.servicios ||
-      source?.inherited?.servicios ||
-      source?.data?.servicios
+      source?.services ||
+      source?.collections?.servicios ||
+      source?.collections?.services ||
+      inherited?.servicios ||
+      inherited?.services ||
+      data?.servicios ||
+      data?.services ||
+      data?.collections?.servicios ||
+      data?.collections?.services
     );
     const nextBarbers = normalizeInheritedBarbers(
       source?.barberos ||
-      source?.inherited?.barberos ||
-      source?.data?.barberos
+      source?.barbers ||
+      source?.collections?.barberos ||
+      source?.collections?.barbers ||
+      inherited?.barberos ||
+      inherited?.barbers ||
+      data?.barberos ||
+      data?.barbers ||
+      data?.collections?.barberos ||
+      data?.collections?.barbers
     );
     const nextHours = normalizeInheritedHours(
       source?.horarios ||
-      source?.inherited?.horarios ||
-      source?.data?.horarios
+      source?.hours ||
+      source?.collections?.horarios ||
+      source?.collections?.hours ||
+      inherited?.horarios ||
+      inherited?.hours ||
+      data?.horarios ||
+      data?.hours ||
+      data?.collections?.horarios ||
+      data?.collections?.hours
     );
 
     if (nextServices.length) {
@@ -1497,10 +1558,26 @@
       safeText(seedLandingData?.map_url) ||
       buildMapsEmbedUrl(seedAddress);
 
-    const seedLogoUrl =
-      safeImageUrl(seedLandingData?.logo_url) ||
-      safeImageUrl(seedLandingData?.barberia?.logo_url) ||
-      safeImageUrl(seedLandingData?.branding?.logo_url);
+    const seedLogoUrl = safeImageUrl(
+      pickFirstImage(
+        seedLandingData?.logo_url,
+        seedLandingData?.logo,
+        seedLandingData?.logoUrl,
+        seedLandingData?.logoURL,
+        seedLandingData?.barberia?.logo_url,
+        seedLandingData?.barberia?.logo,
+        seedLandingData?.barberia?.logoUrl,
+        seedLandingData?.barberia?.logoURL,
+        seedLandingData?.branding?.logo_url,
+        seedLandingData?.branding?.logo,
+        seedLandingData?.branding?.logoUrl,
+        seedLandingData?.branding?.logoURL,
+        seedLandingData?.profile?.logo_url,
+        seedLandingData?.profile?.logo,
+        seedLandingData?.profile?.logoUrl,
+        seedLandingData?.profile?.logoURL
+      )
+    );
 
     const seedCoverUrl = getCanonicalSeedCoverUrl();
 
@@ -2763,10 +2840,17 @@
     };
   }
 
+  function getInheritedBarberPhotoUrls() {
+    return inheritedCollections.barbers
+      .map((item) => safeImageUrl(pickFirstImage(item?.foto_url, item?.foto, item?.photo, item?.picture_url, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url)))
+      .filter(Boolean);
+  }
+
   function buildEditorMessagePayload(data, extra = {}) {
     const qrContext = getQrContext();
     const coverUrl = safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl();
     const logoUrl = safeImageUrl(data.logo_url);
+    const barberPhotos = getInheritedBarberPhotoUrls();
     const payload = {
       ...extra,
       source: 'ba-editor',
@@ -2779,20 +2863,27 @@
       hero_btn_primary: data.hero_btn_primary,
       hero_btn_secondary: data.hero_btn_secondary,
       logo_url: logoUrl,
+      logo: runtimePreview.logo || logoUrl,
+      logoUrl,
       logo_width: data.logo_width,
       cover_url: coverUrl,
+      cover: runtimePreview.cover || coverUrl,
+      coverUrl,
+      hero_url: coverUrl,
       address: data.address,
       maps_url: data.maps_url,
       slot_min: data.slot_min,
       public_landing_url: qrContext.public_landing_url,
       qr_url: qrContext.qr_url,
       reservation_url: qrContext.reservation_url,
-      barber_photos: DEFAULT_BARBER_PHOTOS.slice(),
-      force_pool_photos: true,
+      barber_photos: barberPhotos.length ? barberPhotos : DEFAULT_BARBER_PHOTOS.slice(),
+      force_pool_photos: barberPhotos.length === 0,
       use_custom_palette: data.use_custom_palette,
       fonts: FONT_PRESETS[data.font_pair] || FONT_PRESETS.dm_plusjakarta,
-      logo: runtimePreview.logo || logoUrl,
-      cover: runtimePreview.cover || coverUrl
+      hero: coverUrl,
+      services: inheritedCollections.services,
+      barbers: inheritedCollections.barbers,
+      hours: inheritedCollections.hours
     };
 
     if (data.use_custom_palette) {
@@ -2809,6 +2900,7 @@
     const qrContext = getQrContext();
     const coverUrl = safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl();
     const logoUrl = safeImageUrl(data.logo_url);
+    const barberPhotos = getInheritedBarberPhotoUrls();
     const payload = {
       ...extra,
       biz_name: data.biz_name,
@@ -2820,19 +2912,23 @@
       hero_btn_primary: data.hero_btn_primary,
       hero_btn_secondary: data.hero_btn_secondary,
       logo_url: logoUrl,
+      logo: runtimePreview.logo || logoUrl,
+      logoUrl,
       logo_width: data.logo_width,
       cover_url: coverUrl,
+      cover: runtimePreview.cover || coverUrl,
+      coverUrl,
+      hero_url: coverUrl,
       address: data.address,
       maps_url: data.maps_url,
       slot_min: data.slot_min,
       public_landing_url: qrContext.public_landing_url,
       qr_url: qrContext.qr_url,
       reservation_url: qrContext.reservation_url,
-      barber_photos: DEFAULT_BARBER_PHOTOS.slice(),
-      force_pool_photos: true,
+      barber_photos: barberPhotos.length ? barberPhotos : DEFAULT_BARBER_PHOTOS.slice(),
+      force_pool_photos: barberPhotos.length === 0,
       use_custom_palette: data.use_custom_palette,
-      logo: runtimePreview.logo || logoUrl,
-      cover: runtimePreview.cover || coverUrl,
+      hero: coverUrl,
       services: inheritedCollections.services,
       barbers: inheritedCollections.barbers,
       hours: inheritedCollections.hours
@@ -3598,8 +3694,8 @@
     if (!doc || !data) return;
 
     const brandName = safeText(data.biz_name);
-    const logoUrl = safeText(runtimePreview.logo || data.logo_url);
-    const coverUrl = safeText(runtimePreview.cover || data.cover_url);
+    const logoUrl = safeImageUrl(pickFirstImage(runtimePreview.logo, data.logo_url, data.logo, data.logoUrl, data.logoURL));
+    const coverUrl = safeImageUrl(pickFirstImage(runtimePreview.cover, data.cover_url, data.cover, data.coverUrl, data.hero_url, data.hero, data.imagen_portada, data.portada_url));
     const primaryBtn = safeText(data.hero_btn_primary);
     const secondaryBtn = safeText(data.hero_btn_secondary);
     const secondaryColor = safeText(data.palette_secondary) || '#075985';
