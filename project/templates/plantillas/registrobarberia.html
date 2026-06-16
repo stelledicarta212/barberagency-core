@@ -622,26 +622,41 @@
           timezone: clean(seed.timezone || barberiaSeed.timezone || "America/Bogotá"),
           slot_min: Number(seed.slot_min || barberiaSeed.slot_min || 15)
         },
-        servicios: serviciosSeed.map((item) => ({
-          nombre: clean(item && (item.nombre || item.name)),
-          duracion_min: Number(item && (item.duracion_min || item.duration_min || 30)),
-          precio: Math.max(0, Number(item && (item.precio || item.price || 0))),
-          imagen_url: clean(item && (item.imagen_url || item.image_url || item.foto_url || item.foto))
-        })),
+        servicios: serviciosSeed.map((item) => {
+          const imgVal = clean(item && (item.imagen_url || item.image_url || item.foto_url || item.foto || ''));
+          const sId = Number(item && (item.id || item.id_servicio)) || undefined;
+          return {
+            id: sId,
+            id_servicio: sId,
+            nombre: clean(item && (item.nombre || item.name)),
+            duracion_min: Number(item && (item.duracion_min || item.duration_min || 30)),
+            precio: Math.max(0, Number(item && (item.precio || item.price || 0))),
+            imagen_url: imgVal,
+            image_url: imgVal,
+            foto_url: imgVal
+          };
+        }),
         horarios: horariosSeed.map((item) => ({
           dia: clean(item && item.dia).toLowerCase(),
           activo: Boolean(item && item.activo),
           hora_abre: clean(item && item.hora_abre),
           hora_cierra: clean(item && item.hora_cierra)
         })),
-        barberos: barberosSeed.map((item) => ({
-          id: Number(item && item.id) || undefined,
-          usuario_id: Number(item && (item.usuario_id || item.user_id)) || undefined,
-          nombre: clean(item && (item.nombre || item.name)),
-          activo: item && item.activo !== undefined ? Boolean(item.activo) : true,
-          foto: normalizeBarberPhoto(item && (item.foto_url || item.foto || item.photo || item.avatar_url)),
-          foto_url: normalizeBarberPhoto(item && (item.foto_url || item.foto || item.photo || item.avatar_url))
-        })),
+        barberos: barberosSeed.map((item) => {
+          const fotoVal = clean(item && (item.foto_url || item.foto || item.photo || item.imagen_url || item.avatar_url || ''));
+          const bId = Number(item && (item.id || item.id_barbero)) || undefined;
+          return {
+            id: bId,
+            id_barbero: bId,
+            usuario_id: Number(item && (item.usuario_id || item.user_id)) || undefined,
+            nombre: clean(item && (item.nombre || item.name)),
+            activo: item && item.activo !== undefined ? Boolean(item.activo) : true,
+            foto: fotoVal,
+            foto_url: fotoVal,
+            imagen_url: fotoVal,
+            especialidad: clean(item && (item.especialidad || item.rol || item.role)) || 'Barbero profesional'
+          };
+        }),
         accesos: {
           admin: {
             nombre: clean(adminSeed.nombre || adminSeed.name),
@@ -2183,6 +2198,25 @@
         return firstEmpty || [];
       };
 
+      const normalizeSeedService = (item, index) => {
+        const nombre = clean(item?.nombre || item?.name);
+        const imgVal = clean(item?.imagen_url || item?.image_url || item?.foto_url || item?.image || item?.foto || '');
+        const sId = Number(item?.id || item?.id_servicio || 0) || undefined;
+        return {
+          ...item,
+          id_servicio: sId,
+          id: sId,
+          nombre,
+          name: nombre,
+          duracion_min: Number(item?.duracion_min || item?.duration_min || 30),
+          precio: Math.max(0, Number(item?.precio || item?.price || 0)),
+          icono: clean(item?.icono || item?.icon || 'bi-scissors'),
+          imagen_url: imgVal,
+          image_url: imgVal,
+          foto_url: imgVal
+        };
+      };
+
       const finalServices = firstArray(
         data?.servicios,
         data?.services,
@@ -2192,7 +2226,7 @@
         payload?.collections?.servicios,
         payload?.collections?.servicios?.upsert,
         payload?.collections_patch?.servicios?.upsert
-      );
+      ).map(normalizeSeedService).filter((item) => clean(item.nombre));
 
       const finalHours = firstArray(
         data?.horarios,
@@ -2236,10 +2270,11 @@
       const normalizeSeedBarber = (item, index) => {
         const nombre = clean(item?.nombre || item?.name);
         const foto = normalizeBarberPhoto(item?.foto_url || item?.foto || item?.photo || item?.picture_url || item?.avatar_url || item?.image_url || item?.image);
+        const bId = Number(item?.id || item?.id_barbero || 0) || undefined;
         return {
           ...item,
-          id: Number(item?.id || 0) || undefined,
-          usuario_id: Number(item?.usuario_id || item?.user_id || 0) || undefined,
+          id_barbero: bId,
+          id: bId,
           nombre,
           name: nombre,
           activo: item?.activo !== undefined ? Boolean(item.activo) : true,
@@ -2247,8 +2282,8 @@
           foto_url: foto,
           photo: foto,
           picture_url: foto,
-          especialidad: clean(item?.especialidad || item?.rol || item?.role),
-          rol: clean(item?.rol || item?.role || item?.especialidad)
+          especialidad: clean(item?.especialidad || item?.rol || item?.role) || 'Barbero profesional',
+          rol: clean(item?.rol || item?.role || item?.especialidad) || 'Barbero profesional'
         };
       };
       const finalBarbers = (Array.isArray(finalBarberSource) ? finalBarberSource : [])
@@ -3425,29 +3460,44 @@
               timezone: clean(b.timezone) || "America/Bogotá",
               slot_min: Number(b.slot_min || 15)
             },
-            servicios: servicesList.map(s => ({
-              id: s.id,
-              nombre: clean(s.nombre),
-              duracion_min: Number(s.duracion_min || 30),
-              precio: Number(s.precio || 0),
-              imagen_url: clean(s.imagen_url)
-            })),
+            servicios: servicesList.map(s => {
+              const imgVal = clean(s.imagen_url || s.image_url || s.foto_url || '');
+              const sId = Number(s.id || s.id_servicio || 0) || undefined;
+              return {
+                id: sId,
+                id_servicio: sId,
+                nombre: clean(s.nombre),
+                duracion_min: Number(s.duracion_min || 30),
+                precio: Number(s.precio || 0),
+                imagen_url: imgVal,
+                image_url: imgVal,
+                foto_url: imgVal
+              };
+            }),
             horarios: hoursList.map(h => ({
               dia: dayNames[h.dia_semana] || "lunes",
               activo: Boolean(h.activo),
               hora_abre: clean(h.hora_abre).slice(0, 5),
               hora_cierra: clean(h.hora_cierra).slice(0, 5)
             })),
-            barberos: barbersList.map(ba => ({
-              id: Number(ba.id || 0) || undefined,
-              usuario_id: Number(ba.usuario_id || 0) || undefined,
-              nombre: clean(ba.nombre),
-              email: clean(ba.email || ba.barbero_email).toLowerCase(),
-              has_password: Boolean(ba.has_password),
-              activo: Boolean(ba.activo),
-              foto: clean(ba.foto_url),
-              foto_url: clean(ba.foto_url)
-            })),
+            barberos: barbersList.map(ba => {
+              const fotoVal = clean(ba.foto_url || ba.foto || ba.imagen_url || ba.avatar_url || '');
+              const bId = Number(ba.id || ba.id_barbero || 0) || undefined;
+              return {
+                id: bId,
+                id_barbero: bId,
+                usuario_id: Number(ba.usuario_id || 0) || undefined,
+                nombre: clean(ba.nombre),
+                email: clean(ba.email || ba.barbero_email).toLowerCase(),
+                has_password: Boolean(ba.has_password),
+                activo: Boolean(ba.activo),
+                foto: fotoVal,
+                foto_url: fotoVal,
+                imagen_url: fotoVal,
+                especialidad: clean(ba.especialidad || ba.rol || ba.role || 'Barbero profesional'),
+                rol: clean(ba.rol || ba.role || ba.especialidad || 'Barbero profesional')
+              };
+            }),
             accesos: {
               admin: {
                 nombre: owner.nombre || "Administrador",

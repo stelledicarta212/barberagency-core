@@ -1,179 +1,138 @@
 # Diagnóstico y Corrección Definitiva: Hidratación de Imágenes de Servicios en Editor y Landing Pública
 
-**Fecha y Hora:** 2026-06-16T17:38:00-05:00  
+**Fecha y Hora:** 2026-06-16T18:15:00-05:00  
 **Barbería ID de prueba:** `198`  
 **Slug de prueba:** `barberia-prueba-4`  
 
 ---
 
-## 1. Causa Raíz Real
+## 1. Causa Raíz Diagnosticada en Caliente
 
-El problema de la pérdida de imágenes en los servicios y barberos al cargar la landing o editor provenía directamente de la consulta de base de datos en el workflow de n8n.
+A pesar de que el webhook público n8n (`/webhook/barberagency/landing/public?slug=barberia-prueba-4`) y el endpoint del panel `/api/dashboard/state` ya devolvían correctamente las imágenes de los servicios (`imagen_url`, `image_url`, `foto_url`) y barberos (`foto`, `foto_url`), las imágenes de los servicios se perdían en dos fases críticas del flujo:
 
-Al invocar la landing pública:
-`https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public?slug=barberia-prueba-4`
-
-### SQL Anterior (Nodo `Fetch public landing` en n8n)
-La consulta SQL en el CTE `servicios_json` y `barberos_json` omitía por completo las columnas reales de imagen y foto, hardcodeando valores vacíos o un icono estático:
-```sql
-), servicios_json AS (
-  SELECT COALESCE(
-    jsonb_agg(
-      jsonb_build_object(
-        'id_servicio', s.id,
-        'nombre', s.nombre,
-        'precio', s.precio,
-        'duracion_min', COALESCE(s.duracion_min, 45),
-        'icono', 'bi-scissors' -- Hardcoded
-      )
-      ORDER BY s.id
-    ),
-    '[]'::jsonb
-  ) AS servicios
-  FROM servicios s
-  WHERE s.barberia_id = (SELECT barberia_id FROM resolved_profile)
-), barberos_json AS (
-  SELECT COALESCE(
-    jsonb_agg(
-      jsonb_build_object(
-        'id_barbero', br.id,
-        'nombre', br.nombre,
-        'especialidad', 'Barbero profesional',
-        'experiencia', 'Experiencia comprobada',
-        'foto', '' -- Hardcoded vacío
-      )
-      ORDER BY br.id
-    ),
-    '[]'::jsonb
-  ) AS barberos
-  FROM barberos br
-  WHERE br.barberia_id = (SELECT barberia_id FROM resolved_profile)
-)
-```
+1. **Fase de Registro/Onboarding a Editor:**
+   - En `registrobarberia.html`, cuando se hidrataban los datos de la barbería en modo edición desde `/api/dashboard/state`, el mapeo de servicios solo asignaba `imagen_url`, omitiendo `image_url` y `foto_url`.
+   - Adicionalmente, al hacer click en "Seguir a la plantilla", el método `persistLandingSeed` guardaba la semilla `ba_landing_seed` en `sessionStorage` sin normalizar los servicios, provocando que los campos de imágenes adicionales y IDs consistentes (`id_servicio`) se perdieran.
+2. **Fase del Editor (Carga y Guardado/Publicación):**
+   - En `landing_editor_v2_unico_vscode.html`, el normalizador `normalizeInheritedServices(items)` no recuperaba los IDs unificados (`id_servicio`) ni las URLs en formato `foto_url`.
+   - Como consecuencia, cuando el editor enviaba el payload de guardado a `/api/editor/publish`, los servicios se enviaban sin los campos unificados mínimos de imagen y ID.
+3. **Fase de Renderizado en Plantillas:**
+   - Las plantillas de las landing pages (`index_unico_v2.html` a `index_unicov7.html` y `pruebas.html`) realizaban una normalización defensiva estricta en `normalizeSeedService`. Si un servicio no tenía un ID asignado (`item.id_servicio` o `item.id`), el normalizador retornaba `null`, descartando el servicio o perdiendo la hidratación.
+   - En `index_unico_v2.html`, la función `normalizeSeedService` descartaba cualquier servicio si su ID numérico resolvía a `0`.
 
 ---
 
-## 2. SQL Corregido y Desplegado en Producción
+## 2. Correcciones Aplicadas
 
-El SQL fue modificado en el workflow de n8n con ID `emtplPl0fdBdqqRL` (`BarberAgency - Landing Public Get`), incluyendo las columnas `imagen_url` y `foto_url` de forma limpia:
+Hemos estandarizado e implementado la preservación de campos de medios e identidades de extremo a extremo, en total cumplimiento con las reglas y contratos de negocio:
 
-```sql
-), servicios_json AS (
-  SELECT COALESCE(
-    jsonb_agg(
-      jsonb_build_object(
-        'id_servicio', s.id,
-        'nombre', s.nombre,
-        'precio', s.precio,
-        'duracion_min', COALESCE(s.duracion_min, 45),
-        'icono', 'bi-scissors',
-        'imagen_url', s.imagen_url,
-        'image_url', s.imagen_url,
-        'foto_url', s.imagen_url
-      )
-      ORDER BY s.id
-    ),
-    '[]'::jsonb
-  ) AS servicios
-  FROM servicios s
-  WHERE s.barberia_id = (SELECT barberia_id FROM resolved_profile)
-), barberos_json AS (
-  SELECT COALESCE(
-    jsonb_agg(
-      jsonb_build_object(
-        'id_barbero', br.id,
-        'nombre', br.nombre,
-        'especialidad', 'Barbero profesional',
-        'experiencia', 'Experiencia comprobada',
-        'foto', COALESCE(br.foto_url, ''),
-        'foto_url', COALESCE(br.foto_url, '')
-      )
-      ORDER BY br.id
-    ),
-    '[]'::jsonb
-  ) AS barberos
-  FROM barberos br
-  WHERE br.barberia_id = (SELECT barberia_id FROM resolved_profile)
-)
-```
-
----
-
-## 3. Ejemplo de Payload (Antes y Después)
-
-### Webhook Probado:
-`https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/public?slug=barberia-prueba-4`
-
-### Payload ANTES del Cambio:
-```json
-"servicios": [
-  {"icono": "bi-scissors", "nombre": "Corte Clasico", "precio": 20000, "id_servicio": 489, "duracion_min": 30}
-],
-"barberos": [
-  {"foto": "", "nombre": "Barbero prueba 4", "id_barbero": 439, "experiencia": "Experiencia comprobada", "especialidad": "Barbero profesional"}
-]
-```
-
-### Payload DESPUÉS del Cambio:
-```json
-"servicios": [
-  {
-    "icono": "bi-scissors",
-    "nombre": "Corte Clasico",
-    "precio": 20000,
-    "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg",
-    "image_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg",
-    "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg",
-    "id_servicio": 489,
-    "duracion_min": 30
-  }
-],
-"barberos": [
-  {
-    "foto": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg",
-    "nombre": "Barbero prueba 4",
-    "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427729.jpg",
-    "id_barbero": 439,
-    "experiencia": "Experiencia comprobada",
-    "especialidad": "Barbero profesional"
-  }
-]
-```
-
----
-
-## 4. Decisiones de Arquitectura y Plantillas Frontend
-
-* **n8n como Fuente Principal:**  
-  La obtención nativa de imágenes ocurre directamente en el primer fetch al webhook de n8n, eliminando la necesidad de consultas adicionales.
-* **PostgREST como Fallback Defensivo:**  
-  La función `enrichPayloadServicesWithDbImages` se conserva en el frontend pero fue optimizada. Ahora valida si el payload de n8n ya contiene imágenes; si las contiene, **cancela la petición a PostgREST**, reduciendo la carga de red innecesaria en un 99%.
+### A. Registro/Onboarding (`registrobarberia.html`)
+- Se implementó `normalizeSeedService` dentro de `persistLandingSeed` para asegurar la correcta serialización e inclusión de `id_servicio`, `imagen_url`, `image_url`, y `foto_url` al guardar la semilla.
+- Se actualizaron las funciones de mapeo de estado `/api/dashboard/state` para poblar todos los campos del contrato:
   ```javascript
-  const alreadyHasImages = payload.servicios.some(s => s.imagen_url || s.image_url || s.foto_url || s.image);
-  if (alreadyHasImages) return;
+  servicios: servicesList.map(s => {
+    const imgVal = clean(s.imagen_url || s.image_url || s.foto_url || '');
+    const sId = Number(s.id || s.id_servicio || 0) || undefined;
+    return {
+      id: sId,
+      id_servicio: sId,
+      nombre: clean(s.nombre),
+      duracion_min: Number(s.duracion_min || 30),
+      precio: Number(s.precio || 0),
+      imagen_url: imgVal,
+      image_url: imgVal,
+      foto_url: imgVal
+    };
+  })
   ```
-* **Plantillas Revisadas:**
-  - `EsenciaPremiun.html`
-  - `index_unico_v2.html`
-  - `index_unico_v3_nueva.html`
-  - `index_unico_v4_editorial.html`
-  - `index_unico_v5_1_azul_rojo_elegante.html`
-  - `index_unico_v6_negro_dorado.html`
-  - `index_unicov7.html`
-  - `pruebas.html`
+
+### B. Editor (`landing_editor_v2_unico_vscode.html`)
+- Se actualizaron `normalizeInheritedServices` y `normalizeInheritedBarbers` para estructurar y unificar todos los campos de imágenes y fotos (`imagen_url`, `image_url`, `foto_url`, `foto`) y mapear `id_servicio` e `id_barbero` respectivamente. Esto garantiza que el payload enviado a `/api/editor/publish` contenga la información completa sin pérdidas de serialización.
+
+### C. Plantillas (`EsenciaPremiun.html`, `index_unico_v2.html` a `index_unicov7.html` y `pruebas.html`)
+- Se actualizaron los normalizadores frontend `normalizeSeedService` y `normalizeSeedBarber` en las 8 plantillas para mapear de manera segura todas las variables e implementar una asignación de ID secuencial defensiva (`idx + 1`) como fallback si no existiese un ID de base de datos válido.
 
 ---
 
-## 5. Pruebas y Resultados
+## 3. Evidencias de Ejecución (Flujo QA Caliente)
 
-* **Prueba de Webhook Público:** **PASS** (Devuelve servicios con imágenes y barberos con fotos reales).
-* **Prueba de Landing Pública (`/b/barberia-prueba-4`):** **PASS** (Muestra las imágenes correctas de servicios en caliente y barberos reales).
-* **Pruebas de Editor / Publicar / Borrador:** **PASS** (Compilación Next.js limpia, sin errores de tipado o lógica).
+### A. Endpoint de Estado del Panel (`/api/dashboard/state?barberia_id=198&slug=barberia-prueba-4`)
+Fragmento JSON verificado:
+```json
+"servicios": [
+  {
+    "id": 489,
+    "barberia_id": 198,
+    "nombre": "Corte Clasico",
+    "duracion_min": 30,
+    "precio": 20000,
+    "activo": true,
+    "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+  }
+]
+```
+
+### B. Semilla Guardada en Editor (`ba_landing_seed`)
+Fragmento del payload del editor cargado:
+```json
+"servicios": [
+  {
+    "id": 489,
+    "id_servicio": 489,
+    "name": "Corte Clasico",
+    "nombre": "Corte Clasico",
+    "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg",
+    "image_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg",
+    "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+  }
+]
+```
+
+### C. Body de la Petición al Publicar (`/api/editor/publish`)
+Payload real serializado en el request body:
+```json
+{
+  "p_payload": {
+    "barberia_id": 198,
+    "slug": "barberia-prueba-4",
+    "servicios": [
+      {
+        "id": 489,
+        "id_servicio": 489,
+        "nombre": "Corte Clasico",
+        "precio": 20000,
+        "duracion_min": 30,
+        "imagen_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg",
+        "image_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg",
+        "foto_url": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg"
+      }
+    ]
+  }
+}
+```
+
+### D. Chequeo del DOM de Landing Pública (`/b/barberia-prueba-4`)
+Al ejecutar el DOM Check:
+```javascript
+[...document.querySelectorAll('img')].map((img, i) => ({ i, src: img.src, alt: img.alt, w: img.naturalWidth, h: img.naturalHeight }));
+```
+Resultado exitoso:
+```javascript
+[
+  { "i": 0, "src": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-593431.jpg", "alt": "", "w": 320, "h": 320 },
+  { "i": 1, "src": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427726.jpg", "alt": "Corte Clasico", "w": 800, "h": 600 },
+  { "i": 2, "src": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427727.png", "alt": "Barba", "w": 800, "h": 600 },
+  { "i": 3, "src": "https://pub-369b1ea177db4f8e8b8fb47c8f6c0ef7.r2.dev/logos/file-427728.png", "alt": "Corte + Cejas", "w": 800, "h": 600 }
+]
+```
 
 ---
 
-## 6. Riesgos y Rollback
+## 4. Riesgos y Rollback
 
-* **Riesgo:** Pérdida de conectividad con la DB en el nodo n8n.
-* **Mitigación:** Si el webhook público llegara a fallar, el fallback frontend a PostgREST sigue activo y recuperará las imágenes de los servicios.
-* **Rollback:** Si se desea revertir el cambio de n8n, se puede restaurar la versión del archivo `scratch/wf_emtplPl0fdBdqqRL.json` previa a este commit.
+* **Riesgo:** Si un webhook legacy esperase exclusivamente la estructura plana anterior sin normalizar.
+* **Mitigación:** Se han conservado las propiedades originales y solo se agregaron propiedades de compatibilidad y fallbacks seguros.
+* **Rollback:** 
+  ```bash
+  git checkout HEAD~1 -- project/templates/
+  ```

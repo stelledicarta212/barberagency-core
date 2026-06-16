@@ -2662,9 +2662,6 @@
 
       return parseRaw(sessionStorage.getItem('ba_landing_seed')) ||
         parseRaw(localStorage.getItem('ba_landing_seed')) ||
-        null;
-    }
-
     function toSeedNumber(value, fallback) {
       const normalized = typeof value === 'string' ? value.replace(/[^\d.-]/g, '') : value;
       const n = Number(normalized);
@@ -2680,16 +2677,20 @@
       if (!activo) return null;
 
       const iconFallback = DEFAULT_SERVICE_ICONS[idx % DEFAULT_SERVICE_ICONS.length];
+      const imgVal = resolveServiceImage(item) || '';
       return {
         ...item,
         id_servicio: serviceId,
         servicio_id: serviceId,
+        id: serviceId,
         nombre: name,
         name,
         activo,
         precio: Math.max(0, toSeedNumber(item.precio ?? item.precio_base ?? item.valor ?? item.tarifa ?? item.price, 0)),
         icono: safeSeedText(item.icono || item.icon || iconFallback) || iconFallback,
-        imagen_url: safeSeedText(item.imagen_url || item.image_url || item.foto_url || item.foto || item.imagen || item.image || item.cover_url || item.photo),
+        imagen_url: imgVal,
+        image_url: imgVal,
+        foto_url: imgVal,
         duracion_min: Math.max(15, toSeedNumber(item.duracion_min ?? item.duration_min ?? item.duracion ?? item.duration, 60))
       };
     }
@@ -2705,18 +2706,20 @@
 
       const photoFallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
       const exp = safeSeedText(item.experiencia || item.anios_experiencia || item.years_experience || item.years);
-      const foto = safeSeedText(item.foto || item.foto_url || item.avatar_url || item.imagen || item.imagen_url || item.photo) || photoFallback;
+      const foto = safeImageUrl(pickFirstImage(item.foto_url, item.avatar_url, item.imagen_url, item.foto, item.avatar, item.image, item.image_url, item.photo, item.picture_url)) || photoFallback;
       return {
         ...item,
         id_barbero: barberId,
         barbero_id: barberId,
+        id: barberId,
         nombre: name,
         name,
         activo,
         especialidad: safeSeedText(item.especialidad || item.especialidades || item.rol || item.descripcion || item.bio) || 'Barbero profesional',
         experiencia: exp || 'Experiencia comprobada',
         foto,
-        foto_url: safeSeedText(item.foto_url || item.foto || item.avatar_url || item.imagen || item.imagen_url || item.photo) || foto
+        foto_url: foto,
+        imagen_url: foto
       };
     }
 

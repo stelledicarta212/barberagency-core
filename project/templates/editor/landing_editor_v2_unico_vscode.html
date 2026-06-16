@@ -1,4 +1,4 @@
-﻿
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
@@ -1317,38 +1317,58 @@
   function normalizeInheritedServices(items) {
     const safe = Array.isArray(items) ? items : [];
     return safe
-      .map((item, i) => ({
-      id: Number(item?.id) || null,
-      name: safeText(item?.name || item?.nombre),
-      nombre: safeText(item?.nombre || item?.name),
-      description: safeText(item?.description || item?.descripcion || 'Trabajo profesional con acabados premium.'),
-      descripcion: safeText(item?.descripcion || item?.description || 'Trabajo profesional con acabados premium.'),
-      icon: safeText(item?.icon || DEFAULT_SERVICE_ICONS[i % DEFAULT_SERVICE_ICONS.length]),
-      image: safeImageUrl(pickFirstImage(item?.image, item?.image_url, item?.imagen_url, item?.foto_url, item?.icon_url, item?.foto, item?.imagen)),
-      image_url: safeImageUrl(pickFirstImage(item?.image_url, item?.imagen_url, item?.image, item?.foto_url, item?.icon_url, item?.foto, item?.imagen)),
-      imagen_url: safeImageUrl(pickFirstImage(item?.imagen_url, item?.image_url, item?.image, item?.foto_url, item?.icon_url, item?.foto, item?.imagen)),
-      duration_min: Number(item?.duration_min || item?.duracion_min || 45),
-      duracion_min: Number(item?.duracion_min || item?.duration_min || 45),
-      price: Math.max(0, Number(item?.price || item?.precio || 0)),
-      precio: Math.max(0, Number(item?.precio || item?.price || 0))
-    }))
+      .map((item, i) => {
+        const idVal = Number(item?.id || item?.id_servicio || item?.servicio_id) || null;
+        const nameVal = safeText(item?.name || item?.nombre || item?.nombre_servicio || item?.servicio);
+        const iconFallback = DEFAULT_SERVICE_ICONS[i % DEFAULT_SERVICE_ICONS.length];
+        const imgVal = safeImageUrl(pickFirstImage(item?.imagen_url, item?.image_url, item?.foto_url, item?.image, item?.foto, item?.icon_url, item?.imagen)) || '';
+        return {
+          id: idVal,
+          id_servicio: idVal,
+          servicio_id: idVal,
+          name: nameVal,
+          nombre: nameVal,
+          description: safeText(item?.description || item?.descripcion || 'Trabajo profesional con acabados premium.'),
+          descripcion: safeText(item?.descripcion || item?.description || 'Trabajo profesional con acabados premium.'),
+          icon: safeText(item?.icon || item?.icono || iconFallback),
+          icono: safeText(item?.icono || item?.icon || iconFallback),
+          image: imgVal,
+          image_url: imgVal,
+          imagen_url: imgVal,
+          foto_url: imgVal,
+          duration_min: Number(item?.duration_min || item?.duracion_min || 45),
+          duracion_min: Number(item?.duracion_min || item?.duration_min || 45),
+          price: Math.max(0, Number(item?.price || item?.precio || 0)),
+          precio: Math.max(0, Number(item?.precio || item?.price || 0))
+        };
+      })
       .filter((item) => safeText(item.name) || safeText(item.nombre));
   }
 
   function normalizeInheritedBarbers(items) {
     const safe = Array.isArray(items) ? items : [];
-    return safe.map((item, i) => ({
-      id: Number(item?.id) || null,
-      name: safeText(item?.name || item?.nombre),
-      nombre: safeText(item?.nombre || item?.name),
-      activo: item?.activo !== undefined ? Boolean(item.activo) : true,
-      especialidad: safeText(item?.especialidad || item?.rol || item?.role),
-      rol: safeText(item?.rol || item?.role || item?.especialidad),
-      photo: safeImageUrl(pickFirstImage(item?.photo, item?.foto, item?.foto_url, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url, item?.picture_url)) || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length],
-      foto: safeImageUrl(pickFirstImage(item?.foto, item?.photo, item?.foto_url, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url, item?.picture_url)) || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length],
-      foto_url: safeImageUrl(pickFirstImage(item?.foto_url, item?.foto, item?.photo, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url, item?.picture_url)) || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length],
-      picture_url: safeImageUrl(pickFirstImage(item?.picture_url, item?.foto_url, item?.foto, item?.photo, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url)) || DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length]
-    }))
+    return safe.map((item, i) => {
+      const idVal = Number(item?.id || item?.id_barbero || item?.barbero_id) || null;
+      const nameVal = safeText(item?.name || item?.nombre);
+      const photoFallback = DEFAULT_BARBER_PHOTOS[i % DEFAULT_BARBER_PHOTOS.length];
+      const photoVal = safeImageUrl(pickFirstImage(item?.foto, item?.photo, item?.foto_url, item?.avatar_url, item?.imagen_url, item?.avatar, item?.image, item?.image_url, item?.picture_url)) || photoFallback;
+      return {
+        id: idVal,
+        id_barbero: idVal,
+        barbero_id: idVal,
+        name: nameVal,
+        nombre: nameVal,
+        activo: item?.activo !== undefined ? Boolean(item.activo) : true,
+        especialidad: safeText(item?.especialidad || item?.rol || item?.role || 'Barbero profesional'),
+        rol: safeText(item?.rol || item?.role || item?.especialidad || 'Barbero profesional'),
+        experiencia: safeText(item?.experiencia || 'Experiencia comprobada'),
+        photo: photoVal,
+        foto: photoVal,
+        foto_url: photoVal,
+        imagen_url: photoVal,
+        picture_url: photoVal
+      };
+    })
       .filter((item) => safeText(item.name) || safeText(item.nombre));
   }
 
