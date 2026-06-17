@@ -1027,7 +1027,7 @@
 
       barbersGrid.innerHTML = barbers.map((b, idx) => {
         const fallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
-        const photo = safeSeedText(b.foto) || fallback;
+        const photo = resolveBarberImage(b) || fallback;
         return `
         <div class="${barberColClass}">
           <article class="block barber-item text-center">
@@ -1979,6 +1979,22 @@
       ));
     }
 
+    function resolveBarberImage(item) {
+      if (!item || typeof item !== 'object') return '';
+      return safeImageUrl(pickFirstImage(
+        item.foto_url,
+        item.foto,
+        item.imagen_url,
+        item.image_url,
+        item.avatar_url,
+        item.photo_url,
+        item.photo,
+        item.picture_url,
+        item.avatar,
+        item.image
+      ));
+    }
+
     function buildMapsEmbedUrl(value) {
       const clean = safeSeedText(value);
       if (!clean) return '';
@@ -2533,7 +2549,7 @@
 
       const photoFallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
       const exp = safeSeedText(item.experiencia || item.anios_experiencia || item.years_experience || item.years);
-      const foto = safeImageUrl(pickFirstImage(item.foto_url, item.avatar_url, item.imagen_url, item.foto, item.avatar, item.image, item.image_url, item.photo, item.picture_url)) || photoFallback;
+      const foto = resolveBarberImage(item) || photoFallback;
       return {
         ...item,
         id_barbero: barberId,
@@ -2546,7 +2562,11 @@
         experiencia: exp || 'Experiencia comprobada',
         foto,
         foto_url: foto,
-        imagen_url: foto
+        imagen_url: foto,
+        image_url: foto,
+        photo_url: foto,
+        photo: foto,
+        picture_url: foto
       };
     }
 
@@ -2710,7 +2730,6 @@
   </script>
 </body>
 </html>
-
 
 
 
