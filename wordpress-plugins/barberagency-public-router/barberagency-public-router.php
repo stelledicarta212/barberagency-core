@@ -19,6 +19,13 @@ final class BarberAgency_Public_Router {
         add_filter('query_vars', [self::class, 'register_query_var']);
         add_filter('redirect_canonical', [self::class, 'disable_canonical_redirect_for_public_landing'], 10, 2);
         add_action('template_redirect', [self::class, 'maybe_render_public_landing'], 0);
+        add_action('init', function() {
+            if (isset($_GET['ba_ping'])) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['pong' => true, 'version' => '0.5.0-debug', 'time' => time()], JSON_PRETTY_PRINT);
+                exit;
+            }
+        });
     }
 
     public static function activate(): void {
@@ -284,7 +291,14 @@ final class BarberAgency_Public_Router {
     }
 
     private static function get_requested_slug(): string {
-        return sanitize_title((string) get_query_var(self::QUERY_VAR));
+        $slug = sanitize_title((string) get_query_var(self::QUERY_VAR));
+        if ($slug === '' && isset($_SERVER['REQUEST_URI'])) {
+            $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+            if (preg_match('/^\/b\/([^\/]+)/', $path, $matches)) {
+                $slug = sanitize_title($matches[1]);
+            }
+        }
+        return $slug;
     }
 
     private static function get_public_payload(string $slug): ?array {
