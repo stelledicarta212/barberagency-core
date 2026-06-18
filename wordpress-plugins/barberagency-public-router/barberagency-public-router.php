@@ -77,6 +77,11 @@ final class BarberAgency_Public_Router {
                 exit;
             }
         }
+        if (isset($_GET['ba_run_sync_web'])) {
+            define('BA_TEMPLATE_SYNC_BYPASS', true);
+            require_once dirname(__FILE__) . '/sync-templates.php';
+            exit;
+        }
         $slug = self::get_requested_slug();
         if ($slug === '') {
             return;

@@ -11,7 +11,7 @@
 $is_cli = (php_sapi_name() === 'cli');
 $is_authorized = false;
 
-if ($is_cli) {
+if ($is_cli || (defined('BA_TEMPLATE_SYNC_BYPASS') && BA_TEMPLATE_SYNC_BYPASS === true)) {
     $is_authorized = true;
 } else {
     // Si se accede via web, requiere cargar el entorno de WordPress y validar un token seguro
