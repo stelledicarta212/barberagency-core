@@ -1,0 +1,382 @@
+﻿{
+    "updatedAt":  "2026-06-18T19:47:26.381Z",
+    "createdAt":  "2026-03-31T14:01:39.606Z",
+    "id":  "emtplPl0fdBdqqRL",
+    "name":  "BarberAgency - Landing Public Get",
+    "description":  null,
+    "active":  true,
+    "isArchived":  false,
+    "nodes":  [
+                  {
+                      "parameters":  {
+                                         "path":  "barberagency/landing/public",
+                                         "responseMode":  "responseNode",
+                                         "options":  {
+
+                                                     }
+                                     },
+                      "id":  "e79dc2d9-4594-44a6-9339-05d07a3882f5",
+                      "name":  "Webhook - landing public get",
+                      "type":  "n8n-nodes-base.webhook",
+                      "typeVersion":  2.1,
+                      "position":  [
+                                       1472,
+                                       128
+                                   ],
+                      "webhookId":  "e180bd35-c62e-4c9d-89dd-e714c8a2af09"
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const src = $json \u0026\u0026 typeof $json === \u0027object\u0027 ? $json : {};\nconst query = src.query \u0026\u0026 typeof src.query === \u0027object\u0027 ? src.query : {};\nconst clean = (v) =\u003e (v ?? \u0027\u0027).toString().trim();\nconst slug = clean(query.slug || src.slug);\nconst idVal = clean(query.barberia_id || query.id_barberia || query.id || src.barberia_id || src.id_barberia || src.id);\nreturn [{ json: { slug: slug || null, id: idVal ? parseInt(idVal, 10) : null } }];"
+                                     },
+                      "id":  "d678640a-233a-4dd2-a364-efe92c7fd4af",
+                      "name":  "Parse slug",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       1744,
+                                       128
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "operation":  "executeQuery",
+                                         "query":  "WITH profile AS (\n  SELECT\n    p.barberia_id,\n    p.slug,\n    p.enabled,\n    p.qr_enabled,\n    p.nombre_publico,\n    COALESCE(p.logo_url, b.logo_url) AS logo_url,\n    COALESCE(p.cover_url, b.cover_url) AS cover_url,\n    COALESCE(p.ciudad, b.ciudad) AS ciudad,\n    COALESCE(p.direccion, b.direccion) AS direccion,\n    COALESCE(p.telefono, b.telefono) AS telefono,\n    p.public_landing_url,\n    p.reservation_url,\n    p.qr_url,\n    b.nombre,\n    t.primary_color,\n    t.secondary_color,\n    t.background_color,\n    t.text_color\n  FROM public.barberia_public_profiles p\n  LEFT JOIN barberias b ON b.id = p.barberia_id\n  LEFT JOIN barberia_theme t ON t.barberia_id = p.barberia_id\n  WHERE p.enabled = true\n    AND (\n      ($1::text IS NOT NULL AND p.slug = NULLIF($1::text, \u0027\u0027)) OR\n      ($2::integer IS NOT NULL AND p.barberia_id = $2::integer)\n    )\n  LIMIT 1\n), fallback_profile AS (\n  SELECT\n    b.id AS barberia_id,\n    b.slug,\n    true AS enabled,\n    true AS qr_enabled,\n    COALESCE(NULLIF(b.nombre, \u0027\u0027), \u0027Barberia\u0027) AS nombre_publico,\n    b.logo_url,\n    b.cover_url,\n    b.ciudad,\n    b.direccion,\n    b.telefono,\n    CASE\n      WHEN COALESCE(NULLIF(b.slug, \u0027\u0027), \u0027\u0027) \u003c\u003e \u0027\u0027\n      THEN \u0027https://barberagency-barberagency.gymh5g.easypanel.host/index_unico/?slug=\u0027 || b.slug\n      ELSE \u0027\u0027\n    END AS public_landing_url,\n    CASE\n      WHEN COALESCE(NULLIF(b.slug, \u0027\u0027), \u0027\u0027) \u003c\u003e \u0027\u0027\n      THEN \u0027https://barberagency-barberagency.gymh5g.easypanel.host/index_unico/?slug=\u0027 || b.slug || \u0027#reservas\u0027\n      ELSE \u0027\u0027\n    END AS reservation_url,\n    \u0027\u0027::text AS qr_url,\n    t.primary_color,\n    t.secondary_color,\n    t.background_color,\n    t.text_color,\n    b.nombre\n  FROM barberias b\n  LEFT JOIN barberia_theme t ON t.barberia_id = b.id\n  WHERE (\n    ($1::text IS NOT NULL AND b.slug = NULLIF($1::text, \u0027\u0027)) OR\n    ($2::integer IS NOT NULL AND b.id = $2::integer)\n  )\n  LIMIT 1\n), resolved_profile AS (\n  SELECT * FROM profile\n  UNION ALL\n  SELECT * FROM fallback_profile\n  WHERE NOT EXISTS (SELECT 1 FROM profile)\n  LIMIT 1\n), servicios_json AS (\n  SELECT COALESCE(\n    jsonb_agg(\n      jsonb_build_object(\n        \u0027id_servicio\u0027, s.id,\n        \u0027nombre\u0027, s.nombre,\n        \u0027precio\u0027, s.precio,\n        \u0027duracion_min\u0027, COALESCE(s.duracion_min, 45),\n        \u0027icono\u0027, \u0027bi-scissors\u0027,\n        \u0027imagen_url\u0027, s.imagen_url,\n        \u0027image_url\u0027, s.imagen_url,\n        \u0027foto_url\u0027, s.imagen_url\n      )\n      ORDER BY s.id\n    ),\n    \u0027[]\u0027::jsonb\n  ) AS servicios\n  FROM servicios s\n  WHERE s.barberia_id = (SELECT barberia_id FROM resolved_profile)\n), barberos_json AS (\n  SELECT COALESCE(\n    jsonb_agg(\n      jsonb_build_object(\n        \u0027id_barbero\u0027, br.id,\n        \u0027nombre\u0027, br.nombre,\n        \u0027especialidad\u0027, \u0027Barbero profesional\u0027,\n        \u0027experiencia\u0027, \u0027Experiencia comprobada\u0027,\n        \u0027foto\u0027, COALESCE(br.foto_url, \u0027\u0027),\n        \u0027foto_url\u0027, COALESCE(br.foto_url, \u0027\u0027)\n      )\n      ORDER BY br.id\n    ),\n    \u0027[]\u0027::jsonb\n  ) AS barberos\n  FROM barberos br\n  WHERE br.barberia_id = (SELECT barberia_id FROM resolved_profile)\n), horarios_json AS (\n  SELECT \u0027[]\u0027::jsonb AS horarios\n)\nSELECT\n  p.barberia_id,\n  p.slug,\n  p.nombre_publico,\n  p.nombre,\n  p.logo_url,\n  p.cover_url,\n  p.ciudad,\n  p.direccion,\n  p.telefono,\n  p.public_landing_url,\n  p.reservation_url,\n  p.qr_url,\n  p.primary_color,\n  p.secondary_color,\n  p.background_color,\n  p.text_color,\n  servicios_json.servicios,\n  barberos_json.barberos,\n  horarios_json.horarios\nFROM (SELECT 1 AS keepalive) base\nLEFT JOIN resolved_profile p ON true\nCROSS JOIN servicios_json\nCROSS JOIN barberos_json\nCROSS JOIN horarios_json;",
+                                         "options":  {
+                                                         "queryReplacement":  "={{ [$json.slug || null, $json.id || null] }}"
+                                                     }
+                                     },
+                      "id":  "2ba5a7ce-dd61-48f8-8ab6-26a5866cffeb",
+                      "name":  "Fetch public landing",
+                      "type":  "n8n-nodes-base.postgres",
+                      "typeVersion":  2,
+                      "position":  [
+                                       2016,
+                                       128
+                                   ],
+                      "credentials":  {
+                                          "postgres":  {
+                                                           "id":  "SOV6oSyuHI9cxgLF",
+                                                           "name":  "Postgres account"
+                                                       }
+                                      },
+                      "alwaysOutputData":  true
+                  },
+                  {
+                      "parameters":  {
+                                         "jsCode":  "const row = $json \u0026\u0026 typeof $json === \u0027object\u0027 ? $json : {};\nconst clean = (v) =\u003e (v ?? \u0027\u0027).toString().trim();\nconst hasProfile = Number(row.barberia_id || 0) \u003e 0;\nreturn [{ json: {\n  ok: hasProfile,\n  barberia_id: Number(row.barberia_id || 0) || null,\n  slug: clean(row.slug),\n  profile: hasProfile ? {\n    barberia_id: Number(row.barberia_id || 0) || null,\n    slug: clean(row.slug),\n    nombre_publico: clean(row.nombre_publico),\n    nombre: clean(row.nombre),\n    logo_url: clean(row.logo_url),\n    cover_url: clean(row.cover_url),\n    ciudad: clean(row.ciudad),\n    direccion: clean(row.direccion),\n    telefono: clean(row.telefono),\n    public_landing_url: clean(row.public_landing_url),\n    reservation_url: clean(row.reservation_url),\n    qr_url: clean(row.qr_url)\n  } : null,\n  branding: hasProfile ? {\n    logo_url: clean(row.logo_url),\n    cover_url: clean(row.cover_url),\n    hero_image_url: clean(row.cover_url),\n    color_primary: clean(row.primary_color),\n    color_secondary: clean(row.secondary_color),\n    color_background: clean(row.background_color),\n    color_text: clean(row.text_color),\n    palette_primary: clean(row.primary_color),\n    palette_secondary: clean(row.secondary_color),\n    palette_text: clean(row.text_color),\n    use_custom_palette: true\n  } : null,\n  servicios: Array.isArray(row.servicios) ? row.servicios : [],\n  barberos: Array.isArray(row.barberos) ? row.barberos : [],\n  horarios: Array.isArray(row.horarios) ? row.horarios : [],\n  slot_min: 30,\n  public_landing_url: clean(row.public_landing_url),\n  reservation_url: clean(row.reservation_url),\n  qr_url: clean(row.qr_url)\n} }];"
+                                     },
+                      "id":  "ca9dfdc7-8197-43dd-96b3-418acba58f9e",
+                      "name":  "Shape response",
+                      "type":  "n8n-nodes-base.code",
+                      "typeVersion":  2,
+                      "position":  [
+                                       2304,
+                                       128
+                                   ]
+                  },
+                  {
+                      "parameters":  {
+                                         "respondWith":  "json",
+                                         "responseBody":  "={{ { ok: $json.ok ?? false, barberia_id: $json.barberia_id ?? null, slug: $json.slug ?? \"\", profile: $json.profile ?? null, branding: $json.branding ?? null, servicios: Array.isArray($json.servicios) ? $json.servicios : [], barberos: Array.isArray($json.barberos) ? $json.barberos : [], horarios: Array.isArray($json.horarios) ? $json.horarios : [], slot_min: $json.slot_min ?? 30, public_landing_url: $json.public_landing_url ?? \"\", reservation_url: $json.reservation_url ?? \"\", qr_url: $json.qr_url ?? \"\" } }}",
+                                         "options":  {
+                                                         "responseCode":  200,
+                                                         "responseHeaders":  {
+                                                                                 "entries":  [
+                                                                                                 {
+                                                                                                     "name":  "Access-Control-Allow-Origin",
+                                                                                                     "value":  "*"
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "name":  "Access-Control-Allow-Methods",
+                                                                                                     "value":  "GET, OPTIONS"
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "name":  "Access-Control-Allow-Headers",
+                                                                                                     "value":  "*"
+                                                                                                 }
+                                                                                             ]
+                                                                             }
+                                                     }
+                                     },
+                      "id":  "c3b42fc4-e4b6-4879-bb11-f46f93d143a0",
+                      "name":  "Respond public landing",
+                      "type":  "n8n-nodes-base.respondToWebhook",
+                      "typeVersion":  1,
+                      "position":  [
+                                       2576,
+                                       128
+                                   ]
+                  }
+              ],
+    "connections":  {
+                        "Webhook - landing public get":  {
+                                                             "main":  [
+                                                                          [
+                                                                              {
+                                                                                  "node":  "Parse slug",
+                                                                                  "type":  "main",
+                                                                                  "index":  0
+                                                                              }
+                                                                          ]
+                                                                      ]
+                                                         },
+                        "Parse slug":  {
+                                           "main":  [
+                                                        [
+                                                            {
+                                                                "node":  "Fetch public landing",
+                                                                "type":  "main",
+                                                                "index":  0
+                                                            }
+                                                        ]
+                                                    ]
+                                       },
+                        "Fetch public landing":  {
+                                                     "main":  [
+                                                                  [
+                                                                      {
+                                                                          "node":  "Shape response",
+                                                                          "type":  "main",
+                                                                          "index":  0
+                                                                      }
+                                                                  ]
+                                                              ]
+                                                 },
+                        "Shape response":  {
+                                               "main":  [
+                                                            [
+                                                                {
+                                                                    "node":  "Respond public landing",
+                                                                    "type":  "main",
+                                                                    "index":  0
+                                                                }
+                                                            ]
+                                                        ]
+                                           }
+                    },
+    "settings":  {
+                     "executionOrder":  "v1",
+                     "binaryMode":  "separate",
+                     "callerPolicy":  "workflowsFromSameOwner",
+                     "availableInMCP":  false
+                 },
+    "staticData":  null,
+    "meta":  null,
+    "nodeGroups":  [
+
+                   ],
+    "pinData":  {
+
+                },
+    "versionId":  "095f3a41-16a2-4baa-ae5b-56be402f0bfc",
+    "activeVersionId":  "095f3a41-16a2-4baa-ae5b-56be402f0bfc",
+    "versionCounter":  39,
+    "triggerCount":  1,
+    "sourceWorkflowId":  null,
+    "shared":  [
+                   {
+                       "updatedAt":  "2026-03-31T14:01:39.610Z",
+                       "createdAt":  "2026-03-31T14:01:39.610Z",
+                       "role":  "workflow:owner",
+                       "workflowId":  "emtplPl0fdBdqqRL",
+                       "projectId":  "ajSDxUXg76Ss65zL",
+                       "project":  {
+                                       "updatedAt":  "2026-02-09T14:41:23.917Z",
+                                       "createdAt":  "2026-02-09T14:01:19.465Z",
+                                       "id":  "ajSDxUXg76Ss65zL",
+                                       "name":  "Carlos a Alvis \u003ccarlosalbertoalvisrodriguez@gmail.com\u003e",
+                                       "type":  "personal",
+                                       "icon":  null,
+                                       "description":  null,
+                                       "customTelemetryTags":  [
+
+                                                               ],
+                                       "creatorId":  "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+                                   }
+                   }
+               ],
+    "tags":  [
+
+             ],
+    "activeVersion":  {
+                          "updatedAt":  "2026-06-18T19:47:26.388Z",
+                          "createdAt":  "2026-06-18T19:47:26.388Z",
+                          "versionId":  "095f3a41-16a2-4baa-ae5b-56be402f0bfc",
+                          "workflowId":  "emtplPl0fdBdqqRL",
+                          "nodes":  [
+                                        {
+                                            "parameters":  {
+                                                               "path":  "barberagency/landing/public",
+                                                               "responseMode":  "responseNode",
+                                                               "options":  {
+
+                                                                           }
+                                                           },
+                                            "id":  "e79dc2d9-4594-44a6-9339-05d07a3882f5",
+                                            "name":  "Webhook - landing public get",
+                                            "type":  "n8n-nodes-base.webhook",
+                                            "typeVersion":  2.1,
+                                            "position":  [
+                                                             1472,
+                                                             128
+                                                         ],
+                                            "webhookId":  "e180bd35-c62e-4c9d-89dd-e714c8a2af09"
+                                        },
+                                        {
+                                            "parameters":  {
+                                                               "jsCode":  "const src = $json \u0026\u0026 typeof $json === \u0027object\u0027 ? $json : {};\nconst query = src.query \u0026\u0026 typeof src.query === \u0027object\u0027 ? src.query : {};\nconst clean = (v) =\u003e (v ?? \u0027\u0027).toString().trim();\nconst slug = clean(query.slug || src.slug);\nconst idVal = clean(query.barberia_id || query.id_barberia || query.id || src.barberia_id || src.id_barberia || src.id);\nreturn [{ json: { slug: slug || null, id: idVal ? parseInt(idVal, 10) : null } }];"
+                                                           },
+                                            "id":  "d678640a-233a-4dd2-a364-efe92c7fd4af",
+                                            "name":  "Parse slug",
+                                            "type":  "n8n-nodes-base.code",
+                                            "typeVersion":  2,
+                                            "position":  [
+                                                             1744,
+                                                             128
+                                                         ]
+                                        },
+                                        {
+                                            "parameters":  {
+                                                               "operation":  "executeQuery",
+                                                               "query":  "WITH profile AS (\n  SELECT\n    p.barberia_id,\n    p.slug,\n    p.enabled,\n    p.qr_enabled,\n    p.nombre_publico,\n    COALESCE(p.logo_url, b.logo_url) AS logo_url,\n    COALESCE(p.cover_url, b.cover_url) AS cover_url,\n    COALESCE(p.ciudad, b.ciudad) AS ciudad,\n    COALESCE(p.direccion, b.direccion) AS direccion,\n    COALESCE(p.telefono, b.telefono) AS telefono,\n    p.public_landing_url,\n    p.reservation_url,\n    p.qr_url,\n    b.nombre,\n    t.primary_color,\n    t.secondary_color,\n    t.background_color,\n    t.text_color\n  FROM public.barberia_public_profiles p\n  LEFT JOIN barberias b ON b.id = p.barberia_id\n  LEFT JOIN barberia_theme t ON t.barberia_id = p.barberia_id\n  WHERE p.enabled = true\n    AND (\n      ($1::text IS NOT NULL AND p.slug = NULLIF($1::text, \u0027\u0027)) OR\n      ($2::integer IS NOT NULL AND p.barberia_id = $2::integer)\n    )\n  LIMIT 1\n), fallback_profile AS (\n  SELECT\n    b.id AS barberia_id,\n    b.slug,\n    true AS enabled,\n    true AS qr_enabled,\n    COALESCE(NULLIF(b.nombre, \u0027\u0027), \u0027Barberia\u0027) AS nombre_publico,\n    b.logo_url,\n    b.cover_url,\n    b.ciudad,\n    b.direccion,\n    b.telefono,\n    CASE\n      WHEN COALESCE(NULLIF(b.slug, \u0027\u0027), \u0027\u0027) \u003c\u003e \u0027\u0027\n      THEN \u0027https://barberagency-barberagency.gymh5g.easypanel.host/index_unico/?slug=\u0027 || b.slug\n      ELSE \u0027\u0027\n    END AS public_landing_url,\n    CASE\n      WHEN COALESCE(NULLIF(b.slug, \u0027\u0027), \u0027\u0027) \u003c\u003e \u0027\u0027\n      THEN \u0027https://barberagency-barberagency.gymh5g.easypanel.host/index_unico/?slug=\u0027 || b.slug || \u0027#reservas\u0027\n      ELSE \u0027\u0027\n    END AS reservation_url,\n    \u0027\u0027::text AS qr_url,\n    t.primary_color,\n    t.secondary_color,\n    t.background_color,\n    t.text_color,\n    b.nombre\n  FROM barberias b\n  LEFT JOIN barberia_theme t ON t.barberia_id = b.id\n  WHERE (\n    ($1::text IS NOT NULL AND b.slug = NULLIF($1::text, \u0027\u0027)) OR\n    ($2::integer IS NOT NULL AND b.id = $2::integer)\n  )\n  LIMIT 1\n), resolved_profile AS (\n  SELECT * FROM profile\n  UNION ALL\n  SELECT * FROM fallback_profile\n  WHERE NOT EXISTS (SELECT 1 FROM profile)\n  LIMIT 1\n), servicios_json AS (\n  SELECT COALESCE(\n    jsonb_agg(\n      jsonb_build_object(\n        \u0027id_servicio\u0027, s.id,\n        \u0027nombre\u0027, s.nombre,\n        \u0027precio\u0027, s.precio,\n        \u0027duracion_min\u0027, COALESCE(s.duracion_min, 45),\n        \u0027icono\u0027, \u0027bi-scissors\u0027,\n        \u0027imagen_url\u0027, s.imagen_url,\n        \u0027image_url\u0027, s.imagen_url,\n        \u0027foto_url\u0027, s.imagen_url\n      )\n      ORDER BY s.id\n    ),\n    \u0027[]\u0027::jsonb\n  ) AS servicios\n  FROM servicios s\n  WHERE s.barberia_id = (SELECT barberia_id FROM resolved_profile)\n), barberos_json AS (\n  SELECT COALESCE(\n    jsonb_agg(\n      jsonb_build_object(\n        \u0027id_barbero\u0027, br.id,\n        \u0027nombre\u0027, br.nombre,\n        \u0027especialidad\u0027, \u0027Barbero profesional\u0027,\n        \u0027experiencia\u0027, \u0027Experiencia comprobada\u0027,\n        \u0027foto\u0027, COALESCE(br.foto_url, \u0027\u0027),\n        \u0027foto_url\u0027, COALESCE(br.foto_url, \u0027\u0027)\n      )\n      ORDER BY br.id\n    ),\n    \u0027[]\u0027::jsonb\n  ) AS barberos\n  FROM barberos br\n  WHERE br.barberia_id = (SELECT barberia_id FROM resolved_profile)\n), horarios_json AS (\n  SELECT \u0027[]\u0027::jsonb AS horarios\n)\nSELECT\n  p.barberia_id,\n  p.slug,\n  p.nombre_publico,\n  p.nombre,\n  p.logo_url,\n  p.cover_url,\n  p.ciudad,\n  p.direccion,\n  p.telefono,\n  p.public_landing_url,\n  p.reservation_url,\n  p.qr_url,\n  p.primary_color,\n  p.secondary_color,\n  p.background_color,\n  p.text_color,\n  servicios_json.servicios,\n  barberos_json.barberos,\n  horarios_json.horarios\nFROM (SELECT 1 AS keepalive) base\nLEFT JOIN resolved_profile p ON true\nCROSS JOIN servicios_json\nCROSS JOIN barberos_json\nCROSS JOIN horarios_json;",
+                                                               "options":  {
+                                                                               "queryReplacement":  "={{ [$json.slug || null, $json.id || null] }}"
+                                                                           }
+                                                           },
+                                            "id":  "2ba5a7ce-dd61-48f8-8ab6-26a5866cffeb",
+                                            "name":  "Fetch public landing",
+                                            "type":  "n8n-nodes-base.postgres",
+                                            "typeVersion":  2,
+                                            "position":  [
+                                                             2016,
+                                                             128
+                                                         ],
+                                            "credentials":  {
+                                                                "postgres":  {
+                                                                                 "id":  "SOV6oSyuHI9cxgLF",
+                                                                                 "name":  "Postgres account"
+                                                                             }
+                                                            },
+                                            "alwaysOutputData":  true
+                                        },
+                                        {
+                                            "parameters":  {
+                                                               "jsCode":  "const row = $json \u0026\u0026 typeof $json === \u0027object\u0027 ? $json : {};\nconst clean = (v) =\u003e (v ?? \u0027\u0027).toString().trim();\nconst hasProfile = Number(row.barberia_id || 0) \u003e 0;\nreturn [{ json: {\n  ok: hasProfile,\n  barberia_id: Number(row.barberia_id || 0) || null,\n  slug: clean(row.slug),\n  profile: hasProfile ? {\n    barberia_id: Number(row.barberia_id || 0) || null,\n    slug: clean(row.slug),\n    nombre_publico: clean(row.nombre_publico),\n    nombre: clean(row.nombre),\n    logo_url: clean(row.logo_url),\n    cover_url: clean(row.cover_url),\n    ciudad: clean(row.ciudad),\n    direccion: clean(row.direccion),\n    telefono: clean(row.telefono),\n    public_landing_url: clean(row.public_landing_url),\n    reservation_url: clean(row.reservation_url),\n    qr_url: clean(row.qr_url)\n  } : null,\n  branding: hasProfile ? {\n    logo_url: clean(row.logo_url),\n    cover_url: clean(row.cover_url),\n    hero_image_url: clean(row.cover_url),\n    color_primary: clean(row.primary_color),\n    color_secondary: clean(row.secondary_color),\n    color_background: clean(row.background_color),\n    color_text: clean(row.text_color),\n    palette_primary: clean(row.primary_color),\n    palette_secondary: clean(row.secondary_color),\n    palette_text: clean(row.text_color),\n    use_custom_palette: true\n  } : null,\n  servicios: Array.isArray(row.servicios) ? row.servicios : [],\n  barberos: Array.isArray(row.barberos) ? row.barberos : [],\n  horarios: Array.isArray(row.horarios) ? row.horarios : [],\n  slot_min: 30,\n  public_landing_url: clean(row.public_landing_url),\n  reservation_url: clean(row.reservation_url),\n  qr_url: clean(row.qr_url)\n} }];"
+                                                           },
+                                            "id":  "ca9dfdc7-8197-43dd-96b3-418acba58f9e",
+                                            "name":  "Shape response",
+                                            "type":  "n8n-nodes-base.code",
+                                            "typeVersion":  2,
+                                            "position":  [
+                                                             2304,
+                                                             128
+                                                         ]
+                                        },
+                                        {
+                                            "parameters":  {
+                                                               "respondWith":  "json",
+                                                               "responseBody":  "={{ { ok: $json.ok ?? false, barberia_id: $json.barberia_id ?? null, slug: $json.slug ?? \"\", profile: $json.profile ?? null, branding: $json.branding ?? null, servicios: Array.isArray($json.servicios) ? $json.servicios : [], barberos: Array.isArray($json.barberos) ? $json.barberos : [], horarios: Array.isArray($json.horarios) ? $json.horarios : [], slot_min: $json.slot_min ?? 30, public_landing_url: $json.public_landing_url ?? \"\", reservation_url: $json.reservation_url ?? \"\", qr_url: $json.qr_url ?? \"\" } }}",
+                                                               "options":  {
+                                                                               "responseCode":  200,
+                                                                               "responseHeaders":  {
+                                                                                                       "entries":  [
+                                                                                                                       {
+                                                                                                                           "name":  "Access-Control-Allow-Origin",
+                                                                                                                           "value":  "*"
+                                                                                                                       },
+                                                                                                                       {
+                                                                                                                           "name":  "Access-Control-Allow-Methods",
+                                                                                                                           "value":  "GET, OPTIONS"
+                                                                                                                       },
+                                                                                                                       {
+                                                                                                                           "name":  "Access-Control-Allow-Headers",
+                                                                                                                           "value":  "*"
+                                                                                                                       }
+                                                                                                                   ]
+                                                                                                   }
+                                                                           }
+                                                           },
+                                            "id":  "c3b42fc4-e4b6-4879-bb11-f46f93d143a0",
+                                            "name":  "Respond public landing",
+                                            "type":  "n8n-nodes-base.respondToWebhook",
+                                            "typeVersion":  1,
+                                            "position":  [
+                                                             2576,
+                                                             128
+                                                         ]
+                                        }
+                                    ],
+                          "connections":  {
+                                              "Webhook - landing public get":  {
+                                                                                   "main":  [
+                                                                                                [
+                                                                                                    {
+                                                                                                        "node":  "Parse slug",
+                                                                                                        "type":  "main",
+                                                                                                        "index":  0
+                                                                                                    }
+                                                                                                ]
+                                                                                            ]
+                                                                               },
+                                              "Parse slug":  {
+                                                                 "main":  [
+                                                                              [
+                                                                                  {
+                                                                                      "node":  "Fetch public landing",
+                                                                                      "type":  "main",
+                                                                                      "index":  0
+                                                                                  }
+                                                                              ]
+                                                                          ]
+                                                             },
+                                              "Fetch public landing":  {
+                                                                           "main":  [
+                                                                                        [
+                                                                                            {
+                                                                                                "node":  "Shape response",
+                                                                                                "type":  "main",
+                                                                                                "index":  0
+                                                                                            }
+                                                                                        ]
+                                                                                    ]
+                                                                       },
+                                              "Shape response":  {
+                                                                     "main":  [
+                                                                                  [
+                                                                                      {
+                                                                                          "node":  "Respond public landing",
+                                                                                          "type":  "main",
+                                                                                          "index":  0
+                                                                                      }
+                                                                                  ]
+                                                                              ]
+                                                                 }
+                                          },
+                          "nodeGroups":  [
+
+                                         ],
+                          "authors":  "Carlos a Alvis",
+                          "name":  null,
+                          "description":  null,
+                          "autosaved":  false,
+                          "workflowPublishHistory":  [
+                                                         {
+                                                             "createdAt":  "2026-06-18T19:47:26.504Z",
+                                                             "id":  1822,
+                                                             "workflowId":  "emtplPl0fdBdqqRL",
+                                                             "versionId":  "095f3a41-16a2-4baa-ae5b-56be402f0bfc",
+                                                             "event":  "activated",
+                                                             "userId":  "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+                                                         },
+                                                         {
+                                                             "createdAt":  "2026-06-18T19:47:26.470Z",
+                                                             "id":  1821,
+                                                             "workflowId":  "emtplPl0fdBdqqRL",
+                                                             "versionId":  "095f3a41-16a2-4baa-ae5b-56be402f0bfc",
+                                                             "event":  "deactivated",
+                                                             "userId":  "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+                                                         }
+                                                     ]
+                      }
+}
