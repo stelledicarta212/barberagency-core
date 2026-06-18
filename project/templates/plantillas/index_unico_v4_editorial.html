@@ -2104,24 +2104,38 @@ function normalizeDayLabel(value) {
       );
     }
 
+    function pickFirstImage(...values) {
+      return values.find((value) => typeof value === 'string' && value.trim().length > 0) || '';
+    }
+
+    function normalizeImageUrl(value) {
+      const raw = safeSeedText(value);
+      if (!raw) return '';
+      if (/^(https?:\/\/|data:image\/)/i.test(raw)) return raw;
+      if (raw.startsWith('/wp-content/')) return `${window.location.origin}${raw}`;
+      if (raw.startsWith('wp-content/')) return `${window.location.origin}/${raw}`;
+      return raw;
+    }
+
     function safeImageUrl(url) {
-      const value = safeSeedText(url);
+      const value = normalizeImageUrl(url);
       return value && !isKnownPlaceholderImage(value) ? value : '';
     }
 
     function resolveServiceImage(item) {
       if (!item || typeof item !== 'object') return '';
-      return safeImageUrl(
-        item.foto_url ||
-        item.foto ||
-        item.imagen ||
-        item.image_url ||
-        item.image ||
-        item.cover_url ||
-        item.media_url ||
-        item.photo ||
-        item.imagen_url
-      );
+      return safeImageUrl(pickFirstImage(
+        item.imagen_url,
+        item.image_url,
+        item.foto_url,
+        item.image,
+        item.foto,
+        item.imagen,
+        item.icon_url,
+        item.cover_url,
+        item.media_url,
+        item.photo
+      ));
     }
 
     function buildMapsEmbedUrl(value) {
@@ -2239,8 +2253,25 @@ function normalizeDayLabel(value) {
       const profile = payload.profile || payload.barberia || {};
       const branding = payload.branding || payload.config || {};
       const publicName = safeSeedText(profile.nombre_publico || profile.nombre || branding.biz_name);
-      const logoUrl = safeSeedText(profile.logo_url || branding.logo_url);
-      const coverUrl = safeImageUrl(profile.cover_url || branding.cover_url || branding.hero_image_url);
+      const logoUrl = safeImageUrl(pickFirstImage(profile.logo_url, profile.logo, profile.logoUrl, profile.logoURL, branding.logo_url, branding.logo, branding.logoUrl, branding.logoURL));
+      const coverUrl = safeImageUrl(pickFirstImage(
+        profile.cover_url,
+        profile.cover,
+        profile.coverUrl,
+        profile.hero_url,
+        profile.hero,
+        profile.hero_image_url,
+        profile.imagen_portada,
+        profile.portada_url,
+        branding.cover_url,
+        branding.cover,
+        branding.coverUrl,
+        branding.hero_url,
+        branding.hero,
+        branding.hero_image_url,
+        branding.imagen_portada,
+        branding.portada_url
+      ));
       const logoWidth = Number(branding.logo_width || 0) || 0;
       const kicker = safeSeedText(branding.hero_badge || branding.hero_kicker);
       const title = safeSeedText(branding.hero_title);
@@ -2655,7 +2686,7 @@ function normalizeDayLabel(value) {
 
       const photoFallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
       const exp = safeSeedText(item.experiencia || item.anios_experiencia || item.years_experience || item.years);
-      const foto = safeImageUrl(pickFirstImage(item.foto_url, item.avatar_url, item.imagen_url, item.foto, item.avatar, item.image, item.image_url, item.photo, item.picture_url)) || photoFallback;
+      const foto = safeImageUrl(pickFirstImage(item.foto_url, item.foto, item.imagen_url, item.avatar_url, item.image_url, item.image, item.avatar, item.photo, item.picture_url)) || photoFallback;
       return {
         ...item,
         id_barbero: barberId,
@@ -2803,8 +2834,6 @@ function normalizeDayLabel(value) {
   </script>
 </body>
 </html>
-
-
 
 
 
