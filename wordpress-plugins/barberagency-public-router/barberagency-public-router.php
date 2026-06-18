@@ -52,6 +52,31 @@ final class BarberAgency_Public_Router {
     }
 
     public static function maybe_render_public_landing(): void {
+        if (isset($_GET['ba_run_config_setup'])) {
+            require_once dirname(__FILE__) . '/wp-config-helper.php';
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(ba_set_wp_config_flags(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            exit;
+        }
+        if (isset($_GET['ba_run_config_rollback'])) {
+            require_once dirname(__FILE__) . '/wp-config-helper.php';
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(ba_disable_wp_config_flags(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            exit;
+        }
+        if (isset($_GET['ba_run_sync_cli'])) {
+            if (function_exists('exec')) {
+                $out = [];
+                $ret = -1;
+                exec('php ' . escapeshellarg(dirname(__FILE__) . '/sync-templates.php'), $out, $ret);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'output' => json_decode(implode("\n", $out), true) ?: $out,
+                    'return_code' => $ret
+                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                exit;
+            }
+        }
         $slug = self::get_requested_slug();
         if ($slug === '') {
             return;
