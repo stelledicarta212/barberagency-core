@@ -1,0 +1,44 @@
+{
+  "v2": {
+    "template_id": "v2",
+    "name": "Esencia Premium",
+    "file": "project/templates/plantillas/index_unico_v2.html",
+    "active": true,
+    "legacy_wp_page_id": 1558
+  },
+  "v3": {
+    "template_id": "v3",
+    "name": "V3",
+    "file": "project/templates/plantillas/index_unico_v3_nueva.html",
+    "active": true,
+    "legacy_wp_page_id": 1563
+  },
+  "v4": {
+    "template_id": "v4",
+    "name": "V4",
+    "file": "project/templates/plantillas/index_unico_v4_editorial.html",
+    "active": true,
+    "legacy_wp_page_id": 1568
+  },
+  "v5": {
+    "template_id": "v5",
+    "name": "V5",
+    "file": "project/templates/plantillas/index_unico_v5_1_azul_rojo_elegante.html",
+    "active": true,
+    "legacy_wp_page_id": 3687
+  },
+  "v6": {
+    "template_id": "v6",
+    "name": "V6",
+    "file": "project/templates/plantillas/index_unico_v6_negro_dorado.html",
+    "active": true,
+    "legacy_wp_page_id": 1578
+  },
+  "v7": {
+    "template_id": "v7",
+    "name": "V7",
+    "file": "project/templates/plantillas/index_unicov7.html",
+    "active": true,
+    "legacy_wp_page_id": null
+  }
+}

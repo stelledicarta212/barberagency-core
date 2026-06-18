@@ -64,24 +64,143 @@ final class BarberAgency_Public_Router {
         }
 
         $template_id = sanitize_key((string) ($payload['plantilla']['template_id'] ?? ''));
-        $legacy_path = self::template_legacy_path_map()[$template_id] ?? '';
-        if ($legacy_path === '') {
-            self::set_404();
-            return;
+
+        // ==========================================
+        // FEATURE FLAGS & CANARY DE TEMPLATE RUNTIME
+        // ==========================================
+        $use_new_runtime = false;
+
+        $enabled = defined('BA_TEMPLATE_RUNTIME_ENABLED') ? BA_TEMPLATE_RUNTIME_ENABLED : false;
+        $canary_enabled = defined('BA_TEMPLATE_RUNTIME_CANARY_ENABLED') ? BA_TEMPLATE_RUNTIME_CANARY_ENABLED : false;
+
+        $allowed_slugs_raw = defined('BA_TEMPLATE_RUNTIME_ALLOWED_SLUGS') ? BA_TEMPLATE_RUNTIME_ALLOWED_SLUGS : '';
+        $allowed_templates_raw = defined('BA_TEMPLATE_RUNTIME_ALLOWED_TEMPLATES') ? BA_TEMPLATE_RUNTIME_ALLOWED_TEMPLATES : '';
+
+        $allowed_slugs = !empty($allowed_slugs_raw) ? array_map('trim', explode(',', $allowed_slugs_raw)) : [];
+        $allowed_templates = !empty($allowed_templates_raw) ? array_map('trim', explode(',', $allowed_templates_raw)) : [];
+
+        $fallback_enabled = defined('BA_TEMPLATE_RUNTIME_FALLBACK_ENABLED') ? BA_TEMPLATE_RUNTIME_FALLBACK_ENABLED : true;
+
+        if ($enabled) {
+            // Si el runtime global está activo, se valida si hay limitadores (slugs/templates)
+            $slug_ok = empty($allowed_slugs) || in_array($slug, $allowed_slugs, true);
+            $template_ok = empty($allowed_templates) || in_array($template_id, $allowed_templates, true);
+            if ($slug_ok && $template_ok) {
+                $use_new_runtime = true;
+            }
+        } elseif ($canary_enabled) {
+            // Si el runtime global está apagado pero Canary está activo, probamos con la lista canary
+            $slug_ok = !empty($allowed_slugs) && in_array($slug, $allowed_slugs, true);
+            $template_ok = empty($allowed_templates) || in_array($template_id, $allowed_templates, true);
+            if ($slug_ok && $template_ok) {
+                $use_new_runtime = true;
+            }
         }
 
-        $legacy_url = add_query_arg('slug', rawurlencode($slug), home_url($legacy_path));
-        $html = self::fetch_legacy_html($legacy_url);
+        $html = null;
+        $runtime_type = 'legacy';
+
+        if ($use_new_runtime) {
+            error_log("BarberAgency Runtime: Intentando cargar por nuevo runtime para slug '{$slug}' (template_id: '{$template_id}')");
+            $html = self::fetch_physical_html_from_registry($template_id, $slug);
+            if ($html !== null) {
+                $runtime_type = 'physical_registry';
+            } else {
+                error_log("BarberAgency Runtime: Fallo en nuevo runtime. Fallback activo: " . ($fallback_enabled ? 'si' : 'no'));
+                if (!$fallback_enabled) {
+                    self::set_404();
+                    return;
+                }
+            }
+        }
+
+        // Si no se usó el nuevo runtime, o si falló y el fallback está activo, usamos el legacy
         if ($html === null) {
-            self::set_404();
-            return;
+            $legacy_path = self::template_legacy_path_map()[$template_id] ?? '';
+            if ($legacy_path === '') {
+                error_log("BarberAgency Runtime: Legacy Path no encontrado para template_id '{$template_id}'");
+                self::set_404();
+                return;
+            }
+            $legacy_url = add_query_arg('slug', rawurlencode($slug), home_url($legacy_path));
+            error_log("BarberAgency Runtime: Cargando por legacy URL '{$legacy_url}' para slug '{$slug}'");
+            $html = self::fetch_legacy_html($legacy_url);
+            if ($html === null) {
+                error_log("BarberAgency Runtime: Fallo al cargar legacy HTML para slug '{$slug}'");
+                self::set_404();
+                return;
+            }
         }
 
         status_header(200);
         nocache_headers();
         header('Content-Type: text/html; charset=' . get_bloginfo('charset'));
+        header("X-BarberAgency-Runtime: {$runtime_type}");
+        header("X-BarberAgency-Template-Id: {$template_id}");
         echo self::inject_route_context($html, $payload);
         exit;
+    }
+
+    private static function fetch_physical_html_from_registry(string $template_id, string $slug): ?string {
+        $base_path = defined('BA_TEMPLATE_RUNTIME_BASE_PATH') ? BA_TEMPLATE_RUNTIME_BASE_PATH : ABSPATH;
+        $manifest_path = $base_path . '/project/templates/manifest.json';
+
+        if (!file_exists($manifest_path)) {
+            error_log("BarberAgency Runtime: Manifest no encontrado en " . $manifest_path);
+            return null;
+        }
+
+        $manifest_data = file_get_contents($manifest_path);
+        $manifest = json_decode($manifest_data, true);
+        if (!is_array($manifest)) {
+            error_log("BarberAgency Runtime: Manifest invalido.");
+            return null;
+        }
+
+        if (!isset($manifest[$template_id])) {
+            error_log("BarberAgency Runtime: template_id '{$template_id}' no registrado en el manifest.");
+            return null;
+        }
+
+        $template_info = $manifest[$template_id];
+        if (empty($template_info['active'])) {
+            error_log("BarberAgency Runtime: template_id '{$template_id}' inactivo.");
+            return null;
+        }
+
+        $relative_file = $template_info['file'] ?? '';
+        if ($relative_file === '') {
+            error_log("BarberAgency Runtime: No se especifico archivo para '{$template_id}'.");
+            return null;
+        }
+
+        $real_base = realpath($base_path);
+        $target_file = $real_base . '/' . $relative_file;
+        $real_target = realpath($target_file);
+
+        if ($real_target === false) {
+            error_log("BarberAgency Runtime: Archivo de plantilla no existe fisicamente en " . $target_file);
+            return null;
+        }
+
+        if (strpos($real_target, $real_base) !== 0) {
+            error_log("BarberAgency Runtime: Intento de Path Traversal bloqueado para " . $real_target);
+            return null;
+        }
+
+        if (pathinfo($real_target, PATHINFO_EXTENSION) !== 'html') {
+            error_log("BarberAgency Runtime: Archivo no tiene extension .html para " . $real_target);
+            return null;
+        }
+
+        $html = file_get_contents($real_target);
+        if ($html === false || trim($html) === '') {
+            error_log("BarberAgency Runtime: HTML leido de " . $real_target . " esta vacio.");
+            return null;
+        }
+
+        error_log("BarberAgency Runtime: Plantilla '{$template_id}' cargada exitosamente de disco para slug '{$slug}'.");
+        return $html;
     }
 
     private static function fetch_legacy_html(string $url): ?string {
