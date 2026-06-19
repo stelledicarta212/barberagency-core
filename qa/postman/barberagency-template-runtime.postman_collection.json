@@ -1,0 +1,221 @@
+{
+  "info": {
+    "_postman_id": "4dbe82ac-6f29-49ea-bca3-7beab2b75a1d",
+    "name": "BarberAgency Template Runtime Verification",
+    "description": "Collection to verify the behaviour of the WordPress custom routing engine, active templates (V2, V3, V4) under physical_registry, and legacy fallbacks (V5).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "ba_ping",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Verify ping response\", function () {",
+              "    pm.expect(pm.response.text()).to.include(\"1\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://barberagency-barberagency.gymh5g.easypanel.host/?ba_ping=1",
+          "protocol": "https",
+          "host": [
+            "barberagency-barberagency",
+            "gymh5g",
+            "easypanel",
+            "host"
+          ],
+          "path": [
+            ""
+          ],
+          "query": [
+            {
+              "key": "ba_ping",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "V2 Landing (Active Runtime)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"X-BarberAgency-Runtime is physical_registry\", function () {",
+              "    pm.response.headers.to.have.key(\"X-BarberAgency-Runtime\");",
+              "    pm.expect(pm.response.headers.get(\"X-BarberAgency-Runtime\")).to.eql(\"physical_registry\");",
+              "});",
+              "pm.test(\"X-BarberAgency-Template-Id is v2\", function () {",
+              "    pm.response.headers.to.have.key(\"X-BarberAgency-Template-Id\");",
+              "    pm.expect(pm.response.headers.get(\"X-BarberAgency-Template-Id\")).to.eql(\"v2\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://barberagency-barberagency.gymh5g.easypanel.host/b/barberia-prueba-4",
+          "protocol": "https",
+          "host": [
+            "barberagency-barberagency",
+            "gymh5g",
+            "easypanel",
+            "host"
+          ],
+          "path": [
+            "b",
+            "barberia-prueba-4"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "V3 Landing (Active Runtime)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"X-BarberAgency-Runtime is physical_registry\", function () {",
+              "    pm.response.headers.to.have.key(\"X-BarberAgency-Runtime\");",
+              "    pm.expect(pm.response.headers.get(\"X-BarberAgency-Runtime\")).to.eql(\"physical_registry\");",
+              "});",
+              "pm.test(\"X-BarberAgency-Template-Id is v3\", function () {",
+              "    pm.response.headers.to.have.key(\"X-BarberAgency-Template-Id\");",
+              "    pm.expect(pm.response.headers.get(\"X-BarberAgency-Template-Id\")).to.eql(\"v3\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://barberagency-barberagency.gymh5g.easypanel.host/b/barberia-167",
+          "protocol": "https",
+          "host": [
+            "barberagency-barberagency",
+            "gymh5g",
+            "easypanel",
+            "host"
+          ],
+          "path": [
+            "b",
+            "barberia-167"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "V4 Landing (Active Runtime)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"X-BarberAgency-Runtime is physical_registry\", function () {",
+              "    pm.response.headers.to.have.key(\"X-BarberAgency-Runtime\");",
+              "    pm.expect(pm.response.headers.get(\"X-BarberAgency-Runtime\")).to.eql(\"physical_registry\");",
+              "});",
+              "pm.test(\"X-BarberAgency-Template-Id is v4\", function () {",
+              "    pm.response.headers.to.have.key(\"X-BarberAgency-Template-Id\");",
+              "    pm.expect(pm.response.headers.get(\"X-BarberAgency-Template-Id\")).to.eql(\"v4\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://barberagency-barberagency.gymh5g.easypanel.host/b/barberia-150",
+          "protocol": "https",
+          "host": [
+            "barberagency-barberagency",
+            "gymh5g",
+            "easypanel",
+            "host"
+          ],
+          "path": [
+            "b",
+            "barberia-150"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "V5 Landing (Legacy Runtime / Pending Allowed)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"X-BarberAgency-Runtime is legacy\", function () {",
+              "    pm.response.headers.to.have.key(\"X-BarberAgency-Runtime\");",
+              "    pm.expect(pm.response.headers.get(\"X-BarberAgency-Runtime\")).to.eql(\"legacy\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://barberagency-barberagency.gymh5g.easypanel.host/b/barberia-129",
+          "protocol": "https",
+          "host": [
+            "barberagency-barberagency",
+            "gymh5g",
+            "easypanel",
+            "host"
+          ],
+          "path": [
+            "b",
+            "barberia-129"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
