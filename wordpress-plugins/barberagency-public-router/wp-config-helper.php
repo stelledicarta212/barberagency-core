@@ -71,3 +71,20 @@ function ba_disable_wp_config_flags(): array {
 
     return ['success' => true, 'disabled' => true];
 }
+
+// Habilitar ejecución directa por CLI dentro del contenedor
+if (php_sapi_name() === 'cli') {
+    $action = isset($argv[1]) ? trim($argv[1]) : '';
+    if ($action === 'setup') {
+        $res = ba_set_wp_config_flags();
+        echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+        exit(isset($res['success']) ? 0 : 1);
+    } elseif ($action === 'rollback') {
+        $res = ba_disable_wp_config_flags();
+        echo json_encode($res, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+        exit(isset($res['success']) ? 0 : 1);
+    } else {
+        echo "Uso: php wp-config-helper.php [setup|rollback]\n";
+        exit(1);
+    }
+}

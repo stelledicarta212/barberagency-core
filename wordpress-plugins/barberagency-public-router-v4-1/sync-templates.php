@@ -7,28 +7,10 @@
  * Implementa control de rollback automático, validación de integridad y seguridad de acceso.
  */
 
-// 1. Restricciones de acceso y seguridad
-$is_cli = (php_sapi_name() === 'cli');
-$is_authorized = false;
-
-if ($is_cli || (defined('BA_TEMPLATE_SYNC_BYPASS') && BA_TEMPLATE_SYNC_BYPASS === true)) {
-    $is_authorized = true;
-} else {
-    // Si se accede via web, requiere cargar el entorno de WordPress y validar un token seguro
-    $wp_load_path = dirname(dirname(dirname(__DIR__))) . '/wp-load.php';
-    if (file_exists($wp_load_path)) {
-        require_once $wp_load_path;
-    }
-
-    $secret_token = defined('BA_TEMPLATE_SYNC_TOKEN') ? BA_TEMPLATE_SYNC_TOKEN : '';
-    if ($secret_token !== '' && isset($_GET['token']) && hash_equals($secret_token, $_GET['token'])) {
-        $is_authorized = true;
-    }
-}
-
-if (!$is_authorized) {
+// 1. Restricciones de acceso y seguridad: Estrictamente ejecutable solo vía CLI
+if (php_sapi_name() !== 'cli') {
     header('HTTP/1.1 403 Forbidden');
-    echo json_encode(['error' => 'No autorizado. Se requiere acceso CLI o un token de sincronizacion valido.']);
+    echo json_encode(['error' => 'No autorizado. Este script solo puede ejecutarse mediante la CLI del contenedor.']);
     exit(1);
 }
 

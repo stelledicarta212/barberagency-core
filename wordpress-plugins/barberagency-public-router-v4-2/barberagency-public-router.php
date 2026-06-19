@@ -22,7 +22,7 @@ final class BarberAgency_Public_Router {
         add_action('init', function() {
             if (isset($_GET['ba_ping'])) {
                 header('Content-Type: application/json; charset=utf-8');
-                echo json_encode(['pong' => true, 'version' => '0.5.0-debug', 'time' => time()], JSON_PRETTY_PRINT);
+                echo json_encode(['pong' => true, 'version' => '0.5.0-v4-2', 'time' => time()], JSON_PRETTY_PRINT);
                 exit;
             }
         });
@@ -59,36 +59,6 @@ final class BarberAgency_Public_Router {
     }
 
     public static function maybe_render_public_landing(): void {
-        if (isset($_GET['ba_run_config_setup'])) {
-            require_once dirname(__FILE__) . '/wp-config-helper.php';
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(ba_set_wp_config_flags(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-            exit;
-        }
-        if (isset($_GET['ba_run_config_rollback'])) {
-            require_once dirname(__FILE__) . '/wp-config-helper.php';
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(ba_disable_wp_config_flags(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-            exit;
-        }
-        if (isset($_GET['ba_run_sync_cli'])) {
-            if (function_exists('exec')) {
-                $out = [];
-                $ret = -1;
-                exec('php ' . escapeshellarg(dirname(__FILE__) . '/sync-templates.php'), $out, $ret);
-                header('Content-Type: application/json; charset=utf-8');
-                echo json_encode([
-                    'output' => json_decode(implode("\n", $out), true) ?: $out,
-                    'return_code' => $ret
-                ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-                exit;
-            }
-        }
-        if (isset($_GET['ba_run_sync_web'])) {
-            define('BA_TEMPLATE_SYNC_BYPASS', true);
-            require_once dirname(__FILE__) . '/sync-templates.php';
-            exit;
-        }
         $slug = self::get_requested_slug();
         if ($slug === '') {
             return;
