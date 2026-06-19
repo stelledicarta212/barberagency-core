@@ -10,9 +10,27 @@ El estado de las versiones de plantillas y su mecanismo de renderizado actual es
 *   **V2**: `physical_registry` (Activo y Validado)
 *   **V3**: `physical_registry` (Activo y Validado)
 *   **V4**: `physical_registry` (Activo y Validado)
-*   **V5**: `legacy` / Pendiente de Activación
+    *   **URL Validada**: [https://barberagency-barberagency.gymh5g.easypanel.host/b/barberia-150](https://barberagency-barberagency.gymh5g.easypanel.host/b/barberia-150)
+    *   **Resultado de Validación**:
+        *   HTTP 200 OK
+        *   Runtime: `physical_registry`
+        *   Template-Id: `v4`
+        *   Logo visible
+        *   Servicios visibles
+        *   Barberos visibles
+        *   Fotos cargadas
+        *   Sin errores JS críticos
+*   **V5**: `legacy` / Pendiente de Activación (Fase 6D)
 *   **V6**: Pendiente / Sin activar
 *   **V7**: Pendiente / Sin activar
+
+---
+
+## 🛡️ Seguridad Validada (Versión 0.5.0-v5)
+*   **ba_ping**: OK (Versión `0.5.0-v5`)
+*   **Protección**: Endpoints sensibles HTTP bloqueados externamente.
+*   **Robustez**: Sin errores HTTP 500 ni loops de redirección detectados.
+*   **Integridad**: n8n y Base de Datos (PostgreSQL) intactas.
 
 ---
 
@@ -49,12 +67,15 @@ Cada agente que realice cualquier modificación en el sistema debe documentar ob
 ## 📐 Rol de los Agentes en QA
 *   **Arquitecto**: Asegurar el desacoplamiento entre el backend de WordPress, el panel Next.js y PostgreSQL, y verificar que no se eludan las reglas de red.
 *   **Database**: Validar que ninguna consulta o modificación de esquema bypassée RLS y que todas las llamadas respeten el aislamiento multi-tenant.
-*   **Backend**: Garantizar la consistencia transaccional y el correcto enrutamiento del Same-Origin Proxy de Next.js y los flujos de n8n.
-*   **Frontend**: Validar la fidelidad del renderizado visual en móvil/desktop y la correcta hidratación del seed.
+*   **Backend / Runtime**: Garantizar la consistencia transaccional, el correcto enrutamiento del Same-Origin Proxy de Next.js, la validez lógica del motor de plantillas y los flujos de n8n.
+*   **Frontend / Templates**: Validar la fidelidad del renderizado visual en móvil/desktop, la correcta hidratación del seed y el comportamiento responsivo.
+*   **DevOps**: Controlar la infraestructura de contenedores, la inyección segura de variables de entorno y asegurar que los scripts de sincronización mantengan los permisos adecuados.
+*   **QA / Testing**: Actúa como filtro obligatorio antes de aprobar producción. Debe ejecutar o coordinar pruebas unitarias, de integración, Postman/API, E2E visual, seguridad, smoke tests y rollback. Su salida debe terminar con un veredicto explícito "PASS" o "BLOCKED", evidencia de headers, resultados visuales/DOM, errores detectados y planes de rollback.
+
 
 ---
 
-## ↩️ Rollback Actual
+## ↩️ Rollback para Fase 6D
 Si se detecta cualquier anomalía tras la activación de V5 o cualquier otra plantilla, se debe ejecutar inmediatamente el siguiente comando CLI para restablecer el estado seguro validado (V2, V3 y V4):
 
 ```bash
@@ -64,4 +85,4 @@ php /code/wp-content/plugins/barberagency-public-router-v5-flat/wp-config-helper
 ---
 
 ## 🚀 Próxima Fase Pendiente
-*   **Fase 6D**: Activación controlada de la plantilla **V5** (Prestigio Ejecutivo) a través de la actualización de `BA_TEMPLATE_RUNTIME_ALLOWED_TEMPLATES` e hidratación desde la fuente de verdad.
+*   **Fase 6D — Activación controlada de V5**: Habilitación de la plantilla V5 (Prestigio Ejecutivo) mediante la actualización de `BA_TEMPLATE_RUNTIME_ALLOWED_TEMPLATES` e hidratación desde la fuente de verdad.
