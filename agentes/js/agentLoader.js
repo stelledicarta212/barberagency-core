@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Ruta fija a los archivos Markdown de agentes
-const skillsPath = path.resolve(__dirname, '..', 'skills');
+const skillsPath = path.resolve(__dirname, '..', '..', 'ContextoGeneral', 'skills');
 
 function extractAgentNameFromFile(file) {
   const base = path.basename(file, '.md');

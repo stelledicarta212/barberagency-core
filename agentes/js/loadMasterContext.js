@@ -8,7 +8,7 @@ function loadMasterContext() {
     return cachedMasterContext;
   }
 
-  const skillsDir = path.join(__dirname, '../skills');
+  const skillsDir = path.join(__dirname, '../../ContextoGeneral/skills');
 
   if (!fs.existsSync(skillsDir)) {
     throw new Error(`No existe la carpeta skills: ${skillsDir}`);

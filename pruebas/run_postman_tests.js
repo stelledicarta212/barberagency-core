@@ -139,7 +139,7 @@ function makeRequest(url, method, headers = {}, body = null) {
       slug: 'barberia-prueba-4'
     };
     const resCLocal = await makeRequest(
-      'http://localhost:3000/api/auth/login',
+      'http://localhost:3000/api/session/login',
       'POST',
       {},
       proxyPayload
@@ -182,7 +182,7 @@ function makeRequest(url, method, headers = {}, body = null) {
     console.log('TEST C (Remote): Remote Proxy Next login (panel)');
     console.log('==================================================');
     const resCRemote = await makeRequest(
-      'https://panel-de-barberia.gymh5g.easypanel.host/api/auth/login',
+      'https://panel-de-barberia.gymh5g.easypanel.host/api/session/login',
       'POST',
       {},
       proxyPayload

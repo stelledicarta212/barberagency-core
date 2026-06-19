@@ -8,7 +8,7 @@ const path = require('path');
 
 // 📂 cargar agentes (.md)
 function loadAgents() {
-  const dir = path.join(__dirname, '../skills');
+  const dir = path.join(__dirname, '../../ContextoGeneral/skills');
   const files = fs.readdirSync(dir);
 
   const agents = {};
