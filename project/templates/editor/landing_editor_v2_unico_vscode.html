@@ -2835,7 +2835,6 @@ function persistRegistroSeedContext() {
 
     try {
       const runPublishRpc = async (idToPublish) => {
-        await refreshCanonicalCollectionsBeforePublish(identity);
         const publishPayload = applyPublishIdentity(buildSavePayload(), idToPublish);
         const response = await fetch(endpoint, {
           method: 'POST',
