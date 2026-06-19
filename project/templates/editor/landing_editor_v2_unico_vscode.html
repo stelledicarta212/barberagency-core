@@ -1213,41 +1213,58 @@
       const sessionSeedRaw = getSafeStorage(sessionStorage, STORAGE_LANDING_SEED);
       const localSeedRaw = getSafeStorage(localStorage, STORAGE_LANDING_SEED);
       const rawSeed = sessionSeedRaw || localSeedRaw;
+
+      const queryBarberiaId = getQueryNumberParam('barberia_id', 'id_barberia', 'id', 'barberia', 'barberiaId', 'business_id', 'ba_barberia_id');
+      const querySlug = getQueryParam('barberia_slug') || getQueryParam('slug') || getQueryParam('business_slug') || getQueryParam('ba_barberia_slug');
+
       if (rawSeed) {
         const sessionSeed = JSON.parse(rawSeed);
         const barberia = sessionSeed?.barberia && typeof sessionSeed.barberia === 'object'
           ? sessionSeed.barberia
           : {};
-        return {
-          ...sessionSeed,
-          barberia_id: Number(sessionSeed?.barberia_id) || Number(barberia?.id) || Number(barberia?.barberia_id) || 0,
-          id_barberia: Number(sessionSeed?.id_barberia) || Number(barberia?.id) || Number(barberia?.barberia_id) || 0,
-          id: Number(sessionSeed?.id) || Number(barberia?.id) || 0,
-          slug: safeText(sessionSeed?.slug) || safeText(barberia?.slug),
-          nombre: safeText(sessionSeed?.nombre) || safeText(barberia?.nombre),
-          ciudad: safeText(sessionSeed?.ciudad) || safeText(barberia?.ciudad),
-          direccion: safeText(sessionSeed?.direccion) || safeText(barberia?.direccion),
-          telefono: safeText(sessionSeed?.telefono) || safeText(barberia?.telefono),
-          qr_url: safeText(sessionSeed?.qr_url) || safeText(barberia?.qr_url),
-          public_landing_url:
-            safeText(sessionSeed?.public_landing_url) ||
-            safeText(sessionSeed?.landing_url) ||
-            safeText(sessionSeed?.url_publica) ||
-            safeText(sessionSeed?.url_public_landing) ||
-            safeText(barberia?.public_landing_url) ||
-            safeText(barberia?.landing_url) ||
-            safeText(barberia?.url_publica) ||
-            safeText(barberia?.url_public_landing),
-          reservation_url:
-            safeText(sessionSeed?.reservation_url) ||
-            safeText(sessionSeed?.url_reservas) ||
-            safeText(barberia?.reservation_url) ||
-            safeText(barberia?.url_reservas),
-          slot_min: normalizeSlotMin(sessionSeed?.slot_min || barberia?.slot_min, 30),
-          servicios: Array.isArray(sessionSeed?.servicios) ? sessionSeed.servicios : [],
-          barberos: Array.isArray(sessionSeed?.barberos) ? sessionSeed.barberos : [],
-          horarios: Array.isArray(sessionSeed?.horarios) ? sessionSeed.horarios : []
-        };
+        const seedId = Number(sessionSeed?.barberia_id) || Number(barberia?.id) || Number(barberia?.barberia_id) || Number(sessionSeed?.id) || 0;
+        const seedSlug = safeText(sessionSeed?.slug) || safeText(barberia?.slug);
+
+        const idMismatch = queryBarberiaId > 0 && seedId > 0 && queryBarberiaId !== seedId;
+        const slugMismatch = querySlug && seedSlug && querySlug !== seedSlug;
+
+        if (idMismatch || slugMismatch) {
+          try {
+            sessionStorage.removeItem(STORAGE_LANDING_SEED);
+            localStorage.removeItem(STORAGE_LANDING_SEED);
+          } catch (_) {}
+        } else {
+          return {
+            ...sessionSeed,
+            barberia_id: Number(sessionSeed?.barberia_id) || Number(barberia?.id) || Number(barberia?.barberia_id) || 0,
+            id_barberia: Number(sessionSeed?.id_barberia) || Number(barberia?.id) || Number(barberia?.barberia_id) || 0,
+            id: Number(sessionSeed?.id) || Number(barberia?.id) || 0,
+            slug: safeText(sessionSeed?.slug) || safeText(barberia?.slug),
+            nombre: safeText(sessionSeed?.nombre) || safeText(barberia?.nombre),
+            ciudad: safeText(sessionSeed?.ciudad) || safeText(barberia?.ciudad),
+            direccion: safeText(sessionSeed?.direccion) || safeText(barberia?.direccion),
+            telefono: safeText(sessionSeed?.telefono) || safeText(barberia?.telefono),
+            qr_url: safeText(sessionSeed?.qr_url) || safeText(barberia?.qr_url),
+            public_landing_url:
+              safeText(sessionSeed?.public_landing_url) ||
+              safeText(sessionSeed?.landing_url) ||
+              safeText(sessionSeed?.url_publica) ||
+              safeText(sessionSeed?.url_public_landing) ||
+              safeText(barberia?.public_landing_url) ||
+              safeText(barberia?.landing_url) ||
+              safeText(barberia?.url_publica) ||
+              safeText(barberia?.url_public_landing),
+            reservation_url:
+              safeText(sessionSeed?.reservation_url) ||
+              safeText(sessionSeed?.url_reservas) ||
+              safeText(barberia?.reservation_url) ||
+              safeText(barberia?.url_reservas),
+            slot_min: normalizeSlotMin(sessionSeed?.slot_min || barberia?.slot_min, 30),
+            servicios: Array.isArray(sessionSeed?.servicios) ? sessionSeed.servicios : [],
+            barberos: Array.isArray(sessionSeed?.barberos) ? sessionSeed.barberos : [],
+            horarios: Array.isArray(sessionSeed?.horarios) ? sessionSeed.horarios : []
+          };
+        }
       }
 
       const el = document.getElementById('ba-seed-data');
@@ -1498,6 +1515,152 @@
       .filter((item) => item.dia);
   }
 
+  function mergeCollections(existingList, incomingList, type) {
+    if (!incomingList || !incomingList.length) {
+      return existingList;
+    }
+    if (!existingList || !existingList.length) {
+      return [...incomingList];
+    }
+
+    const mergedList = [...existingList];
+
+    incomingList.forEach(incomingItem => {
+      const incomingId = type === 'barber'
+        ? (Number(incomingItem?.id) || Number(incomingItem?.id_barbero) || Number(incomingItem?.barbero_id) || 0)
+        : (Number(incomingItem?.id) || Number(incomingItem?.id_servicio) || Number(incomingItem?.servicio_id) || 0);
+
+      const incomingName = safeText(incomingItem?.nombre || incomingItem?.name || '').toLowerCase().trim();
+
+      let matchIndex = -1;
+      if (incomingId > 0) {
+        matchIndex = mergedList.findIndex(item => {
+          const itemId = type === 'barber'
+            ? (Number(item?.id) || Number(item?.id_barbero) || Number(item?.barbero_id) || 0)
+            : (Number(item?.id) || Number(item?.id_servicio) || Number(item?.servicio_id) || 0);
+          return itemId === incomingId;
+        });
+      }
+      if (matchIndex === -1 && incomingName) {
+        matchIndex = mergedList.findIndex(item =>
+          safeText(item?.nombre || item?.name || '').toLowerCase().trim() === incomingName
+        );
+      }
+
+      if (matchIndex !== -1) {
+        const existingItem = mergedList[matchIndex];
+        const merged = { ...existingItem };
+        for (const key of Object.keys(incomingItem)) {
+          const val = incomingItem[key];
+          if (val !== undefined && val !== null && val !== '') {
+            merged[key] = val;
+          }
+        }
+
+        if (type === 'barber') {
+          const photo = firstDefined(
+            incomingItem?.foto_url,
+            incomingItem?.foto,
+            incomingItem?.imagen_url,
+            incomingItem?.photo,
+            existingItem?.foto_url,
+            existingItem?.foto,
+            existingItem?.imagen_url,
+            existingItem?.photo
+          );
+          if (photo) {
+            merged.foto = photo;
+            merged.foto_url = photo;
+            merged.imagen_url = photo;
+            merged.photo = photo;
+            merged.picture_url = photo;
+          }
+          const name = firstDefined(
+            incomingItem?.nombre,
+            incomingItem?.name,
+            existingItem?.nombre,
+            existingItem?.name
+          );
+          if (name) {
+            merged.nombre = name;
+            merged.name = name;
+          }
+          const resId = incomingId || Number(existingItem?.id) || Number(existingItem?.id_barbero) || Number(existingItem?.barbero_id) || null;
+          if (resId) {
+            merged.id = resId;
+            merged.id_barbero = resId;
+            merged.barbero_id = resId;
+          }
+        } else if (type === 'service') {
+          const img = firstDefined(
+            incomingItem?.imagen_url,
+            incomingItem?.image_url,
+            incomingItem?.foto_url,
+            incomingItem?.image,
+            existingItem?.imagen_url,
+            existingItem?.image_url,
+            existingItem?.foto_url,
+            existingItem?.image
+          );
+          if (img) {
+            merged.imagen_url = img;
+            merged.image_url = img;
+            merged.foto_url = img;
+            merged.image = img;
+          }
+          const name = firstDefined(
+            incomingItem?.nombre,
+            incomingItem?.name,
+            existingItem?.nombre,
+            existingItem?.name
+          );
+          if (name) {
+            merged.nombre = name;
+            merged.name = name;
+          }
+          const resId = incomingId || Number(existingItem?.id) || Number(existingItem?.id_servicio) || Number(existingItem?.servicio_id) || null;
+          if (resId) {
+            merged.id = resId;
+            merged.id_servicio = resId;
+            merged.servicio_id = resId;
+          }
+        }
+
+        mergedList[matchIndex] = merged;
+      } else {
+        mergedList.push(incomingItem);
+      }
+    });
+
+    return mergedList;
+  }
+
+  function mergeHours(existingHours, incomingHours) {
+    if (!incomingHours || !incomingHours.length) {
+      return existingHours;
+    }
+    if (!existingHours || !existingHours.length) {
+      return [...incomingHours];
+    }
+    const mergedList = [...existingHours];
+    incomingHours.forEach(incomingItem => {
+      const day = incomingItem?.dia_semana !== undefined && incomingItem?.dia_semana !== null
+        ? Number(incomingItem.dia_semana)
+        : null;
+      if (day === null) return;
+      const matchIndex = mergedList.findIndex(item => Number(item?.dia_semana) === day);
+      if (matchIndex !== -1) {
+        mergedList[matchIndex] = {
+          ...mergedList[matchIndex],
+          ...incomingItem
+        };
+      } else {
+        mergedList.push(incomingItem);
+      }
+    });
+    return mergedList;
+  }
+
   function applyInheritedCollectionsFromPayload(payload) {
     const source = payload && typeof payload === 'object' ? payload : {};
     const data = source?.data && typeof source.data === 'object' ? source.data : {};
@@ -1540,13 +1703,16 @@
     );
 
     if (nextServices.length) {
-      inheritedCollections.services.splice(0, inheritedCollections.services.length, ...nextServices);
+      const merged = mergeCollections(inheritedCollections.services, nextServices, 'service');
+      inheritedCollections.services.splice(0, inheritedCollections.services.length, ...merged);
     }
     if (nextBarbers.length) {
-      inheritedCollections.barbers.splice(0, inheritedCollections.barbers.length, ...nextBarbers);
+      const merged = mergeCollections(inheritedCollections.barbers, nextBarbers, 'barber');
+      inheritedCollections.barbers.splice(0, inheritedCollections.barbers.length, ...merged);
     }
     if (nextHours.length) {
-      inheritedCollections.hours.splice(0, inheritedCollections.hours.length, ...nextHours);
+      const merged = mergeHours(inheritedCollections.hours, nextHours);
+      inheritedCollections.hours.splice(0, inheritedCollections.hours.length, ...merged);
     }
 
     renderInheritedSeedSummary();
@@ -1619,15 +1785,25 @@
       safeText(merged?.map_url) ||
       buildMapsEmbedUrl(nextAddress);
 
-    if (!safeText(seedLandingData.nombre) && nextName) seedLandingData.nombre = nextName;
-    if (!safeText(seedLandingData.direccion) && nextAddress) seedLandingData.direccion = nextAddress;
-    if (nextSlug) seedLandingData.slug = nextSlug;
+    const cameFromRegistroEdit =
+      getQueryParam('source') === 'editor' ||
+      getQueryParam('edit') === '1' ||
+      getQueryParam('mode') === 'edit' ||
+      getQueryParam('modo') === 'editar' ||
+      getQueryParam('editing') === '1' ||
+      getQueryParam('is_edit') === '1';
+
+    if (!cameFromRegistroEdit) {
+      if (!safeText(seedLandingData.nombre) && nextName) seedLandingData.nombre = nextName;
+      if (!safeText(seedLandingData.direccion) && nextAddress) seedLandingData.direccion = nextAddress;
+      if (nextSlug) seedLandingData.slug = nextSlug;
+      if (!safeText(seedLandingData.maps_url) && nextMapsUrl) seedLandingData.maps_url = nextMapsUrl;
+    }
     if (nextBarberiaId > 0) {
       seedLandingData.barberia_id = nextBarberiaId;
       seedLandingData.id_barberia = nextBarberiaId;
       if (!Number(seedLandingData.id)) seedLandingData.id = nextBarberiaId;
     }
-    if (!safeText(seedLandingData.maps_url) && nextMapsUrl) seedLandingData.maps_url = nextMapsUrl;
   }
 
   async function hydrateInheritedFromPublicProfile() {
@@ -1928,18 +2104,18 @@
       safeText(window.BA_BARBERIA_SLUG) ||
       safeText(window.BA_BUSINESS_SLUG);
     const slug =
-      safeText(seedLandingData?.slug) ||
       querySlug ||
       runtimeSlug ||
+      safeText(seedLandingData?.slug) ||
       storedSlug;
     const hasExplicitQuerySlug = !!safeText(querySlug);
     const hasExplicitQueryId = queryBarberíaId > 0;
     const barberiaIdFromSeedOrQuery =
+      queryBarberíaId ||
+      runtimeBarberíaId ||
       Number(seedLandingData?.barberia_id) ||
       Number(seedLandingData?.id_barberia) ||
       Number(seedLandingData?.id) ||
-      queryBarberíaId ||
-      runtimeBarberíaId ||
       0;
     const barberiaId =
       barberiaIdFromSeedOrQuery > 0
@@ -2115,21 +2291,144 @@ function persistRegistroSeedContext() {
       const identity = getSeedIdentity();
       const data = getFormData();
       const existingSeedBarberos = Array.isArray(seedLandingData?.barberos) ? seedLandingData.barberos : [];
+      const existingSeedServices = Array.isArray(seedLandingData?.servicios) ? seedLandingData.servicios : [];
       const existingSeedAccesos = seedLandingData?.accesos && typeof seedLandingData.accesos === 'object'
         ? seedLandingData.accesos
         : {};
-      const mergedBarberos = existingSeedBarberos.length
-        ? existingSeedBarberos.map((item, index) => {
-            const fallback = inheritedCollections.barbers[index] || {};
-            return {
-              ...item,
-              nombre: safeText(item?.nombre || item?.name || fallback?.nombre || fallback?.name),
-              name: safeText(item?.name || item?.nombre || fallback?.name || fallback?.nombre),
-              foto: safeText(item?.foto || item?.photo || fallback?.foto || fallback?.photo),
-              photo: safeText(item?.photo || item?.foto || fallback?.photo || fallback?.foto)
-            };
-          })
-        : inheritedCollections.barbers;
+
+      const mergedBarberos = inheritedCollections.barbers.map((canonical, index) => {
+        const canonicalId = Number(canonical?.id) || Number(canonical?.id_barbero) || Number(canonical?.barbero_id) || 0;
+        let existing = null;
+        if (canonicalId > 0) {
+          existing = existingSeedBarberos.find(item => {
+            const itemId = Number(item?.id) || Number(item?.id_barbero) || Number(item?.barbero_id) || 0;
+            return itemId === canonicalId;
+          });
+        }
+        if (!existing) {
+          const canonicalName = safeText(canonical?.nombre || canonical?.name || '').toLowerCase().trim();
+          if (canonicalName) {
+            existing = existingSeedBarberos.find(item =>
+              safeText(item?.nombre || item?.name || '').toLowerCase().trim() === canonicalName
+            );
+          }
+        }
+
+        const merged = { ...canonical };
+        if (existing) {
+          for (const key of Object.keys(existing)) {
+            const val = existing[key];
+            if (val !== undefined && val !== null && val !== '') {
+              merged[key] = val;
+            }
+          }
+        }
+
+        const photo = firstDefined(
+          existing?.foto_url,
+          existing?.foto,
+          existing?.imagen_url,
+          existing?.photo,
+          canonical?.foto_url,
+          canonical?.foto,
+          canonical?.imagen_url,
+          canonical?.photo
+        );
+        if (photo) {
+          merged.foto = photo;
+          merged.foto_url = photo;
+          merged.imagen_url = photo;
+          merged.photo = photo;
+          merged.picture_url = photo;
+        }
+
+        const name = firstDefined(
+          existing?.nombre,
+          existing?.name,
+          canonical?.nombre,
+          canonical?.name
+        );
+        if (name) {
+          merged.nombre = name;
+          merged.name = name;
+        }
+
+        const resolvedId = canonicalId || Number(existing?.id) || Number(existing?.id_barbero) || Number(existing?.barbero_id) || null;
+        if (resolvedId) {
+          merged.id = resolvedId;
+          merged.id_barbero = resolvedId;
+          merged.barbero_id = resolvedId;
+        }
+
+        return merged;
+      });
+
+      const mergedServices = inheritedCollections.services.map((canonical, index) => {
+        const canonicalId = Number(canonical?.id) || Number(canonical?.id_servicio) || Number(canonical?.servicio_id) || 0;
+        let existing = null;
+        if (canonicalId > 0) {
+          existing = existingSeedServices.find(item => {
+            const itemId = Number(item?.id) || Number(item?.id_servicio) || Number(item?.servicio_id) || 0;
+            return itemId === canonicalId;
+          });
+        }
+        if (!existing) {
+          const canonicalName = safeText(canonical?.nombre || canonical?.name || '').toLowerCase().trim();
+          if (canonicalName) {
+            existing = existingSeedServices.find(item =>
+              safeText(item?.nombre || item?.name || '').toLowerCase().trim() === canonicalName
+            );
+          }
+        }
+
+        const merged = { ...canonical };
+        if (existing) {
+          for (const key of Object.keys(existing)) {
+            const val = existing[key];
+            if (val !== undefined && val !== null && val !== '') {
+              merged[key] = val;
+            }
+          }
+        }
+
+        const img = firstDefined(
+          existing?.imagen_url,
+          existing?.image_url,
+          existing?.foto_url,
+          existing?.image,
+          canonical?.imagen_url,
+          canonical?.image_url,
+          canonical?.foto_url,
+          canonical?.image
+        );
+        if (img) {
+          merged.imagen_url = img;
+          merged.image_url = img;
+          merged.foto_url = img;
+          merged.image = img;
+        }
+
+        const name = firstDefined(
+          existing?.nombre,
+          existing?.name,
+          canonical?.nombre,
+          canonical?.name
+        );
+        if (name) {
+          merged.nombre = name;
+          merged.name = name;
+        }
+
+        const resolvedId = canonicalId || Number(existing?.id) || Number(existing?.id_servicio) || Number(existing?.servicio_id) || null;
+        if (resolvedId) {
+          merged.id = resolvedId;
+          merged.id_servicio = resolvedId;
+          merged.servicio_id = resolvedId;
+        }
+
+        return merged;
+      });
+
       const seed = {
         ...seedLandingData,
         barberia_id: Number(identity.barberia_id) || 0,
@@ -2153,7 +2452,7 @@ function persistRegistroSeedContext() {
           safeText(seedLandingData?.url_public_landing),
         edit_mode: true,
         source: 'editor',
-        servicios: inheritedCollections.services,
+        servicios: mergedServices,
         barberos: mergedBarberos,
         horarios: inheritedCollections.hours,
         accesos: {
@@ -4344,9 +4643,7 @@ function persistRegistroSeedContext() {
     }
     // Siempre rehidrata colecciones heredadas desde backend público para evitar
     // que un borrador viejo vuelva a pisar servicios/barberos/horarios.
-    if (!cameFromRegistroEdit) {
-      await hydrateInheritedFromPublicProfile();
-    }
+    await hydrateInheritedFromPublicProfile();
     applySeedDefaults();
     forceSeedIdentityIntoPanel();
     enforcePreferredAddress();
