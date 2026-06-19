@@ -2118,22 +2118,18 @@ function persistRegistroSeedContext() {
       const existingSeedAccesos = seedLandingData?.accesos && typeof seedLandingData.accesos === 'object'
         ? seedLandingData.accesos
         : {};
-      const mergedBarberos = (inheritedCollections.barbers && inheritedCollections.barbers.length)
-        ? inheritedCollections.barbers.map((fallback) => {
-            const match = existingSeedBarberos.find(item =>
-              (Number(item?.id_barbero || item?.id) > 0 && Number(item?.id_barbero || item?.id) === Number(fallback?.id_barbero || fallback?.id)) ||
-              (item?.nombre && item.nombre === fallback.nombre)
-            ) || {};
+      const mergedBarberos = existingSeedBarberos.length
+        ? existingSeedBarberos.map((item, index) => {
+            const fallback = inheritedCollections.barbers[index] || {};
             return {
-              ...fallback,
-              ...match,
-              nombre: safeText(match?.nombre || match?.name || fallback?.nombre || fallback?.name),
-              name: safeText(match?.name || match?.nombre || fallback?.name || fallback?.nombre),
-              foto: safeText(match?.foto || match?.photo || fallback?.foto || fallback?.photo),
-              photo: safeText(match?.photo || match?.foto || fallback?.photo || fallback?.foto)
+              ...item,
+              nombre: safeText(item?.nombre || item?.name || fallback?.nombre || fallback?.name),
+              name: safeText(item?.name || item?.nombre || fallback?.name || fallback?.nombre),
+              foto: safeText(item?.foto || item?.photo || fallback?.foto || fallback?.photo),
+              photo: safeText(item?.photo || item?.foto || fallback?.photo || fallback?.foto)
             };
           })
-        : existingSeedBarberos;
+        : inheritedCollections.barbers;
       const seed = {
         ...seedLandingData,
         barberia_id: Number(identity.barberia_id) || 0,
@@ -4348,7 +4344,9 @@ function persistRegistroSeedContext() {
     }
     // Siempre rehidrata colecciones heredadas desde backend público para evitar
     // que un borrador viejo vuelva a pisar servicios/barberos/horarios.
-    await hydrateInheritedFromPublicProfile();
+    if (!cameFromRegistroEdit) {
+      await hydrateInheritedFromPublicProfile();
+    }
     applySeedDefaults();
     forceSeedIdentityIntoPanel();
     enforcePreferredAddress();
