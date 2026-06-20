@@ -1718,34 +1718,213 @@
     renderInheritedSeedSummary();
   }
 
-  async function refreshCanonicalCollectionsBeforePublish(identity) {
-    const endpoint = safeText(CONFIG.publicLandingRpcEndpoint) || DEFAULT_PUBLIC_LANDING_RPC_ENDPOINT;
-    const slug = safeText(identity?.slug);
-    if (!endpoint || !slug) return false;
+  const SAFE_PUBLISH_BLOCK_MESSAGE =
+    'No se pudo publicar de forma segura porque no fue posible recuperar los barberos o servicios actuales. Recarga el editor e int\u00e9ntalo nuevamente. No se realiz\u00f3 ning\u00fan cambio.';
 
-    try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ p_slug: slug })
-      });
-      const rawText = await response.text().catch(() => '');
-      let json = {};
-      try {
-        json = rawText ? JSON.parse(rawText) : {};
-      } catch (_) {
-        json = {};
+  function getMissingPublishCollections(payload) {
+    return ['servicios', 'barberos'].filter((collectionName) => {
+      const items = payload?.[collectionName];
+      return !Array.isArray(items) || items.length === 0;
+    });
+  }
+
+  function getCanonicalCollectionFromPayload(payload, collectionName) {
+    const source = payload && typeof payload === 'object' ? payload : {};
+    const data = source?.data && typeof source.data === 'object' ? source.data : {};
+    const inherited = source?.inherited && typeof source.inherited === 'object' ? source.inherited : {};
+    const aliases = collectionName === 'barberos' ? ['barberos', 'barbers'] : ['servicios', 'services'];
+    const candidates = [];
+
+    aliases.forEach((alias) => {
+      candidates.push(
+        source?.[alias],
+        source?.collections?.[alias],
+        inherited?.[alias],
+        data?.[alias],
+        data?.collections?.[alias]
+      );
+    });
+
+    const firstNonEmpty = candidates.find((candidate) => Array.isArray(candidate) && candidate.length > 0);
+    if (firstNonEmpty) return firstNonEmpty;
+    return candidates.find(Array.isArray) || [];
+  }
+
+  function dedupeCanonicalCollection(items, collectionName) {
+    const normalized = collectionName === 'barberos'
+      ? normalizeInheritedBarbers(items)
+      : normalizeInheritedServices(items);
+    const getItemId = (item) => collectionName === 'barberos'
+      ? (Number(item?.id_barbero) || Number(item?.barbero_id) || Number(item?.id) || 0)
+      : (Number(item?.id_servicio) || Number(item?.servicio_id) || Number(item?.id) || 0);
+    const getItemName = (item) => safeText(item?.nombre || item?.name).toLowerCase().trim();
+    const namesBackedById = new Set(
+      normalized
+        .filter((item) => getItemId(item) > 0)
+        .map(getItemName)
+        .filter(Boolean)
+    );
+    const seenIds = new Set();
+    const seenFallbackNames = new Set();
+
+    return normalized.filter((item) => {
+      const id = getItemId(item);
+      const name = getItemName(item);
+      if (id > 0) {
+        if (seenIds.has(id)) return false;
+        seenIds.add(id);
+        return true;
       }
-      const rpcPayload = normalizeRpcJsonbPayload(json);
-      if (!response.ok || !rpcPayload || rpcPayload?.ok === false) return false;
-
-      applyInheritedCollectionsFromPayload(rpcPayload);
-      syncSeedIdentityFromPublicProfile(rpcPayload);
-      persistRegistroSeedContext();
+      if (!name || namesBackedById.has(name) || seenFallbackNames.has(name)) return false;
+      seenFallbackNames.add(name);
       return true;
-    } catch (_) {
-      return false;
+    });
+  }
+
+  function readCanonicalIdentity(payload) {
+    const source = payload && typeof payload === 'object' ? payload : {};
+    const profile = source?.profile && typeof source.profile === 'object' ? source.profile : {};
+    const barberia = source?.barberia && typeof source.barberia === 'object' ? source.barberia : {};
+    const dataBarberia = source?.data?.barberia && typeof source.data.barberia === 'object'
+      ? source.data.barberia
+      : {};
+
+    return {
+      barberia_id:
+        Number(source?.barberia_id) ||
+        Number(source?.id_barberia) ||
+        Number(profile?.barberia_id) ||
+        Number(profile?.id) ||
+        Number(barberia?.barberia_id) ||
+        Number(barberia?.id) ||
+        Number(source?.data?.barberia_id) ||
+        Number(dataBarberia?.barberia_id) ||
+        Number(dataBarberia?.id) ||
+        0,
+      slug:
+        safeText(source?.slug) ||
+        safeText(profile?.slug) ||
+        safeText(barberia?.slug) ||
+        safeText(source?.data?.slug) ||
+        safeText(dataBarberia?.slug)
+    };
+  }
+
+  function canonicalIdentityMatches(identity, barberiaId, payload) {
+    const expectedId = Number(barberiaId) || Number(identity?.barberia_id) || 0;
+    const expectedSlug = safeText(identity?.slug).toLowerCase();
+    const canonical = readCanonicalIdentity(payload);
+    const canonicalSlug = safeText(canonical.slug).toLowerCase();
+    const hasComparableIdentity = canonical.barberia_id > 0 || !!canonicalSlug;
+
+    if (!hasComparableIdentity) return false;
+    if (expectedId > 0 && canonical.barberia_id > 0 && expectedId !== canonical.barberia_id) return false;
+    if (expectedSlug && canonicalSlug && expectedSlug !== canonicalSlug) return false;
+    return true;
+  }
+
+  function isConfirmedInitialRegistration(identity, barberiaId) {
+    if (safeText(seedLandingData?.source) !== 'onboarding_complete') return false;
+
+    const isEditIntent =
+      getQueryParam('source') === 'editor' ||
+      getQueryParam('edit') === '1' ||
+      getQueryParam('mode') === 'edit' ||
+      getQueryParam('modo') === 'editar' ||
+      getQueryParam('editing') === '1' ||
+      getQueryParam('is_edit') === '1';
+    if (isEditIntent) return false;
+
+    const currentId = Number(barberiaId) || Number(identity?.barberia_id) || 0;
+    const currentSlug = safeText(identity?.slug).toLowerCase();
+    const seedBarberia = seedLandingData?.barberia && typeof seedLandingData.barberia === 'object'
+      ? seedLandingData.barberia
+      : {};
+    const seedId =
+      Number(seedLandingData?.barberia_id) ||
+      Number(seedLandingData?.id_barberia) ||
+      Number(seedLandingData?.id) ||
+      Number(seedBarberia?.id) ||
+      0;
+    const seedSlug = (safeText(seedLandingData?.slug) || safeText(seedBarberia?.slug)).toLowerCase();
+
+    if (!(currentId > 0 || currentSlug) || !(seedId > 0 || seedSlug)) return false;
+    if (currentId > 0 && seedId !== currentId) return false;
+    if (currentSlug && seedSlug !== currentSlug) return false;
+    return true;
+  }
+
+  function omitEmptyPublishCollections(payload, collectionNames) {
+    const nextPayload = {
+      ...payload,
+      inherited: payload?.inherited && typeof payload.inherited === 'object'
+        ? { ...payload.inherited }
+        : payload?.inherited
+    };
+
+    collectionNames.forEach((collectionName) => {
+      delete nextPayload[collectionName];
+      if (nextPayload?.inherited && typeof nextPayload.inherited === 'object') {
+        delete nextPayload.inherited[collectionName];
+      }
+    });
+    return nextPayload;
+  }
+
+  async function refreshCanonicalCollectionsBeforePublish(identity, options = {}) {
+    const endpoint = safeText(CONFIG.publicProfileEndpoint) || DEFAULT_PUBLIC_PROFILE_ENDPOINT;
+    const only = Array.isArray(options?.only)
+      ? options.only.filter((name) => name === 'servicios' || name === 'barberos')
+      : ['servicios', 'barberos'];
+    const preserveNonEmpty = options?.preserveNonEmpty !== false;
+    const safeBarberiaId = Number(options?.barberiaId) || Number(identity?.barberia_id) || 0;
+    const safeSlug = safeText(identity?.slug);
+    if (!endpoint || !only.length || (!(safeBarberiaId > 0) && !safeSlug)) {
+      return { ok: false, identityMismatch: false, recovered: [] };
     }
+
+    const queryParts = [];
+    if (safeBarberiaId > 0) queryParts.push(`barberia_id=${encodeURIComponent(String(safeBarberiaId))}`);
+    if (safeSlug) queryParts.push(`slug=${encodeURIComponent(safeSlug)}`);
+
+    for (const query of queryParts) {
+      try {
+        const requestUrl = `${endpoint}${endpoint.includes('?') ? '&' : '?'}${query}`;
+        const response = await fetch(requestUrl, {
+          method: 'GET',
+          headers: { Accept: 'application/json' }
+        });
+        const json = await response.json().catch(() => ({}));
+        if (!response.ok || json?.ok === false) continue;
+        if (!canonicalIdentityMatches(identity, safeBarberiaId, json)) {
+          return { ok: false, identityMismatch: true, recovered: [] };
+        }
+
+        const recovered = [];
+        only.forEach((collectionName) => {
+          const target = collectionName === 'barberos'
+            ? inheritedCollections.barbers
+            : inheritedCollections.services;
+          if (preserveNonEmpty && Array.isArray(target) && target.length > 0) return;
+
+          const canonicalItems = dedupeCanonicalCollection(
+            getCanonicalCollectionFromPayload(json, collectionName),
+            collectionName
+          );
+          if (!canonicalItems.length) return;
+          target.splice(0, target.length, ...canonicalItems);
+          recovered.push(collectionName);
+        });
+
+        syncSeedIdentityFromPublicProfile(json);
+        persistPublishedIdentityFromResponse(json);
+        persistRegistroSeedContext();
+        renderInheritedSeedSummary();
+        return { ok: true, identityMismatch: false, recovered };
+      } catch (_) {}
+    }
+
+    return { ok: false, identityMismatch: false, recovered: [] };
   }
 
   function syncSeedIdentityFromPublicProfile(payload) {
@@ -2896,6 +3075,31 @@ function persistRegistroSeedContext() {
     };
   }
 
+  async function prepareSafePublish(identity, barberiaId) {
+    let publishPayload = applyPublishIdentity(buildSavePayload(), barberiaId);
+    let missingCollections = getMissingPublishCollections(publishPayload);
+    if (!missingCollections.length) return publishPayload;
+
+    const refreshResult = await refreshCanonicalCollectionsBeforePublish(identity, {
+      only: missingCollections,
+      preserveNonEmpty: true,
+      barberiaId
+    });
+    if (!refreshResult?.ok || refreshResult?.identityMismatch) {
+      throw new Error(SAFE_PUBLISH_BLOCK_MESSAGE);
+    }
+
+    publishPayload = applyPublishIdentity(buildSavePayload(), barberiaId);
+    missingCollections = getMissingPublishCollections(publishPayload);
+    if (!missingCollections.length) return publishPayload;
+
+    if (isConfirmedInitialRegistration(identity, barberiaId)) {
+      return omitEmptyPublishCollections(publishPayload, missingCollections);
+    }
+
+    throw new Error(SAFE_PUBLISH_BLOCK_MESSAGE);
+  }
+
   function applyPublishIdentity(payload, barberiaId) {
     const nextPayload = { ...payload, barberia_id: barberiaId };
     if (nextPayload?.inherited && typeof nextPayload.inherited === 'object') {
@@ -3129,8 +3333,10 @@ function persistRegistroSeedContext() {
     if (labelNode) labelNode.textContent = 'públicando...';
 
     try {
-      const runPublishRpc = async (idToPublish) => {
-        const publishPayload = applyPublishIdentity(buildSavePayload(), idToPublish);
+      const safePublishPayload = await prepareSafePublish(identity, barberiaId);
+
+      const runPublishRpc = async (idToPublish, validatedPayload) => {
+        const publishPayload = applyPublishIdentity(validatedPayload, idToPublish);
         const response = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -3153,7 +3359,7 @@ function persistRegistroSeedContext() {
         return { response, rawText, rpcPayload, explicitFailure };
       };
 
-      let publishResult = await runPublishRpc(barberiaId);
+      let publishResult = await runPublishRpc(barberiaId, safePublishPayload);
       const firstErrorMessage = safeText(
         publishResult?.rpcPayload?.message ||
         publishResult?.rpcPayload?.error ||
@@ -3168,7 +3374,7 @@ function persistRegistroSeedContext() {
         const resolvedId = await resolveBarberiaIdFromPublicProfile(identity);
         if (resolvedId > 0 && resolvedId !== barberiaId) {
           barberiaId = resolvedId;
-          publishResult = await runPublishRpc(barberiaId);
+          publishResult = await runPublishRpc(barberiaId, safePublishPayload);
         }
       }
 
@@ -3248,7 +3454,12 @@ function persistRegistroSeedContext() {
       updatePreview();
     } catch (error) {
       console.error('Error públicando landing:', error);
-      alert(`No se pudo publicar: ${error?.message || 'error desconocido'}`);
+      const publishErrorMessage = error?.message || 'error desconocido';
+      alert(
+        publishErrorMessage === SAFE_PUBLISH_BLOCK_MESSAGE
+          ? SAFE_PUBLISH_BLOCK_MESSAGE
+          : `No se pudo publicar: ${publishErrorMessage}`
+      );
     } finally {
       el.publish.disabled = false;
       if (labelNode) labelNode.textContent = originalLabel;
