@@ -1721,9 +1721,19 @@
   const SAFE_PUBLISH_BLOCK_MESSAGE =
     'No se pudo publicar de forma segura porque no fue posible recuperar los barberos o servicios actuales. Recarga el editor e int\u00e9ntalo nuevamente. No se realiz\u00f3 ning\u00fan cambio.';
 
+  const COLLECTION_PAYLOAD_KEYS = {
+    servicios: ['servicios', 'services'],
+    barberos: ['barberos', 'barbers']
+  };
+
   function getMissingPublishCollections(payload) {
-    return ['servicios', 'barberos'].filter((collectionName) => {
-      const items = payload?.[collectionName];
+    return Object.keys(COLLECTION_PAYLOAD_KEYS).filter((collectionName) => {
+      const candidates = COLLECTION_PAYLOAD_KEYS[collectionName]
+        .map((key) => payload?.inherited?.[key])
+        .filter(Array.isArray);
+      const items =
+        candidates.find((candidate) => candidate.length > 0) ||
+        candidates[0];
       return !Array.isArray(items) || items.length === 0;
     });
   }

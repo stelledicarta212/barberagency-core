@@ -69,7 +69,7 @@ const refreshFunctionSource = [
   'refreshCanonicalCollectionsBeforePublish'
 ].map(extractFunction).join('\n');
 
-function createHarness({ barbers, services, refresh, seed, query = {} }) {
+function createHarness({ barbers, services, rootBarbers, rootServices, refresh, seed, query = {} }) {
   const state = {
     barbers: [...barbers],
     services: [...services]
@@ -81,6 +81,10 @@ function createHarness({ barbers, services, refresh, seed, query = {} }) {
     Object,
     Set,
     String,
+    COLLECTION_PAYLOAD_KEYS: {
+      servicios: ['servicios', 'services'],
+      barberos: ['barberos', 'barbers']
+    },
     SAFE_PUBLISH_BLOCK_MESSAGE:
       'No se pudo publicar de forma segura porque no fue posible recuperar los barberos o servicios actuales. Recarga el editor e intentalo nuevamente. No se realizo ningun cambio.',
     seedLandingData: seed || {},
@@ -93,8 +97,8 @@ function createHarness({ barbers, services, refresh, seed, query = {} }) {
       return {
         barberia_id: 198,
         slug: 'barberia-prueba-4',
-        barberos: [...state.barbers],
-        servicios: [...state.services],
+        barberos: rootBarbers === undefined ? [...state.barbers] : [...rootBarbers],
+        servicios: rootServices === undefined ? [...state.services] : [...rootServices],
         inherited: {
           barberos: [...state.barbers],
           servicios: [...state.services]
@@ -154,17 +158,70 @@ function createRefreshHarness(responseFactory) {
 async function run() {
   validateInlineSyntax();
 
+  const missingHarness = createHarness({
+    barbers: [],
+    services: [],
+    refresh: async () => ({ ok: true, identityMismatch: false })
+  });
+  assert.deepStrictEqual([
+    ...missingHarness.context.getMissingPublishCollections({
+      inherited: {
+        barberos: [{ id_barbero: 1 }, { id_barbero: 2 }, { id_barbero: 3 }],
+        servicios: [{ id_servicio: 1 }, { id_servicio: 2 }, { id_servicio: 3 }]
+      }
+    })
+  ], []);
+  assert.deepStrictEqual([
+    ...missingHarness.context.getMissingPublishCollections({
+      barberos: [],
+      servicios: [],
+      inherited: {
+        barberos: [{ id_barbero: 1 }],
+        servicios: [{ id_servicio: 1 }]
+      }
+    })
+  ], []);
+  assert.deepStrictEqual([
+    ...missingHarness.context.getMissingPublishCollections({
+      inherited: { barberos: [], servicios: [{ id_servicio: 1 }] }
+    })
+  ], ['barberos']);
+  assert.deepStrictEqual([
+    ...missingHarness.context.getMissingPublishCollections({
+      inherited: { barberos: [{ id_barbero: 1 }], servicios: [] }
+    })
+  ], ['servicios']);
+  assert.deepStrictEqual([
+    ...missingHarness.context.getMissingPublishCollections({
+      inherited: { barberos: [], servicios: [] }
+    })
+  ], ['servicios', 'barberos']);
+  assert.deepStrictEqual([
+    ...missingHarness.context.getMissingPublishCollections({
+      inherited: {
+        barberos: [],
+        barbers: [{ id_barbero: 1 }],
+        servicios: [],
+        services: [{ id_servicio: 1 }]
+      }
+    })
+  ], []);
+
   const healthy = createHarness({
     barbers: [{ id_barbero: 1 }, { id_barbero: 2 }, { id_barbero: 3 }],
     services: [{ id_servicio: 1 }, { id_servicio: 2 }, { id_servicio: 3 }],
+    rootBarbers: [],
+    rootServices: [],
     refresh: async () => ({ ok: true, identityMismatch: false })
   });
   const healthyPayload = await healthy.context.prepareSafePublish(
     { barberia_id: 198, slug: 'barberia-prueba-4' },
     198
   );
-  assert.strictEqual(healthyPayload.barberos.length, 3);
-  assert.strictEqual(healthyPayload.servicios.length, 3);
+  assert.strictEqual(healthyPayload.inherited.barberos.length, 3);
+  assert.strictEqual(healthyPayload.inherited.servicios.length, 3);
+  assert.strictEqual(healthyPayload.barberos.length, 0);
+  assert.strictEqual(healthyPayload.servicios.length, 0);
   assert.strictEqual(healthy.metrics.builds, 1);
   assert.strictEqual(healthy.metrics.refreshes, 0);
 
