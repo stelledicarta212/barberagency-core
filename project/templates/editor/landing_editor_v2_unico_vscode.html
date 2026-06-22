@@ -4871,11 +4871,63 @@ function persistRegistroSeedContext() {
       .join('');
   }
 
+  function getBarberCanonicalId(barber) {
+    return Number(barber?.id_barbero) || Number(barber?.barbero_id) || Number(barber?.id) || 0;
+  }
+
+  function getBarberComparableName(barber) {
+    return safeText(barber?.nombre || barber?.name || '').toLowerCase().trim();
+  }
+
+  function resolveBarberPhotoTarget(barbers, barberId, index, expectedName = '') {
+    const items = Array.isArray(barbers) ? barbers : [];
+    const requestedId = Number(barberId) || 0;
+
+    if (requestedId > 0) {
+      const idIndex = items.findIndex((barber) => getBarberCanonicalId(barber) === requestedId);
+      if (idIndex >= 0) {
+        return { barber: items[idIndex], index: idIndex, resolvedBy: 'id' };
+      }
+    }
+
+    const fallbackIndex = Number(index);
+    if (!Number.isInteger(fallbackIndex) || fallbackIndex < 0 || fallbackIndex >= items.length) {
+      return null;
+    }
+
+    const fallbackBarber = items[fallbackIndex];
+    const visualName = safeText(expectedName).toLowerCase().trim();
+    const fallbackName = getBarberComparableName(fallbackBarber);
+    if (visualName && (!fallbackName || visualName !== fallbackName)) {
+      return null;
+    }
+
+    return { barber: fallbackBarber, index: fallbackIndex, resolvedBy: 'index' };
+  }
+
+  function syncBarberPhotoAliases(barber, photoUrl) {
+    if (!barber || !photoUrl) return;
+    barber.foto_url = photoUrl;
+    barber.foto = photoUrl;
+    barber.imagen_url = photoUrl;
+    barber.photo = photoUrl;
+    barber.picture_url = photoUrl;
+  }
+
   async function handleBarberPhotoUpload(file, barberId, index, btn) {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
       alert('Por favor selecciona una imagen válida.');
+      return;
+    }
+
+    const expectedName = btn
+      ?.closest('.ba-barber-row')
+      ?.querySelector('img')
+      ?.getAttribute('alt') || '';
+    if (!resolveBarberPhotoTarget(inheritedCollections.barbers, barberId, index, expectedName)) {
+      alert('No se pudo identificar de forma segura el barbero. Recarga el editor e intentalo nuevamente.');
       return;
     }
 
@@ -4924,29 +4976,34 @@ function persistRegistroSeedContext() {
       if (lastError) throw lastError;
 
       if (publicUrl) {
-        const barberIndex = Number(index);
-        const barber = inheritedCollections.barbers[barberIndex];
+        const target = resolveBarberPhotoTarget(
+          inheritedCollections.barbers,
+          barberId,
+          index,
+          expectedName
+        );
+        if (!target) {
+          throw new Error('No se pudo identificar de forma segura el barbero. Recarga el editor e intentalo nuevamente.');
+        }
+
+        const barberIndex = target.index;
+        const barber = target.barber;
         if (barber) {
-          barber.foto_url = publicUrl;
-          barber.foto = publicUrl;
-          barber.imagen_url = publicUrl;
-          barber.photo = publicUrl;
-          barber.picture_url = publicUrl;
+          syncBarberPhotoAliases(barber, publicUrl);
 
           if (typeof seedLandingData !== 'undefined' && seedLandingData && Array.isArray(seedLandingData.barberos)) {
-            const canonicalId = Number(barber?.id) || Number(barber?.id_barbero) || Number(barber?.barbero_id) || 0;
-            const canonicalName = safeText(barber?.nombre || barber?.name || '').toLowerCase().trim();
+            const canonicalId = getBarberCanonicalId(barber);
+            const canonicalName = getBarberComparableName(barber);
 
             let seedBarber = null;
             if (canonicalId > 0) {
               seedBarber = seedLandingData.barberos.find(b => {
-                const bId = Number(b?.id) || Number(b?.id_barbero) || Number(b?.barbero_id) || 0;
-                return bId === canonicalId;
+                return getBarberCanonicalId(b) === canonicalId;
               });
             }
             if (!seedBarber && canonicalName) {
               seedBarber = seedLandingData.barberos.find(b =>
-                safeText(b?.nombre || b?.name || '').toLowerCase().trim() === canonicalName
+                getBarberComparableName(b) === canonicalName
               );
             }
             if (!seedBarber && seedLandingData.barberos[barberIndex]) {
@@ -4954,11 +5011,7 @@ function persistRegistroSeedContext() {
             }
 
             if (seedBarber) {
-              seedBarber.foto_url = publicUrl;
-              seedBarber.foto = publicUrl;
-              seedBarber.imagen_url = publicUrl;
-              seedBarber.photo = publicUrl;
-              seedBarber.picture_url = publicUrl;
+              syncBarberPhotoAliases(seedBarber, publicUrl);
             }
           }
 
