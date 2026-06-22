@@ -172,7 +172,7 @@
 -->
 
 
-<!-- 
+<!--
   =================================
   INICIO: sección CONTENEDOR PRINCIPAL
   =================================
@@ -203,7 +203,7 @@
   </header>
 
   <div class="ba-row">
-    <!-- 
+    <!--
       ===y ==============================
       INICIO: sección PANEL DE CONTROLES (IZQUIERDA)
       =================================
@@ -379,7 +379,7 @@
       </div>
     </aside>
 
-    <!-- 
+    <!--
       =================================
       INICIO: sección AREA DE PREVISUALIZACION (DERECHA)
       =================================
@@ -439,7 +439,7 @@
     </section>
   </div>
 
-  <!-- 
+  <!--
     =================================
     INICIO: sección NAVEGACION MOVIL (DOCK)
     =================================
@@ -466,7 +466,7 @@
       <span>Preview</span>
     </button>
   </nav>
-  <!-- 
+  <!--
     =================================
     INICIO: sección PANELES FLOTANTES Y MODALES
     =================================
@@ -532,7 +532,7 @@
   </section>
 </main>
 
-<!-- 
+<!--
   =================================
   INICIO: sección DATOS DE PLANTILLAS (JSON)
   =================================
@@ -548,7 +548,7 @@
 ]
 </script>
 
-<!-- 
+<!--
   =================================
   INICIO: sección LOGICA DE LA APLICACION (JAVASCRIPT)
   =================================
@@ -1340,7 +1340,7 @@
     if (typeof seedLandingData !== 'undefined' && seedLandingData && Array.isArray(seedLandingData.servicios)) {
       const nameToMatch = safeText(service?.name || service?.nombre).toLowerCase().trim();
       if (nameToMatch) {
-        seedService = seedLandingData.servicios.find(s => 
+        seedService = seedLandingData.servicios.find(s =>
           safeText(s?.nombre || s?.name || s?.title).toLowerCase().trim() === nameToMatch
         );
       }
@@ -1414,7 +1414,7 @@
     if (typeof seedLandingData !== 'undefined' && seedLandingData && Array.isArray(seedLandingData.barberos)) {
       const nameToMatch = safeText(barber?.name || barber?.nombre).toLowerCase().trim();
       if (nameToMatch) {
-        seedBarber = seedLandingData.barberos.find(b => 
+        seedBarber = seedLandingData.barberos.find(b =>
           safeText(b?.nombre || b?.name).toLowerCase().trim() === nameToMatch
         );
       }
@@ -2213,11 +2213,9 @@
       );
     }
     if (el.inheritedBarbers) {
-      el.inheritedBarbers.innerHTML = buildSeedChips(
-        inheritedCollections.barbers,
-        'Sin barberos heredados',
-        (item) => item?.name
-      );
+      el.inheritedBarbers.style.flexDirection = 'column';
+      el.inheritedBarbers.style.width = '100%';
+      el.inheritedBarbers.innerHTML = buildBarberListHtml(inheritedCollections.barbers);
     }
     if (el.inheritedHours) {
       el.inheritedHours.innerHTML = buildSeedChips(
@@ -2227,7 +2225,7 @@
       );
     }
   }
-  
+
   function getFormData() {
     const biz_name = safeText(el.bizName.value) || 'Barber Agency';
     const tplId = getSelectedId();
@@ -3601,7 +3599,7 @@ function persistRegistroSeedContext() {
     const data = getFormData();
     el.bizNameLabel.textContent = data.biz_name;
     el.bizSlug.textContent = data.biz_slug;
-    
+
     // Auto-ajuste de kicker si está vacío o es un valor por defecto
     const currentKicker = safeText(el.heroKicker.value).toLowerCase();
     if (!currentKicker || TEMPLATE_HERO_KICKER_VALUES.includes(currentKicker)) {
@@ -3752,7 +3750,7 @@ function persistRegistroSeedContext() {
         }
       }
       if (!draft || typeof draft !== 'object') return false;
-      
+
       const {
         runtimePublishData: draftPublishData,
         paletteTouched: pt,
@@ -3849,7 +3847,7 @@ function persistRegistroSeedContext() {
         cover_url: 'coverUrl',
         maps_url: 'mapsUrl'
       };
-      
+
       Object.keys(data).forEach(key => {
         const targetKey = fieldAliases[key] || key;
         if (el[targetKey] && typeof data[key] !== 'undefined') {
@@ -3875,7 +3873,7 @@ function persistRegistroSeedContext() {
       if (safeText(el.logoWidth?.value) === '120') {
         el.logoWidth.value = '50';
       }
-      
+
       console.log('Borrador cargado');
       return draftLoaded;
     } catch(e) {
@@ -3883,7 +3881,7 @@ function persistRegistroSeedContext() {
       return false;
     }
   }
-  
+
   function updatePaletteFromTemplate(doc, options = {}) {
     try {
       if (!doc?.documentElement) return;
@@ -4793,7 +4791,7 @@ function persistRegistroSeedContext() {
     const wrap = target === 'logo' ? el.logoWrap : el.coverWrap;
     const urlInput = target === 'logo' ? el.logoUrl : el.coverUrl;
     const img = target === 'logo' ? el.logoImg : el.coverImg;
-    
+
     wrap.classList.add('is-loading');
     const blobUrl = URL.createObjectURL(file);
     img.src = blobUrl;
@@ -4844,6 +4842,140 @@ function persistRegistroSeedContext() {
     }
   }
 
+  function buildBarberListHtml(items) {
+    const safeItems = Array.isArray(items) ? items : [];
+    if (!safeItems.length) {
+      return `<span class="ba-seed-chip is-empty">Sin barberos heredados</span>`;
+    }
+    return safeItems
+      .map((item, index) => {
+        const name = escapeHtml(item?.name || item?.nombre || `Barbero ${index + 1}`);
+        const role = escapeHtml(item?.especialidad || item?.rol || 'Barbero profesional');
+        const photo = item?.foto_url || item?.foto || item?.photo || item?.picture_url || item?.avatar_url || item?.imagen_url || DEFAULT_BARBER_PHOTOS[index % DEFAULT_BARBER_PHOTOS.length];
+
+        return `
+          <div class="ba-barber-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 8px; background: rgba(26, 39, 64, 0.5); border: 1px solid #273348; border-radius: 12px; width: 100%;">
+            <div style="display: flex; align-items: center; flex: 1; min-width: 0;">
+              <img src="${escapeHtml(photo)}" alt="${name}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #3a4f72; margin-right: 12px; flex-shrink: 0;" />
+              <div style="min-width: 0; flex: 1;">
+                <div style="font-size: 13px; font-weight: 600; color: #e8edf7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${name}</div>
+                <div style="font-size: 11px; color: #8e9fb8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${role}</div>
+              </div>
+            </div>
+            <button type="button" class="ba-barber-photo-btn" data-id="${item.id || ''}" data-index="${index}" style="margin-left: 12px; padding: 6px 12px; font-size: 11px; font-weight: 600; color: #e8edf7; border-radius: 6px; border: 1px solid #3a4f72; background: linear-gradient(180deg, #1a2740, #101723); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 28px; white-space: nowrap;">
+              Cambiar foto
+            </button>
+          </div>
+        `;
+      })
+      .join('');
+  }
+
+  async function handleBarberPhotoUpload(file, barberId, index, btn) {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Por favor selecciona una imagen válida.');
+      return;
+    }
+
+    const originalBtnText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Subiendo...';
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('biz_slug', toSlug(el.bizName.value || 'barberia'));
+
+    try {
+      const uploadEndpoints = getUploadEndpointCandidates();
+      let lastError = null;
+      let publicUrl = null;
+
+      for (const endpoint of uploadEndpoints) {
+        try {
+          const res = await fetch(endpoint, { method: 'POST', body: formData });
+          if (!res.ok) {
+            const errorBody = await res.text().catch(() => '');
+            const isNotRegistered =
+              res.status === 404 &&
+              /not registered/i.test(errorBody || '');
+            if (isNotRegistered) {
+              lastError = new Error(`Webhook no registrado en ${endpoint}`);
+              continue;
+            }
+            throw new Error(`HTTP error ${res.status}`);
+          }
+          const json = await res.json().catch(() => ({}));
+          publicUrl = buildUploadPublicUrl(json, file);
+          if (!publicUrl) throw new Error('No URL in response');
+
+          if (!publicUrl.startsWith('https://')) {
+            throw new Error('La URL devuelta por el servidor no es segura (https).');
+          }
+
+          lastError = null;
+          break;
+        } catch (err) {
+          lastError = err;
+        }
+      }
+
+      if (lastError) throw lastError;
+
+      if (publicUrl) {
+        const barberIndex = Number(index);
+        const barber = inheritedCollections.barbers[barberIndex];
+        if (barber) {
+          barber.foto_url = publicUrl;
+          barber.foto = publicUrl;
+          barber.imagen_url = publicUrl;
+          barber.photo = publicUrl;
+          barber.picture_url = publicUrl;
+
+          if (typeof seedLandingData !== 'undefined' && seedLandingData && Array.isArray(seedLandingData.barberos)) {
+            const canonicalId = Number(barber?.id) || Number(barber?.id_barbero) || Number(barber?.barbero_id) || 0;
+            const canonicalName = safeText(barber?.nombre || barber?.name || '').toLowerCase().trim();
+
+            let seedBarber = null;
+            if (canonicalId > 0) {
+              seedBarber = seedLandingData.barberos.find(b => {
+                const bId = Number(b?.id) || Number(b?.id_barbero) || Number(b?.barbero_id) || 0;
+                return bId === canonicalId;
+              });
+            }
+            if (!seedBarber && canonicalName) {
+              seedBarber = seedLandingData.barberos.find(b =>
+                safeText(b?.nombre || b?.name || '').toLowerCase().trim() === canonicalName
+              );
+            }
+            if (!seedBarber && seedLandingData.barberos[barberIndex]) {
+              seedBarber = seedLandingData.barberos[barberIndex];
+            }
+
+            if (seedBarber) {
+              seedBarber.foto_url = publicUrl;
+              seedBarber.foto = publicUrl;
+              seedBarber.imagen_url = publicUrl;
+              seedBarber.photo = publicUrl;
+              seedBarber.picture_url = publicUrl;
+            }
+          }
+
+          persistRegistroSeedContext();
+          renderInheritedSeedSummary();
+          updatePreview();
+        }
+      }
+    } catch (e) {
+      console.error('Barber photo upload failed:', e);
+      alert(`No se pudo subir la foto del barbero: ${e?.message || 'Error del servidor'}`);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalBtnText;
+    }
+  }
+
   async function init() {
     applyHostUiCleanup();
     await loadDraft();
@@ -4890,12 +5022,12 @@ function persistRegistroSeedContext() {
       setSafeStorage(localStorage, STORAGE_BARBERIA_SLUG, identity.slug);
     }
     refreshDashboardButtonState();
-    
+
     el.chips.innerHTML = templates.map(t => {
       const cover = safeImageUrl(t.cover);
       return `<div class="ba-chip ${t.id === selectedId ? 'is-active' : ''}" data-id="${t.id}">${cover ? `<img class="ba-chip-thumb" src="${escapeHtml(cover)}" alt="" loading="lazy" decoding="async">` : ''}<span class="ba-chip-label">${escapeHtml(t.name)}</span></div>`;
     }).join('');
-    
+
     el.templateName.textContent = selectedTpl.name;
     el.frame.src = fileToUrl(selectedTpl.file);
 
@@ -4956,7 +5088,7 @@ function persistRegistroSeedContext() {
 
       wrap.addEventListener('click', () => input.click());
       input.addEventListener('change', () => handleFileUpload(input.files?.[0], target));
-      
+
       const events = ['dragenter', 'dragover', 'dragleave', 'drop'];
       events.forEach(name => wrap.addEventListener(name, e => {
         e.preventDefault();
@@ -4971,6 +5103,31 @@ function persistRegistroSeedContext() {
       });
       wrap.addEventListener('drop', e => handleFileUpload(e.dataTransfer?.files?.[0], target));
     });
+
+    if (el.inheritedBarbers) {
+      el.inheritedBarbers.addEventListener('click', (e) => {
+        const btn = e.target.closest('.ba-barber-photo-btn');
+        if (!btn) return;
+        e.preventDefault();
+
+        const index = btn.getAttribute('data-index');
+        const barberId = btn.getAttribute('data-id');
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+
+        fileInput.addEventListener('change', () => {
+          const file = fileInput.files?.[0];
+          if (file) {
+            handleBarberPhotoUpload(file, barberId, index, btn);
+          }
+        });
+
+        fileInput.click();
+      });
+    }
 
     el.goRegistro?.addEventListener('click', () => {
       persistRegistroSeedContext();
@@ -5062,7 +5219,7 @@ function persistRegistroSeedContext() {
         }
         enforceMobilePanelAnchor();
       };
-      
+
       const handleTouchMove = (e) => {
         if (!isDragging) return;
         if (!leftPanel) return;
@@ -5086,10 +5243,10 @@ function persistRegistroSeedContext() {
         isDragging = false;
         root.classList.remove('is-sheet-dragging');
         if (!leftPanel) return;
-        
+
         const dragState = leftPanel.dataset.dragState || 'min';
         delete leftPanel.dataset.dragState;
-        
+
         if (dragState === 'full') {
           setSheetPosition('full');
         } else if (dragState === 'mid') {
@@ -5097,7 +5254,7 @@ function persistRegistroSeedContext() {
         } else {
           setSheetPosition('min');
         }
-        
+
         window.removeEventListener('touchmove', handleTouchMove);
         window.removeEventListener('touchend', handleTouchEnd);
         window.removeEventListener('mousemove', handleTouchMove);
@@ -5121,13 +5278,13 @@ function persistRegistroSeedContext() {
         window.addEventListener('mousemove', handleTouchMove);
         window.addEventListener('mouseup', handleTouchEnd);
       });
-      
+
       mobileDock.addEventListener('click', (e) => {
         const btn = e.target.closest('.ba-dock-btn');
         if (!btn) return;
         const { target, action } = btn.dataset;
         const dockKey = safeText(target || action);
-        
+
         document.querySelectorAll('#baMobileDock .ba-dock-btn').forEach(b => b.classList.remove('is-active'));
         btn.classList.add('is-active');
 
@@ -5155,7 +5312,7 @@ function persistRegistroSeedContext() {
 
         if (dockKey) toggleDockCompact(dockKey);
       });
-      
+
       mobileScrim.addEventListener('click', () => setSheetPosition('min'));
       window.addEventListener('resize', enforceMobilePanelAnchor);
       enforceMobilePanelAnchor();
@@ -5175,7 +5332,7 @@ function persistRegistroSeedContext() {
       el.openFinalPreview.addEventListener('click', () => toggleFinalPreview(true));
       finalPreviewClose.addEventListener('click', () => toggleFinalPreview(false));
     }
-    
+
     if (settingsDrawer && drawerClose) {
       settingsDrawer.addEventListener('click', (e) => {
         if (e.target === settingsDrawer || e.target === drawerClose) {
@@ -5217,14 +5374,14 @@ function persistRegistroSeedContext() {
     if(themeDockBtn && themeDockIcon) {
         const sunIcon = `<path d="M12 3.2v2.1"></path><path d="m18.2 5.8-1.5 1.5"></path><path d="M20.8 12h-2.1"></path><path d="m18.2 18.2-1.5-1.5"></path><path d="M12 20.8v-2.1"></path><path d="m5.8 18.2 1.5-1.5"></path><path d="M3.2 12h2.1"></path><path d="m5.8 5.8 1.5 1.5"></path><circle cx="12" cy="12" r="3.3"></circle>`;
         const moonIcon = `<path d="M12 21a9 9 0 1 1 7.8-14.7A7.4 7.4 0 0 0 12 9Z"></path>`;
-        
+
         const setTheme = (theme) => {
             root.dataset.uiTheme = theme;
             root.setAttribute('data-theme', theme);
             themeDockIcon.innerHTML = theme === 'light' ? sunIcon : moonIcon;
             setSafeStorage(localStorage, 'ba-editor-theme', theme);
         };
-        
+
         themeDockBtn.addEventListener('click', () => {
             const newTheme = root.dataset.uiTheme === 'light' ? 'dark' : 'light';
             setTheme(newTheme);
