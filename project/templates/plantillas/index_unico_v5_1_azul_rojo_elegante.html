@@ -2976,8 +2976,24 @@ function normalizeDayLabel(value) {
         profile,
         branding: buildRuntimeBranding(brandingSource),
         inherited,
-        servicios: Array.isArray(source?.servicios) ? source.servicios : Array.isArray(inherited?.servicios) ? inherited.servicios : [],
-        barberos: Array.isArray(source?.barberos) ? source.barberos : Array.isArray(inherited?.barberos) ? inherited.barberos : [],
+        servicios: Array.isArray(source?.servicios)
+          ? source.servicios
+          : Array.isArray(source?.services)
+            ? source.services
+            : Array.isArray(inherited?.servicios)
+              ? inherited.servicios
+              : Array.isArray(inherited?.services)
+                ? inherited.services
+                : [],
+        barberos: Array.isArray(source?.barberos)
+          ? source.barberos
+          : Array.isArray(source?.barbers)
+            ? source.barbers
+            : Array.isArray(inherited?.barberos)
+              ? inherited.barberos
+              : Array.isArray(inherited?.barbers)
+                ? inherited.barbers
+                : [],
         horarios: Array.isArray(source?.horarios) ? source.horarios : Array.isArray(inherited?.horarios) ? inherited.horarios : [],
         slot_min: Number(source?.slot_min) || Number(inherited?.slot_min) || 0,
         public_landing_url: safeSeedText(source?.public_landing_url || profile?.public_landing_url),
@@ -3285,7 +3301,10 @@ function normalizeDayLabel(value) {
         experiencia: exp || 'Experiencia comprobada',
         foto,
         foto_url: foto,
-        imagen_url: foto
+        imagen_url: foto,
+        image_url: foto,
+        photo: foto,
+        picture_url: foto
       };
     }
 
@@ -3456,7 +3475,6 @@ function normalizeDayLabel(value) {
   </script>
 </body>
 </html>
-
 
 
 
