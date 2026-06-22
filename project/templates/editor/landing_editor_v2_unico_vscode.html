@@ -938,6 +938,7 @@
     barbers: normalizeInheritedBarbers(seedLandingData?.barberos),
     hours: normalizeInheritedHours(seedLandingData?.horarios)
   };
+  const registroEditHydrationState = getRegistroEditSeedState(seedLandingData);
 
   function getSafeStorage(storage, key) {
     try {
@@ -1177,6 +1178,70 @@
     return 0;
   }
 
+  function getPayloadIdentity(payload) {
+    const source = payload && typeof payload === 'object' ? payload : {};
+    const barberia = source?.barberia && typeof source.barberia === 'object' ? source.barberia : {};
+    return {
+      barberiaId:
+        Number(source?.barberia_id) ||
+        Number(source?.id_barberia) ||
+        Number(source?.id) ||
+        Number(barberia?.barberia_id) ||
+        Number(barberia?.id) ||
+        0,
+      slug: safeText(source?.slug) || safeText(barberia?.slug)
+    };
+  }
+
+  function getRegistroEditSeedState(seed) {
+    const source = seed && typeof seed === 'object' ? seed : {};
+    const seedIdentity = getPayloadIdentity(source);
+    const queryIdentity = {
+      barberiaId: getQueryNumberParam('barberia_id', 'id_barberia', 'id', 'barberia', 'barberiaId', 'business_id'),
+      slug: getQueryParam('barberia_slug') || getQueryParam('slug') || getQueryParam('business_slug')
+    };
+    const editIntent =
+      getQueryParam('source') === 'registro' ||
+      getQueryParam('edit') === '1' ||
+      getQueryParam('mode') === 'edit' ||
+      getQueryParam('modo') === 'editar' ||
+      getQueryParam('editing') === '1' ||
+      getQueryParam('is_edit') === '1';
+    const idMismatch =
+      queryIdentity.barberiaId > 0 &&
+      seedIdentity.barberiaId > 0 &&
+      queryIdentity.barberiaId !== seedIdentity.barberiaId;
+    const slugMismatch =
+      !!queryIdentity.slug &&
+      !!seedIdentity.slug &&
+      queryIdentity.slug !== seedIdentity.slug;
+    const createdAt = Date.parse(safeText(source?.created_at));
+    const recent = Number.isFinite(createdAt) && (Date.now() - createdAt) >= 0 && (Date.now() - createdAt) <= (2 * 60 * 60 * 1000);
+    const sourceMatches = safeText(source?.source) === 'registro_edit_seed';
+    const hasIdentity = seedIdentity.barberiaId > 0 || !!seedIdentity.slug;
+
+    return {
+      active: editIntent && sourceMatches && recent && hasIdentity && !idMismatch && !slugMismatch,
+      source: sourceMatches ? 'registro_edit_seed' : 'none',
+      barberiaId: seedIdentity.barberiaId,
+      slug: seedIdentity.slug,
+      recent,
+      identityMismatch: idMismatch || slugMismatch
+    };
+  }
+
+  function logEditorHydrationSource(source, details = {}) {
+    console.info('[BA Editor] hydration source', {
+      source,
+      barberiaId: Number(details?.barberiaId) || 0,
+      slug: safeText(details?.slug),
+      barbers: Number(details?.barbers) || 0,
+      services: Number(details?.services) || 0,
+      ignoredOldStorage: details?.ignoredOldStorage === true,
+      publicComplemented: details?.publicComplemented === true
+    });
+  }
+
   function isHttpUrl(value) {
     return /^https?:\/\//i.test(safeText(value));
   }
@@ -1229,6 +1294,13 @@
         const slugMismatch = querySlug && seedSlug && querySlug !== seedSlug;
 
         if (idMismatch || slugMismatch) {
+          logEditorHydrationSource('storage_ignored', {
+            barberiaId: seedId,
+            slug: seedSlug,
+            barbers: Array.isArray(sessionSeed?.barberos) ? sessionSeed.barberos.length : 0,
+            services: Array.isArray(sessionSeed?.servicios) ? sessionSeed.servicios.length : 0,
+            ignoredOldStorage: true
+          });
           try {
             sessionStorage.removeItem(STORAGE_LANDING_SEED);
             localStorage.removeItem(STORAGE_LANDING_SEED);
@@ -1661,7 +1733,38 @@
     return mergedList;
   }
 
-  function applyInheritedCollectionsFromPayload(payload) {
+  function complementExistingCollection(existingItems, incomingItems, type) {
+    const existing = Array.isArray(existingItems) ? existingItems : [];
+    const incoming = Array.isArray(incomingItems) ? incomingItems : [];
+    if (!existing.length) return [...incoming];
+    if (!incoming.length) return [...existing];
+
+    return existing.map((existingItem) => {
+      const existingId = type === 'barber'
+        ? (Number(existingItem?.id) || Number(existingItem?.id_barbero) || Number(existingItem?.barbero_id) || 0)
+        : (Number(existingItem?.id) || Number(existingItem?.id_servicio) || Number(existingItem?.servicio_id) || 0);
+      const existingName = safeText(existingItem?.nombre || existingItem?.name).toLowerCase().trim();
+      const match = incoming.find((incomingItem) => {
+        const incomingId = type === 'barber'
+          ? (Number(incomingItem?.id) || Number(incomingItem?.id_barbero) || Number(incomingItem?.barbero_id) || 0)
+          : (Number(incomingItem?.id) || Number(incomingItem?.id_servicio) || Number(incomingItem?.servicio_id) || 0);
+        const incomingName = safeText(incomingItem?.nombre || incomingItem?.name).toLowerCase().trim();
+        if (existingId > 0 && incomingId > 0) return existingId === incomingId;
+        return !!existingName && existingName === incomingName;
+      });
+      if (!match) return existingItem;
+
+      const complemented = { ...existingItem };
+      Object.keys(match).forEach((key) => {
+        if (complemented[key] === undefined || complemented[key] === null || complemented[key] === '') {
+          complemented[key] = match[key];
+        }
+      });
+      return complemented;
+    });
+  }
+
+  function applyInheritedCollectionsFromPayload(payload, options = {}) {
     const source = payload && typeof payload === 'object' ? payload : {};
     const data = source?.data && typeof source.data === 'object' ? source.data : {};
     const inherited = source?.inherited && typeof source.inherited === 'object' ? source.inherited : {};
@@ -1702,12 +1805,17 @@
       data?.collections?.hours
     );
 
+    const preserveExisting = options?.preserveExistingCollections === true;
     if (nextServices.length) {
-      const merged = mergeCollections(inheritedCollections.services, nextServices, 'service');
+      const merged = preserveExisting
+        ? complementExistingCollection(inheritedCollections.services, nextServices, 'service')
+        : mergeCollections(inheritedCollections.services, nextServices, 'service');
       inheritedCollections.services.splice(0, inheritedCollections.services.length, ...merged);
     }
     if (nextBarbers.length) {
-      const merged = mergeCollections(inheritedCollections.barbers, nextBarbers, 'barber');
+      const merged = preserveExisting
+        ? complementExistingCollection(inheritedCollections.barbers, nextBarbers, 'barber')
+        : mergeCollections(inheritedCollections.barbers, nextBarbers, 'barber');
       inheritedCollections.barbers.splice(0, inheritedCollections.barbers.length, ...merged);
     }
     if (nextHours.length) {
@@ -1716,6 +1824,13 @@
     }
 
     renderInheritedSeedSummary();
+    logEditorHydrationSource(safeText(options?.source) || 'payload', {
+      barberiaId: getSeedIdentity().barberia_id,
+      slug: getSeedIdentity().slug,
+      barbers: inheritedCollections.barbers.length,
+      services: inheritedCollections.services.length,
+      publicComplemented: preserveExisting && safeText(options?.source) === 'landing_public'
+    });
   }
 
   const SAFE_PUBLISH_BLOCK_MESSAGE =
@@ -2021,7 +2136,10 @@
         const json = await response.json().catch(() => ({}));
         if (!response.ok || json?.ok === false) continue;
 
-        applyInheritedCollectionsFromPayload(json);
+        applyInheritedCollectionsFromPayload(json, {
+          preserveExistingCollections: registroEditHydrationState.active,
+          source: 'landing_public'
+        });
         syncSeedIdentityFromPublicProfile(json);
         persistPublishedIdentityFromResponse(json);
         return true;
@@ -3855,7 +3973,10 @@ function persistRegistroSeedContext() {
         }
       });
 
-      applyInheritedCollectionsFromPayload(data);
+      applyInheritedCollectionsFromPayload(data, {
+        preserveExistingCollections: registroEditHydrationState.active,
+        source: 'editor_draft'
+      });
 
       if (typeof pt === 'boolean') {
         paletteTouched = pt;
@@ -5031,6 +5152,22 @@ function persistRegistroSeedContext() {
 
   async function init() {
     applyHostUiCleanup();
+    if (registroEditHydrationState.active) {
+      logEditorHydrationSource('registro_edit_seed', {
+        barberiaId: registroEditHydrationState.barberiaId,
+        slug: registroEditHydrationState.slug,
+        barbers: inheritedCollections.barbers.length,
+        services: inheritedCollections.services.length
+      });
+    } else if (registroEditHydrationState.source === 'registro_edit_seed') {
+      logEditorHydrationSource('storage_ignored', {
+        barberiaId: registroEditHydrationState.barberiaId,
+        slug: registroEditHydrationState.slug,
+        barbers: inheritedCollections.barbers.length,
+        services: inheritedCollections.services.length,
+        ignoredOldStorage: true
+      });
+    }
     await loadDraft();
     const cameFromRegistroEdit =
       getQueryParam('source') === 'editor' ||
