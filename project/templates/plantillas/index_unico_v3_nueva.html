@@ -25,6 +25,25 @@
       --shadow: 0 16px 34px rgba(19, 29, 40, .14);
     }
 
+    #landingRoot[data-theme='light'] {
+      --bg: #f8f5ef;
+      --surface: rgba(255, 255, 255, 0.88);
+      --card-bg: #ffffff;
+      --border: rgba(212, 160, 73, 0.38);
+      --ring: rgba(212, 160, 73, 0.16);
+      --main: #d4a049;
+      --main2: #9b6a2f;
+      --hot: #f2c15f;
+      --text: #171717;
+      --muted: #6b6258;
+      --nav: rgba(255, 255, 255, 0.88);
+      --shadow: 0 16px 34px rgba(19, 29, 40, .08);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(212, 160, 73, 0.06), transparent 30%),
+        radial-gradient(circle at 100% 0%, rgba(155, 106, 47, 0.04), transparent 35%),
+        var(--bg) !important;
+    }
+
     #landingRoot[data-theme='dark'] {
       --bg: #050505;
       --surface: #0b0b0b;
@@ -51,8 +70,8 @@
       font-family: 'Outfit', sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at 0% 0%, rgba(29, 209, 159, .16), transparent 24%),
-        radial-gradient(circle at 100% 0%, rgba(46, 185, 255, .14), transparent 30%),
+        radial-gradient(circle at 0% 0%, rgba(212, 160, 73, 0.08), transparent 24%),
+        radial-gradient(circle at 100% 0%, rgba(155, 106, 47, 0.05), transparent 30%),
         var(--bg);
       min-height: 100vh;
     }
@@ -426,27 +445,27 @@
     }
 
     #landingRoot[data-theme='light'] .qr-share-card {
-      border-color: rgba(212, 160, 73, 0.35);
+      border-color: rgba(212, 160, 73, 0.38) !important;
       background:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.94), rgba(247, 243, 234, 0.84)),
-        #ffffff;
+        linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.88)),
+        #ffffff !important;
       box-shadow:
-        0 0 0 1px rgba(212, 160, 73, 0.06),
-        0 18px 45px rgba(15, 35, 53, 0.14),
-        0 0 24px rgba(212, 160, 73, 0.08);
-      color: #10171e;
+        0 0 0 1px rgba(212, 160, 73, 0.1),
+        0 18px 45px rgba(0, 0, 0, 0.08),
+        0 0 24px rgba(212, 160, 73, 0.08) !important;
+      color: #171717 !important;
     }
 
     #landingRoot[data-theme='light'] .qr-share-card::before {
       background:
-        linear-gradient(90deg, rgba(255, 255, 255, 0.85), rgba(247, 243, 234, 0.65)),
-        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv6.jpg');
-      opacity: 0.22;
-      filter: saturate(0.62) brightness(1.04);
+        linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.80)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv6.jpg') !important;
+      opacity: 0.35 !important;
+      filter: saturate(0.62) brightness(1.04) !important;
     }
 
     #landingRoot[data-theme='light'] .qr-share-card h2 {
-      color: #10171e;
+      color: #171717 !important;
     }
 
     .qr-share-kicker {
@@ -463,7 +482,7 @@
     }
 
     #landingRoot[data-theme='light'] .qr-share-text {
-      color: var(--muted);
+      color: #5b6775 !important;
     }
 
     .qr-share-link {
@@ -475,7 +494,16 @@
     }
 
     #landingRoot[data-theme='light'] .qr-share-link {
-      color: #10171e;
+      color: #171717 !important;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-frame {
+      border-color: rgba(212, 160, 73, 0.38) !important;
+      background: #ffffff !important;
+      box-shadow:
+        0 0 0 1px rgba(212, 160, 73, 0.1),
+        0 14px 32px rgba(0, 0, 0, 0.08),
+        0 0 22px rgba(212, 160, 73, 0.10) !important;
     }
 
     .qr-share-link:hover {
@@ -966,7 +994,7 @@
     /* Premium golden buttons globally in both themes */
     .btn-main,
     .btn-hot {
-      background: linear-gradient(135deg, #d4a049, #9b6a2f) !important;
+      background: linear-gradient(135deg, #f2c15f, #d4a049, #9b6a2f) !important;
       color: #050505 !important;
       font-weight: 600 !important;
       box-shadow: 0 4px 14px rgba(212, 160, 73, 0.25) !important;
@@ -1022,6 +1050,70 @@
     #landingRoot[data-theme='dark'] .form-select:focus {
       border-color: var(--main) !important;
       box-shadow: 0 0 0 0.2rem rgba(212, 160, 73, 0.25) !important;
+    }
+
+    /* Form and control styles in light mode */
+    #landingRoot[data-theme='light'] .reserve-form {
+      background: rgba(255, 255, 255, 0.88) !important;
+      border: 1px solid rgba(212, 160, 73, 0.38) !important;
+      box-shadow: 0 16px 34px rgba(212, 160, 73, 0.08) !important;
+    }
+    #landingRoot[data-theme='light'] .reserve-form h2 {
+      color: #171717 !important;
+    }
+    #landingRoot[data-theme='light'] .reserve-form .form-label {
+      color: #171717 !important;
+      font-weight: 600 !important;
+    }
+    #landingRoot[data-theme='light'] .form-control,
+    #landingRoot[data-theme='light'] .form-select {
+      background-color: rgba(255, 255, 255, 0.92) !important;
+      border: 1px solid rgba(212, 160, 73, 0.35) !important;
+      color: #171717 !important;
+    }
+    #landingRoot[data-theme='light'] .form-control:focus,
+    #landingRoot[data-theme='light'] .form-select:focus {
+      border-color: #d4a049 !important;
+      box-shadow: 0 0 0 3px rgba(212, 160, 73, 0.16) !important;
+      background-color: #ffffff !important;
+      color: #171717 !important;
+    }
+
+    /* Hours section styled for light theme in V3 */
+    #landingRoot[data-theme='light'] .reservation-hours-card {
+      border-color: rgba(212, 160, 73, 0.38) !important;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(247, 243, 234, 0.84)),
+        #ffffff !important;
+      color: #171717 !important;
+      box-shadow:
+        0 0 0 1px rgba(212, 160, 73, 0.1),
+        0 18px 45px rgba(0, 0, 0, 0.08),
+        0 0 24px rgba(212, 160, 73, 0.08) !important;
+    }
+    #landingRoot[data-theme='light'] .reservation-hours-card::before {
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.75)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv7.jpg') !important;
+      opacity: 0.35 !important;
+      filter: saturate(0.62) brightness(1.04) !important;
+    }
+    #landingRoot[data-theme='light'] .reservation-hours-card h2,
+    #landingRoot[data-theme='light'] .reservation-hours-card p,
+    #landingRoot[data-theme='light'] .reservation-hours-table table,
+    #landingRoot[data-theme='light'] .reservation-hours-table td:first-child {
+      color: #171717 !important;
+    }
+    #landingRoot[data-theme='light'] .reservation-hours-table td:last-child {
+      color: rgba(23, 23, 23, 0.85) !important;
+    }
+    #landingRoot[data-theme='light'] .reservation-hours-table {
+      border-color: rgba(212, 160, 73, 0.35) !important;
+      background: rgba(255, 255, 255, 0.88) !important;
+    }
+    #landingRoot[data-theme='light'] .reservation-hours-table tr.is-today {
+      background: linear-gradient(90deg, rgba(212, 160, 73, 0.2), rgba(212, 160, 73, 0.06)) !important;
+      box-shadow: inset 3px 0 0 var(--main) !important;
     }
 
     /* --- SECCIÓN HORARIOS ESTILO V2 ADAPTADO A V3 --- */
@@ -1318,12 +1410,12 @@
             <div class="col-lg-7">
               <span class="qr-share-kicker">Comparte tu landing</span>
               <h2 class="mt-2 mb-3">Escanea y reserva tu cita al instante</h2>
-              <p class="mb-3 qr-share-text">Escanea este código QR y envia a tus clientes directo al flujo de reserva en segundos.</p>
+              <p class="mb-3 qr-share-text">Escanea este c&oacute;digo QR y env&iacute;a a tus clientes directo al flujo de reserva en segundos.</p>
               <a id="landingQrLink" class="qr-share-link" href="#" target="_blank" rel="noopener">Cargando enlace...</a>
             </div>
             <div class="col-lg-5">
               <div class="qr-share-frame mx-auto">
-                <img id="landingQrImage" alt="código QR de la landing" loading="lazy" decoding="async">
+                <img id="landingQrImage" alt="c&oacute;digo QR de la landing" loading="lazy" decoding="async">
               </div>
             </div>
           </div>
@@ -1338,7 +1430,7 @@
         <a class="btn btn-theme" href="#inicio">Inicio</a>
         <a class="btn btn-theme" href="#servicios">Servicios</a>
         <a class="btn btn-theme" href="#barberos">Barberos</a>
-        <a class="btn btn-theme" href="#mapa">Ubicación</a>
+        <a class="btn btn-theme" href="#mapa">Ubicaci&oacute;n</a>
         <a class="btn btn-theme" href="#reservas">Reservas</a>
       </div>
       <div class="footer-brand-wrap">
@@ -1709,10 +1801,10 @@
     function buildReservationWhatsAppText(details) {
       const ticketId = details.citaId ? `\n🧾 *Reserva:* #${details.citaId}` : '';
       const locationText = details.direccion
-        ? `\n📍 *Dirección:* ${details.direccion}`
+        ? `\n📍 *Direcci\u00f3n:* ${details.direccion}`
         : '';
       return [
-        `💈 *${safeSeedText(details.barberia || 'Barbería').toUpperCase()}* 💈`,
+        `💈 *${safeSeedText(details.barberia || 'Barber\u00eda').toUpperCase()}* 💈`,
         '================================',
         '✅ *COMPROBANTE DE RESERVA*',
         '--------------------------------',
@@ -1725,7 +1817,7 @@
         `⏰ *Hora:* ${details.hora || '-'}`,
         locationText,
         '--------------------------------',
-        'Tu cita quedó confirmada.',
+        'Tu cita qued\u00f3 confirmada.',
         'Te esperamos puntual. ✂️🔥'
       ].filter(Boolean).join('\n');
     }
@@ -2012,15 +2104,49 @@ function normalizeDayLabel(value) {
         weekday: 'long',
         timeZone: 'America/Bogota'
       }).format(new Date()));
-      const rows = activeHours
+
+      const seenDays = new Set();
+      const mapped = activeHours
         .map((item) => {
-          const normalizedDay = normalizeDayLabel(item.dia || item.day || item.nombre_dia);
-          const day = formatDayName(item.dia || item.day || item.nombre_dia);
+          const rawDay = item.dia || item.day || item.nombre_dia || '';
+          const normalizedDay = normalizeDayLabel(rawDay);
+          const dayLabel = formatDayName(rawDay);
           const open = safeSeedText(item.hora_abre || item.abre || item.open);
           const close = safeSeedText(item.hora_cierra || item.cierra || item.close);
-          return day && open && close ? { day, range: `${open} - ${close}`, isToday: normalizedDay === todayName } : null;
+          if (!dayLabel || !open || !close) return null;
+          return {
+            normalizedDay,
+            day: dayLabel,
+            range: `${open} - ${close}`,
+            isToday: normalizedDay === todayName
+          };
         })
         .filter(Boolean);
+
+      const DAYS_ORDER = {
+        'lunes': 1,
+        'martes': 2,
+        'miercoles': 3,
+        'jueves': 4,
+        'viernes': 5,
+        'sabado': 6,
+        'domingo': 7
+      };
+
+      mapped.sort((a, b) => {
+        const orderA = DAYS_ORDER[a.normalizedDay] || 99;
+        const orderB = DAYS_ORDER[b.normalizedDay] || 99;
+        return orderA - orderB;
+      });
+
+      const rows = [];
+      for (const item of mapped) {
+        if (!seenDays.has(item.normalizedDay)) {
+          seenDays.add(item.normalizedDay);
+          rows.push(item);
+        }
+      }
+
       if (!rows.length) return '';
       return `
         <div class="reservation-hours-table">
@@ -2503,7 +2629,7 @@ function normalizeDayLabel(value) {
       const fecha = safeSeedText(dateInput?.value || document.getElementById('fecha')?.value);
       const hora = safeSeedText(hourSelect?.value || document.getElementById('hora')?.value);
       const clienteNombre = readFormValue('nombre', 'nombre');
-      const clienteTelefono = readFormValue('telefono', 'telefono') || readFormValue('telefono', 'Teléfono');
+      const clienteTelefono = readFormValue('telefono', 'telefono') || readFormValue('telefono', 'Tel\u00e9fono');
       const clienteEmail = readFormValue('email', 'email');
       const documento = readFormValue('documento', 'documento');
       const notas = readFormValue('notas', 'notas');
@@ -2598,7 +2724,7 @@ function normalizeDayLabel(value) {
         fillSelects();
       } catch (error) {
         console.error('Error guardando reserva:', error);
-        showAlert('danger', error.message || 'Error de conexión con el servicio de reservas.');
+        showAlert('danger', error.message || 'Error de conexi\u00f3n con el servicio de reservas.');
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
@@ -2791,7 +2917,7 @@ function normalizeDayLabel(value) {
           node.prepend(img);
         }
         img.src = safeLogo;
-        img.alt = safeName || 'Logo barbería';
+        img.alt = safeName || 'Logo barber\u00eda';
         if (logoWidth > 0) {
           img.style.width = `${logoWidth}px`;
           img.style.height = 'auto';
@@ -3161,7 +3287,7 @@ function normalizeDayLabel(value) {
       ) || `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(targetUrl)}`;
       qrImage.src = qrImageUrl;
       qrLink.href = targetUrl;
-      qrLink.textContent = 'Reserva Aquí';
+      qrLink.textContent = 'Reserva Aqu\u00ed';
       document.querySelectorAll('a[href="#reservas"], a[href$="#reservas"]').forEach((link) => {
         link.href = targetUrl;
       });
