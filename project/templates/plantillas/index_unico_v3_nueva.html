@@ -311,7 +311,7 @@
 
     .section-soft { background: color-mix(in srgb, var(--surface) 68%, transparent); }
 
-    .service-card, .barber-card { padding: 1.2rem; height: 100%; }
+    .barber-card { padding: 1.2rem; height: 100%; }
 
     .icon-chip {
       width: 44px;
@@ -1028,16 +1028,150 @@
       color: #f2c15f !important;
     }
     /* Premium dark theme card overrides */
-    #landingRoot[data-theme='dark'] .service-card,
     #landingRoot[data-theme='dark'] .barber-card {
       background: var(--card-bg) !important;
       border: 1px solid var(--border) !important;
       transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
-    #landingRoot[data-theme='dark'] .service-card:hover,
     #landingRoot[data-theme='dark'] .barber-card:hover {
       border-color: var(--main) !important;
       box-shadow: 0 8px 24px rgba(212, 160, 73, 0.15) !important;
+    }
+
+    /* --- TARJETAS DE SERVICIOS ESTILO V2 ADAPTADO A V3 --- */
+    #landingRoot .service-card {
+      position: relative;
+      min-height: 430px;
+      padding: 0 !important;
+      overflow: hidden;
+      border-radius: 1.25rem;
+      background: #0b0b0b !important;
+      border: 1px solid rgba(212, 160, 73, 0.25);
+      isolation: isolate;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    #landingRoot .service-card:hover {
+      border-color: var(--main) !important;
+      box-shadow: 0 0 24px rgba(212, 160, 73, 0.2) !important;
+      transform: translateY(-4px);
+    }
+
+    #landingRoot .service-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(180deg, rgba(5, 5, 5, 0.08) 0%, rgba(5, 5, 5, 0.24) 38%, rgba(5, 5, 5, 0.92) 75%, #050505 100%);
+      pointer-events: none;
+    }
+
+    #landingRoot[data-theme='light'] .service-card {
+      background: #ffffff !important;
+      border-color: rgba(212, 160, 73, 0.38) !important;
+      box-shadow: 0 16px 34px rgba(212, 160, 73, 0.06) !important;
+    }
+
+    #landingRoot[data-theme='light'] .service-card::after {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.24) 38%, rgba(255, 255, 255, 0.94) 75%, #ffffff 100%) !important;
+    }
+
+    .service-photo {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+      object-fit: cover !important;
+      object-position: center;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: #0b0b0b;
+    }
+
+    #landingRoot[data-theme='light'] .service-photo {
+      background: #ffffff;
+    }
+
+    .service-visual-fallback {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(212, 160, 73, 0.15), transparent 32%),
+        linear-gradient(145deg, #111111, #050505);
+      color: var(--main);
+      font-size: 5rem;
+    }
+
+    #landingRoot[data-theme='light'] .service-visual-fallback {
+      background:
+        radial-gradient(circle at 50% 38%, rgba(212, 160, 73, 0.1), transparent 32%),
+        linear-gradient(145deg, #fbfbfb, #f8f5ef) !important;
+      color: var(--main) !important;
+    }
+
+    .service-card-body {
+      position: relative;
+      z-index: 2;
+      min-height: 430px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 2rem 1.65rem 1.6rem;
+      text-align: center;
+    }
+
+    #landingRoot .service-card h3 {
+      color: #ffffff !important;
+      font-size: clamp(1.35rem, 2vw, 1.65rem);
+      font-weight: 800;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    #landingRoot[data-theme='light'] .service-card h3 {
+      color: #171717 !important;
+      text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .service-copy {
+      color: var(--main) !important;
+      font-weight: 700;
+      margin-bottom: 0.9rem;
+      font-size: 0.88rem;
+    }
+
+    .service-price-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-height: 30px;
+      padding: 0.3rem 0.75rem;
+      margin-bottom: 1.55rem;
+      border: 1px solid rgba(212, 160, 73, 0.25);
+      border-radius: 0.45rem;
+      background: rgba(5, 5, 5, 0.75);
+      color: #ffffff;
+      font-size: 0.9rem;
+      font-weight: 800;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    #landingRoot[data-theme='light'] .service-price-chip {
+      background: rgba(255, 255, 255, 0.85) !important;
+      color: #171717 !important;
+      border-color: rgba(212, 160, 73, 0.35) !important;
+    }
+
+    .service-price-chip i {
+      color: var(--main);
+    }
+
+    .service-reserve-btn {
+      width: 100%;
     }
     /* Form controls in dark mode styling */
     #landingRoot[data-theme='dark'] .form-control,
@@ -2020,15 +2154,18 @@
       servicesGrid.innerHTML = services.map(s => {
         const image = resolveServiceImage(s);
         const media = image
-          ? `<img class="service-photo mb-3" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null; const div = document.createElement('div'); div.className = 'icon-chip mb-3'; div.innerHTML = '<i class=&quot;bi ${s.icono}&quot;></i>'; this.replaceWith(div);" style="width:100%;height:140px;object-fit:cover;border-radius:12px;" />`
-          : `<div class="icon-chip mb-3"><i class="bi ${s.icono}"></i></div>`;
+          ? `<img class="service-photo" src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null; const div = document.createElement('div'); div.className = 'service-visual-fallback'; div.innerHTML = '<i class=&quot;bi ${s.icono}&quot;></i>'; this.replaceWith(div);" />`
+          : `<div class="service-visual-fallback"><i class="bi ${s.icono}"></i></div>`;
         return `
         <div class="${serviceColClass}">
           <article class="panel service-card" style="cursor:pointer;" data-service-id="${s.id_servicio || s.servicio_id || s.id || ''}" data-service-name="${s.nombre || ''}">
             ${media}
-            <h3 class="h5 mb-2">${s.nombre}</h3>
-            <p class="text-secondary mb-2">Atenci&oacute;n premium y resultado preciso.</p>
-            <span class="price">${cop(s.precio)}</span>
+            <div class="service-card-body">
+              <h3 class="mb-2">${s.nombre}</h3>
+              <p class="service-copy">Servicio profesional premium</p>
+              <span class="service-price-chip"><i class="bi bi-tag-fill"></i>${cop(s.precio)}</span>
+              <button class="btn btn-main service-reserve-btn" type="button">Reservar servicio</button>
+            </div>
           </article>
         </div>
       `;
