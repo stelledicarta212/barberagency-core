@@ -1519,6 +1519,7 @@
     ];
     const inheritedHours = [...defaultHours];
     let inheritedSlotMin = 30;
+    let landingSeed = null;
     const SERVICE_COVERS = [
       'https://images.unsplash.com/photo-1622288432450-277d0fef5ed6?auto=format&fit=crop&w=900&q=80',
       'https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80',
@@ -3369,7 +3370,7 @@ function normalizeDayLabel(value) {
     }
 
     async function initLanding() {
-      const landingSeed = readLandingSeed();
+      landingSeed = readLandingSeed();
       const initialPayload = extractPublicLandingPayload(landingSeed);
 
       if (initialPayload.ok) {
