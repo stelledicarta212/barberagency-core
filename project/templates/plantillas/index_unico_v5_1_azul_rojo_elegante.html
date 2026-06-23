@@ -1624,7 +1624,7 @@
         const image = resolveServiceImage(s) || fallback;
         return `
         <div class="${serviceColClass}">
-          <article class="panel service-card">
+          <article class="panel service-card" style="cursor:pointer;" data-service-id="${s.id_servicio || s.servicio_id || s.id || ''}" data-service-name="${s.nombre || ''}">
             <div class="service-visual" style="display:block;height:194px;position:relative;overflow:hidden;">
               <img src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';">
               <span class="service-badge"><i class="bi ${s.icono}"></i></span>
@@ -1654,7 +1654,7 @@
         const photo = safeSeedText(b.foto) || fallback;
         return `
         <div class="${barberColClass}">
-          <article class="panel barber-card text-center">
+          <article class="panel barber-card text-center" style="cursor:pointer;" data-barber-id="${b.id_barbero || b.barbero_id || b.id || ''}" data-barber-name="${b.nombre || ''}">
             <img class="barber-photo mb-3" src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';" style="width:96px;height:96px;object-fit:cover;border-radius:999px;" />
             <h3 class="h6 mb-1">${b.nombre}</h3>
             <p class="text-secondary mb-1">${b.especialidad}</p>
@@ -3473,9 +3473,82 @@ function normalizeDayLabel(value) {
         if (event.target === reservationSuccessOverlay) hideReservationSuccessCard();
       });
     }
+
+    // Selection dynamic booking helper
+    const bookingSelection = {
+      barberId: null,
+      barberName: '',
+      serviceId: null,
+      serviceName: ''
+    };
+
+    function selectOption(selectEl, id, name) {
+      if (!selectEl) return false;
+      let found = false;
+      if (id) {
+        for (let i = 0; i < selectEl.options.length; i++) {
+          if (selectEl.options[i].value === String(id)) {
+            selectEl.selectedIndex = i;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (!found && name) {
+        const cleanName = name.toLowerCase().trim();
+        for (let i = 0; i < selectEl.options.length; i++) {
+          const optionText = selectEl.options[i].textContent.toLowerCase().trim();
+          if (optionText.includes(cleanName) || cleanName.includes(optionText)) {
+            selectEl.selectedIndex = i;
+            found = true;
+            break;
+          }
+        }
+      }
+      if (found) {
+        selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      return found;
+    }
+
+    function prefillBookingForm() {
+      const selectBarbero = document.getElementById('barbero');
+      const selectServicio = document.getElementById('servicio');
+      if (bookingSelection.barberId || bookingSelection.barberName) {
+        selectOption(selectBarbero, bookingSelection.barberId, bookingSelection.barberName);
+      }
+      if (bookingSelection.serviceId || bookingSelection.serviceName) {
+        selectOption(selectServicio, bookingSelection.serviceId, bookingSelection.serviceName);
+      }
+    }
+
+    function openBookingForm() {
+      const formContainer = document.getElementById('reservar') || document.getElementById('reservas');
+      if (formContainer) {
+        formContainer.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    document.addEventListener('click', function(e) {
+      const ctaCard = e.target.closest('.barber-card-cta');
+      if (ctaCard) return;
+
+      const barberCard = e.target.closest('[data-barber-id]');
+      const serviceCard = e.target.closest('[data-service-id]');
+
+      if (barberCard) {
+        if (e.target.closest('.barber-socials') || e.target.closest('.social-icon')) return;
+        bookingSelection.barberId = barberCard.getAttribute('data-barber-id') || null;
+        bookingSelection.barberName = barberCard.getAttribute('data-barber-name') || '';
+        prefillBookingForm();
+        openBookingForm();
+      } else if (serviceCard) {
+        bookingSelection.serviceId = serviceCard.getAttribute('data-service-id') || null;
+        bookingSelection.serviceName = serviceCard.getAttribute('data-service-name') || '';
+        prefillBookingForm();
+        openBookingForm();
+      }
+    });
   </script>
 </body>
 </html>
-
-
-
