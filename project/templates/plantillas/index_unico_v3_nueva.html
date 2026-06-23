@@ -26,17 +26,22 @@
     }
 
     #landingRoot[data-theme='dark'] {
-      --bg: #0d151b;
-      --surface: #142029;
-      --text: #edf8ff;
-      --muted: #a7becf;
-      --main: #1dd19f;
-      --main2: #2eb9ff;
-      --hot: #ff8a3d;
-      --border: rgba(154, 203, 237, .22);
-      --ring: rgba(29, 209, 159, .2);
-      --nav: rgba(10, 18, 24, .84);
-      --shadow: 0 20px 40px rgba(0, 0, 0, .46);
+      --bg: #050505;
+      --surface: #0d0d0d;
+      --card-bg: #111111;
+      --border: rgba(212, 160, 73, 0.22);
+      --ring: rgba(212, 160, 73, 0.2);
+      --main: #d4a049;
+      --main2: #9b6a2f;
+      --hot: #f2c15f;
+      --text: #f7f3ea;
+      --muted: #a8a29a;
+      --nav: rgba(13, 13, 13, 0.85);
+      --shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(212, 160, 73, 0.07), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(155, 106, 47, 0.05), transparent 35%),
+        var(--bg);
     }
 
     #landingRoot,
@@ -75,9 +80,9 @@
     }
 
     #landingRoot[data-theme='dark'] .topnav {
-      background: rgba(26, 30, 42, 0.55) !important;
-      border: 1px solid rgba(255, 255, 255, 0.08) !important;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25) !important;
+      background: rgba(13, 13, 13, 0.65) !important;
+      border: 1px solid rgba(212, 160, 73, 0.15) !important;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5) !important;
     }
 
     .navbar .navbar-brand { color: #000000 !important; }
@@ -463,15 +468,14 @@
         background: rgba(255, 255, 255, 0.94) !important;
         backdrop-filter: blur(20px) !important;
       }
-
       #landingRoot[data-theme='dark'] .topnav {
-        background: rgba(11, 15, 24, 0.75) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
+        background: rgba(13, 13, 13, 0.75) !important;
+        border: 1px solid rgba(212, 160, 73, 0.15) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5) !important;
       }
 
       #landingRoot[data-theme='dark'] .topnav:has(.navbar-collapse.show) {
-        background: rgba(11, 15, 24, 0.94) !important;
+        background: rgba(13, 13, 13, 0.96) !important;
       }
 
       .topnav .container {
@@ -885,6 +889,61 @@
         height: 340px;
       }
     }
+    /* Premium dark theme button overrides */
+    #landingRoot[data-theme='dark'] .btn-main,
+    #landingRoot[data-theme='dark'] .btn-hot {
+      background: linear-gradient(135deg, var(--main), var(--main2)) !important;
+      color: #050505 !important;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(212, 160, 73, 0.2) !important;
+      border: none !important;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+    #landingRoot[data-theme='dark'] .btn-main:hover,
+    #landingRoot[data-theme='dark'] .btn-hot:hover {
+      box-shadow: 0 6px 20px rgba(212, 160, 73, 0.35) !important;
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+    #landingRoot[data-theme='dark'] .btn-ghost,
+    #landingRoot[data-theme='dark'] .btn-theme {
+      background: rgba(13, 13, 13, 0.5) !important;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid var(--border) !important;
+      color: var(--main) !important;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    #landingRoot[data-theme='dark'] .btn-ghost:hover,
+    #landingRoot[data-theme='dark'] .btn-theme:hover {
+      background: rgba(212, 160, 73, 0.08) !important;
+      border-color: var(--hot) !important;
+      color: var(--hot) !important;
+    }
+    /* Premium dark theme card overrides */
+    #landingRoot[data-theme='dark'] .service-card,
+    #landingRoot[data-theme='dark'] .barber-card {
+      background: var(--card-bg) !important;
+      border: 1px solid var(--border) !important;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    #landingRoot[data-theme='dark'] .service-card:hover,
+    #landingRoot[data-theme='dark'] .barber-card:hover {
+      border-color: var(--main) !important;
+      box-shadow: 0 8px 24px rgba(212, 160, 73, 0.15) !important;
+    }
+    /* Form controls in dark mode styling */
+    #landingRoot[data-theme='dark'] .form-control,
+    #landingRoot[data-theme='dark'] .form-select {
+      background-color: var(--card-bg) !important;
+      border-color: var(--border) !important;
+      color: var(--text) !important;
+    }
+    #landingRoot[data-theme='dark'] .form-control:focus,
+    #landingRoot[data-theme='dark'] .form-select:focus {
+      border-color: var(--main) !important;
+      box-shadow: 0 0 0 0.2rem rgba(212, 160, 73, 0.25) !important;
+    }
   </style>
 </head>
 <body>
@@ -903,7 +962,7 @@
           <li class="nav-item"><a class="nav-link" href="#barberos">Barberos</a></li>
           <li class="nav-item"><a class="nav-link" href="#mapa">Mapa</a></li>
         </ul>
-        <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i> Tema</button>
+        <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i></button>
       </div>
     </div>
   </nav>
@@ -2055,7 +2114,7 @@ function normalizeDayLabel(value) {
       document.body.classList.toggle('light-mode', theme === 'light');
       localStorage.setItem('nova_theme_v3_alt', theme);
       if (themeToggle) {
-        themeToggle.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i> Tema' : '<i class="bi bi-moon-stars-fill"></i> Tema';
+        themeToggle.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
       }
     }
 
