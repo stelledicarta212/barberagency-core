@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V3 Nova Cut - Barbería</title>
-  <meta name="description" content="Landing V3 alternativa para barbería en archivo unico." />
+  <title>V3 Nova Cut - Barber&iacute;a</title>
+  <meta name="description" content="Landing V3 alternativa para barber&iacute;a en archivo unico." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
 
     #landingRoot[data-theme='dark'] {
       --bg: #050505;
-      --surface: #0d0d0d;
+      --surface: #0b0b0b;
       --card-bg: #111111;
       --border: rgba(212, 160, 73, 0.22);
       --ring: rgba(212, 160, 73, 0.2);
@@ -385,14 +385,68 @@
     }
 
     .qr-share-card {
-      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(212, 160, 73, 0.35);
       border-radius: 1.5rem;
-      background: color-mix(in srgb, var(--surface) 88%, transparent);
-      box-shadow: var(--shadow);
+      background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.92), rgba(5, 5, 5, 0.74)),
+        #050505;
+      box-shadow:
+        0 0 0 1px rgba(212, 160, 73, 0.08),
+        0 18px 45px rgba(0, 0, 0, 0.8),
+        0 0 24px rgba(212, 160, 73, 0.10);
+      color: #ffffff;
+      isolation: isolate;
+    }
+
+    .qr-share-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.55)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv6.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.42;
+      filter: saturate(0.78);
+    }
+
+    .qr-share-card h2 {
+      color: #ffffff;
     }
 
     #landingRoot[data-theme='dark'] .qr-share-card {
-      background: rgba(26, 20, 20, 0.92);
+      background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.92), rgba(5, 5, 5, 0.74)),
+        #050505;
+      border-color: rgba(212, 160, 73, 0.35);
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-card {
+      border-color: rgba(212, 160, 73, 0.35);
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.94), rgba(247, 243, 234, 0.84)),
+        #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(212, 160, 73, 0.06),
+        0 18px 45px rgba(15, 35, 53, 0.14),
+        0 0 24px rgba(212, 160, 73, 0.08);
+      color: #10171e;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-card::before {
+      background:
+        linear-gradient(90deg, rgba(255, 255, 255, 0.85), rgba(247, 243, 234, 0.65)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv6.jpg');
+      opacity: 0.22;
+      filter: saturate(0.62) brightness(1.04);
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-card h2 {
+      color: #10171e;
     }
 
     .qr-share-kicker {
@@ -405,15 +459,23 @@
     }
 
     .qr-share-text {
+      color: rgba(255, 255, 255, 0.76);
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-text {
       color: var(--muted);
     }
 
     .qr-share-link {
       display: inline-block;
-      color: var(--text);
+      color: #ffffff;
       font-weight: 700;
       text-decoration: none;
       word-break: break-all;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-link {
+      color: #10171e;
     }
 
     .qr-share-link:hover {
@@ -425,11 +487,23 @@
       aspect-ratio: 1;
       padding: 14px;
       border-radius: 1.25rem;
+      border: 1px solid rgba(212, 160, 73, 0.35);
       background: #fff;
-      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+      box-shadow:
+        0 0 0 1px rgba(212, 160, 73, 0.08),
+        0 14px 32px rgba(15, 23, 42, 0.12),
+        0 0 24px rgba(212, 160, 73, 0.12);
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-frame {
+      border-color: rgba(212, 160, 73, 0.35);
+      box-shadow:
+        0 0 0 1px rgba(212, 160, 73, 0.06),
+        0 14px 32px rgba(15, 35, 53, 0.12),
+        0 0 22px rgba(212, 160, 73, 0.10);
     }
 
     .qr-share-frame img {
@@ -820,14 +894,13 @@
       color: #d4af37 !important;
     }
 
-    /* CTA Barber Card style */
     .barber-card-cta {
       height: 400px;
       border-radius: 1rem;
-      background: rgba(20, 32, 41, 0.7) !important;
+      background: rgba(11, 11, 11, 0.75) !important;
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(212, 160, 73, 0.22) !important;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -890,36 +963,41 @@
         height: 340px;
       }
     }
-    /* Premium dark theme button overrides */
-    #landingRoot[data-theme='dark'] .btn-main,
-    #landingRoot[data-theme='dark'] .btn-hot {
-      background: linear-gradient(135deg, var(--main), var(--main2)) !important;
+    /* Premium golden buttons globally in both themes */
+    .btn-main,
+    .btn-hot {
+      background: linear-gradient(135deg, #d4a049, #9b6a2f) !important;
       color: #050505 !important;
-      font-weight: 600;
-      box-shadow: 0 4px 14px rgba(212, 160, 73, 0.2) !important;
+      font-weight: 600 !important;
+      box-shadow: 0 4px 14px rgba(212, 160, 73, 0.25) !important;
       border: none !important;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
     }
-    #landingRoot[data-theme='dark'] .btn-main:hover,
-    #landingRoot[data-theme='dark'] .btn-hot:hover {
-      box-shadow: 0 6px 20px rgba(212, 160, 73, 0.35) !important;
-      filter: brightness(1.1);
-      transform: translateY(-1px);
+    .btn-main:hover,
+    .btn-hot:hover {
+      box-shadow: 0 6px 20px rgba(212, 160, 73, 0.4) !important;
+      filter: brightness(1.1) !important;
+      transform: translateY(-1px) !important;
+      color: #050505 !important;
+    }
+    .btn-ghost,
+    .btn-theme {
+      background: transparent !important;
+      border: 1px solid rgba(212, 160, 73, 0.35) !important;
+      color: #9b6a2f !important;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
     }
     #landingRoot[data-theme='dark'] .btn-ghost,
     #landingRoot[data-theme='dark'] .btn-theme {
       background: rgba(13, 13, 13, 0.5) !important;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      border: 1px solid var(--border) !important;
-      color: var(--main) !important;
-      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+      border: 1px solid rgba(212, 160, 73, 0.22) !important;
+      color: #d4a049 !important;
     }
-    #landingRoot[data-theme='dark'] .btn-ghost:hover,
-    #landingRoot[data-theme='dark'] .btn-theme:hover {
+    .btn-ghost:hover,
+    .btn-theme:hover {
       background: rgba(212, 160, 73, 0.08) !important;
-      border-color: var(--hot) !important;
-      color: var(--hot) !important;
+      border-color: #f2c15f !important;
+      color: #f2c15f !important;
     }
     /* Premium dark theme card overrides */
     #landingRoot[data-theme='dark'] .service-card,
@@ -945,6 +1023,170 @@
       border-color: var(--main) !important;
       box-shadow: 0 0 0 0.2rem rgba(212, 160, 73, 0.25) !important;
     }
+
+    /* --- SECCIÓN HORARIOS ESTILO V2 ADAPTADO A V3 --- */
+    #landingRoot .reservation-hours-card {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 560px;
+      padding: 1.35rem;
+      border: 1px solid rgba(212, 160, 73, 0.35);
+      border-radius: 1.25rem;
+      background:
+        linear-gradient(180deg, rgba(5, 5, 5, 0.70), rgba(5, 5, 5, 0.96)),
+        radial-gradient(circle at 72% 10%, rgba(212, 160, 73, 0.16), transparent 32%),
+        #050505;
+      color: #ffffff;
+      text-align: center;
+      box-shadow:
+        0 0 0 1px rgba(212, 160, 73, 0.12),
+        0 24px 60px rgba(0, 0, 0, 0.8),
+        0 0 34px rgba(212, 160, 73, 0.18);
+    }
+
+    #landingRoot .reservation-hours-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(5, 5, 5, 0.85), rgba(5, 5, 5, 0.55)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv7.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.38;
+      filter: saturate(0.75);
+    }
+
+    #landingRoot .reservation-hours-icon {
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      margin-bottom: 0.8rem;
+      border: 1px solid rgba(212, 160, 73, 0.42);
+      border-radius: 1.25rem;
+      background: rgba(212, 160, 73, 0.10);
+      color: var(--main);
+      font-size: 2.2rem;
+      box-shadow: 0 0 26px rgba(212, 160, 73, 0.20);
+    }
+
+    #landingRoot .reservation-hours-card h2 {
+      margin: 0 0 0.35rem;
+      color: #ffffff;
+      font-size: clamp(2.25rem, 4vw, 3.2rem);
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    #landingRoot .reservation-hours-card p {
+      margin: 0 0 0.85rem;
+      color: rgba(255, 255, 255, 0.72);
+      font-weight: 600;
+    }
+
+    #landingRoot .reservation-hours-status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 30px;
+      margin-bottom: 1rem;
+      padding: 0.25rem 0.85rem;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f2c15f, #9b6a2f);
+      color: #050505;
+      font-size: 0.86rem;
+      font-weight: 900;
+      box-shadow: 0 10px 22px rgba(212, 160, 73, 0.20);
+    }
+
+    #landingRoot .reservation-hours-table {
+      width: min(100%, 460px);
+      overflow: hidden;
+      border: 1px solid rgba(212, 160, 73, 0.22);
+      border-radius: 0.85rem;
+      background: rgba(11, 11, 11, 0.56);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    #landingRoot .reservation-hours-table table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #ffffff;
+      font-size: 0.98rem;
+    }
+
+    #landingRoot .reservation-hours-table td {
+      padding: 0.72rem 0.9rem;
+      border-bottom: 1px solid rgba(212, 160, 73, 0.16);
+      vertical-align: middle;
+    }
+
+    #landingRoot .reservation-hours-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    #landingRoot .reservation-hours-table td:first-child {
+      color: #ffffff;
+      font-weight: 800;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    #landingRoot .reservation-hours-table td:last-child {
+      color: rgba(255, 255, 255, 0.82);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    #landingRoot .reservation-hours-table tr.is-today {
+      background: linear-gradient(90deg, rgba(212, 160, 73, 0.24), rgba(212, 160, 73, 0.08));
+      box-shadow: inset 3px 0 0 var(--main);
+    }
+
+    #landingRoot .reservation-hours-table tr.is-today td {
+      color: var(--hot);
+    }
+
+    #landingRoot .reservation-hours-empty {
+      color: rgba(255, 255, 255, 0.74);
+      font-weight: 700;
+    }
+
+    #landingRoot .reservation-hours-mark {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      width: min(280px, 76%);
+      margin-top: 1.05rem;
+      color: var(--main);
+    }
+
+    #landingRoot .reservation-hours-mark span {
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, transparent, rgba(212, 160, 73, 0.78), transparent);
+    }
+
+    #landingRoot .reservation-hours-card small {
+      margin-top: 0.35rem;
+      color: var(--main);
+      text-transform: uppercase;
+      letter-spacing: 0.45em;
+      font-size: 0.7rem;
+    }
+
+    #landingRoot .reservation-hours-actions {
+      width: min(100%, 460px);
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -969,12 +1211,12 @@
   </nav>
 
   <header id="inicio" class="hero">
-    <img id="heroImage" src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv3.jpg" alt="Hero barbería" loading="eager" decoding="async">
+    <img id="heroImage" src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv3.jpg" alt="Hero barber&iacute;a" loading="eager" decoding="async">
     <div class="container hero-inner">
       <div class="hero-copy">
         <span class="tag">Agenda en 60 segundos</span>
-        <h1 class="hero-title display-4 mt-3 mb-3">Tu corte habla antes que tú</h1>
-        <p class="hero-subtitle lead mb-4">Diseño renovado con estilo fresco, una sola reserva central y experiencia moderna en desktop y móvil.</p>
+        <h1 class="hero-title display-4 mt-3 mb-3">Tu corte habla antes que t&uacute;</h1>
+        <p class="hero-subtitle lead mb-4">Dise&ntilde;o renovado con estilo fresco, una sola reserva central y experiencia moderna en desktop y m&oacute;vil.</p>
         <div class="d-flex flex-wrap gap-2 justify-content-end">
           <a href="#reservas" class="btn btn-main btn-lg px-4">Reservar cita</a>
           <a href="#servicios" class="btn btn-hot btn-lg px-4">Ver servicios</a>
@@ -1003,8 +1245,8 @@
           <div class="col-lg-4">
             <div class="panel p-4 h-100 d-flex flex-column justify-content-between">
               <div>
-                <h2 class="h3">Llega fácil y sin perder tiempo</h2>
-                <p class="text-secondary">Estamos en una zona cómoda de ubicar para que llegues rápido, relajado y listo para tu cita.</p>
+                <h2 class="h3">Llega f&aacute;cil y sin perder tiempo</h2>
+                <p class="text-secondary">Estamos en una zona c&oacute;moda de ubicar para que llegues r&aacute;pido, relajado y listo para tu cita.</p>
               </div>
               <a href="#reservas" class="btn btn-main">Reservar mi espacio</a>
             </div>
@@ -1022,7 +1264,7 @@
       <div class="container">
         <div class="text-center mb-4">
           <h2>Nuestros Barberos</h2>
-          <p class="text-secondary mb-0">Especialistas en estilo clásico y moderno.</p>
+          <p class="text-secondary mb-0">Especialistas en estilo cl&aacute;sico y moderno.</p>
         </div>
         <div class="row g-4" id="barbersGrid"></div>
       </div>
@@ -1031,28 +1273,35 @@
     <section id="reservas" class="py-5">
       <div class="container">
         <div class="row g-4 align-items-stretch">
-          <div class="col-lg-6 order-lg-1">
-            <div class="panel p-4 h-100 d-flex flex-column justify-content-center">
-              <h3 class="h4 mb-3">Reserva rápido y sal con tu mejor versión</h3>
-              <p class="text-secondary">Elige tu servicio, reserva con tu profesional ideal y asegura tu horario en un proceso simple y cómodo.</p>
-              <div class="d-grid gap-2">
-                <a href="#inicio" class="btn btn-hot">Ver estilo de la barbería</a>
-                <button id="toMap" type="button" class="btn btn-ghost">Ver Ubicación y llegar fácil</button>
+          <div class="col-lg-6">
+            <div class="reservation-hours-card h-100">
+              <div class="reservation-hours-icon" aria-hidden="true"><i class="bi bi-clock"></i></div>
+              <h2>Horarios</h2>
+              <p>Agenda tu cita dentro del horario disponible.</p>
+              <span class="reservation-hours-status">Abierto hoy</span>
+              <div id="landingHoursText" class="reservation-hours-empty">Cargando horarios...</div>
+              <div class="reservation-hours-actions d-grid gap-2">
+                <a href="#inicio" class="btn btn-main">Ver estilo de la barber&iacute;a</a>
+                <button id="toMap" class="btn btn-ghost" type="button">Ver Ubicaci&oacute;n y llegar f&aacute;cil</button>
               </div>
+              <div class="reservation-hours-mark" aria-hidden="true">
+                <span></span><i class="bi bi-scissors"></i><span></span>
+              </div>
+              <small>Barber&iacute;a premium</small>
             </div>
           </div>
-          <div class="col-lg-6 order-lg-2">
-            <form id="reservationForm" class="panel reserve-form needs-validation" novalidate>
-              <h2 class="mb-3">Reserva tu cita</h2>
+          <div class="col-lg-6">
+            <form id="reservationForm" class="panel reserve-form needs-validation h-100" novalidate>
+              <h2 class="mb-3">Formulario de reserva</h2>
               <div class="row g-3">
                 <div class="col-12"><label for="nombre" class="form-label">Nombre y apellido</label><input id="nombre" name="nombre" class="form-control" type="text" required></div>
-                <div class="col-md-6"><label for="telefono" class="form-label">Teléfono</label><input id="telefono" name="telefono" class="form-control" type="tel" required></div>
-                <div class="col-md-6"><label for="email" class="form-label">Correo</label><input id="email" name="email" class="form-control" type="email" required></div>
-                <div class="col-md-6"><label for="servicio" class="form-label">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
-                <div class="col-md-6"><label for="barbero" class="form-label">Barbero</label><select id="barbero" name="barbero" class="form-select" required></select></div>
+                <div class="col-md-6"><label for="telefono" class="form-label">Tel&eacute;fono</label><input id="telefono" name="telefono" class="form-control" type="tel" required></div>
+                <div class="col-md-6"><label for="email" class="form-label">Correo opcional</label><input id="email" name="email" class="form-control" type="email"></div>
                 <div class="col-md-6"><label for="fecha" class="form-label">Fecha</label><input id="fecha" name="fecha" class="form-control" type="date" required></div>
+                <div class="col-md-6"><label for="barbero" class="form-label">Barbero</label><select id="barbero" name="barbero" class="form-select" required></select></div>
+                <div class="col-md-6"><label for="servicio" class="form-label">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
                 <div class="col-md-6"><label for="hora" class="form-label">Hora</label><select id="hora" name="hora" class="form-select" required></select></div>
-                <div class="col-12"><label for="notas" class="form-label">Notas</label><textarea id="notas" name="notas" class="form-control" rows="3" placeholder="Detalle adicional"></textarea></div>
+                <div class="col-12"><label for="notas" class="form-label">Notas</label><textarea id="notas" name="notas" class="form-control" rows="3" placeholder="Detalle de preferencia"></textarea></div>
                 <div class="col-12 d-grid"><button class="btn btn-main btn-lg" type="submit">Confirmar reserva</button></div>
               </div>
               <div id="reservationAlert" class="alert mt-3 d-none" role="alert"></div>
@@ -1686,7 +1935,7 @@
           <article class="panel service-card" style="cursor:pointer;" data-service-id="${s.id_servicio || s.servicio_id || s.id || ''}" data-service-name="${s.nombre || ''}">
             ${media}
             <h3 class="h5 mb-2">${s.nombre}</h3>
-            <p class="text-secondary mb-2">Atención premium y resultado preciso.</p>
+            <p class="text-secondary mb-2">Atenci&oacute;n premium y resultado preciso.</p>
             <span class="price">${cop(s.precio)}</span>
           </article>
         </div>
@@ -1730,8 +1979,8 @@
               <div class="cta-circle">
                 <i class="bi bi-plus-lg"></i>
               </div>
-              <h3 class="cta-title">Únete al equipo</h3>
-              <p class="cta-subtext">Buscamos talento con estilo y precisión</p>
+              <h3 class="cta-title">&Uacute;NETE AL EQUIPO</h3>
+              <p class="cta-subtext">Buscamos talento con estilo y precisi&oacute;n</p>
             </div>
           </article>
         </div>
@@ -1741,6 +1990,55 @@
     }
 function normalizeDayLabel(value) {
       return safeSeedText(value).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function formatDayName(value) {
+      const normalized = normalizeDayLabel(value);
+      const labels = {
+        domingo: 'Domingo',
+        lunes: 'Lunes',
+        martes: 'Martes',
+        miercoles: 'Mi&eacute;rcoles',
+        jueves: 'Jueves',
+        viernes: 'Viernes',
+        sabado: 'S&aacute;bado'
+      };
+      return labels[normalized] || safeSeedText(value);
+    }
+
+    function formatLandingHoursTable(hours = inheritedHours) {
+      const activeHours = Array.isArray(hours) ? hours.filter((item) => item?.activo !== false) : [];
+      const todayName = normalizeDayLabel(new Intl.DateTimeFormat('es-CO', {
+        weekday: 'long',
+        timeZone: 'America/Bogota'
+      }).format(new Date()));
+      const rows = activeHours
+        .map((item) => {
+          const normalizedDay = normalizeDayLabel(item.dia || item.day || item.nombre_dia);
+          const day = formatDayName(item.dia || item.day || item.nombre_dia);
+          const open = safeSeedText(item.hora_abre || item.abre || item.open);
+          const close = safeSeedText(item.hora_cierra || item.cierra || item.close);
+          return day && open && close ? { day, range: `${open} - ${close}`, isToday: normalizedDay === todayName } : null;
+        })
+        .filter(Boolean);
+      if (!rows.length) return '';
+      return `
+        <div class="reservation-hours-table">
+          <table aria-label="Horarios de atenci&oacute;n">
+            <tbody>
+              ${rows.map((row) => `<tr class="${row.isToday ? 'is-today' : ''}"><td>${row.day}</td><td>${row.range}</td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderLocationInfo() {
+      const landingHoursText = document.getElementById('landingHoursText');
+      if (!landingHoursText) return;
+      const tableMarkup = formatLandingHoursTable(inheritedHours);
+      landingHoursText.className = tableMarkup ? '' : 'reservation-hours-empty';
+      landingHoursText.innerHTML = tableMarkup || 'Horarios no disponibles';
     }
 
     function normalizeSeedHour(item) {
@@ -3003,6 +3301,7 @@ function normalizeDayLabel(value) {
       if (typeof renderBarbers === 'function') renderBarbers();
       if (typeof fillSelects === 'function') fillSelects();
       if (typeof populateSelects === 'function') populateSelects();
+      if (typeof renderLocationInfo === 'function') renderLocationInfo();
     }
 
     function applyBrandingPalette(payload) {
@@ -3049,6 +3348,7 @@ function normalizeDayLabel(value) {
       );
       applyPublicLandingBranding({ profile: payload.barberia || payload.profile || {}, branding: payload.branding || payload.config || payload || {} });
       renderLandingQr();
+      renderLocationInfo();
     });
     initTheme();
     stripInjectedUi();
@@ -3058,6 +3358,7 @@ function normalizeDayLabel(value) {
     setReservationMinDate();
     fillSelects();
     renderLandingQr();
+    renderLocationInfo();
     dateInput.addEventListener('click', setReservationMinDate);
     dateInput.addEventListener('focus', setReservationMinDate);
     dateInput.addEventListener('touchstart', setReservationMinDate, { passive: true });
