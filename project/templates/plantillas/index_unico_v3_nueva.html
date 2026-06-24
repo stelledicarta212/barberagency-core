@@ -19,7 +19,7 @@
       --v3-gold-mid: rgba(212, 160, 73, 0.55);
       --v3-gold-glow: rgba(212, 160, 73, 0.22);
       --v3-gold-glow-strong: rgba(242, 193, 95, 0.30);
-      --bg: #f8f5ef;
+      --bg: #f4f7f6;
       --surface: #ffffff;
       --text: #171717;
       --muted: #6b6258;
@@ -3103,7 +3103,24 @@ function normalizeDayLabel(value) {
 
 
 
+    function normalizeV3GoldPalette(branding = {}) {
+      const source = branding && typeof branding === 'object' ? branding : {};
+      return {
+        ...source,
+        palette_primary: '#d4a049',
+        palette_secondary: '#9b6a2f',
+        palette_accent: '#f2c15f',
+        color_primary: '#d4a049',
+        color_secondary: '#9b6a2f',
+        color_accent: '#f2c15f',
+        primary_color: '#d4a049',
+        secondary_color: '#9b6a2f',
+        accent_color: '#f2c15f'
+      };
+    }
+
     function buildRuntimeBranding(raw = {}) {
+      raw = normalizeV3GoldPalette(raw);
       return {
         logo_url: safeSeedText(raw.logo_url),
         cover_url: safeImageUrl(raw.cover_url || raw.hero_image_url),
@@ -3167,7 +3184,7 @@ function normalizeDayLabel(value) {
 
     function applyPublicLandingBranding(payload = {}) {
       const profile = payload.profile || payload.barberia || {};
-      const branding = payload.branding || payload.config || {};
+      const branding = normalizeV3GoldPalette(payload.branding || payload.config || {});
       const publicName = safeSeedText(
         payload?.perfil_publico?.nombre_publico ||
         payload?.nombre_publico ||
@@ -3668,9 +3685,11 @@ function normalizeDayLabel(value) {
     function applyBrandingPalette(payload) {
       if (!html || !payload) return;
       const rootStyle = html.style;
-      rootStyle.setProperty('--main', '#d4a049');
-      rootStyle.setProperty('--main2', '#9b6a2f');
-      rootStyle.setProperty('--hot', '#f2c15f');
+      if (!rootStyle || typeof rootStyle.setProperty !== 'function') return;
+      const branding = normalizeV3GoldPalette(payload);
+      rootStyle.setProperty('--main', branding.palette_primary);
+      rootStyle.setProperty('--main2', branding.palette_secondary);
+      rootStyle.setProperty('--hot', branding.palette_accent);
       rootStyle.removeProperty('--text');
     }
 

@@ -41,8 +41,10 @@ assert(html.includes("#landingRoot[data-theme='light'] .barber-card"), 'Missing 
 assert(html.includes("#landingRoot[data-theme='dark'] .barber-card"), 'Missing dark theme barber treatment');
 assert(html.includes("#landingRoot[data-theme='light'] #mapa .panel"), 'Missing light theme map glow');
 assert(html.includes("#landingRoot[data-theme='dark'] #mapa .panel"), 'Missing dark theme map glow');
-assert(html.includes("rootStyle.setProperty('--main', '#d4a049')"), 'Dynamic branding can reintroduce a non-gold primary accent');
-assert(html.includes("rootStyle.setProperty('--main2', '#9b6a2f')"), 'Dynamic branding can reintroduce a non-bronze secondary accent');
-assert(html.includes("rootStyle.setProperty('--hot', '#f2c15f')"), 'Dynamic branding can reintroduce a non-gold hot accent');
+assert(html.includes('function normalizeV3GoldPalette('), 'Missing V3 dynamic branding normalizer');
+assert(html.includes('const branding = normalizeV3GoldPalette(payload);'), 'Dynamic branding is not normalized before applying CSS variables');
+assert(html.includes("rootStyle.setProperty('--main', branding.palette_primary)"), 'Dynamic primary accent is not sourced from normalized branding');
+assert(html.includes("rootStyle.setProperty('--main2', branding.palette_secondary)"), 'Dynamic secondary accent is not sourced from normalized branding');
+assert(html.includes("rootStyle.setProperty('--hot', branding.palette_accent)"), 'Dynamic hot accent is not sourced from normalized branding');
 
 console.log('PASS V3 uses gold accents with no cyan tokens in light/dark card, form and map states');
