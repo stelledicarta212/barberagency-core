@@ -7,9 +7,10 @@
   <meta name="description" content="Landing barbería V4 con layout distinto, colores nuevos y reservas." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@500;700;800&family=Playfair+Display:wght@600;700;800&family=Great+Vibes&family=Oswald:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     #landingRoot {
       --bg: #f7f8fd;
@@ -342,43 +343,339 @@
     .service-card { padding:1rem; min-height:160px; }
     .service-card i { font-size:1.3rem; color: var(--main); }
 
-    .barber-grid .barber {
-      padding:1.1rem;
-      display:flex;
-      align-items:center;
-      gap:.9rem;
+    /* === BARBEROS PREMIUM - TARJETAS TRAPEZOIDALES, NO ROTADAS === */
+    .barber-stage {
+      position: relative;
+      overflow: hidden;
+    }
+    .barber-eyebrow {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--main);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .barber-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .barber-subtitle {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+    .barber-header-divider {
+      width: 80px;
+      height: 2px;
+      background-color: var(--main);
+      margin: 1rem 0;
+    }
+    .barber-header-lead {
+      font-size: 0.875rem;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.6;
+      max-width: 500px;
+    }
+    .barber-info-box {
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(212,176,138,0.25);
+      background: color-mix(in srgb, var(--surface) 35%, transparent);
+      backdrop-filter: blur(4px);
+    }
+    .barber-info-icon-wrapper {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      color: var(--main);
+      background: color-mix(in srgb, var(--surface) 30%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+    }
+    .barber-info-icon-wrapper i {
+      font-size: 0.85rem;
+    }
+    .barber-info-title {
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .barber-info-desc {
+      font-size: 0.65rem;
+      color: var(--muted);
+      line-height: 1.4;
+      margin-bottom: 0;
     }
 
-    .barber-card {
-      min-height: 230px;
-      padding: 1.4rem 1.1rem;
+    .barber-card-shell {
+      position: relative;
+      min-height: 560px;
+      isolation: isolate;
+      transition: transform .55s cubic-bezier(.16,1,.3,1), filter .55s cubic-bezier(.16,1,.3,1);
+      margin-bottom: 1.5rem;
+    }
+
+    .barber-card-shell:hover {
+      transform: translateY(-14px);
+      filter: drop-shadow(0 34px 38px rgba(0,0,0,.42));
+    }
+
+    .barber-card-frame {
+      height: 100%;
+      min-height: 560px;
+      padding: 1px;
+      clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+      background: linear-gradient(145deg, rgba(212,176,138,.72), rgba(58,50,43,.42) 45%, rgba(166,106,63,.72));
+      box-shadow: 0 28px 70px rgba(0,0,0,.46);
+      transition: background .45s ease, transform .45s ease;
+    }
+
+    .barber-card-shell:hover .barber-card-frame {
+      background: linear-gradient(145deg, rgba(212,176,138,1), rgba(166,106,63,.68), rgba(212,176,138,.86));
+    }
+
+    .barber-card-body {
+      height: 100%;
+      min-height: 558px;
+      clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.045), transparent 28%),
+        linear-gradient(145deg, rgba(26,24,21,.98), rgba(10,9,8,.96));
+      overflow: hidden;
+      position: relative;
+    }
+
+    #landingRoot[data-theme='light'] .barber-card-body {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.72), rgba(239,229,215,.94)),
+        var(--surface);
+    }
+
+    .barber-card-number {
+      position: absolute;
+      top: 18px;
+      left: 28px;
+      z-index: 4;
+      font-family: 'Oswald', sans-serif;
+      font-size: clamp(3.6rem, 5vw, 5.5rem);
+      line-height: .8;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+      color: rgba(196,138,90,.55);
+      text-shadow: 0 12px 24px rgba(0,0,0,.32);
+      pointer-events: none;
+    }
+
+    .barber-card-photo {
+      position: relative;
+      height: 365px;
+      clip-path: polygon(10% 0, 100% 0, 93% 100%, 0 100%);
+      overflow: hidden;
+      background: #0b0a09;
+    }
+
+    .barber-card-photo img {
+      width: 112%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transform: scale(1.04);
+      filter: grayscale(8%) sepia(18%) brightness(.82) contrast(1.1);
+      transition: transform .75s cubic-bezier(.16,1,.3,1), filter .75s cubic-bezier(.16,1,.3,1);
+    }
+
+    .barber-card-shell:hover .barber-card-photo img {
+      transform: scale(1.11);
+      filter: grayscale(0%) sepia(0%) brightness(1.02) contrast(1.05);
+    }
+
+    .barber-card-photo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        linear-gradient(180deg, rgba(42, 24, 14, .18), rgba(42, 24, 14, .62)),
+        rgba(74, 42, 24, .52);
+      mix-blend-mode: multiply;
+      transition: opacity .7s cubic-bezier(.16,1,.3,1);
+      pointer-events: none;
+    }
+
+    .barber-card-shell:hover .barber-card-photo::before {
+      opacity: 0;
+    }
+
+    .barber-card-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.62)),
+        linear-gradient(90deg, rgba(166,106,63,.18), transparent 38%, rgba(0,0,0,.22));
+      transition: opacity .7s cubic-bezier(.16,1,.3,1);
+      pointer-events: none;
+    }
+
+    .barber-card-shell:hover .barber-card-photo::after {
+      opacity: .28;
+    }
+
+    .barber-role-badge {
+      position: absolute;
+      left: 34px;
+      bottom: 24px;
+      z-index: 5;
+      background: linear-gradient(135deg, rgba(166,106,63,.95), rgba(196,138,90,.86));
+      color: #fff;
+      border: 1px solid rgba(212,176,138,.36);
+      box-shadow: 0 14px 28px rgba(0,0,0,.28);
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 9px;
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .barber-card-info {
+      position: relative;
+      z-index: 4;
+      padding: 26px 38px 28px 42px;
+      min-height: 190px;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .barber-card-info::before {
+      content: '';
+      position: absolute;
+      top: -46px;
+      left: 0;
+      right: 0;
+      height: 88px;
+      background: linear-gradient(180deg, rgba(17,16,13,.18), rgba(17,16,13,.98));
+      clip-path: polygon(8% 0, 100% 26%, 91% 100%, 0 100%);
+      z-index: -1;
+    }
+
+    #landingRoot[data-theme='light'] .barber-card-info::before {
+      background: linear-gradient(180deg, rgba(247,241,232,.22), rgba(239,229,215,.98));
+    }
+
+    .barber-name {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      line-height: .95;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: #fff;
+      text-align: left;
+    }
+
+    #landingRoot[data-theme='light'] .barber-name { color: var(--text); }
+
+    .barber-name-line {
+      width: 44px;
+      height: 2px;
+      margin: 13px 0 14px;
+      background: var(--main);
+    }
+
+    .barber-desc {
+      display: none !important;
+    }
+
+    .barber-chip {
+      border: 1px solid rgba(212,176,138,.42);
+      color: var(--accent);
+      background: rgba(17,16,13,.34);
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 5px 9px;
+      display: inline-block;
+    }
+
+    #landingRoot[data-theme='light'] .barber-chip {
+      background: rgba(255,255,255,.44);
+      color: var(--main);
+    }
+
+    .barber-socials {
+      display: none !important;
+    }
+
+    .barber-reserve-btn {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      height: 58px;
+      min-width: 128px;
+      padding-left: 24px;
+      padding-right: 24px;
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--main), var(--alt));
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+      transition: all .35s ease;
+      text-decoration: none;
     }
 
-    .barber-card .h6 {
-      font-size: 1.08rem;
-      margin-bottom: .45rem !important;
+    .barber-card-shell:hover .barber-reserve-btn {
+      min-width: 150px;
+      background: linear-gradient(135deg, var(--alt), var(--accent));
+      color: #fff;
     }
 
-    .barber-card .text-secondary {
-      font-size: .98rem;
+    @media (max-width: 1023px) {
+      .barber-card-shell,
+      .barber-card-frame,
+      .barber-card-body {
+        min-height: 545px;
+      }
+      .barber-card-photo { height: 345px; }
     }
 
-    .barber-photo {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      object-position: center center;
-    }
-
-    .barber img {
-      width:64px;
-      height:64px;
-      border-radius:50%;
-      object-fit:cover;
-      border:2px solid rgba(94,160,255,.35);
+    @media (max-width: 640px) {
+      .barber-card-shell,
+      .barber-card-frame,
+      .barber-card-body {
+        min-height: 520px;
+      }
+      .barber-card-photo { height: 320px; }
+      .barber-card-info { padding: 22px 34px 26px 36px; min-height: 180px; }
+      .barber-name { font-size: 1.6rem; }
     }
 
     .map-block iframe { border:0; width:100%; height:100%; }
@@ -491,7 +788,6 @@
       .hero, .hero img { height:500px; }
       .hero img { object-position: 62% center; }
       .service-strip { grid-template-columns: repeat(6, minmax(240px,1fr)); }
-      .barber-card { min-height: 210px; }
     }
 
     @media (max-width: 991.98px) {
@@ -816,9 +1112,49 @@
       </div>
     </section>
 
-    <section id="barberos" class="py-5">
-      <div class="container">
-        <div class="row g-3 barber-grid" id="barbersGrid"></div>
+    <section id="barberos" class="py-5 barber-stage">
+      <div class="container relative z-10">
+        <!-- Cabecera premium -->
+        <div class="row align-items-end mb-5">
+          <div class="col-lg-7 text-start mb-4 mb-lg-0">
+            <span class="barber-eyebrow">Nuestro Equipo</span>
+            <h2 class="barber-title">Barberos Expertos</h2>
+            <h3 class="barber-subtitle">Pasión, técnica y estilo</h3>
+            <div class="barber-header-divider"></div>
+            <p class="barber-header-lead">
+              Profesionales apasionados por su arte. Cada corte se trabaja con precisión, criterio estético y una experiencia pensada para que te veas impecable.
+            </p>
+          </div>
+          <div class="col-lg-5 d-none d-md-block">
+            <div class="barber-info-box">
+              <div class="row text-start">
+                <div class="col-4">
+                  <div class="barber-info-icon-wrapper">
+                    <i class="bi bi-scissors"></i>
+                  </div>
+                  <h4 class="barber-info-title">Expertos</h4>
+                  <p class="barber-info-desc">Certificados en técnicas modernas.</p>
+                </div>
+                <div class="col-4">
+                  <div class="barber-info-icon-wrapper">
+                    <i class="bi bi-star"></i>
+                  </div>
+                  <h4 class="barber-info-title">Experiencia</h4>
+                  <p class="barber-info-desc">Años perfeccionando cada detalle.</p>
+                </div>
+                <div class="col-4">
+                  <div class="barber-info-icon-wrapper">
+                    <i class="bi bi-award"></i>
+                  </div>
+                  <h4 class="barber-info-title">Calidad</h4>
+                  <p class="barber-info-desc">Productos premium y atención precisa.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 barber-grid" id="barbersGrid"></div>
       </div>
     </section>
 
@@ -1577,13 +1913,37 @@
       barbersGrid.innerHTML = barbers.map((b, idx) => {
         const fallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
         const photo = safeSeedText(b.foto) || fallback;
+        const formattedNum = String(idx + 1).padStart(2, '0');
         return `
         <div class="${barberColClass}">
-          <article class="panel barber-card text-center" style="cursor:pointer;" data-barber-id="${b.id_barbero || b.barbero_id || b.id || ''}" data-barber-name="${b.nombre || ''}">
-            <img class="barber-photo mb-3" src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';" style="width:122px;height:122px;object-fit:cover;object-position:center center;border-radius:999px;" />
-            <h3 class="h6 mb-1">${b.nombre}</h3>
-            <p class="text-secondary mb-1">${b.especialidad}</p>
-            <small class="text-secondary">${b.experiencia}</small>
+          <article class="barber-card-shell group" style="cursor:pointer;" data-barber-id="${b.id_barbero || b.barbero_id || b.id || ''}" data-barber-name="${b.nombre || ''}">
+            <div class="barber-card-frame">
+              <div class="barber-card-body">
+                <span class="barber-card-number">${formattedNum}</span>
+                <div class="barber-card-photo">
+                  <img src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';" draggable="false">
+                  <span class="barber-role-badge">${b.especialidad}</span>
+                </div>
+                <div class="barber-card-info">
+                  <div>
+                    <h4 class="barber-name">${b.nombre}</h4>
+                    <div class="barber-name-line"></div>
+                    <p class="barber-desc">${b.especialidad}</p>
+                  </div>
+                  <div class="space-y-3 pb-12">
+                    <div class="flex flex-wrap gap-2">
+                      <span class="barber-chip">${b.experiencia}</span>
+                    </div>
+                    <div class="barber-socials flex items-center gap-2">
+                      <a href="#"><i class="fab fa-instagram text-xs"></i></a>
+                      <a href="#"><i class="fab fa-whatsapp text-xs"></i></a>
+                      <a href="#"><i class="fab fa-tiktok text-xs"></i></a>
+                    </div>
+                  </div>
+                  <span class="barber-reserve-btn">Reservar <i class="fas fa-arrow-right text-[10px]"></i></span>
+                </div>
+              </div>
+            </div>
           </article>
         </div>
       `;
