@@ -37,6 +37,15 @@
       --red-deep: #3d0015;
       --red-main: #93002f;
       --red-electric: #e60046;
+      
+      /* Colores específicos de barberos */
+      --barber-blue-deep: #061f73;
+      --barber-blue-main: #0838c9;
+      --barber-blue-electric: #1194ff;
+      --barber-red-deep: #6f0027;
+      --barber-red-main: #a5003c;
+      --barber-red-electric: #ff236a;
+      
       --font-title: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
       --font-digital: 'Orbitron', sans-serif;
       --transition-smooth: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
@@ -944,13 +953,13 @@
     }
     
     .barber-card:nth-child(odd) .barber-badge-custom {
-      color: var(--blue-electric);
-      border-color: rgba(0, 140, 255, 0.3);
+      color: var(--barber-blue-electric);
+      border-color: rgba(17, 148, 255, 0.3);
     }
     
     .barber-card:nth-child(even) .barber-badge-custom {
-      color: var(--red-electric);
-      border-color: rgba(230, 0, 70, 0.3);
+      color: var(--barber-red-electric);
+      border-color: rgba(255, 35, 106, 0.3);
     }
 
     .barber-card-dots {
@@ -975,13 +984,13 @@
     }
     
     .barber-card:nth-child(odd):hover .barber-num-custom {
-      color: var(--blue-electric);
-      text-shadow: 0 0 10px var(--blue-electric);
+      color: var(--barber-blue-electric);
+      text-shadow: 0 0 10px var(--barber-blue-electric);
     }
     
     .barber-card:nth-child(even):hover .barber-num-custom {
-      color: var(--red-electric);
-      text-shadow: 0 0 10px var(--red-electric);
+      color: var(--barber-red-electric);
+      text-shadow: 0 0 10px var(--barber-red-electric);
     }
 
     .barber-info {
@@ -1003,13 +1012,13 @@
     }
 
     .blue-grad-text {
-      background: linear-gradient(135deg, var(--blue-electric), #ffffff);
+      background: linear-gradient(135deg, var(--barber-blue-electric), #ffffff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .red-grad-text {
-      background: linear-gradient(135deg, var(--red-electric), #ffffff);
+      background: linear-gradient(135deg, var(--barber-red-electric), #ffffff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -1065,25 +1074,25 @@
     }
     
     .barber-card:nth-child(odd) .barber-btn-custom {
-      background: linear-gradient(135deg, var(--blue-deep), var(--blue-main));
-      border: 1px solid var(--blue-electric);
-      box-shadow: 0 0 10px rgba(0, 140, 255, 0.2);
+      background: linear-gradient(135deg, var(--barber-blue-deep), var(--barber-blue-main));
+      border: 1px solid var(--barber-blue-electric);
+      box-shadow: 0 0 10px rgba(17, 148, 255, 0.2);
     }
     .barber-card:nth-child(odd) .barber-btn-custom:hover {
-      background: linear-gradient(135deg, var(--red-deep), var(--red-main)) !important;
-      border-color: var(--red-electric) !important;
-      box-shadow: 0 0 15px rgba(230, 0, 70, 0.4) !important;
+      background: linear-gradient(135deg, var(--barber-red-deep), var(--barber-red-main)) !important;
+      border-color: var(--barber-red-electric) !important;
+      box-shadow: 0 0 15px rgba(255, 35, 106, 0.4) !important;
     }
 
     .barber-card:nth-child(even) .barber-btn-custom {
-      background: linear-gradient(135deg, var(--red-deep), var(--red-main));
-      border: 1px solid var(--red-electric);
-      box-shadow: 0 0 10px rgba(230, 0, 70, 0.2);
+      background: linear-gradient(135deg, var(--barber-red-deep), var(--barber-red-main));
+      border: 1px solid var(--barber-red-electric);
+      box-shadow: 0 0 10px rgba(255, 35, 106, 0.2);
     }
     .barber-card:nth-child(even) .barber-btn-custom:hover {
-      background: linear-gradient(135deg, var(--blue-deep), var(--blue-main)) !important;
-      border-color: var(--blue-electric) !important;
-      box-shadow: 0 0 15px rgba(0, 140, 255, 0.4) !important;
+      background: linear-gradient(135deg, var(--barber-blue-deep), var(--barber-blue-main)) !important;
+      border-color: var(--barber-blue-electric) !important;
+      box-shadow: 0 0 15px rgba(17, 148, 255, 0.4) !important;
     }
 
     /* Light theme overrides */
@@ -3391,10 +3400,10 @@ function normalizeDayLabel(value) {
     });
     const DEFAULT_SERVICE_ICONS = ['bi-scissors', 'bi-stars', 'bi-bezier2', 'bi-lightning-charge', 'bi-droplet-half', 'bi-brush'];
     const DEFAULT_BARBER_PHOTOS = [
-      'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero1.1.png',
-      'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero2.1.png',
-      'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero3.1.png',
-      'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png'
+      'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=600&q=80'
     ];
 
     function safeSeedText(v) {
