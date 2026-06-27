@@ -1186,34 +1186,71 @@
 
     /* Header/menu igual a pruebav4, adaptado a la estructura funcional V4 */
     .topnav {
+      position: fixed !important;
       top: 0 !important;
       left: 0 !important;
       transform: none !important;
       width: 100% !important;
       max-width: none !important;
       border-radius: 0 !important;
-      background: rgba(17, 16, 13, .78) !important;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(12, 10, 8, .34) 0%,
+          rgba(12, 10, 8, .18) 42%,
+          rgba(12, 10, 8, .36) 100%
+        ) !important;
       border: 0 !important;
-      border-bottom: 1px solid rgba(58, 50, 43, .22) !important;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, .14) !important;
-      backdrop-filter: blur(12px) saturate(160%) !important;
-      -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
+      border-bottom: 1px solid rgba(212, 176, 138, .36) !important;
+      box-shadow:
+        0 20px 55px rgba(0, 0, 0, .25),
+        inset 0 1px 0 rgba(255, 255, 255, .05) !important;
+      backdrop-filter: blur(22px) saturate(145%) !important;
+      -webkit-backdrop-filter: blur(22px) saturate(145%) !important;
+      overflow: hidden;
       padding: 0 !important;
       min-height: 80px !important;
     }
 
+    .topnav::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(105deg, rgba(255, 255, 255, .10) 0%, transparent 18%, transparent 58%, rgba(212, 176, 138, .08) 72%, transparent 100%);
+      opacity: .55;
+    }
+
     #landingRoot[data-theme='light'] .topnav {
-      background: rgba(247, 241, 232, .72) !important;
-      border-bottom-color: rgba(139, 94, 60, .22) !important;
-      box-shadow: 0 16px 48px rgba(42, 36, 30, .10) !important;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(250, 244, 235, .34) 0%,
+          rgba(250, 244, 235, .16) 42%,
+          rgba(250, 244, 235, .36) 100%
+        ) !important;
+      border-bottom-color: rgba(166, 106, 63, .30) !important;
+      box-shadow:
+        0 18px 48px rgba(64, 38, 20, .14),
+        inset 0 1px 0 rgba(255, 255, 255, .30) !important;
     }
 
     #landingRoot[data-theme='dark'] .topnav {
-      background: rgba(17, 16, 13, .78) !important;
-      border-bottom-color: rgba(58, 50, 43, .22) !important;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(12, 10, 8, .34) 0%,
+          rgba(12, 10, 8, .18) 42%,
+          rgba(12, 10, 8, .36) 100%
+        ) !important;
+      border-bottom-color: rgba(212, 176, 138, .36) !important;
     }
 
     .topnav .container {
+      position: relative;
+      z-index: 1;
       width: 100%;
       max-width: 1280px;
       min-height: 80px;
@@ -1251,6 +1288,23 @@
 
     #landingRoot[data-theme='light'] .navbar-brand.brand {
       color: #2A241E !important;
+    }
+
+    .navbar-brand.brand img[data-ba-live-logo][src*="images.unsplash.com/logo.jpg"],
+    .navbar-brand.brand img[data-ba-live-logo][src*="unsplash.com"][src$="/logo.jpg"] {
+      display: none !important;
+    }
+
+    .navbar-brand.brand img[data-ba-live-logo] {
+      border-color: rgba(212, 176, 138, .38) !important;
+      background: rgba(26, 24, 21, .26) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06) !important;
+    }
+
+    #landingRoot[data-theme='light'] .navbar-brand.brand img[data-ba-live-logo] {
+      border-color: rgba(166, 106, 63, .28) !important;
+      background: rgba(250, 244, 235, .28) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28) !important;
     }
 
     .navbar-brand.brand .brand-subtitle {
@@ -1406,26 +1460,50 @@
         transform: none !important;
         width: 100% !important;
         border-radius: 0 !important;
-        background: rgba(17, 16, 13, .78) !important;
-        backdrop-filter: blur(12px) saturate(160%) !important;
-        -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(12, 10, 8, .38) 0%,
+            rgba(12, 10, 8, .22) 42%,
+            rgba(12, 10, 8, .40) 100%
+          ) !important;
+        backdrop-filter: blur(22px) saturate(145%) !important;
+        -webkit-backdrop-filter: blur(22px) saturate(145%) !important;
         padding: 0 !important;
         min-height: 72px !important;
       }
 
       #landingRoot[data-theme='light'] .topnav {
-        background: rgba(247, 241, 232, .76) !important;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(250, 244, 235, .38) 0%,
+            rgba(250, 244, 235, .20) 42%,
+            rgba(250, 244, 235, .40) 100%
+          ) !important;
       }
 
       .topnav:has(.navbar-collapse.show),
       #landingRoot[data-theme='dark'] .topnav:has(.navbar-collapse.show) {
-        background: rgba(26, 24, 21, .95) !important;
-        backdrop-filter: blur(16px) saturate(160%) !important;
-        -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(12, 10, 8, .72) 0%,
+            rgba(12, 10, 8, .56) 42%,
+            rgba(12, 10, 8, .74) 100%
+          ) !important;
+        backdrop-filter: blur(22px) saturate(145%) !important;
+        -webkit-backdrop-filter: blur(22px) saturate(145%) !important;
       }
 
       #landingRoot[data-theme='light'] .topnav:has(.navbar-collapse.show) {
-        background: rgba(247, 241, 232, .95) !important;
+        background:
+          linear-gradient(
+            90deg,
+            rgba(250, 244, 235, .76) 0%,
+            rgba(250, 244, 235, .62) 42%,
+            rgba(250, 244, 235, .78) 100%
+          ) !important;
       }
 
       .topnav .container {
@@ -1886,14 +1964,12 @@
       </button>
       <div class="collapse navbar-collapse" id="menuNav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-          <li class="nav-item"><a class="nav-link" href="#servicios">Rituales</a></li>
-          <li class="nav-item"><a class="nav-link" href="#resumen">La Visión</a></li>
-          <li class="nav-item"><a class="nav-link" href="#barberos">Artesanos</a></li>
-          <li class="nav-item"><a class="nav-link" href="#mapa">Disponibilidad</a></li>
-          <li class="nav-item"><a class="nav-link" href="#reservas">Agendar Cita</a></li>
+          <li class="nav-item"><a class="nav-link" href="#resumen">Resumen</a></li>
+          <li class="nav-item"><a class="nav-link" href="#mapa">Mapa</a></li>
+          <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
+          <li class="nav-item"><a class="nav-link" href="#barberos">Barberos</a></li>
         </ul>
         <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="fas fa-moon"></i></button>
-        <a class="header-vip-btn ms-lg-4 mt-3 mt-lg-0" href="#reservas">Espacio VIP <i class="fas fa-arrow-right"></i></a>
       </div>
     </div>
   </nav>
