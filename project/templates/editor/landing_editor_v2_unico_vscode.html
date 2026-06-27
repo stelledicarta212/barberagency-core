@@ -993,7 +993,10 @@
       const cleanFile = f.replace(/^\/+/, '').replace(/\/+$/, '');
       const slug = cleanFile.replace(/\.html?$/i, '');
       const overridePath = TEMPLATE_PUBLIC_PATH_OVERRIDES[slug];
-      if (overridePath && hasHttpOrigin()) {
+      const landingPreviewPath = getTemplateLandingPreviewPath(slug);
+      if (landingPreviewPath && hasHttpOrigin()) {
+        url = `${location.origin}${landingPreviewPath}`;
+      } else if (overridePath && hasHttpOrigin()) {
         url = `${location.origin}${overridePath}`;
       } else if (/\.html?$/i.test(cleanFile) && hasHttpOrigin()) {
         url = `${location.origin}/${cleanFile}/`;
@@ -1026,6 +1029,22 @@
       }
     }
     return `./${clean}`;
+  }
+
+  function getTemplateLandingPreviewPath(templateSlug) {
+    if (templateSlug !== 'index_unico_v4_editorial') return '';
+    const businessSlug = safeText(
+      getQueryParam('slug') ||
+      getQueryParam('barberia_slug') ||
+      getQueryParam('business_slug') ||
+      getQueryParam('ba_barberia_slug') ||
+      runtimePreviewIdentity.slug ||
+      seedLandingData?.slug ||
+      seedLandingData?.barberia?.slug ||
+      el.bizSlug?.textContent
+    );
+    if (!businessSlug) return '';
+    return `/b/${encodeURIComponent(businessSlug)}`;
   }
 
   function appendTemplatePreviewParams(rawUrl, file) {
