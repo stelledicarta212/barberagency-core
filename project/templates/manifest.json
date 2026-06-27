@@ -47,5 +47,12 @@
     "file": "project/templates/plantillas/index_unico_v8_neon_oscuro.html",
     "active": true,
     "legacy_wp_page_id": null
+  },
+  "electric-club": {
+    "template_id": "electric-club",
+    "name": "Electric Club",
+    "file": "project/templates/plantillas/index_unico_v6_electric_club.html",
+    "active": true,
+    "legacy_wp_page_id": null
   }
 }
