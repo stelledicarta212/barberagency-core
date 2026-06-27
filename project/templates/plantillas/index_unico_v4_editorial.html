@@ -4469,6 +4469,126 @@ function normalizeDayLabel(value) {
       if (text) html.style.setProperty('--text', text);
     }
 
+    function getFirstEditorArray(...candidates) {
+      const firstNonEmpty = candidates.find((candidate) => Array.isArray(candidate) && candidate.length > 0);
+      if (firstNonEmpty) return firstNonEmpty;
+      return candidates.find(Array.isArray);
+    }
+
+    function extractEditorPreviewCollections(payload = {}) {
+      const source = payload && typeof payload === 'object' ? payload : {};
+      const data = source.data && typeof source.data === 'object' ? source.data : {};
+      const inherited = source.inherited && typeof source.inherited === 'object' ? source.inherited : {};
+      const dataInherited = data.inherited && typeof data.inherited === 'object' ? data.inherited : {};
+      const seed = source.seedLandingData && typeof source.seedLandingData === 'object' ? source.seedLandingData : {};
+      const collections = source.collections && typeof source.collections === 'object' ? source.collections : {};
+      const dataCollections = data.collections && typeof data.collections === 'object' ? data.collections : {};
+      const inheritedCollections = source.inheritedCollections && typeof source.inheritedCollections === 'object'
+        ? source.inheritedCollections
+        : {};
+      const dataInheritedCollections = data.inheritedCollections && typeof data.inheritedCollections === 'object'
+        ? data.inheritedCollections
+        : {};
+
+      return {
+        services: getFirstEditorArray(
+          source.services,
+          source.inherited_services,
+          source.servicios,
+          collections.services,
+          collections.servicios,
+          inherited.services,
+          inherited.inherited_services,
+          inherited.servicios,
+          inheritedCollections.services,
+          inheritedCollections.servicios,
+          data.services,
+          data.inherited_services,
+          data.servicios,
+          dataCollections.services,
+          dataCollections.servicios,
+          dataInherited.services,
+          dataInherited.inherited_services,
+          dataInherited.servicios,
+          dataInheritedCollections.services,
+          dataInheritedCollections.servicios,
+          seed.services,
+          seed.servicios,
+          seed.inherited?.services,
+          seed.inherited?.servicios
+        ),
+        barbers: getFirstEditorArray(
+          source.barbers,
+          source.inherited_barbers,
+          source.barberos,
+          collections.barbers,
+          collections.barberos,
+          inherited.barbers,
+          inherited.inherited_barbers,
+          inherited.barberos,
+          inheritedCollections.barbers,
+          inheritedCollections.barberos,
+          data.barbers,
+          data.inherited_barbers,
+          data.barberos,
+          dataCollections.barbers,
+          dataCollections.barberos,
+          dataInherited.barbers,
+          dataInherited.inherited_barbers,
+          dataInherited.barberos,
+          dataInheritedCollections.barbers,
+          dataInheritedCollections.barberos,
+          seed.barbers,
+          seed.barberos,
+          seed.inherited?.barbers,
+          seed.inherited?.barberos
+        ),
+        hours: getFirstEditorArray(
+          source.hours,
+          source.inherited_hours,
+          source.horarios,
+          collections.hours,
+          collections.horarios,
+          inherited.hours,
+          inherited.inherited_hours,
+          inherited.horarios,
+          inheritedCollections.hours,
+          inheritedCollections.horarios,
+          data.hours,
+          data.inherited_hours,
+          data.horarios,
+          dataCollections.hours,
+          dataCollections.horarios,
+          dataInherited.hours,
+          dataInherited.inherited_hours,
+          dataInherited.horarios,
+          dataInheritedCollections.hours,
+          dataInheritedCollections.horarios,
+          seed.hours,
+          seed.horarios,
+          seed.inherited?.hours,
+          seed.inherited?.horarios
+        )
+      };
+    }
+
+    function isV4EditorDebugEnabled() {
+      if (window.parent === window) return false;
+      try {
+        const params = new URLSearchParams(window.location.search || '');
+        if (params.get('v4_editor_debug') === '1') return true;
+        return sessionStorage.getItem('v4_editor_debug') === '1' ||
+          localStorage.getItem('v4_editor_debug') === '1';
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function logV4EditorDebug(label, value) {
+      if (!isV4EditorDebugEnabled()) return;
+      console.info(`[V4_EDITOR_DEBUG] ${label}`, value);
+    }
+
     const landingSeed = readLandingSeed();
     applyInheritedCollections(landingSeed?.servicios, landingSeed?.barberos, landingSeed?.horarios, landingSeed?.slot_min || landingSeed?.barberia?.slot_min);
     applyPublicLandingBranding({ profile: landingSeed?.barberia || landingSeed || {}, branding: landingSeed?.branding || {} });
@@ -4478,23 +4598,41 @@ function normalizeDayLabel(value) {
 
     function applyEditorPreviewPayload(data) {
       const payload = data.type === 'BA_BRANDING_UPDATE' ? (data.payload || {}) : data;
+      const collections = extractEditorPreviewCollections(payload);
 
-      if (payload.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(payload.public_landing_url);
-      if (payload.reservation_url) window.BA_RESERVATION_URL = safeSeedText(payload.reservation_url);
-      if (payload.qr_url) window.BA_QR_URL = safeSeedText(payload.qr_url);
+      logV4EditorDebug('extracted collections', {
+        services: (collections.services || []).length,
+        barbers: (collections.barbers || []).length,
+        hours: (collections.hours || []).length
+      });
+
+      const runtimePublishData = payload.runtimePublishData && typeof payload.runtimePublishData === 'object'
+        ? payload.runtimePublishData
+        : {};
+      if (payload.public_landing_url || runtimePublishData.public_landing_url) {
+        window.BA_PUBLIC_LANDING_URL = safeSeedText(payload.public_landing_url || runtimePublishData.public_landing_url);
+      }
+      if (payload.reservation_url || runtimePublishData.reservation_url) {
+        window.BA_RESERVATION_URL = safeSeedText(payload.reservation_url || runtimePublishData.reservation_url);
+      }
+      if (payload.qr_url || runtimePublishData.qr_url) {
+        window.BA_QR_URL = safeSeedText(payload.qr_url || runtimePublishData.qr_url);
+      }
       if (Array.isArray(payload.barber_photos)) window.BA_BARBER_PHOTOS = payload.barber_photos.map((item) => safeSeedText(item)).filter(Boolean);
       if (typeof payload.force_pool_photos === 'boolean') window.BA_FORCE_POOL_PHOTOS = payload.force_pool_photos;
 
       applyBrandingPalette(payload);
       applyInheritedCollections(
-        payload.services || payload.inherited_services || payload.servicios,
-        payload.barbers || payload.inherited_barbers || payload.barberos,
-        payload.hours || payload.inherited_hours || payload.horarios,
+        collections.services,
+        collections.barbers,
+        collections.hours,
         payload.slot_min || payload.barberia?.slot_min
       );
+      const payloadData = payload.data && typeof payload.data === 'object' ? payload.data : {};
+      const seedData = payload.seedLandingData && typeof payload.seedLandingData === 'object' ? payload.seedLandingData : {};
       applyPublicLandingBranding({
-        profile: payload.barberia || payload.profile || payload || {},
-        branding: payload.branding || payload.config || payload || {}
+        profile: payload.barberia || payload.profile || payloadData.barberia || payloadData.profile || seedData.barberia || seedData || payload || {},
+        branding: payload.branding || payload.config || payloadData.branding || payloadData.config || payload || {}
       });
 
       if (typeof renderServices === 'function') renderServices();
@@ -4504,6 +4642,7 @@ function normalizeDayLabel(value) {
     }
 
     window.addEventListener('message', (event) => {
+      logV4EditorDebug('message received', event.data);
       const data = event?.data || {};
       const isEditorMessage =
         data.source === 'ba-editor' ||
