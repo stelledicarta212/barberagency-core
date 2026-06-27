@@ -1284,6 +1284,249 @@
       }
     }
 
+    .v4-method-section {
+      position: relative;
+      overflow: hidden;
+      border-block: 1px solid color-mix(in srgb, var(--border) 42%, transparent);
+      background:
+        radial-gradient(circle at 82% 16%, color-mix(in srgb, var(--main) 14%, transparent), transparent 34%),
+        linear-gradient(180deg, color-mix(in srgb, var(--surface) 22%, transparent), color-mix(in srgb, var(--bg) 98%, transparent));
+    }
+
+    .v4-method-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--main) 6%, transparent) 50%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .v4-method-eyebrow {
+      display: block;
+      margin-bottom: .9rem;
+      color: var(--main);
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+    }
+
+    .v4-method-title {
+      max-width: 620px;
+      margin: 0;
+      color: var(--text);
+      font-family: 'Playfair Display', serif !important;
+      font-size: clamp(2.45rem, 5vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .v4-method-divider {
+      width: 4.2rem;
+      height: 2px;
+      margin: 1.55rem 0;
+      background: var(--main);
+    }
+
+    .v4-method-copy {
+      max-width: 560px;
+      color: var(--muted);
+      font-size: .98rem;
+      line-height: 1.85;
+    }
+
+    .v4-method-list {
+      display: grid;
+      gap: 1.35rem;
+      margin-top: 1.9rem;
+    }
+
+    .v4-method-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .v4-method-number {
+      color: var(--accent);
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem;
+      font-style: italic;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .v4-method-item h3 {
+      margin: 0;
+      color: var(--text);
+      font-size: .82rem;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .v4-method-item p {
+      margin: .35rem 0 0;
+      color: var(--muted);
+      font-size: .86rem;
+      line-height: 1.7;
+    }
+
+    .v4-compare-card {
+      position: relative;
+      overflow: hidden;
+      padding: 1.25rem;
+      border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+      border-radius: .75rem;
+      background: color-mix(in srgb, var(--surface) 58%, transparent);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .v4-compare-head {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .v4-compare-head h3 {
+      margin: 0;
+      color: var(--text);
+      font-family: 'Playfair Display', serif !important;
+      font-size: 1.2rem;
+      font-weight: 800;
+    }
+
+    .v4-compare-head p {
+      margin: .35rem 0 0;
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .v4-compare-stage {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      min-height: 270px;
+      border: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
+      border-radius: .5rem;
+      background: var(--bg);
+      box-shadow: 0 26px 60px rgba(0, 0, 0, .34);
+    }
+
+    .v4-compare-stage img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      user-select: none;
+    }
+
+    .v4-compare-after {
+      filter: brightness(1.04) contrast(1.04);
+    }
+
+    .v4-compare-before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 50%;
+      overflow: hidden;
+      border-right: 2px solid var(--accent);
+    }
+
+    .v4-compare-before img {
+      width: 200%;
+      max-width: none;
+      filter: grayscale(1) brightness(.56) contrast(.92);
+    }
+
+    .v4-compare-handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      z-index: 4;
+      width: 2px;
+      background: var(--accent);
+      transform: translateX(-1px);
+    }
+
+    .v4-compare-handle span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2.8rem;
+      height: 2.8rem;
+      display: grid;
+      place-items: center;
+      border: 2px solid color-mix(in srgb, var(--surface) 80%, transparent);
+      border-radius: 999px;
+      background: var(--main);
+      color: #ffffff;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .32);
+      transform: translate(-50%, -50%);
+    }
+
+    .v4-compare-label {
+      position: absolute;
+      z-index: 5;
+      bottom: 1rem;
+      padding: .42rem .72rem;
+      border-radius: .25rem;
+      color: #ffffff;
+      font-size: .62rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .28);
+    }
+
+    .v4-compare-label.is-before {
+      left: 1rem;
+      border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+      background: rgba(0, 0, 0, .78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .v4-compare-label.is-after {
+      right: 1rem;
+      background: var(--main);
+    }
+
+    @media (max-width: 991.98px) {
+      .v4-method-section {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 575px) {
+      .v4-method-title {
+        font-size: clamp(2.2rem, 12vw, 3.1rem);
+      }
+
+      .v4-compare-card {
+        padding: .8rem;
+      }
+
+      .v4-compare-stage {
+        min-height: 220px;
+        aspect-ratio: 4 / 5;
+      }
+
+      .v4-compare-head p,
+      .v4-compare-label {
+        font-size: .55rem;
+      }
+    }
+
     /* === BARBEROS PREMIUM - TARJETAS TRAPEZOIDALES, NO ROTADAS === */
     .barber-stage {
       position: relative;
@@ -1671,33 +1914,73 @@
     }
 
     .qr-share-card {
-      border: 1px solid var(--border);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border: 1px solid rgba(196, 138, 90, .36);
       border-radius: 1.5rem;
-      background: color-mix(in srgb, var(--surface) 88%, transparent);
-      box-shadow: var(--shadow);
+      background:
+        linear-gradient(90deg, rgba(17, 16, 13, .92), rgba(17, 16, 13, .72)),
+        #11100d;
+      color: #ffffff;
+      box-shadow:
+        0 0 0 1px rgba(196, 138, 90, .08),
+        0 24px 60px rgba(0, 0, 0, .5),
+        0 0 32px rgba(166, 106, 63, .1);
     }
 
-    #landingRoot[data-theme='dark'] .qr-share-card {
-      background: rgba(22, 22, 24, 0.92);
+    .qr-share-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(17, 16, 13, .86), rgba(17, 16, 13, .56)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv6.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: .42;
+      filter: saturate(.78);
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-card {
+      border-color: rgba(139, 94, 60, .32);
+      background:
+        linear-gradient(90deg, rgba(247, 241, 232, .95), rgba(239, 229, 215, .88)),
+        #f7f1e8;
+      color: var(--text);
+      box-shadow:
+        0 0 0 1px rgba(139, 94, 60, .08),
+        0 22px 55px rgba(42, 36, 30, .14),
+        0 0 28px rgba(166, 106, 63, .08);
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-card::before {
+      background:
+        linear-gradient(90deg, rgba(247, 241, 232, .88), rgba(239, 229, 215, .7)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv6.jpg');
+      opacity: .26;
+      filter: saturate(.68) brightness(1.04);
     }
 
     .qr-share-kicker {
       display: inline-block;
       text-transform: uppercase;
-      letter-spacing: 0.14em;
-      font-size: 0.78rem;
-      font-weight: 800;
-      color: var(--main);
+      letter-spacing: .2em;
+      font-size: .72rem;
+      font-weight: 900;
+      color: var(--accent);
     }
 
     .qr-share-text {
-      color: var(--muted);
+      color: color-mix(in srgb, var(--muted) 86%, transparent);
     }
 
     .qr-share-link {
       display: inline-block;
-      color: var(--text);
-      font-weight: 700;
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 800;
       text-decoration: none;
       word-break: break-all;
     }
@@ -1707,12 +1990,13 @@
     }
 
     .qr-share-frame {
-      width: min(240px, 100%);
+      width: min(260px, 100%);
       aspect-ratio: 1;
       padding: 14px;
       border-radius: 1.25rem;
+      border: 1px solid rgba(196, 138, 90, .4);
       background: #fff;
-      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+      box-shadow: 0 14px 32px rgba(42, 36, 30, .16), 0 0 24px rgba(196, 138, 90, .1);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1723,6 +2007,12 @@
       height: 100%;
       object-fit: contain;
       display: block;
+    }
+
+    @media (max-width: 991.98px) {
+      .qr-share-card {
+        text-align: center;
+      }
     }
 
     @media (max-width: 991px) {
@@ -2789,6 +3079,54 @@
       </div>
     </section>
 
+    <section id="metodo" class="v4-method-section py-5 py-lg-6">
+      <div class="container position-relative">
+        <div class="row g-4 g-xl-5 align-items-center">
+          <div class="col-lg-5">
+            <span class="v4-method-eyebrow">La ciencia de la geometría</span>
+            <h2 class="v4-method-title">El Rigor Invisible Detrás de Cada Detalle</h2>
+            <div class="v4-method-divider"></div>
+            <p class="v4-method-copy">
+              No creemos en cortes apresurados ni en moldes preestablecidos. Estudiamos las facciones, la estructura ósea y las líneas de crecimiento natural para esculpir una propuesta estética única que exalte tu carácter.
+            </p>
+            <div class="v4-method-list">
+              <div class="v4-method-item">
+                <span class="v4-method-number">I.</span>
+                <div>
+                  <h3>Geometría Craneal Adaptativa</h3>
+                  <p>Alineamos el corte con tu simetría natural para un crecimiento ordenado y de larga duración.</p>
+                </div>
+              </div>
+              <div class="v4-method-item">
+                <span class="v4-method-number">II.</span>
+                <div>
+                  <h3>Dermocosmética Avanzada</h3>
+                  <p>Aplicamos rituales de cuidado con acabados limpios, textura controlada y sensación premium.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <article class="v4-compare-card">
+              <div class="v4-compare-head">
+                <h3>Resultados de Autor</h3>
+                <p>Control visual de simetría y acabado</p>
+              </div>
+              <div class="v4-compare-stage" aria-label="Comparador visual antes y resultado BarberAgency">
+                <img class="v4-compare-after" src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/From-Average-Hair-to-Pinterest-Worthy-Taper.jpg" alt="Resultado final de corte premium" loading="lazy" decoding="async">
+                <div class="v4-compare-before" aria-hidden="true">
+                  <img src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/From-Average-Hair-to-Pinterest-Worthy-Taper.jpg" alt="" loading="lazy" decoding="async">
+                </div>
+                <div class="v4-compare-handle" aria-hidden="true"><span><i class="bi bi-scissors"></i></span></div>
+                <span class="v4-compare-label is-before">Antes</span>
+                <span class="v4-compare-label is-after">Resultado BarberAgency</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="reservas" class="reservation-booking-section py-5 py-lg-6">
       <div class="container">
         <div class="row g-4 g-xl-5 align-items-stretch">
@@ -2859,7 +3197,7 @@
             <div class="col-lg-7">
               <span class="qr-share-kicker">Comparte tu landing</span>
               <h2 class="mt-2 mb-3">Escanea y reserva tu cita al instante</h2>
-              <p class="mb-3 qr-share-text">Escanea este código QR y envía a tus clientes directo al flujo de reserva en segundos.</p>
+              <p class="mb-3 qr-share-text">Este código QR lleva a tus clientes directo al flujo de reserva, sin buscar enlaces y sin perder tiempo.</p>
               <a id="landingQrLink" class="qr-share-link" href="#" target="_blank" rel="noopener">Cargando enlace...</a>
             </div>
             <div class="col-lg-5">
@@ -4645,13 +4983,34 @@ function normalizeDayLabel(value) {
         : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       const querySlug = safeSeedText(params.get('slug') || params.get('barberia_slug') || params.get('business_slug'));
       if (querySlug) return querySlug;
+      const storedSlug = getStoredLandingSlug();
+      if (storedSlug) return storedSlug;
       const pathMatch = String(window.location?.pathname || '').match(/^\/b\/([^/]+)\/?$/i);
       if (pathMatch?.[1]) return safeSeedText(decodeURIComponent(pathMatch[1]));
       return safeSeedText(
+        runtimeLandingState.profile?.slug ||
+        runtimeLandingState.profile?.biz_slug ||
+        runtimeLandingState.inherited?.slug ||
+        runtimeLandingState.inherited?.biz_slug ||
         landingSeed?.slug ||
         landingSeed?.barberia?.slug ||
         landingSeed?.inherited?.slug
       );
+    }
+
+    function getStoredLandingSlug() {
+      try {
+        const storages = [window.sessionStorage, window.localStorage].filter(Boolean);
+        for (const storage of storages) {
+          for (let index = 0; index < storage.length; index += 1) {
+            const key = storage.key(index) || '';
+            if (!key.startsWith('ba_barberia_slug:')) continue;
+            const value = safeSeedText(storage.getItem(key));
+            if (value) return value;
+          }
+        }
+      } catch (_) {}
+      return '';
     }
 
     function getLandingSiteBaseUrl() {
@@ -4670,7 +5029,34 @@ function normalizeDayLabel(value) {
         landingSeed?.barberia?.base_url
       );
       const runtimeBase = safeSeedText(window.location?.origin);
+      if (!explicitBase && isLocalPreviewUrl(runtimeBase)) {
+        return 'https://barberagency-barberagency.gymh5g.easypanel.host';
+      }
       return (explicitBase || runtimeBase).replace(/\/+$/, '');
+    }
+
+    function isLocalPreviewUrl(value) {
+      const localIp = ['127', '0', '0', '1'].join('.');
+      const localHost = ['local', 'host'].join('');
+      try {
+        const parsed = new URL(safeSeedText(value), window.location?.origin || 'https://barberagency-barberagency.gymh5g.easypanel.host');
+        return parsed.hostname === localHost || parsed.hostname === localIp;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function containsLocalPreviewReference(value) {
+      const localIp = ['127', '0', '0', '1'].join('.');
+      const localHost = ['local', 'host'].join('');
+      const raw = safeSeedText(value);
+      const decoded = (() => {
+        try { return decodeURIComponent(raw); } catch (_) { return raw; }
+      })();
+      return raw.includes(localIp) ||
+        decoded.includes(localIp) ||
+        raw.toLowerCase().includes(localHost) ||
+        decoded.toLowerCase().includes(localHost);
     }
 
     function getCurrentLandingPublicPath() {
@@ -4702,7 +5088,7 @@ function normalizeDayLabel(value) {
         document.documentElement?.dataset?.publicUrl ||
         document.body?.dataset?.publicUrl
       );
-      if (reservationUrl) return reservationUrl;
+      if (reservationUrl && !isLocalPreviewUrl(reservationUrl)) return reservationUrl;
       const slug = getLandingSlug();
       if (slug) {
         return `${getLandingSiteBaseUrl()}/b/${encodeURIComponent(slug)}#reservas`;
@@ -4723,15 +5109,18 @@ function normalizeDayLabel(value) {
       const targetUrl = getLandingQrTargetUrl();
       if (!targetUrl) return;
       const params = getLandingUrlParams();
-      const qrImageUrl = safeSeedText(
+      const providedQrImageUrl = safeSeedText(
         window.BA_QR_URL ||
         params.get('qr_url') ||
         landingSeed?.qr_url ||
         landingSeed?.barberia?.qr_url
-      ) || `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(targetUrl)}`;
+      );
+      const qrImageUrl = providedQrImageUrl && !containsLocalPreviewReference(providedQrImageUrl)
+        ? providedQrImageUrl
+        : `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(targetUrl)}`;
       qrImage.src = qrImageUrl;
       qrLink.href = targetUrl;
-      qrLink.textContent = 'Reserva Aquí';
+      qrLink.textContent = targetUrl;
       document.querySelectorAll('a[href="#reservas"], a[href$="#reservas"]').forEach((link) => {
         link.href = targetUrl;
       });
