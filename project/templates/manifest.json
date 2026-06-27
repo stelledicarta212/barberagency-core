@@ -40,5 +40,12 @@
     "file": "project/templates/plantillas/index_unicov7.html",
     "active": true,
     "legacy_wp_page_id": null
+  },
+  "v8": {
+    "template_id": "v8",
+    "name": "Neón Oscuro Eléctrico",
+    "file": "project/templates/plantillas/index_unico_v8_neon_oscuro.html",
+    "active": true,
+    "legacy_wp_page_id": null
   }
 }
