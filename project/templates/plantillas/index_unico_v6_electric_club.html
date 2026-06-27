@@ -41,10 +41,10 @@
       /* Colores específicos de barberos */
       --barber-blue-deep: #061f73;
       --barber-blue-main: #0838c9;
-      --barber-blue-electric: #1194ff;
+      --barber-blue-hot: #1194ff;
       --barber-red-deep: #6f0027;
       --barber-red-main: #a5003c;
-      --barber-red-electric: #ff236a;
+      --barber-red-hot: #ff236a;
       
       --font-title: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
       --font-digital: 'Orbitron', sans-serif;
@@ -953,12 +953,12 @@
     }
     
     .barber-card:nth-child(odd) .barber-badge-custom {
-      color: var(--barber-blue-electric);
+      color: var(--barber-blue-hot);
       border-color: rgba(17, 148, 255, 0.3);
     }
     
     .barber-card:nth-child(even) .barber-badge-custom {
-      color: var(--barber-red-electric);
+      color: var(--barber-red-hot);
       border-color: rgba(255, 35, 106, 0.3);
     }
 
@@ -984,13 +984,13 @@
     }
     
     .barber-card:nth-child(odd):hover .barber-num-custom {
-      color: var(--barber-blue-electric);
-      text-shadow: 0 0 10px var(--barber-blue-electric);
+      color: var(--barber-blue-hot);
+      text-shadow: 0 0 10px var(--barber-blue-hot);
     }
     
     .barber-card:nth-child(even):hover .barber-num-custom {
-      color: var(--barber-red-electric);
-      text-shadow: 0 0 10px var(--barber-red-electric);
+      color: var(--barber-red-hot);
+      text-shadow: 0 0 10px var(--barber-red-hot);
     }
 
     .barber-info {
@@ -1012,13 +1012,13 @@
     }
 
     .blue-grad-text {
-      background: linear-gradient(135deg, var(--barber-blue-electric), #ffffff);
+      background: linear-gradient(135deg, var(--barber-blue-hot), #ffffff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .red-grad-text {
-      background: linear-gradient(135deg, var(--barber-red-electric), #ffffff);
+      background: linear-gradient(135deg, var(--barber-red-hot), #ffffff);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -1059,7 +1059,7 @@
       margin-top: 2px;
     }
 
-    .barber-btn-custom {
+    .barber-btn {
       width: 100%;
       border: 0;
       min-height: 38px;
@@ -1073,25 +1073,25 @@
       transition: var(--transition-smooth);
     }
     
-    .barber-card:nth-child(odd) .barber-btn-custom {
-      background: linear-gradient(135deg, var(--barber-blue-deep), var(--barber-blue-main));
-      border: 1px solid var(--barber-blue-electric);
+    .barber-btn.blue-btn {
+      background: linear-gradient(135deg, var(--barber-blue-deep), var(--barber-blue-main) 46%, var(--barber-blue-hot));
+      border: 1px solid var(--barber-blue-hot);
       box-shadow: 0 0 10px rgba(17, 148, 255, 0.2);
     }
-    .barber-card:nth-child(odd) .barber-btn-custom:hover {
-      background: linear-gradient(135deg, var(--barber-red-deep), var(--barber-red-main)) !important;
-      border-color: var(--barber-red-electric) !important;
+    .barber-btn.blue-btn:hover {
+      background: linear-gradient(135deg, var(--barber-red-deep), var(--barber-red-main) 46%, var(--barber-red-hot)) !important;
+      border-color: var(--barber-red-hot) !important;
       box-shadow: 0 0 15px rgba(255, 35, 106, 0.4) !important;
     }
 
-    .barber-card:nth-child(even) .barber-btn-custom {
-      background: linear-gradient(135deg, var(--barber-red-deep), var(--barber-red-main));
-      border: 1px solid var(--barber-red-electric);
+    .barber-btn.red-btn {
+      background: linear-gradient(135deg, var(--barber-red-deep), var(--barber-red-main) 46%, var(--barber-red-hot));
+      border: 1px solid var(--barber-red-hot);
       box-shadow: 0 0 10px rgba(255, 35, 106, 0.2);
     }
-    .barber-card:nth-child(even) .barber-btn-custom:hover {
-      background: linear-gradient(135deg, var(--barber-blue-deep), var(--barber-blue-main)) !important;
-      border-color: var(--barber-blue-electric) !important;
+    .barber-btn.red-btn:hover {
+      background: linear-gradient(135deg, var(--barber-blue-deep), var(--barber-blue-main) 46%, var(--barber-blue-hot)) !important;
+      border-color: var(--barber-blue-hot) !important;
       box-shadow: 0 0 15px rgba(17, 148, 255, 0.4) !important;
     }
 
@@ -2374,7 +2374,7 @@
                 </div>
               </div>
               
-              <button type="button" class="barber-btn-custom">Seleccionar</button>
+              <button type="button" class="barber-btn ${idx % 2 === 0 ? 'blue-btn' : 'red-btn'}">Seleccionar</button>
             </div>
           </div>
         `;
