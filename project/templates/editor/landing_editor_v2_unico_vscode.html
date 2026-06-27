@@ -827,6 +827,7 @@
   const byId = Object.fromEntries(templates.map((t) => [String(t.id || ''), t]));
   const tempBlob = { logo: '', cover: '' };
   const runtimePreview = { logo: '', cover: '' };
+  const runtimePreviewIdentity = {};
   const runtimePublishData = { public_landing_url: '', qr_url: '', reservation_url: '' };
   const currentPublishResult = { public_landing_url: '', qr_url: '', reservation_url: '' };
   const paletteByTemplate = {};
@@ -981,26 +982,28 @@
   function fileToUrl(file) {
     const f = String(file || '').trim();
     if (!f) return 'about:blank';
-    if (/^https?:\/\//i.test(f)) return f;
-    if (isLocalPreviewRuntime() || CONFIG.forceDirectTemplateUrls) {
-      return fileToDirectUrl(f);
+    let url = 'about:blank';
+    if (/^https?:\/\//i.test(f)) {
+      url = f;
+    } else if (isLocalPreviewRuntime() || CONFIG.forceDirectTemplateUrls) {
+      url = fileToDirectUrl(f);
+    } else if (f.startsWith('/')) {
+      url = hasHttpOrigin() ? location.origin + f : `./${f.replace(/^\/+/, '')}`;
+    } else {
+      const cleanFile = f.replace(/^\/+/, '').replace(/\/+$/, '');
+      const slug = cleanFile.replace(/\.html?$/i, '');
+      const overridePath = TEMPLATE_PUBLIC_PATH_OVERRIDES[slug];
+      if (overridePath && hasHttpOrigin()) {
+        url = `${location.origin}${overridePath}`;
+      } else if (/\.html?$/i.test(cleanFile) && hasHttpOrigin()) {
+        url = `${location.origin}/${cleanFile}/`;
+      } else if (hasHttpOrigin()) {
+        url = `${location.origin}/${slug}/`;
+      } else {
+        url = `./${cleanFile}`;
+      }
     }
-    if (f.startsWith('/')) {
-      return hasHttpOrigin() ? location.origin + f : `./${f.replace(/^\/+/, '')}`;
-    }
-    const cleanFile = f.replace(/^\/+/, '').replace(/\/+$/, '');
-    const slug = cleanFile.replace(/\.html?$/i, '');
-    const overridePath = TEMPLATE_PUBLIC_PATH_OVERRIDES[slug];
-    if (overridePath && hasHttpOrigin()) {
-      return `${location.origin}${overridePath}`;
-    }
-    if (/\.html?$/i.test(cleanFile) && hasHttpOrigin()) {
-      return `${location.origin}/${cleanFile}/`;
-    }
-    if (hasHttpOrigin()) {
-      return `${location.origin}/${slug}/`;
-    }
-    return `./${cleanFile}`;
+    return appendTemplatePreviewParams(url, f);
   }
 
   function fileToDirectUrl(file) {
@@ -1014,12 +1017,33 @@
     const clean = f.replace(/^\/+/, '');
     if (hasHttpOrigin()) {
       try {
-        return new URL(clean, location.href).toString();
+        const localTemplatePath = /\.html?$/i.test(clean) && !clean.includes('/')
+          ? `../plantillas/${clean}`
+          : clean;
+        return new URL(localTemplatePath, location.href).toString();
       } catch (_) {
         return `${location.origin}/${clean}`;
       }
     }
     return `./${clean}`;
+  }
+
+  function appendTemplatePreviewParams(rawUrl, file) {
+    const sourceUrl = safeText(rawUrl);
+    if (!sourceUrl || sourceUrl === 'about:blank') return sourceUrl || 'about:blank';
+    try {
+      const parsed = new URL(sourceUrl, location.href);
+      parsed.searchParams.set('cb', String(Date.now()));
+      const debugEnabled = new URLSearchParams(location.search || '').get('v4_editor_debug') === '1';
+      const isV4Template = /index_unico_v4_editorial/i.test(`${file || ''} ${parsed.pathname}`);
+      if (debugEnabled && isV4Template) {
+        parsed.searchParams.set('v4_editor_debug', '1');
+      }
+      return parsed.toString();
+    } catch (_) {
+      const separator = sourceUrl.includes('?') ? '&' : '?';
+      return `${sourceUrl}${separator}cb=${Date.now()}`;
+    }
   }
 
   function isLocalPreviewRuntime() {
@@ -2088,6 +2112,16 @@
       safeText(merged?.maps_url) ||
       safeText(merged?.map_url) ||
       buildMapsEmbedUrl(nextAddress);
+
+    Object.assign(runtimePreviewIdentity, {
+      barberia_id: nextBarberiaId || runtimePreviewIdentity.barberia_id || 0,
+      slug: nextSlug || runtimePreviewIdentity.slug || '',
+      nombre: nextName || runtimePreviewIdentity.nombre || '',
+      direccion: nextAddress || runtimePreviewIdentity.direccion || '',
+      maps_url: nextMapsUrl || runtimePreviewIdentity.maps_url || '',
+      telefono: safeText(merged?.telefono || source?.telefono || source?.inherited?.telefono) || runtimePreviewIdentity.telefono || '',
+      logo_url: safeImageUrl(pickFirstImage(merged?.logo_url, merged?.logo, source?.branding?.logo_url, source?.logo_url)) || runtimePreviewIdentity.logo_url || ''
+    });
 
     const cameFromRegistroEdit =
       getQueryParam('source') === 'editor' ||
@@ -3615,15 +3649,62 @@ function persistRegistroSeedContext() {
       .filter(Boolean);
   }
 
+  function buildEditorPreviewIdentityFallbacks(data = {}) {
+    const identity = getSeedIdentity();
+    const seedBarberia = seedLandingData?.barberia && typeof seedLandingData.barberia === 'object'
+      ? seedLandingData.barberia
+      : {};
+    const nameFromForm = safeText(data.biz_name);
+    const nameFromSeed = safeText(runtimePreviewIdentity.nombre || identity.nombre || seedLandingData?.nombre || seedBarberia.nombre || seedBarberia.nombre_publico);
+    const addressFromForm = safeText(data.address);
+    const addressFromSeed = safeText(
+      runtimePreviewIdentity.direccion ||
+      identity.direccion ||
+      seedLandingData?.direccion ||
+      seedLandingData?.location_address ||
+      seedBarberia.direccion ||
+      seedBarberia.location_address
+    );
+    const mapsFromForm = safeText(data.maps_url);
+    const mapsFromSeed = safeText(
+      runtimePreviewIdentity.maps_url ||
+      seedLandingData?.maps_url ||
+      seedLandingData?.map_url ||
+      seedLandingData?.location_map_url ||
+      seedBarberia.maps_url ||
+      seedBarberia.map_url ||
+      seedBarberia.location_map_url
+    );
+    const logoFromSeed = safeImageUrl(pickFirstImage(
+      runtimePreviewIdentity.logo_url,
+      seedLandingData?.logo_url,
+      seedLandingData?.logo,
+      seedBarberia.logo_url,
+      seedBarberia.logo
+    ));
+
+    const shouldUseSeedName = (!nameFromForm || /^barber agency$/i.test(nameFromForm)) && !!nameFromSeed;
+    const address = addressFromForm || addressFromSeed;
+    const mapsUrl = mapsFromForm || mapsFromSeed || buildMapsEmbedUrl(address);
+
+    return {
+      biz_name: shouldUseSeedName ? nameFromSeed : nameFromForm,
+      address,
+      maps_url: mapsUrl,
+      logo_url: safeImageUrl(data.logo_url) || logoFromSeed
+    };
+  }
+
   function buildEditorMessagePayload(data, extra = {}) {
     const qrContext = getQrContext();
     const coverUrl = safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl();
-    const logoUrl = safeImageUrl(data.logo_url);
+    const identityFallbacks = buildEditorPreviewIdentityFallbacks(data);
+    const logoUrl = identityFallbacks.logo_url;
     const barberPhotos = getInheritedBarberPhotoUrls();
     const payload = {
       ...extra,
       source: 'ba-editor',
-      biz_name: data.biz_name,
+      biz_name: identityFallbacks.biz_name,
       biz_slug: data.biz_slug,
       font_pair: data.font_pair,
       hero_kicker: data.hero_kicker,
@@ -3639,8 +3720,8 @@ function persistRegistroSeedContext() {
       cover: runtimePreview.cover || coverUrl,
       coverUrl,
       hero_url: coverUrl,
-      address: data.address,
-      maps_url: data.maps_url,
+      address: identityFallbacks.address,
+      maps_url: identityFallbacks.maps_url,
       slot_min: data.slot_min,
       public_landing_url: qrContext.public_landing_url,
       qr_url: qrContext.qr_url,
@@ -3668,11 +3749,12 @@ function persistRegistroSeedContext() {
   function buildBrandingUpdatePayload(data, extra = {}) {
     const qrContext = getQrContext();
     const coverUrl = safeImageUrl(data.cover_url) || getCanonicalSeedCoverUrl();
-    const logoUrl = safeImageUrl(data.logo_url);
+    const identityFallbacks = buildEditorPreviewIdentityFallbacks(data);
+    const logoUrl = identityFallbacks.logo_url;
     const barberPhotos = getInheritedBarberPhotoUrls();
     const payload = {
       ...extra,
-      biz_name: data.biz_name,
+      biz_name: identityFallbacks.biz_name,
       biz_slug: data.biz_slug,
       font_pair: data.font_pair,
       hero_kicker: data.hero_kicker,
@@ -3688,8 +3770,8 @@ function persistRegistroSeedContext() {
       cover: runtimePreview.cover || coverUrl,
       coverUrl,
       hero_url: coverUrl,
-      address: data.address,
-      maps_url: data.maps_url,
+      address: identityFallbacks.address,
+      maps_url: identityFallbacks.maps_url,
       slot_min: data.slot_min,
       public_landing_url: qrContext.public_landing_url,
       qr_url: qrContext.qr_url,
