@@ -2294,20 +2294,14 @@
       servicesGrid.innerHTML = services.map((service, idx) => {
         const themeClass = idx % 2 === 0 ? 'blue' : 'red';
         const numLabel = String(idx + 1).padStart(2, '0');
-        
-        const imgUrls = [
-          'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=600&q=80',
-          'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&w=600&q=80',
-          'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=600&q=80',
-          'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=600&q=80',
-          'https://images.unsplash.com/photo-1512864084360-7c0c4d0a0845?auto=format&fit=crop&w=600&q=80',
-          'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=600&q=80'
-        ];
-        const cover = service.imagen_url || service.foto_url || imgUrls[idx % imgUrls.length];
+        const fallback = SERVICE_COVERS[idx % SERVICE_COVERS.length];
+        const cover = resolveServiceImage(service) || fallback;
         const icon = service.icono || 'bi-scissors';
+        const serviceId = service.id_servicio || service.servicio_id || service.id || '';
+        const serviceName = service.nombre || '';
 
         return `
-          <div class="service-card ${themeClass}" data-service-id="${service.id_servicio}" data-service-name="${service.nombre}">
+          <div class="service-card ${themeClass}" data-service-id="${serviceId}" data-service-name="${serviceName}">
             <div class="service-photo" style="background-image: url('${cover}');"></div>
             <div class="shade"></div>
             <div class="side-glow"></div>
@@ -2315,7 +2309,7 @@
             
             <div class="service-content">
               <span class="service-pill">${service.tag || 'Corte'}</span>
-              <h3 class="service-name">${service.nombre}</h3>
+              <h3 class="service-name">${serviceName}</h3>
               <div class="small-line"></div>
               <p class="service-desc">${service.desc || 'Acabado premium con atención y lavado personalizado.'}</p>
               
@@ -2331,7 +2325,7 @@
                   <div class="meta-icon"><i class="bi bi-clock"></i></div>
                   <div>
                     <span class="meta-label">Duración</span>
-                    <span class="meta-value">${service.duracion_min || 30} min</span>
+                    <span class="meta-value">${service.duracion_min || service.duracion || 30} min</span>
                   </div>
                 </div>
               </div>
@@ -2349,9 +2343,12 @@
       barbersGrid.innerHTML = barbers.map((barber, idx) => {
         const fallback = DEFAULT_BARBER_PHOTOS[idx % DEFAULT_BARBER_PHOTOS.length];
         const photo = safeSeedText(barber.foto) || fallback;
+        const barberId = barber.id_barbero || barber.barbero_id || barber.id || '';
+        const barberName = barber.nombre || '';
+        const expText = String(barber.experiencia || '5').replace(/\D/g, '') || '5';
 
         return `
-          <div class="barber-card" data-barber-id="${barber.id_barbero || barber.id || ''}" data-barber-name="${barber.nombre || ''}">
+          <div class="barber-card" data-barber-id="${barberId}" data-barber-name="${barberName}">
             <div class="barber-photo" style="background-image: url('${photo}');"></div>
             
             <div class="barber-top-meta">
@@ -2362,12 +2359,12 @@
             <span class="barber-num-custom">${barber.num || '01'}</span>
             
             <div class="barber-info">
-              <h3 class="barber-name-custom">${splitBarberName(barber.nombre, idx)}</h3>
+              <h3 class="barber-name-custom">${splitBarberName(barberName, idx)}</h3>
               <p class="barber-spec-custom">${barber.especialidad}</p>
               
               <div class="barber-stats-custom">
                 <div>
-                  <span class="barber-stat-val-custom">${barber.experiencia ? barber.experiencia.replace(/\D/g, '') : '5'}</span>
+                  <span class="barber-stat-val-custom">${expText}</span>
                   <span class="barber-stat-lbl-custom">Años</span>
                 </div>
                 <div>
