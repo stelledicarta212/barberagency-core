@@ -1583,65 +1583,158 @@ html[data-theme="dark"] #baWizardApp {
 }
 
 /* Custom mobile overrides for smaller screens to prevent horizontal overflow */
-@media (max-width: 576px) {
+@media (max-width: 768px) {
+  body,
+  .registro-root,
+  .registro-page {
+    overflow-x: hidden;
+  }
+
   #baWizardApp {
-    padding: 12px 8px;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 10px 8px !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  #baWizardApp .ba-shell {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+    box-sizing: border-box !important;
   }
 
   #baWizardApp .ba-topbar {
-    padding: 12px 16px;
-    gap: 12px;
-  }
-
-  #baWizardApp .ba-sidebar {
-    padding: 20px 16px;
-    gap: 16px;
-  }
-
-  #baWizardApp .ba-sidebar-title {
-    font-size: 18px;
+    padding: 12px 16px !important;
+    gap: 12px !important;
   }
 
   #baWizardApp .ba-sidebar-copy {
-    font-size: 12px;
+    display: none !important; /* Hide sidebar description on mobile to save vertical space */
+  }
+
+  #baWizardApp .ba-sidebar {
+    padding: 18px 16px !important;
+    gap: 12px !important;
+  }
+
+  #baWizardApp .ba-sidebar-title {
+    font-size: 15px !important;
+    margin-bottom: 2px !important;
+  }
+
+  #baWizardApp .ba-live-summary {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* Grid of 2 columns instead of vertical stack */
+    gap: 8px !important;
+    width: 100% !important;
+  }
+
+  #baWizardApp .ba-summary-item {
+    padding: 8px 10px !important;
+    gap: 8px !important;
+  }
+
+  #baWizardApp .ba-summary-item-icon {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  #baWizardApp .ba-summary-item-icon svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  #baWizardApp .ba-summary-item strong {
+    font-size: 11px !important;
   }
 
   #baWizardApp .ba-stage {
-    padding: 20px 16px;
-    gap: 20px;
+    padding: 20px 16px !important;
+    gap: 18px !important;
   }
 
   #baWizardApp .ba-question {
-    font-size: 20px;
+    font-size: 18px !important;
   }
 
   #baWizardApp .ba-helper {
-    font-size: 12px;
+    font-size: 12px !important;
   }
 
   #baWizardApp .ba-card {
-    padding: 16px;
-    gap: 12px;
-    border-radius: 16px;
+    padding: 16px !important;
+    gap: 12px !important;
+    border-radius: 16px !important;
   }
 
+  /* Stack input and buttons vertically for optimal mobile spacing */
   #baWizardApp .ba-input-shell,
   #baWizardApp .ba-composer-shell {
-    padding: 12px 14px;
-    gap: 8px;
-    border-radius: 20px;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+    min-height: auto !important;
+  }
+
+  #baWizardApp .ba-input-shell .ba-input,
+  #baWizardApp .ba-composer-input {
+    background: var(--bg-soft) !important;
+    border: 1px solid color-mix(in srgb, var(--gold) 55%, var(--panel-stroke)) !important;
+    border-radius: 12px !important;
+    padding: 14px 18px !important;
+    height: 48px !important;
+    width: 100% !important;
+    font-size: 14px !important;
+  }
+
+  #baWizardApp .ba-input-shell .ba-action,
+  #baWizardApp .ba-input-shell .ba-action-secondary,
+  #baWizardApp .ba-composer-btn-primary,
+  #baWizardApp .ba-composer-btn-secondary {
+    width: 100% !important;
+    height: 46px !important;
+    border-radius: 12px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 13px !important;
+  }
+
+  #baWizardApp .ba-input-shell .ba-plus,
+  #baWizardApp .ba-composer-icon {
+    display: none !important; /* Hide redundant elements */
   }
 
   #baWizardApp .ba-input-shell .ba-options {
-    gap: 8px;
+    gap: 8px !important;
+    width: 100% !important;
   }
 
   #baWizardApp .ba-review-card {
-    padding: 14px;
-    gap: 12px;
+    padding: 14px !important;
+    gap: 12px !important;
   }
 
   #baWizardApp .ba-review-detail-list {
-    gap: 8px;
+    gap: 8px !important;
+  }
+
+  /* Push floating chat/support widgets slightly higher so they don't cover buttons */
+  div[class*="chatwoot"],
+  iframe[class*="chatwoot"],
+  #chatwoot-widget-container,
+  .fb_dialog,
+  .fb_customer_chat_icon,
+  #hubspot-messages-iframe-container {
+    bottom: 80px !important;
   }
 }
