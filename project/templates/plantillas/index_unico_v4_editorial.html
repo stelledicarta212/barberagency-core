@@ -2922,6 +2922,176 @@
       .reservation-success-row { display: grid; gap: .25rem; }
       .reservation-success-value { text-align: left; }
     }
+
+    /* ==========================================
+       TEMA CLARO GLOBAL - OVERRIDES DE CONTRASTE (EXCLUYE EL HEADER)
+       ========================================== */
+    #landingRoot[data-theme='light'] main,
+    #landingRoot[data-theme='light'] footer {
+      color: #2b2119;
+    }
+
+    /* Títulos Grandes (Espresso / Café Oscuro) */
+    #landingRoot[data-theme='light'] main h1,
+    #landingRoot[data-theme='light'] main h2,
+    #landingRoot[data-theme='light'] main h3,
+    #landingRoot[data-theme='light'] main h4,
+    #landingRoot[data-theme='light'] main .services-title,
+    #landingRoot[data-theme='light'] main .v4-hours-title,
+    #landingRoot[data-theme='light'] main .barber-title,
+    #landingRoot[data-theme='light'] main .v4-method-title,
+    #landingRoot[data-theme='light'] main .booking-title,
+    #landingRoot[data-theme='light'] main .booking-map-title,
+    #landingRoot[data-theme='light'] main .qr-share-card h2,
+    #landingRoot[data-theme='light'] main .v4-hours-card h2,
+    #landingRoot[data-theme='light'] main .v4-compare-head h3,
+    #landingRoot[data-theme='light'] main .barber-info-title,
+    #landingRoot[data-theme='light'] footer .footer-brand {
+      color: #2b2119 !important;
+    }
+
+    /* Párrafos y textos descriptivos (Café Medio Legible) */
+    #landingRoot[data-theme='light'] main p,
+    #landingRoot[data-theme='light'] main span:not(.services-eyebrow):not(.v4-hours-eyebrow):not(.barber-eyebrow):not(.v4-method-eyebrow):not(.booking-kicker):not(.qr-share-kicker):not(.service-card-index):not(.service-card-price):not(.v4-hours-status):not(.v4-method-number):not(.barber-chip):not(.barber-role-badge),
+    #landingRoot[data-theme='light'] main .section-copy,
+    #landingRoot[data-theme='light'] main .text-muted,
+    #landingRoot[data-theme='light'] main .barber-header-lead,
+    #landingRoot[data-theme='light'] main .v4-method-copy,
+    #landingRoot[data-theme='light'] main .v4-method-item p,
+    #landingRoot[data-theme='light'] main .v4-compare-head p,
+    #landingRoot[data-theme='light'] main .booking-copy,
+    #landingRoot[data-theme='light'] main .booking-map-text,
+    #landingRoot[data-theme='light'] main .booking-map-value,
+    #landingRoot[data-theme='light'] main .qr-share-text,
+    #landingRoot[data-theme='light'] footer .footer-copy,
+    #landingRoot[data-theme='light'] main .v4-hours-copy p,
+    #landingRoot[data-theme='light'] main .v4-hours-card p,
+    #landingRoot[data-theme='light'] main .barber-info-desc {
+      color: #6b5a4c !important;
+    }
+
+    /* Labels, kickers y eyebrows (Cognac) */
+    #landingRoot[data-theme='light'] main .eyebrow,
+    #landingRoot[data-theme='light'] main .section-kicker,
+    #landingRoot[data-theme='light'] main .services-eyebrow,
+    #landingRoot[data-theme='light'] main .v4-hours-eyebrow,
+    #landingRoot[data-theme='light'] main .barber-eyebrow,
+    #landingRoot[data-theme='light'] main .barber-subtitle,
+    #landingRoot[data-theme='light'] main .v4-method-eyebrow,
+    #landingRoot[data-theme='light'] main .booking-kicker,
+    #landingRoot[data-theme='light'] main .qr-share-kicker,
+    #landingRoot[data-theme='light'] main .v4-method-number,
+    #landingRoot[data-theme='light'] main .services-title span,
+    #landingRoot[data-theme='light'] main .barber-title span,
+    #landingRoot[data-theme='light'] main .service-card-index,
+    #landingRoot[data-theme='light'] main .service-card-price,
+    #landingRoot[data-theme='light'] main .booking-map-label,
+    #landingRoot[data-theme='light'] main .v4-hours-card small,
+    #landingRoot[data-theme='light'] main .reserve-form .form-label {
+      color: #b87444 !important;
+    }
+
+    /* Tablas y filas con texto oscuro */
+    #landingRoot[data-theme='light'] main .v4-hours-table table {
+      color: #2b2119 !important;
+    }
+    #landingRoot[data-theme='light'] main .v4-hours-table td {
+      color: #2b2119 !important;
+    }
+    #landingRoot[data-theme='light'] main .v4-hours-table td:first-child {
+      color: #2b2119 !important;
+      font-weight: 800 !important;
+    }
+    #landingRoot[data-theme='light'] main .v4-hours-table td:last-child {
+      color: #6b5a4c !important;
+      font-weight: 700 !important;
+    }
+    #landingRoot[data-theme='light'] main .v4-hours-table tr.is-today td {
+      color: #b87444 !important;
+    }
+
+    /* Cards claras con texto oscuro y bordes elegantes */
+    #landingRoot[data-theme='light'] main .panel.metric {
+      background: #EFE5D7 !important;
+      border: 1px dashed rgba(139, 94, 60, 0.25) !important;
+    }
+    #landingRoot[data-theme='light'] main .panel.metric strong {
+      color: #b87444 !important;
+    }
+    #landingRoot[data-theme='light'] main .panel.metric span {
+      color: #6b5a4c !important;
+    }
+
+    #landingRoot[data-theme='light'] main .service-card {
+      background: rgba(239, 229, 215, 0.92) !important;
+      border: 1px solid rgba(139, 94, 60, 0.25) !important;
+    }
+    #landingRoot[data-theme='light'] main .service-card h3 {
+      color: #2b2119 !important;
+    }
+    #landingRoot[data-theme='light'] main .service-card:hover h3 {
+      color: #b87444 !important;
+    }
+
+    #landingRoot[data-theme='light'] main .v4-compare-card {
+      background: rgba(239, 229, 215, 0.7) !important;
+      border: 1px solid rgba(139, 94, 60, 0.25) !important;
+    }
+
+    #landingRoot[data-theme='light'] main .barber-info-box {
+      background: rgba(239, 229, 215, 0.5) !important;
+      border: 1px solid rgba(139, 94, 60, 0.25) !important;
+    }
+
+    /* Enlaces y botones */
+    #landingRoot[data-theme='light'] main .qr-share-link {
+      color: #b87444 !important;
+    }
+    #landingRoot[data-theme='light'] main .qr-share-link:hover {
+      color: #2b2119 !important;
+    }
+
+    #landingRoot[data-theme='light'] main .btn-ghost {
+      border: 1px solid rgba(139, 94, 60, 0.4) !important;
+      color: #b87444 !important;
+      background: transparent !important;
+    }
+    #landingRoot[data-theme='light'] main .btn-ghost:hover {
+      background: #b87444 !important;
+      color: #ffffff !important;
+    }
+
+    #landingRoot[data-theme='light'] footer .btn-theme {
+      border: 1px solid rgba(139, 94, 60, 0.25) !important;
+      color: #6b5a4c !important;
+      background: transparent !important;
+    }
+    #landingRoot[data-theme='light'] footer .btn-theme:hover {
+      background: #b87444 !important;
+      color: #ffffff !important;
+    }
+
+    /* Estilo de Botón Principal (.btn-main) global legible */
+    .btn-main {
+      background: linear-gradient(135deg, var(--main), var(--alt)) !important;
+      border: 1px solid rgba(166, 106, 63, 0.3) !important;
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+    .btn-main:hover {
+      background: linear-gradient(135deg, var(--alt), var(--accent)) !important;
+      color: #ffffff !important;
+    }
+
+    #landingRoot[data-theme='light'] main .btn-main {
+      background: linear-gradient(135deg, #8B5E3C, #A66A3F) !important;
+      border-color: rgba(139, 94, 60, 0.3) !important;
+      color: #ffffff !important;
+    }
+    #landingRoot[data-theme='light'] main .btn-main:hover {
+      background: linear-gradient(135deg, #A66A3F, #C48A5A) !important;
+      color: #ffffff !important;
+    }
   </style>
 </head>
 <body>
@@ -5120,7 +5290,9 @@ function normalizeDayLabel(value) {
         : `https://quickchart.io/qr?size=320&margin=2&text=${encodeURIComponent(targetUrl)}`;
       qrImage.src = qrImageUrl;
       qrLink.href = targetUrl;
-      qrLink.textContent = targetUrl;
+      qrLink.textContent = 'Reserva aquí';
+      qrLink.title = targetUrl;
+      qrLink.setAttribute('aria-label', 'Reservar cita en la landing pública');
       document.querySelectorAll('a[href="#reservas"], a[href$="#reservas"]').forEach((link) => {
         link.href = targetUrl;
       });
