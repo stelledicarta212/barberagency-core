@@ -1581,3 +1581,67 @@ html[data-theme="dark"] #baWizardApp {
     flex-shrink: 0;
   }
 }
+
+/* Custom mobile overrides for smaller screens to prevent horizontal overflow */
+@media (max-width: 576px) {
+  #baWizardApp {
+    padding: 12px 8px;
+  }
+
+  #baWizardApp .ba-topbar {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  #baWizardApp .ba-sidebar {
+    padding: 20px 16px;
+    gap: 16px;
+  }
+
+  #baWizardApp .ba-sidebar-title {
+    font-size: 18px;
+  }
+
+  #baWizardApp .ba-sidebar-copy {
+    font-size: 12px;
+  }
+
+  #baWizardApp .ba-stage {
+    padding: 20px 16px;
+    gap: 20px;
+  }
+
+  #baWizardApp .ba-question {
+    font-size: 20px;
+  }
+
+  #baWizardApp .ba-helper {
+    font-size: 12px;
+  }
+
+  #baWizardApp .ba-card {
+    padding: 16px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+
+  #baWizardApp .ba-input-shell,
+  #baWizardApp .ba-composer-shell {
+    padding: 12px 14px;
+    gap: 8px;
+    border-radius: 20px;
+  }
+
+  #baWizardApp .ba-input-shell .ba-options {
+    gap: 8px;
+  }
+
+  #baWizardApp .ba-review-card {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  #baWizardApp .ba-review-detail-list {
+    gap: 8px;
+  }
+}
