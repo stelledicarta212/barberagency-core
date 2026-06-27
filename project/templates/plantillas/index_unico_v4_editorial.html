@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8" />
@@ -4450,21 +4450,19 @@ function normalizeDayLabel(value) {
     const landingSeed = readLandingSeed();
     applyInheritedCollections(landingSeed?.servicios, landingSeed?.barberos, landingSeed?.horarios, landingSeed?.slot_min || landingSeed?.barberia?.slot_min);
     applyPublicLandingBranding({ profile: landingSeed?.barberia || landingSeed || {}, branding: landingSeed?.branding || {} });
-    hydrateLandingFromPublicEndpoint();
+    if (window.parent === window) {
+      hydrateLandingFromPublicEndpoint();
+    }
 
-    window.addEventListener('message', (ev) => {
-      const data = ev?.data || {};
-      if (data?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(data.public_landing_url);
-      if (data?.reservation_url) window.BA_RESERVATION_URL = safeSeedText(data.reservation_url);
-      if (data?.qr_url) window.BA_QR_URL = safeSeedText(data.qr_url);
-      if (data?.source === 'ba-editor') {
-        applyBrandingPalette(data);
-      }
-      if (data.type !== 'BA_BRANDING_UPDATE') return;
-      const payload = data.payload || {};
-      if (payload?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(payload.public_landing_url);
-      if (payload?.reservation_url) window.BA_RESERVATION_URL = safeSeedText(payload.reservation_url);
-      if (payload?.qr_url) window.BA_QR_URL = safeSeedText(payload.qr_url);
+    function applyEditorPreviewPayload(data) {
+      const payload = data.type === 'BA_BRANDING_UPDATE' ? (data.payload || {}) : data;
+
+      if (payload.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(payload.public_landing_url);
+      if (payload.reservation_url) window.BA_RESERVATION_URL = safeSeedText(payload.reservation_url);
+      if (payload.qr_url) window.BA_QR_URL = safeSeedText(payload.qr_url);
+      if (Array.isArray(payload.barber_photos)) window.BA_BARBER_PHOTOS = payload.barber_photos.map((item) => safeSeedText(item)).filter(Boolean);
+      if (typeof payload.force_pool_photos === 'boolean') window.BA_FORCE_POOL_PHOTOS = payload.force_pool_photos;
+
       applyBrandingPalette(payload);
       applyInheritedCollections(
         payload.services || payload.inherited_services || payload.servicios,
@@ -4472,8 +4470,25 @@ function normalizeDayLabel(value) {
         payload.hours || payload.inherited_hours || payload.horarios,
         payload.slot_min || payload.barberia?.slot_min
       );
-      applyPublicLandingBranding({ profile: payload.barberia || payload.profile || {}, branding: payload.branding || payload.config || payload || {} });
-      renderLandingQr();
+      applyPublicLandingBranding({
+        profile: payload.barberia || payload.profile || payload || {},
+        branding: payload.branding || payload.config || payload || {}
+      });
+
+      if (typeof renderServices === 'function') renderServices();
+      if (typeof renderBarbers === 'function') renderBarbers();
+      if (typeof fillSelects === 'function') fillSelects();
+      if (typeof renderLandingQr === 'function') renderLandingQr();
+    }
+
+    window.addEventListener('message', (event) => {
+      const data = event?.data || {};
+      const isEditorMessage =
+        data.source === 'ba-editor' ||
+        data.type === 'BA_EDITOR_PREVIEW_UPDATE' ||
+        data.type === 'BA_BRANDING_UPDATE';
+      if (!isEditorMessage) return;
+      applyEditorPreviewPayload(data);
     });
     initTheme();
     stripInjectedUi();
