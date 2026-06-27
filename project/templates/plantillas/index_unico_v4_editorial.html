@@ -3942,7 +3942,14 @@ function normalizeDayLabel(value) {
     function applyPublicLandingBranding(payload = {}) {
       const profile = payload.profile || payload.barberia || {};
       const branding = payload.branding || payload.config || {};
-      const publicName = safeSeedText(profile.nombre_publico || profile.nombre || branding.biz_name);
+      const publicName = safeSeedText(
+        payload?.perfil_publico?.nombre_publico ||
+        payload?.nombre_publico ||
+        payload?.barberia?.nombre_publico ||
+        profile.nombre_publico ||
+        profile.nombre ||
+        branding.biz_name
+      );
       const logoUrl = safeImageUrl(pickFirstImage(profile.logo_url, profile.logo, profile.logoUrl, profile.logoURL, branding.logo_url, branding.logo, branding.logoUrl, branding.logoURL));
       const coverUrl = safeImageUrl(pickFirstImage(
         profile.cover_url,
@@ -4019,6 +4026,17 @@ function normalizeDayLabel(value) {
       const heroImage = document.getElementById('heroImage');
       if (coverUrl && heroImage) heroImage.src = coverUrl;
 
+      // Actualizar campos de dirección y contacto del mapa
+      const mapItemValues = document.querySelectorAll('.booking-map-value');
+      if (mapItemValues[0]) {
+        const addressVal = profile.direccion || profile.location_address || branding.address || '';
+        if (addressVal) mapItemValues[0].textContent = addressVal;
+      }
+      if (mapItemValues[1]) {
+        const phoneVal = profile.telefono || profile.phone || branding.phone || '';
+        if (phoneVal) mapItemValues[1].textContent = `Teléfono: ${phoneVal}`;
+      }
+
       const mapFallback = buildMapsEmbedUrl(
         profile.maps_url ||
         profile.location_map_url ||
@@ -4069,6 +4087,10 @@ function normalizeDayLabel(value) {
           ? source.config
           : {};
       const inherited = source?.inherited && typeof source.inherited === 'object' ? source.inherited : {};
+      const servicesVal = source?.services || source?.inherited_services || source?.servicios || inherited?.services || inherited?.inherited_services || inherited?.servicios || [];
+      const barbersVal = source?.barbers || source?.inherited_barbers || source?.barberos || inherited?.barbers || inherited?.inherited_barbers || inherited?.barberos || [];
+      const hoursVal = source?.hours || source?.inherited_hours || source?.horarios || inherited?.hours || inherited?.inherited_hours || inherited?.horarios || [];
+
       return {
         ok: source?.ok !== false,
         barberia_id:
@@ -4080,9 +4102,9 @@ function normalizeDayLabel(value) {
         profile,
         branding: buildRuntimeBranding(brandingSource),
         inherited,
-        servicios: Array.isArray(source?.servicios) ? source.servicios : Array.isArray(inherited?.servicios) ? inherited.servicios : [],
-        barberos: Array.isArray(source?.barberos) ? source.barberos : Array.isArray(inherited?.barberos) ? inherited.barberos : [],
-        horarios: Array.isArray(source?.horarios) ? source.horarios : Array.isArray(inherited?.horarios) ? inherited.horarios : [],
+        servicios: Array.isArray(servicesVal) ? servicesVal : [],
+        barberos: Array.isArray(barberosVal) ? barbersVal : [],
+        horarios: Array.isArray(hoursVal) ? hoursVal : [],
         slot_min: Number(source?.slot_min) || Number(inherited?.slot_min) || 0,
         public_landing_url: safeSeedText(source?.public_landing_url || profile?.public_landing_url),
         reservation_url: safeSeedText(source?.reservation_url || source?.url_reservas || profile?.reservation_url || profile?.url_reservas),
