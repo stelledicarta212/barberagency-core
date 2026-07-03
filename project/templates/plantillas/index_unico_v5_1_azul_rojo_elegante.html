@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>V5.1 BlueRed Barber Elegante</title>
-  <meta name="description" content="Landing V5.1 barbería azul profundo y rojo elegante en archivo unico." />
+  <title>V5 Electric BarberAgency</title>
+  <meta name="description" content="Landing premium V5 Electric para barberías con reservas online, servicios, barberos, horarios, mapa y QR.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -20,6 +20,12 @@
       --blue-2: #1a2f63;
       --red: #9b3a44;
       --red-2: #6e2a31;
+      --blue-deep: #020f46;
+      --blue-main: #0030b8;
+      --blue-electric: #008cff;
+      --red-deep: #3d0015;
+      --red-main: #93002f;
+      --red-electric: #e60046;
       --main: var(--blue);
       --alt: var(--red);
       --accent: var(--red);
@@ -27,7 +33,7 @@
       --hot: var(--red);
       --border: rgba(34, 42, 66, 0.14);
       --ring: rgba(39, 71, 143, 0.24);
-      --nav: rgba(255, 255, 255, 0.86);
+      --nav: rgba(3, 8, 22, 0.72);
       --shadow: 0 16px 36px rgba(22, 25, 36, 0.13);
     }
 
@@ -36,10 +42,10 @@
       --surface: #1a1e2a;
       --text: #edeaf2;
       --muted: #b2adc0;
-      --blue: #6d86c3;
-      --blue-2: #46598a;
-      --red: #c5747d;
-      --red-2: #8d4e55;
+      --blue: #008cff;
+      --blue-2: #0030b8;
+      --red: #e60046;
+      --red-2: #93002f;
       --main: var(--blue);
       --alt: var(--red);
       --accent: var(--red);
@@ -47,7 +53,7 @@
       --hot: var(--red);
       --border: rgba(167, 159, 184, 0.24);
       --ring: rgba(109, 134, 195, 0.28);
-      --nav: rgba(10, 19, 38, 0.84);
+      --nav: rgba(3, 8, 22, 0.78);
       --shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
     }
 
@@ -72,30 +78,31 @@
     /* --- NUEVA BARRA DE NAVEGACIÓN FLOTANTE PREMIUM CON EFECTO VIDRIO --- */
     .topnav {
       position: fixed !important;
-      top: 15px !important;
+      top: 14px !important;
       left: 50% !important;
       transform: translateX(-50%) !important;
       margin: 0 !important;
-      width: 92% !important;
-      max-width: 1200px !important;
-      border-radius: 30px !important;
-      background: rgba(255, 255, 255, 0.45) !important;
-      backdrop-filter: blur(16px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.25) !important;
-      box-shadow: 0 12px 32px rgba(31, 38, 135, 0.08) !important;
+      width: min(1180px, calc(100% - 24px)) !important;
+      max-width: none !important;
+      min-height: 62px !important;
+      border-radius: 999px !important;
+      background: linear-gradient(112deg, rgba(2, 15, 70, 0.38), rgba(7, 10, 25, 0.3) 44%, rgba(61, 0, 21, 0.34)) !important;
+      backdrop-filter: blur(24px) saturate(185%) !important;
+      -webkit-backdrop-filter: blur(24px) saturate(185%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22), 0 0 28px rgba(0, 140, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.06) !important;
       z-index: 1040 !important;
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
-      padding: 10px 24px !important;
+      padding: 8px 18px !important;
     }
 
     #landingRoot[data-theme='dark'] .topnav {
-      background: rgba(26, 30, 42, 0.55) !important;
-      border: 1px solid rgba(255, 255, 255, 0.08) !important;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25) !important;
+      background: linear-gradient(112deg, rgba(2, 15, 70, 0.4), rgba(3, 8, 22, 0.32) 44%, rgba(61, 0, 21, 0.34)) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34), 0 0 32px rgba(230, 0, 70, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(255, 255, 255, 0.05) !important;
     }
 
-    .navbar .navbar-brand { color: #000000 !important; }
+    .navbar .navbar-brand { color: #ffffff !important; }
     #landingRoot[data-theme='dark'] .navbar .navbar-brand { color: var(--text) !important; }
 
     .navbar-brand.brand {
@@ -103,9 +110,12 @@
       align-items: center;
       gap: 0.75rem;
       font-weight: 700 !important;
-      color: #000000 !important;
-      font-size: 1.35rem !important;
+      color: #ffffff !important;
+      font-size: 1.25rem !important;
+      line-height: 1 !important;
+      text-transform: uppercase;
       transition: all 0.3s ease !important;
+      text-shadow: 0 0 18px rgba(0, 140, 255, 0.28);
     }
     #landingRoot[data-theme='dark'] .navbar-brand.brand {
       color: var(--text) !important;
@@ -122,10 +132,12 @@
     }
 
     .navbar-nav .nav-link {
-      color: #000000 !important;
-      font-weight: 600 !important;
-      font-size: 0.92rem !important;
-      padding: 6px 16px !important;
+      color: rgba(255, 255, 255, 0.78) !important;
+      font-weight: 800 !important;
+      font-size: 0.74rem !important;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      padding: 8px 12px !important;
       border-radius: 99px !important;
       transition: all 0.3s ease !important;
     }
@@ -134,13 +146,14 @@
     }
 
     .navbar-nav .nav-link:hover {
-      background: rgba(39, 71, 143, 0.08) !important;
-      color: var(--blue) !important;
+      background: rgba(0, 140, 255, 0.14) !important;
+      color: #ffffff !important;
+      box-shadow: inset 0 0 0 1px rgba(0, 140, 255, 0.18);
     }
 
     #landingRoot[data-theme='dark'] .navbar-nav .nav-link:hover {
-      background: rgba(255, 255, 255, 0.08) !important;
-      color: var(--blue) !important;
+      background: rgba(230, 0, 70, 0.13) !important;
+      color: #ffffff !important;
     }
 
     /* --- BOTÓN HAMBURGUESA ANIMADO EN CSS --- */
@@ -166,7 +179,7 @@
       display: block !important;
       width: 100% !important;
       height: 2px !important;
-      background-color: #000000 !important;
+      background-color: #ffffff !important;
       border-radius: 4px !important;
       transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease !important;
     }
@@ -212,18 +225,36 @@
     .btn-blue {
       border: 0;
       color: #fff;
-      background: var(--blue);
-      box-shadow: 0 12px 24px rgba(39, 71, 143, 0.34);
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 14px 30px rgba(0, 140, 255, 0.26), 0 0 22px rgba(0, 48, 184, 0.18);
     }
 
     .btn-red {
       border: 0;
       color: #fff;
-      background: var(--red);
-      box-shadow: 0 12px 24px rgba(155, 58, 68, 0.32);
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      border: 1px solid rgba(230, 0, 70, 0.42);
+      box-shadow: 0 12px 24px rgba(230, 0, 70, 0.2), 0 0 20px rgba(147, 0, 47, 0.18);
     }
 
-    .btn-blue:hover, .btn-red:hover { color: #fff; filter: brightness(1.06); }
+    .btn-blue:hover,
+    .btn-blue:focus-visible,
+    .btn-blue:active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 12px 24px rgba(230, 0, 70, 0.24), 0 0 22px rgba(147, 0, 47, 0.2);
+      filter: brightness(1.06);
+    }
+
+    .btn-red:hover,
+    .btn-red:focus-visible,
+    .btn-red:active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      border-color: rgba(0, 140, 255, 0.46);
+      box-shadow: 0 14px 30px rgba(0, 140, 255, 0.28), 0 0 22px rgba(0, 48, 184, 0.2);
+      filter: brightness(1.06);
+    }
 
     .btn-ghost {
       border: 1px solid var(--border);
@@ -232,64 +263,108 @@
     }
 
     .btn-theme {
-      border: 1px solid var(--border);
-      color: var(--text);
-      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      width: 38px;
+      height: 38px;
+      display: inline-grid;
+      place-items: center;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
 
     .btn-theme:hover {
-      background: var(--blue);
+      background: rgba(0, 140, 255, 0.18);
       color: #fff;
     }
 
     .hero {
       width: 100%;
-      height: 500px;
+      min-height: 680px;
       position: relative;
       overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      background: #02050f;
+      padding-top: 120px;
     }
 
     .hero img {
       position: absolute;
       inset: 0;
       width: 100%;
-      height: 500px;
+      height: 100%;
       object-fit: cover;
       object-position: center;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(0, 140, 255, 0.28), transparent 34%),
+        radial-gradient(circle at 85% 25%, rgba(230, 0, 70, 0.24), transparent 36%),
+        linear-gradient(90deg, rgba(2, 5, 15, 0.92), rgba(2, 5, 15, 0.58), rgba(2, 5, 15, 0.88));
+      z-index: 1;
     }
 
     .hero::after {
       content: '';
       position: absolute;
-      inset: 0;
-      background: linear-gradient(102deg, rgba(5, 14, 34, 0.86), rgba(12, 22, 48, 0.36));
+      inset: auto 0 0;
+      height: 42%;
+      background: linear-gradient(0deg, rgba(2, 5, 15, 0.96), transparent);
+      z-index: 1;
     }
 
     .hero-content {
       position: relative;
       z-index: 2;
       height: 100%;
+      min-height: 560px;
       display: flex;
       align-items: center;
     }
 
-    .hero-copy { max-width: 780px; }
+    .hero-copy { max-width: 760px; }
     .hero-title,
     .hero-subtitle {
       color: #fff;
     }
 
+    .hero-title {
+      max-width: 760px;
+      font-size: clamp(3.25rem, 6vw, 6.2rem);
+      line-height: .88;
+      letter-spacing: 0;
+      text-transform: uppercase;
+      text-shadow: 0 0 34px rgba(0, 140, 255, 0.28), 0 18px 48px rgba(0, 0, 0, 0.55);
+    }
+
+    .hero-subtitle {
+      max-width: 620px;
+      color: rgba(255, 255, 255, 0.82) !important;
+      font-size: 1.12rem;
+    }
+
     .hero-tag {
       display: inline-block;
-      padding: .3rem .7rem;
+      padding: .42rem .78rem;
       border-radius: 999px;
       text-transform: uppercase;
-      letter-spacing: .8px;
-      font-weight: 700;
-      font-size: .82rem;
-      color: #d9e7ff;
-      border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(39,71,143,0.3);
+      letter-spacing: .14em;
+      font-weight: 900;
+      font-size: .76rem;
+      color: #ffffff;
+      border: 1px solid rgba(0, 140, 255, 0.34);
+      background: rgba(3, 8, 22, 0.54);
+      box-shadow: 0 0 26px rgba(0, 140, 255, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px) saturate(150%);
+      -webkit-backdrop-filter: blur(12px) saturate(150%);
     }
 
     .split-badges {
@@ -304,8 +379,10 @@
       border-radius: 999px;
       padding: .3rem .65rem;
       color: #e8efff;
-      border: 1px solid rgba(255,255,255,0.24);
-      background: rgba(11,19,39,0.45);
+      border: 1px solid rgba(0, 140, 255, 0.24);
+      background: rgba(3, 8, 22, 0.52);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       display: inline-flex;
       align-items: center;
       gap: .35rem;
@@ -321,29 +398,261 @@
     .section-soft { background: color-mix(in srgb, var(--surface) 68%, transparent); }
 
     .service-card, .barber-card { padding: 1.2rem; height: 100%; }
-    .service-visual {
-      display: none;
+    .service-card {
       position: relative;
+      min-height: 430px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      isolation: isolate;
       overflow: hidden;
+      clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+      background:
+        linear-gradient(145deg, rgba(0, 48, 184, 1), rgba(4, 8, 24, .46) 40%, rgba(147, 0, 47, 1)),
+        linear-gradient(118deg, transparent 9%, rgba(255,255,255,.82) 10%, transparent 11.2%, transparent 45%, rgba(255,255,255,.66) 46%, transparent 47.4%),
+        linear-gradient(28deg, transparent 54%, rgba(255,255,255,.58) 55%, transparent 56.2%),
+        linear-gradient(145deg, rgba(3, 9, 30, .98), rgba(2, 5, 15, .98));
+      box-shadow:
+        0 22px 42px rgba(0, 0, 0, .48),
+        -12px 0 34px rgba(0, 48, 184, .42),
+        12px 0 34px rgba(147, 0, 47, .38),
+        0 0 22px rgba(255,255,255,.12),
+        inset 0 0 0 2px rgba(0, 140, 255, .86),
+        inset 0 0 0 5px rgba(147, 0, 47, .42);
+      transition: transform .55s cubic-bezier(.16,1,.3,1), filter .55s cubic-bezier(.16,1,.3,1), background .45s ease;
+    }
+    .service-card:hover {
+      transform: translateY(-10px);
+      filter: drop-shadow(0 28px 34px rgba(0,0,0,.42));
+      background:
+        linear-gradient(145deg, rgba(0, 48, 184, 1), rgba(4, 8, 24, .4) 40%, rgba(147, 0, 47, 1)),
+        linear-gradient(118deg, transparent 8%, rgba(255,255,255,.95) 9.2%, transparent 10.4%, transparent 45%, rgba(255,255,255,.76) 46%, transparent 47.4%),
+        linear-gradient(28deg, transparent 54%, rgba(255,255,255,.72) 55%, transparent 56.2%),
+        linear-gradient(145deg, rgba(3, 13, 48, .98), rgba(2, 5, 15, .98));
+    }
+    .service-card::before {
+      content: '01';
+      position: absolute;
+      top: 22px;
+      left: 26px;
+      z-index: 4;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(3.25rem, 4.5vw, 4.85rem);
+      line-height: .8;
+      font-weight: 800;
+      letter-spacing: 0;
+      color: rgba(0, 140, 255, .44);
+      -webkit-text-stroke: 1px rgba(0, 140, 255, .9);
+      text-shadow: 0 12px 26px rgba(0,0,0,.34), 0 0 24px rgba(0, 140, 255, .34);
+      pointer-events: none;
+    }
+    #servicesGrid > :nth-child(2) .service-card::before { content: '02'; }
+    #servicesGrid > :nth-child(3) .service-card::before { content: '03'; }
+    #servicesGrid > :nth-child(4) .service-card::before { content: '04'; }
+    #servicesGrid > :nth-child(5) .service-card::before { content: '05'; }
+    #servicesGrid > :nth-child(6) .service-card::before { content: '06'; }
+    .service-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+      background:
+        linear-gradient(112deg, transparent 3%, rgba(255,255,255,.9) 4%, transparent 5.2%, transparent 72%, rgba(255,255,255,.58) 73%, transparent 74.2%),
+        linear-gradient(32deg, transparent 24%, rgba(255,255,255,.46) 25%, transparent 26.4%, transparent 88%),
+        radial-gradient(circle at 12% 8%, rgba(255,255,255,.48), transparent 9%),
+        radial-gradient(circle at 92% 92%, rgba(255,255,255,.34), transparent 10%);
+      mix-blend-mode: screen;
+      opacity: .74;
+      pointer-events: none;
+    }
+    .service-visual {
+      display: block;
+      position: absolute !important;
+      inset: 6px;
+      height: auto !important;
+      overflow: hidden;
+      clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+      background: #02050f;
     }
     .service-visual img {
       display: block;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center;
+      color: transparent;
+      font-size: 0;
+      transform: scale(1.02);
+      filter: grayscale(7%) brightness(.72) contrast(1.16) saturate(.9);
+      transition: transform .75s cubic-bezier(.16,1,.3,1), filter .75s cubic-bezier(.16,1,.3,1);
     }
-    .service-badge { display: none; }
-    .service-copy { padding: 0; }
-    .service-meta {
-      color: var(--muted);
-      font-size: .8rem;
-      font-weight: 600;
-      letter-spacing: .02em;
+    #servicesGrid > :nth-child(1) .service-visual { background-image: url("https://images.unsplash.com/photo-1622288432450-277d0fef5ed6?auto=format&fit=crop&w=900&q=80"); }
+    #servicesGrid > :nth-child(2) .service-visual { background-image: url("https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80"); }
+    #servicesGrid > :nth-child(3) .service-visual { background-image: url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=900&q=80"); }
+    #servicesGrid > :nth-child(4) .service-visual { background-image: url("https://images.unsplash.com/photo-1593702275687-f8b402bf9ea4?auto=format&fit=crop&w=900&q=80"); }
+    #servicesGrid > :nth-child(5) .service-visual { background-image: url("https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=900&q=80"); }
+    #servicesGrid > :nth-child(6) .service-visual { background-image: url("https://images.unsplash.com/photo-1512690459411-b0fd220c798f?auto=format&fit=crop&w=900&q=80"); }
+    .service-visual {
+      background-size: cover;
+      background-position: center;
+    }
+    .service-card:hover .service-visual img {
+      transform: scale(1.08);
+      filter: grayscale(0%) brightness(.88) contrast(1.08) saturate(1.04);
+    }
+    .service-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        radial-gradient(circle at 12% 0, rgba(0, 140, 255, .24), transparent 38%),
+        radial-gradient(circle at 90% 0, rgba(230, 0, 70, .2), transparent 38%),
+        linear-gradient(180deg, rgba(2, 5, 15, .08), rgba(2, 5, 15, .34) 38%, rgba(2, 5, 15, .96) 82%);
+      mix-blend-mode: normal;
+      pointer-events: none;
+      transition: opacity .7s cubic-bezier(.16,1,.3,1);
+    }
+    .service-card:hover .service-visual::before {
+      opacity: .52;
+    }
+    .service-visual::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,.22) 38%, rgba(0,0,0,.84)),
+        linear-gradient(90deg, rgba(0, 140, 255, .22), transparent 42%, rgba(230, 0, 70, .2));
+      pointer-events: none;
+    }
+    .service-badge {
+      position: absolute;
+      left: 34px;
+      bottom: 162px;
+      z-index: 5;
       display: inline-flex;
       align-items: center;
-      gap: .35rem;
+      gap: 8px;
+      max-width: calc(100% - 82px);
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(0, 140, 255, .94), rgba(230, 0, 70, .84));
+      border: 1px solid rgba(255, 255, 255, .26);
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), 0 0 22px rgba(0, 140, 255, .2);
+      font-size: 8px;
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
     }
-
+    .service-badge::after {
+      content: 'CORTE';
+    }
+    #servicesGrid > :nth-child(2) .service-badge::after { content: 'CORTE PREMIUM'; }
+    #servicesGrid > :nth-child(3) .service-badge::after { content: 'BARBA'; }
+    #servicesGrid > :nth-child(n+4) .service-badge::after { content: 'CORTE PREMIUM'; }
+    .service-copy {
+      position: relative;
+      z-index: 4;
+      min-height: 430px;
+      padding: 218px 36px 62px 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .service-copy::before {
+      display: none;
+    }
+    .service-card .h5 {
+      font-family: 'Rajdhani', sans-serif;
+      margin: 0;
+      color: #fff;
+      font-size: clamp(2.05rem, 3.4vw, 2.7rem);
+      line-height: .95;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      text-align: left;
+    }
+    .service-card .h5::after {
+      content: '';
+      display: block;
+      width: 44px;
+      height: 2px;
+      margin: 11px 0 12px;
+      background: linear-gradient(90deg, var(--blue-electric), var(--red-electric));
+      box-shadow: 0 0 16px rgba(0, 140, 255, .35);
+    }
+    .service-copy p {
+      margin: 0 0 16px;
+      color: rgba(232, 238, 255, .72);
+      font-size: .78rem;
+      line-height: 1.45;
+    }
+    .service-copy .d-flex {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      flex-wrap: wrap;
+      gap: 8px !important;
+    }
+    .service-copy .d-flex .price-pill {
+      margin-bottom: 0;
+    }
+    .service-copy .service-meta {
+      margin: 0 92px 0 0;
+    }
+    .service-copy::after {
+      content: 'RESERVAR \2192';
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      min-width: 126px;
+      height: 58px;
+      padding: 0 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      box-shadow: 0 0 24px rgba(0, 140, 255, .22);
+      transition: all .35s ease;
+    }
+    #servicesGrid > :nth-child(even) .service-copy::after {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 24px rgba(230, 0, 70, .22);
+    }
+    .service-card:hover .service-copy::after {
+      min-width: 150px;
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 28px rgba(230, 0, 70, .26);
+    }
+    #servicesGrid > :nth-child(even) .service-card:hover .service-copy::after {
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 0 28px rgba(0, 140, 255, .26);
+    }
+    .service-meta {
+      border: 1px solid rgba(0, 140, 255, .26);
+      color: #cfe5ff;
+      background: rgba(3, 8, 22, .46);
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      padding: 6px 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+    }
     .mobile-slot-strip,
     .mobile-dock {
       display: none;
@@ -361,15 +670,21 @@
     }
 
     .price-pill {
-      display: inline-block;
-      padding: .2rem .65rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
       border-radius: 999px;
-      background: rgba(155, 58, 68, 0.16);
-      color: var(--red-2);
-      font-weight: 700;
+      background: rgba(230, 0, 70, 0.18);
+      border: 1px solid rgba(230, 0, 70, .28);
+      color: #ffd4df;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
 
-    #landingRoot[data-theme='dark'] .price-pill { color: #ff9dab; }
+    #landingRoot[data-theme='dark'] .price-pill { color: #ffd4df; }
 
     .barber-photo {
       width: 72px;
@@ -623,8 +938,8 @@
         --mobile-card-2: #181d2a;
         --mobile-ink: #edf1ff;
         --mobile-muted: #9aa6c1;
-        --mobile-gold: #e9c54d;
-        --mobile-gold-ink: #1f1608;
+        --mobile-electric: #008cff;
+        --mobile-red: #e60046;
         --mobile-border: rgba(255, 255, 255, 0.09);
       }
 
@@ -662,7 +977,7 @@
         height: 260px;
         left: -110px;
         top: 65%;
-        background: radial-gradient(circle, rgba(233, 197, 77, 0.2), transparent 66%);
+        background: radial-gradient(circle, rgba(230, 0, 70, 0.24), transparent 66%);
         animation: mobileOrbB 8s ease-in-out infinite;
       }
 
@@ -681,34 +996,35 @@
 
       .topnav {
         position: fixed !important;
-        top: 12px !important;
+        top: 10px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         margin: 0 !important;
-        width: calc(100% - 24px) !important;
-        border-radius: 20px !important;
-        background: rgba(255, 255, 255, 0.7) !important;
-        backdrop-filter: blur(16px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
-        border: 1px solid rgba(15, 23, 32, 0.12) !important;
-        box-shadow: 0 12px 30px rgba(15, 23, 32, 0.08) !important;
-        padding: 8px 16px !important;
+        width: calc(100% - 20px) !important;
+        min-height: 54px !important;
+        border-radius: 22px !important;
+        background: linear-gradient(145deg, rgba(2, 15, 70, 0.42), rgba(7, 10, 25, 0.34) 48%, rgba(61, 0, 21, 0.36)) !important;
+        backdrop-filter: blur(24px) saturate(185%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(185%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.17) !important;
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28), 0 0 24px rgba(0, 140, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+        padding: 8px 14px !important;
       }
 
       .topnav:has(.navbar-collapse.show) {
         border-radius: 24px !important;
-        background: rgba(255, 255, 255, 0.94) !important;
+        background: rgba(3, 8, 22, 0.62) !important;
         backdrop-filter: blur(20px) !important;
       }
 
       #landingRoot[data-theme='dark'] .topnav {
-        background: rgba(11, 15, 24, 0.75) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3) !important;
+        background: rgba(11, 15, 24, 0.46) !important;
+        border: 1px solid rgba(255, 255, 255, 0.14) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24) !important;
       }
 
       #landingRoot[data-theme='dark'] .topnav:has(.navbar-collapse.show) {
-        background: rgba(11, 15, 24, 0.94) !important;
+        background: rgba(11, 15, 24, 0.66) !important;
       }
 
       .topnav .container {
@@ -719,9 +1035,9 @@
       }
 
       .navbar-brand.brand {
-        color: #000000 !important;
-        font-size: 1.55rem;
-        letter-spacing: .02em;
+        color: #ffffff !important;
+        font-size: 1.08rem !important;
+        letter-spacing: .04em;
       }
 
       #landingRoot[data-theme='dark'] .navbar-brand.brand {
@@ -735,7 +1051,7 @@
       }
 
       .navbar-toggler {
-        border: 1px solid rgba(15, 23, 32, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.18);
         border-radius: 10px;
         padding: .35rem .5rem;
       }
@@ -749,7 +1065,7 @@
       #landingRoot[data-theme='dark'] .navbar-toggler-icon { filter: invert(1) brightness(2); }
 
       .custom-toggler .toggler-bar {
-        background-color: #000000 !important;
+        background-color: #ffffff !important;
       }
 
       #landingRoot[data-theme='dark'] .custom-toggler .toggler-bar {
@@ -765,15 +1081,15 @@
       }
 
       #menuNav .nav-link {
-        color: #000000 !important;
+        color: rgba(255, 255, 255, 0.86) !important;
         padding: 10px 18px !important;
         margin: 4px 0 !important;
         display: block !important;
         border-radius: 12px !important;
       }
       #menuNav .nav-link:hover {
-        color: var(--blue) !important;
-        background: rgba(0, 0, 0, 0.05) !important;
+        color: #ffffff !important;
+        background: rgba(0, 140, 255, 0.14) !important;
       }
 
       #landingRoot[data-theme='dark'] #menuNav .nav-link {
@@ -790,10 +1106,11 @@
 
       #menuNav #themeToggle {
         margin-top: .45rem;
-        width: 100%;
-        color: #000000 !important;
-        border-color: rgba(0, 0, 0, 0.15) !important;
-        background: transparent !important;
+        width: 44px;
+        height: 44px;
+        color: #ffffff !important;
+        border-color: rgba(255, 255, 255, 0.18) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
       }
 
       #landingRoot[data-theme='dark'] #menuNav #themeToggle {
@@ -803,26 +1120,28 @@
 
       .hero {
         width: auto;
-        min-height: 0;
+        min-height: 520px;
         height: auto;
-        margin: 14px 12px 0;
+        margin: 0;
+        padding-top: 96px;
+        padding-bottom: 42px;
         border: 1px solid var(--mobile-border);
-        border-radius: 26px;
+        border-radius: 0 0 26px 26px;
         box-shadow: 0 24px 46px rgba(0, 0, 0, 0.45);
       }
 
       .hero img {
         min-height: 520px;
         height: 100%;
-        object-position: center;
+        object-position: center top;
       }
 
       .hero::after {
-        background: linear-gradient(166deg, rgba(6, 9, 16, 0.36), rgba(6, 9, 16, 0.92) 70%);
+        background: linear-gradient(0deg, rgba(2, 5, 15, 0.98), transparent 78%);
       }
 
       .hero-content {
-        min-height: 520px;
+        min-height: 382px;
         align-items: flex-end;
         padding: 28px 0 24px;
       }
@@ -876,16 +1195,31 @@
       }
 
       .hero .btn-blue {
-        color: var(--mobile-gold-ink);
-        background: var(--mobile-gold);
-        box-shadow: 0 14px 30px rgba(233, 197, 77, 0.32);
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--mobile-electric), #0030b8);
+        box-shadow: 0 14px 30px rgba(0, 140, 255, 0.24), 0 0 22px rgba(230, 0, 70, 0.16);
       }
 
       .hero .btn-red {
-        color: #f0f4ff;
-        background: rgba(255, 255, 255, 0.09);
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        box-shadow: none;
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--mobile-red), #93002f);
+        border: 1px solid rgba(230, 0, 70, 0.34);
+        box-shadow: 0 14px 30px rgba(230, 0, 70, 0.2);
+      }
+
+      .hero .btn-blue:hover,
+      .hero .btn-blue:focus-visible,
+      .hero .btn-blue:active {
+        background: linear-gradient(135deg, var(--mobile-red), #93002f);
+        box-shadow: 0 14px 30px rgba(230, 0, 70, 0.22);
+      }
+
+      .hero .btn-red:hover,
+      .hero .btn-red:focus-visible,
+      .hero .btn-red:active {
+        background: linear-gradient(135deg, var(--mobile-electric), #0030b8);
+        border-color: rgba(0, 140, 255, 0.4);
+        box-shadow: 0 14px 30px rgba(0, 140, 255, 0.24);
       }
 
       .split-badges { display: none; }
@@ -969,8 +1303,31 @@
 
       .section-soft { background: transparent; }
 
-      #servicesGrid,
+      /* Carrusel de Barberos en móvil */
       #barbersGrid {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        gap: 18px !important;
+        padding: 8px 18px 24px !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+      }
+      #barbersGrid::-webkit-scrollbar {
+        display: none !important;
+      }
+      #barbersGrid > [class*='col-'] {
+        flex: 0 0 82% !important;
+        max-width: 82% !important;
+        scroll-snap-align: center !important;
+      }
+      .barber-carousel-control {
+        display: inline-grid !important;
+      }
+
+      /* Servicios en móvil */
+      #servicesGrid {
         --bs-gutter-x: 0;
         --bs-gutter-y: 0;
         margin: 0;
@@ -981,67 +1338,81 @@
         padding-bottom: 0;
       }
 
-      #servicesGrid > [class*='col-'],
-      #barbersGrid > [class*='col-'] {
+      #servicesGrid > [class*='col-'] {
         width: 100%;
         max-width: 100%;
         padding: 0;
       }
+    }
 
       .service-card,
       .barber-card {
-        border-radius: 24px;
-        border: 1px solid var(--mobile-border);
-        background: linear-gradient(160deg, var(--mobile-card-2), var(--mobile-card));
         overflow: hidden;
-        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.3);
       }
 
       .service-card {
-        padding: 0 0 1rem;
+        min-height: 430px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
+        box-shadow: 0 24px 46px rgba(0, 0, 0, 0.38), 0 0 28px rgba(0, 140, 255, .12);
       }
 
       .service-visual {
         display: block;
-        height: 194px;
-        position: relative;
+        height: auto !important;
+        position: absolute !important;
+        inset: 2px;
         overflow: hidden;
+        clip-path: polygon(8% 0, 100% 0, 92% 100%, 0 100%);
       }
 
       .service-visual::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(8, 11, 20, 0.05), rgba(8, 11, 20, 0.75));
+        background:
+          linear-gradient(180deg, rgba(2, 5, 15, 0.04), rgba(2, 5, 15, 0.72)),
+          linear-gradient(90deg, rgba(0, 140, 255, .14), transparent 38%, rgba(230, 0, 70, .16));
       }
 
       .service-badge {
-        display: inline-grid;
-        place-items: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        color: #fbe9b3;
-        background: rgba(0, 0, 0, 0.46);
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        z-index: 1;
-        font-size: 1.05rem;
+        left: 28px;
+        bottom: 156px;
+        width: auto;
+        height: auto;
+        color: #fff;
+        background: linear-gradient(135deg, rgba(0, 140, 255, .92), rgba(230, 0, 70, .82));
+        z-index: 5;
+        font-size: 8px;
       }
 
       .service-copy {
-        padding: .95rem 1rem .25rem;
+        min-height: 430px;
+        padding: 218px 32px 62px 34px;
       }
 
       .service-icon-desktop { display: none !important; }
-      .service-card .h5 { color: #f4f7ff; }
+      .service-card .h5 {
+        font-size: 1.55rem;
+      }
+
+      .service-copy p {
+        font-size: .84rem;
+      }
+
+      .service-copy .service-meta {
+        margin-right: 84px;
+      }
 
       .price-pill {
-        background: rgba(233, 197, 77, 0.2);
-        color: #f6da7f;
-        font-size: .88rem;
+        background: rgba(230, 0, 70, 0.18);
+        color: #ffd4df;
+        font-size: 9px;
+      }
+
+      .service-copy::after {
+        min-width: 118px;
+        height: 54px;
+        padding: 0 20px;
       }
 
       .barber-card {
@@ -1222,6 +1593,105 @@
         color: #111827;
       }
 
+      #landingRoot[data-theme='light'] .service-card {
+        border: 0;
+        background:
+          linear-gradient(145deg, rgba(0, 48, 184, 1), rgba(255,255,255,.96) 43%, rgba(147, 0, 47, 1)),
+          linear-gradient(118deg, transparent 8%, rgba(255,255,255,.98) 9.2%, transparent 10.5%, transparent 45%, rgba(255,255,255,.82) 46.2%, transparent 47.6%),
+          linear-gradient(28deg, transparent 54%, rgba(255,255,255,.72) 55.1%, transparent 56.4%),
+          linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(247, 250, 255, .98));
+        box-shadow:
+          0 20px 38px rgba(2, 15, 70, .13),
+          -14px 0 30px rgba(0, 48, 184, .3),
+          14px 0 30px rgba(147, 0, 47, .28),
+          0 0 18px rgba(255,255,255,.72),
+          inset 0 0 0 3px rgba(0, 48, 184, .86),
+          inset 0 0 0 7px rgba(147, 0, 47, .44);
+      }
+
+      #landingRoot[data-theme='light'] .service-card:hover {
+        background:
+          linear-gradient(145deg, rgba(0, 48, 184, 1), rgba(255,255,255,.96) 43%, rgba(147, 0, 47, 1)),
+          linear-gradient(118deg, transparent 8%, rgba(255,255,255,1) 9.2%, transparent 10.5%, transparent 45%, rgba(255,255,255,.92) 46.2%, transparent 47.6%),
+          linear-gradient(28deg, transparent 54%, rgba(255,255,255,.82) 55.1%, transparent 56.4%),
+          linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(241, 246, 255, .98));
+        filter: drop-shadow(-10px 0 20px rgba(0, 48, 184, .28)) drop-shadow(10px 0 20px rgba(147, 0, 47, .26));
+      }
+
+      #landingRoot[data-theme='light'] .service-card::before {
+        color: rgba(0, 48, 184, .08);
+        -webkit-text-stroke: 1.4px rgba(0, 48, 184, .62);
+        text-shadow: 0 10px 22px rgba(0, 48, 184, .1);
+      }
+
+      #landingRoot[data-theme='light'] .service-visual {
+        background: #f7f9ff;
+        margin: 7px;
+      }
+
+      #landingRoot[data-theme='light'] .service-visual img {
+        opacity: .72;
+        filter: grayscale(4%) brightness(1.08) contrast(.98) saturate(.94);
+      }
+
+      #landingRoot[data-theme='light'] .service-visual::before {
+        background:
+          radial-gradient(circle at 14% 16%, rgba(0, 140, 255, .16), transparent 30%),
+          radial-gradient(circle at 88% 20%, rgba(230, 0, 70, .12), transparent 34%),
+          linear-gradient(180deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .26) 36%, rgba(255, 255, 255, .92) 82%);
+        mix-blend-mode: normal;
+      }
+
+      #landingRoot[data-theme='light'] .service-visual::after {
+        background:
+          linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.24) 38%, rgba(255,255,255,.96)),
+          linear-gradient(90deg, rgba(0, 48, 184, .14), transparent 38%, rgba(147, 0, 47, .12));
+      }
+
+      #landingRoot[data-theme='light'] .service-copy::before {
+        background: linear-gradient(180deg, rgba(255, 255, 255, .24), rgba(255, 255, 255, .98));
+      }
+
+      #landingRoot[data-theme='light'] .service-copy {
+        margin: 4px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,.04) 0, rgba(255,255,255,.78) 48%, rgba(255,255,255,1) 70%),
+          radial-gradient(circle at 0 100%, rgba(0, 140, 255, .12), transparent 42%),
+          radial-gradient(circle at 100% 100%, rgba(230, 0, 70, .1), transparent 42%);
+      }
+
+      #landingRoot[data-theme='light'] .service-card .h5,
+      #landingRoot[data-theme='light'] .service-copy p,
+      #landingRoot[data-theme='light'] .service-meta {
+        color: inherit;
+      }
+
+      #landingRoot[data-theme='light'] .service-card .h5 {
+        color: #07142f;
+        text-shadow: none;
+      }
+
+      #landingRoot[data-theme='light'] .service-copy p {
+        color: #3d4963;
+      }
+
+      #landingRoot[data-theme='light'] .service-meta {
+        color: #0030b8;
+        background: rgba(0, 140, 255, .08);
+        border-color: rgba(0, 48, 184, .18);
+      }
+
+      #landingRoot[data-theme='light'] .service-card .price-pill {
+        background: rgba(230, 0, 70, 0.08);
+        border-color: rgba(230, 0, 70, .28);
+        color: #93002f;
+      }
+
+      #landingRoot[data-theme='light'] .service-copy::after {
+        background: linear-gradient(135deg, var(--blue-main), var(--red-electric));
+        box-shadow: 0 0 18px rgba(230, 0, 70, .16);
+      }
+
       #landingRoot[data-theme='light'] .reserve-box .form-control,
       #landingRoot[data-theme='light'] .reserve-box .form-select {
         color: #111827;
@@ -1266,11 +1736,2500 @@
         color: #111827;
       }
     }
+
+    #landingRoot[data-theme='light'] .service-card {
+      border: 0;
+      background:
+        linear-gradient(145deg, rgba(0, 48, 184, 1), rgba(255,255,255,.96) 43%, rgba(147, 0, 47, 1)),
+        linear-gradient(118deg, transparent 8%, rgba(255,255,255,.98) 9.2%, transparent 10.5%, transparent 45%, rgba(255,255,255,.82) 46.2%, transparent 47.6%),
+        linear-gradient(28deg, transparent 54%, rgba(255,255,255,.72) 55.1%, transparent 56.4%),
+        linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(247, 250, 255, .98));
+      box-shadow:
+        0 20px 38px rgba(2, 15, 70, .13),
+        -14px 0 30px rgba(0, 48, 184, .3),
+        14px 0 30px rgba(147, 0, 47, .28),
+        0 0 18px rgba(255,255,255,.72),
+        inset 0 0 0 3px rgba(0, 48, 184, .86),
+        inset 0 0 0 7px rgba(147, 0, 47, .44);
+    }
+
+    #landingRoot[data-theme='light'] .service-card:hover {
+      background:
+        linear-gradient(145deg, rgba(0, 48, 184, 1), rgba(255,255,255,.96) 43%, rgba(147, 0, 47, 1)),
+        linear-gradient(118deg, transparent 8%, rgba(255,255,255,1) 9.2%, transparent 10.5%, transparent 45%, rgba(255,255,255,.92) 46.2%, transparent 47.6%),
+        linear-gradient(28deg, transparent 54%, rgba(255,255,255,.82) 55.1%, transparent 56.4%),
+        linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(241, 246, 255, .98));
+      filter: drop-shadow(-10px 0 20px rgba(0, 48, 184, .28)) drop-shadow(10px 0 20px rgba(147, 0, 47, .26));
+    }
+
+    #landingRoot[data-theme='light'] .service-card::before {
+      color: rgba(0, 48, 184, .08);
+      -webkit-text-stroke: 1.4px rgba(0, 48, 184, .62);
+      text-shadow: 0 10px 22px rgba(0, 48, 184, .1);
+    }
+
+    #landingRoot[data-theme='light'] .service-visual {
+      background: #f7f9ff;
+      margin: 7px;
+    }
+
+    #landingRoot[data-theme='light'] .service-visual img {
+      opacity: .72;
+      filter: grayscale(4%) brightness(1.08) contrast(.98) saturate(.94);
+    }
+
+    #landingRoot[data-theme='light'] .service-visual::before {
+      background:
+        radial-gradient(circle at 14% 16%, rgba(0, 140, 255, .16), transparent 30%),
+        radial-gradient(circle at 88% 20%, rgba(230, 0, 70, .12), transparent 34%),
+        linear-gradient(180deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .26) 36%, rgba(255, 255, 255, .92) 82%);
+      mix-blend-mode: normal;
+    }
+
+    #landingRoot[data-theme='light'] .service-visual::after {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.24) 38%, rgba(255,255,255,.96)),
+        linear-gradient(90deg, rgba(0, 48, 184, .14), transparent 38%, rgba(147, 0, 47, .12));
+    }
+
+    #landingRoot[data-theme='light'] .service-copy {
+      margin: 4px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04) 0, rgba(255,255,255,.78) 48%, rgba(255,255,255,1) 70%),
+        radial-gradient(circle at 0 100%, rgba(0, 140, 255, .12), transparent 42%),
+        radial-gradient(circle at 100% 100%, rgba(230, 0, 70, .1), transparent 42%);
+    }
+
+    #landingRoot[data-theme='light'] .service-card .h5 {
+      color: #07142f;
+      text-shadow: none;
+    }
+
+    #landingRoot[data-theme='light'] .service-copy p {
+      color: #3d4963;
+    }
+
+    #landingRoot[data-theme='light'] .service-meta {
+      color: #0030b8;
+      background: rgba(0, 140, 255, .08);
+      border-color: rgba(0, 48, 184, .18);
+    }
+
+    #landingRoot[data-theme='light'] .service-card .price-pill {
+      background: rgba(230, 0, 70, 0.08);
+      border-color: rgba(230, 0, 70, .28);
+      color: #93002f;
+    }
+
+    #landingRoot[data-theme='light'] .service-copy::after {
+      background: linear-gradient(135deg, var(--blue-main), var(--red-electric));
+      box-shadow: 0 0 18px rgba(230, 0, 70, .16);
+    }
+
+    #landingRoot[data-theme='light'] .service-visual img {
+      opacity: .9;
+      filter: grayscale(0) brightness(1.02) contrast(1.05) saturate(1.05);
+    }
+
+    #landingRoot[data-theme='light'] .service-visual::before {
+      background:
+        radial-gradient(circle at 14% 16%, rgba(0, 140, 255, .1), transparent 32%),
+        radial-gradient(circle at 88% 20%, rgba(230, 0, 70, .08), transparent 35%),
+        linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .08) 34%, rgba(255, 255, 255, .64) 84%);
+      mix-blend-mode: normal;
+    }
+
+    #landingRoot[data-theme='light'] .service-visual::after {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.09) 42%, rgba(255,255,255,.78)),
+        linear-gradient(90deg, rgba(0, 48, 184, .1), transparent 40%, rgba(147, 0, 47, .08));
+    }
+
+    #landingRoot[data-theme='light'] .service-copy {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0) 0, rgba(255,255,255,.58) 50%, rgba(255,255,255,1) 76%),
+        radial-gradient(circle at 0 100%, rgba(0, 140, 255, .1), transparent 42%),
+        radial-gradient(circle at 100% 100%, rgba(230, 0, 70, .08), transparent 42%);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-copy::after {
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 0 20px rgba(0, 140, 255, .34), inset 0 0 0 1px rgba(255,255,255,.34);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-copy::after {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 20px rgba(230, 0, 70, .34), inset 0 0 0 1px rgba(255,255,255,.34);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-card:hover .service-copy::after,
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-card:focus-within .service-copy::after,
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-card:active .service-copy::after {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 24px rgba(230, 0, 70, .44), inset 0 0 0 1px rgba(255,255,255,.4);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-card:hover .service-copy::after,
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-card:focus-within .service-copy::after,
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-card:active .service-copy::after {
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 0 24px rgba(0, 140, 255, .44), inset 0 0 0 1px rgba(255,255,255,.4);
+    }
+
+    #landingRoot[data-theme='light'] .service-card {
+      display: flex;
+      min-height: 0;
+      padding: 0;
+      flex-direction: column;
+      background:
+        linear-gradient(145deg, #0030b8, #fff 36%, #fff 66%, #93002f),
+        linear-gradient(118deg, transparent 8%, rgba(255,255,255,1) 9.1%, transparent 10.2%, transparent 72%, rgba(255,255,255,.9) 73%, transparent 74.4%),
+        #fff;
+      box-shadow:
+        0 24px 44px rgba(7, 20, 47, .16),
+        -10px 0 24px rgba(0, 48, 184, .28),
+        10px 0 24px rgba(147, 0, 47, .22),
+        inset 0 0 0 3px rgba(0, 48, 184, .9),
+        inset 0 0 0 7px rgba(147, 0, 47, .32);
+    }
+
+    #landingRoot[data-theme='light'] .service-card:hover {
+      transform: translateY(-8px);
+      background:
+        linear-gradient(145deg, #00227c, #fff 35%, #fff 66%, #6e0026),
+        linear-gradient(118deg, transparent 8%, rgba(255,255,255,1) 9.1%, transparent 10.2%, transparent 72%, rgba(255,255,255,.96) 73%, transparent 74.4%),
+        #fff;
+      filter: drop-shadow(-8px 0 22px rgba(0, 48, 184, .32)) drop-shadow(8px 0 22px rgba(147, 0, 47, .3));
+    }
+
+    #landingRoot[data-theme='light'] .service-card::after {
+      opacity: .34;
+      background:
+        linear-gradient(112deg, transparent 4%, rgba(255,255,255,.9) 5%, transparent 6%, transparent 75%, rgba(255,255,255,.62) 76%, transparent 77.4%),
+        linear-gradient(32deg, transparent 26%, rgba(255,255,255,.5) 27%, transparent 28.2%);
+    }
+
+    #landingRoot[data-theme='light'] .service-visual {
+      position: relative !important;
+      inset: auto;
+      height: 270px !important;
+      margin: 8px 8px 0;
+      flex: 0 0 auto;
+      background: #eef4ff;
+    }
+
+    #landingRoot[data-theme='light'] .service-visual img {
+      opacity: 1;
+      transform: scale(1.01);
+      filter: grayscale(0) brightness(.96) contrast(1.12) saturate(1.04);
+    }
+
+    #landingRoot[data-theme='light'] .service-card:hover .service-visual img {
+      transform: scale(1.06);
+      filter: grayscale(0) brightness(1.02) contrast(1.08) saturate(1.08);
+    }
+
+    #landingRoot[data-theme='light'] .service-visual::before {
+      background:
+        radial-gradient(circle at 12% 8%, rgba(0, 140, 255, .18), transparent 36%),
+        radial-gradient(circle at 90% 8%, rgba(230, 0, 70, .14), transparent 36%),
+        linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.02) 44%, rgba(255,255,255,.28));
+    }
+
+    #landingRoot[data-theme='light'] .service-visual::after {
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.02), rgba(0,0,0,.08) 48%, rgba(255,255,255,.2)),
+        linear-gradient(90deg, rgba(0, 48, 184, .16), transparent 42%, rgba(147, 0, 47, .14));
+    }
+
+    #landingRoot[data-theme='light'] .service-badge {
+      left: 28px;
+      bottom: 18px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 12px 24px rgba(0, 48, 184, .28);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-badge {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 12px 24px rgba(147, 0, 47, .24);
+    }
+
+    #landingRoot[data-theme='light'] .service-copy {
+      min-height: 310px;
+      margin: 0 8px 8px;
+      padding: 34px 32px 76px;
+      justify-content: flex-start;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.98), #fff 52%),
+        radial-gradient(circle at 0 100%, rgba(0, 140, 255, .08), transparent 42%),
+        radial-gradient(circle at 100% 100%, rgba(230, 0, 70, .07), transparent 42%);
+    }
+
+    #landingRoot[data-theme='light'] .service-copy .service-meta {
+      margin-right: 104px;
+    }
+
+    #landingRoot[data-theme='light'] .service-copy::after {
+      min-width: 136px;
+      height: 64px;
+      right: -1px;
+      bottom: -1px;
+      clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-copy::after {
+      background: linear-gradient(135deg, #0076e8, #0030b8);
+      box-shadow: 0 0 24px rgba(0, 48, 184, .4), inset 0 0 0 1px rgba(255,255,255,.36);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-copy::after {
+      background: linear-gradient(135deg, #d6003f, #93002f);
+      box-shadow: 0 0 24px rgba(147, 0, 47, .38), inset 0 0 0 1px rgba(255,255,255,.36);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-card:hover .service-copy::after,
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-card:focus-within .service-copy::after,
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-card:active .service-copy::after {
+      background: linear-gradient(135deg, #d6003f, #93002f);
+      box-shadow: 0 0 28px rgba(147, 0, 47, .46), inset 0 0 0 1px rgba(255,255,255,.42);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-card:hover .service-copy::after,
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-card:focus-within .service-copy::after,
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-card:active .service-copy::after {
+      background: linear-gradient(135deg, #0076e8, #0030b8);
+      box-shadow: 0 0 28px rgba(0, 48, 184, .46), inset 0 0 0 1px rgba(255,255,255,.42);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(1) .service-visual { background-image: url("https://images.unsplash.com/photo-1622288432450-277d0fef5ed6?auto=format&fit=crop&w=900&q=80"); }
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(2) .service-visual { background-image: url("https://images.unsplash.com/photo-1517832606299-7ae9b720a186?auto=format&fit=crop&w=900&q=80"); }
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(3) .service-visual { background-image: url("https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=900&q=80"); }
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(4) .service-visual { background-image: url("https://images.unsplash.com/photo-1593702275687-f8b402bf9ea4?auto=format&fit=crop&w=900&q=80"); }
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(5) .service-visual { background-image: url("https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=900&q=80"); }
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(6) .service-visual { background-image: url("https://images.unsplash.com/photo-1512690459411-b0fd220c798f?auto=format&fit=crop&w=900&q=80"); }
+    #landingRoot[data-theme='light'] .service-visual {
+      background-color: #eef4ff;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .service-barber-card {
+      position: relative;
+      min-height: 560px;
+      isolation: isolate;
+      cursor: pointer;
+      transition: transform .55s cubic-bezier(.16,1,.3,1), filter .55s cubic-bezier(.16,1,.3,1);
+    }
+
+    .service-barber-card:hover {
+      transform: translateY(-14px);
+      filter: drop-shadow(0 34px 38px rgba(0,0,0,.42));
+    }
+
+    .service-barber-frame {
+      height: 100%;
+      min-height: 560px;
+      padding: 4px;
+      clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+      background:
+        linear-gradient(145deg, #00a6ff, #0030b8 42%, #00124f),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.95) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.65) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.22),
+        0 0 28px rgba(0, 140, 255, .55),
+        -14px 0 34px rgba(0, 140, 255, .42);
+      transition: background .35s ease, box-shadow .35s ease, transform .45s ease;
+    }
+
+    .service-barber-card:hover .service-barber-frame {
+      background:
+        linear-gradient(145deg, #ff0050, #93002f 42%, #3b0016),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.95) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.65) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.24),
+        0 0 30px rgba(230, 0, 70, .62),
+        14px 0 36px rgba(230, 0, 70, .5);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-frame {
+      background:
+        linear-gradient(145deg, #ff0050, #93002f 42%, #3b0016),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.95) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.65) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.22),
+        0 0 28px rgba(230, 0, 70, .55),
+        14px 0 34px rgba(230, 0, 70, .42);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:hover .service-barber-frame {
+      background:
+        linear-gradient(145deg, #00a6ff, #0030b8 42%, #00124f),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.95) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.65) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.24),
+        0 0 30px rgba(0, 140, 255, .62),
+        -14px 0 36px rgba(0, 140, 255, .5);
+    }
+
+    .service-barber-body {
+      height: 100%;
+      min-height: 558px;
+      clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.045), transparent 28%),
+        linear-gradient(145deg, rgba(3, 13, 48, .98), rgba(2, 5, 15, .98));
+      overflow: hidden;
+      position: relative;
+    }
+
+    #landingRoot[data-theme='light'] .service-barber-body {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.72), rgba(246,249,255,.96)),
+        #fff;
+    }
+
+    .service-barber-number {
+      position: absolute;
+      top: 18px;
+      left: 28px;
+      z-index: 4;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(3.6rem, 5vw, 5.5rem);
+      line-height: .8;
+      font-weight: 800;
+      letter-spacing: 0;
+      color: rgba(0, 140, 255, .52);
+      -webkit-text-stroke: 1px rgba(0, 140, 255, .86);
+      text-shadow: 0 12px 24px rgba(0,0,0,.32);
+      pointer-events: none;
+    }
+
+    .service-barber-photo {
+      position: relative;
+      height: 365px;
+      clip-path: polygon(10% 0, 100% 0, 93% 100%, 0 100%);
+      overflow: hidden;
+      background: #02050f;
+    }
+
+    .service-barber-photo img {
+      width: 112%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transform: scale(1.04);
+      filter: grayscale(8%) brightness(.8) contrast(1.12) saturate(.95);
+      transition: transform .75s cubic-bezier(.16,1,.3,1), filter .75s cubic-bezier(.16,1,.3,1);
+    }
+
+    .service-barber-card:hover .service-barber-photo img {
+      transform: scale(1.11);
+      filter: grayscale(0%) brightness(1.02) contrast(1.05) saturate(1.06);
+    }
+
+    .service-barber-photo::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        linear-gradient(180deg, rgba(2, 5, 15, .12), rgba(2, 5, 15, .58)),
+        linear-gradient(90deg, rgba(0, 48, 184, .42), transparent 44%, rgba(147, 0, 47, .42));
+      mix-blend-mode: multiply;
+      transition: opacity .7s cubic-bezier(.16,1,.3,1);
+      pointer-events: none;
+    }
+
+    .service-barber-card:hover .service-barber-photo::before {
+      opacity: 0;
+    }
+
+    .service-barber-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.62)),
+        linear-gradient(90deg, rgba(0, 140, 255, .2), transparent 38%, rgba(230, 0, 70, .2));
+      transition: opacity .7s cubic-bezier(.16,1,.3,1);
+      pointer-events: none;
+    }
+
+    .service-barber-card:hover .service-barber-photo::after {
+      opacity: .28;
+    }
+
+    .service-role-badge {
+      position: absolute;
+      left: 34px;
+      bottom: 24px;
+      z-index: 5;
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.28);
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), 0 0 18px rgba(0, 140, 255, .32);
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 9px;
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    #servicesGrid > :nth-child(even) .service-role-badge {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), 0 0 18px rgba(230, 0, 70, .32);
+    }
+
+    .service-barber-card:hover .service-role-badge {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), 0 0 22px rgba(230, 0, 70, .44);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:hover .service-role-badge {
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), 0 0 22px rgba(0, 140, 255, .44);
+    }
+
+    .service-barber-info {
+      position: relative;
+      z-index: 4;
+      padding: 26px 38px 28px 42px;
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .service-barber-info::before {
+      content: '';
+      position: absolute;
+      top: -46px;
+      left: 0;
+      right: 0;
+      height: 88px;
+      background: linear-gradient(180deg, rgba(2, 5, 15, .18), rgba(2, 5, 15, .98));
+      clip-path: polygon(8% 0, 100% 26%, 91% 100%, 0 100%);
+      z-index: -1;
+    }
+
+    #landingRoot[data-theme='light'] .service-barber-info::before {
+      background: linear-gradient(180deg, rgba(246,249,255,.2), rgba(246,249,255,.98));
+    }
+
+    .service-barber-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 2rem;
+      line-height: .95;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: #fff;
+      text-align: left;
+    }
+
+    #landingRoot[data-theme='light'] .service-barber-name {
+      color: #07142f;
+    }
+
+    .service-barber-line {
+      width: 44px;
+      height: 2px;
+      margin: 13px 0 14px;
+      background: linear-gradient(90deg, var(--blue-electric), var(--red-electric));
+    }
+
+    .service-barber-chip {
+      border: 1px solid rgba(0, 140, 255, .36);
+      color: #cfe5ff;
+      background: rgba(3, 8, 22, .34);
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 5px 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+    }
+
+    #landingRoot[data-theme='light'] .service-barber-chip {
+      background: rgba(0, 140, 255, .08);
+      color: #0030b8;
+      border-color: rgba(0, 48, 184, .18);
+    }
+
+    .service-barber-price {
+      color: #ffd4df;
+      background: rgba(230, 0, 70, .18);
+      border: 1px solid rgba(230, 0, 70, .34);
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 5px 9px;
+      display: inline-flex;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    #landingRoot[data-theme='light'] .service-barber-price {
+      color: #93002f;
+      background: rgba(230, 0, 70, .08);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-number {
+      color: rgba(0, 140, 255, .52);
+      -webkit-text-stroke-color: rgba(0, 140, 255, .9);
+      text-shadow: 0 12px 24px rgba(0,0,0,.32), 0 0 24px rgba(0, 140, 255, .34);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-number {
+      color: rgba(230, 0, 70, .46);
+      -webkit-text-stroke-color: rgba(230, 0, 70, .9);
+      text-shadow: 0 12px 24px rgba(0,0,0,.32), 0 0 24px rgba(230, 0, 70, .34);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-line {
+      background: var(--blue-electric);
+      box-shadow: 0 0 16px rgba(0, 140, 255, .42);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-line {
+      background: var(--red-electric);
+      box-shadow: 0 0 16px rgba(230, 0, 70, .42);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-price {
+      color: #cfe5ff;
+      background: rgba(0, 140, 255, .16);
+      border-color: rgba(0, 140, 255, .44);
+      box-shadow: 0 0 18px rgba(0, 140, 255, .22);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-barber-price {
+      color: #0030b8;
+      background: rgba(0, 140, 255, .08);
+      border-color: rgba(0, 48, 184, .28);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-price {
+      color: #ffd4df;
+      background: rgba(230, 0, 70, .18);
+      border-color: rgba(230, 0, 70, .44);
+      box-shadow: 0 0 18px rgba(230, 0, 70, .22);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-barber-price {
+      color: #93002f;
+      background: rgba(230, 0, 70, .08);
+      border-color: rgba(230, 0, 70, .32);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-chip {
+      color: #cfe5ff;
+      background: rgba(0, 140, 255, .16);
+      border-color: rgba(0, 140, 255, .42);
+      box-shadow: 0 0 18px rgba(0, 140, 255, .18);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-barber-chip {
+      color: #0030b8;
+      background: rgba(0, 140, 255, .08);
+      border-color: rgba(0, 48, 184, .28);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-chip {
+      color: #ffd4df;
+      background: rgba(230, 0, 70, .16);
+      border-color: rgba(230, 0, 70, .42);
+      box-shadow: 0 0 18px rgba(230, 0, 70, .18);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-barber-chip {
+      color: #93002f;
+      background: rgba(230, 0, 70, .08);
+      border-color: rgba(230, 0, 70, .32);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-photo::before {
+      background:
+        linear-gradient(180deg, rgba(2, 5, 15, .12), rgba(2, 5, 15, .58)),
+        linear-gradient(90deg, rgba(0, 48, 184, .46), transparent 54%, rgba(0, 140, 255, .18));
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-photo::before {
+      background:
+        linear-gradient(180deg, rgba(2, 5, 15, .12), rgba(2, 5, 15, .58)),
+        linear-gradient(90deg, rgba(147, 0, 47, .46), transparent 54%, rgba(230, 0, 70, .18));
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-photo::after {
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.62)),
+        linear-gradient(90deg, rgba(0, 140, 255, .24), transparent 44%, rgba(0, 48, 184, .16));
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-photo::after {
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.62)),
+        linear-gradient(90deg, rgba(230, 0, 70, .24), transparent 44%, rgba(147, 0, 47, .16));
+    }
+
+    .service-reserve-btn {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      z-index: 8;
+      height: 58px;
+      min-width: 128px;
+      padding: 0 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+      transition: all .35s ease;
+      text-decoration: none;
+      box-shadow: 0 0 24px rgba(0, 140, 255, .34);
+      pointer-events: auto;
+    }
+
+    #servicesGrid > :nth-child(even) .service-reserve-btn {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 24px rgba(230, 0, 70, .34);
+    }
+
+    .service-barber-card:hover .service-reserve-btn {
+      min-width: 150px;
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      color: #fff;
+      box-shadow: 0 0 28px rgba(230, 0, 70, .48);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:hover .service-reserve-btn {
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 0 28px rgba(0, 140, 255, .48);
+    }
+
+    @media (max-width: 1023px) {
+      .service-barber-card,
+      .service-barber-frame,
+      .service-barber-body {
+        min-height: 545px;
+      }
+      .service-barber-photo { height: 345px; }
+    }
+
+    @media (max-width: 640px) {
+      .service-barber-card,
+      .service-barber-frame,
+      .service-barber-body {
+        min-height: 520px;
+      }
+      .service-barber-photo { height: 320px; }
+      .service-barber-info { padding: 22px 34px 26px 36px; min-height: 180px; }
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:hover .service-barber-frame {
+      background:
+        linear-gradient(145deg, #00a6ff, #0030b8 42%, #00124f),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.95) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.65) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.22),
+        0 0 28px rgba(0, 140, 255, .55),
+        -14px 0 34px rgba(0, 140, 255, .42);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:hover .service-barber-frame {
+      background:
+        linear-gradient(145deg, #ff0050, #93002f 42%, #3b0016),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.95) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.65) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.22),
+        0 0 28px rgba(230, 0, 70, .55),
+        14px 0 34px rgba(230, 0, 70, .42);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:hover .service-reserve-btn {
+      min-width: 128px;
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 0 24px rgba(0, 140, 255, .34);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:hover .service-reserve-btn {
+      min-width: 128px;
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 24px rgba(230, 0, 70, .34);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:hover .service-role-badge {
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), 0 0 18px rgba(0, 140, 255, .32);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:hover .service-role-badge {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), 0 0 18px rgba(230, 0, 70, .32);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active)) .service-barber-frame {
+      background:
+        linear-gradient(145deg, #ff0050, #93002f 42%, #3b0016),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.95) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.65) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.24),
+        0 0 34px rgba(230, 0, 70, .72),
+        14px 0 40px rgba(230, 0, 70, .58);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active)) .service-barber-frame {
+      background:
+        linear-gradient(145deg, #00a6ff, #0030b8 42%, #00124f),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.95) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.65) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.42),
+        0 0 0 1px rgba(255,255,255,.24),
+        0 0 34px rgba(0, 140, 255, .72),
+        -14px 0 40px rgba(0, 140, 255, .58);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-reserve-btn:is(:hover, :active) {
+      min-width: 150px;
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 30px rgba(230, 0, 70, .58);
+    }
+
+    #servicesGrid > :nth-child(even) .service-reserve-btn:is(:hover, :active) {
+      min-width: 150px;
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 0 30px rgba(0, 140, 255, .58);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:hover .service-reserve-btn:is(:hover, :active, :focus-visible) {
+      min-width: 150px;
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 30px rgba(230, 0, 70, .58);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:hover .service-reserve-btn:is(:hover, :active, :focus-visible) {
+      min-width: 150px;
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 0 30px rgba(0, 140, 255, .58);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) {
+      filter: drop-shadow(14px 0 34px rgba(230, 0, 70, .5)) drop-shadow(0 30px 38px rgba(0,0,0,.38));
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) {
+      filter: drop-shadow(-14px 0 34px rgba(0, 140, 255, .5)) drop-shadow(0 30px 38px rgba(0,0,0,.38));
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-number {
+      color: rgba(230, 0, 70, .48);
+      -webkit-text-stroke-color: rgba(230, 0, 70, .9);
+      text-shadow: 0 12px 24px rgba(0,0,0,.32), 0 0 24px rgba(230, 0, 70, .44);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-number {
+      color: rgba(0, 140, 255, .52);
+      -webkit-text-stroke-color: rgba(0, 140, 255, .9);
+      text-shadow: 0 12px 24px rgba(0,0,0,.32), 0 0 24px rgba(0, 140, 255, .44);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-role-badge {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      border-color: rgba(255,255,255,.34);
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), 0 0 24px rgba(230, 0, 70, .52);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-role-badge {
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      border-color: rgba(255,255,255,.34);
+      box-shadow: 0 14px 28px rgba(0,0,0,.28), 0 0 24px rgba(0, 140, 255, .52);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-line {
+      background: var(--red-electric);
+      box-shadow: 0 0 18px rgba(230, 0, 70, .58);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-line {
+      background: var(--blue-electric);
+      box-shadow: 0 0 18px rgba(0, 140, 255, .58);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-chip {
+      color: #ffd4df;
+      background: rgba(230, 0, 70, .16);
+      border-color: rgba(230, 0, 70, .42);
+      box-shadow: 0 0 18px rgba(230, 0, 70, .2);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-chip {
+      color: #93002f;
+      background: rgba(230, 0, 70, .08);
+      border-color: rgba(230, 0, 70, .32);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-chip {
+      color: #cfe5ff;
+      background: rgba(0, 140, 255, .16);
+      border-color: rgba(0, 140, 255, .42);
+      box-shadow: 0 0 18px rgba(0, 140, 255, .2);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-chip {
+      color: #0030b8;
+      background: rgba(0, 140, 255, .08);
+      border-color: rgba(0, 48, 184, .28);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-price {
+      color: #ffd4df;
+      background: rgba(230, 0, 70, .18);
+      border-color: rgba(230, 0, 70, .44);
+      box-shadow: 0 0 18px rgba(230, 0, 70, .28);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-price {
+      color: #93002f;
+      background: rgba(230, 0, 70, .08);
+      border-color: rgba(230, 0, 70, .32);
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-price {
+      color: #cfe5ff;
+      background: rgba(0, 140, 255, .16);
+      border-color: rgba(0, 140, 255, .44);
+      box-shadow: 0 0 18px rgba(0, 140, 255, .28);
+    }
+
+    #landingRoot[data-theme='light'] #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-price {
+      color: #0030b8;
+      background: rgba(0, 140, 255, .08);
+      border-color: rgba(0, 48, 184, .28);
+    }
+
+    #servicesGrid > :nth-child(odd) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-photo::after {
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.56)),
+        linear-gradient(90deg, rgba(230, 0, 70, .28), transparent 48%, rgba(230, 0, 70, .18));
+    }
+
+    #servicesGrid > :nth-child(even) .service-barber-card:has(.service-reserve-btn:is(:hover, :active, :focus-visible)) .service-barber-photo::after {
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.56)),
+        linear-gradient(90deg, rgba(0, 140, 255, .28), transparent 48%, rgba(0, 140, 255, .18));
+    }
+
+    .barber-v3-card {
+      position: relative;
+      overflow: hidden;
+      height: 400px;
+      border-radius: 18px;
+      padding: 4px;
+      cursor: pointer;
+      isolation: isolate;
+      background:
+        linear-gradient(145deg, #00a6ff, #0030b8 42%, #00124f),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.92) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.6) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.36),
+        0 0 0 1px rgba(255,255,255,.22),
+        0 0 28px rgba(0, 140, 255, .5),
+        -14px 0 34px rgba(0, 140, 255, .38);
+      transition: transform .38s ease, filter .38s ease, background .35s ease, box-shadow .35s ease;
+    }
+
+    #barbersGrid > :nth-child(even) .barber-v3-card {
+      background:
+        linear-gradient(145deg, #ff0050, #93002f 42%, #3b0016),
+        linear-gradient(118deg, transparent 7%, rgba(255,255,255,.92) 8.2%, transparent 9.5%, transparent 76%, rgba(255,255,255,.6) 77%, transparent 78.4%);
+      box-shadow:
+        0 28px 70px rgba(0,0,0,.36),
+        0 0 0 1px rgba(255,255,255,.22),
+        0 0 28px rgba(230, 0, 70, .5),
+        14px 0 34px rgba(230, 0, 70, .38);
+    }
+
+    .barber-v3-card:hover,
+    .barber-v3-card:focus-within {
+      transform: translateY(-8px);
+    }
+
+    .barber-v3-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 14px;
+      background: #02050f;
+    }
+
+    .barber-v3-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: grayscale(100%) brightness(.82) contrast(1.12);
+      transform: scale(1.01);
+      transition: filter .4s ease, transform .4s ease;
+    }
+
+    .barber-v3-card:hover .barber-v3-photo,
+    .barber-v3-card:focus-within .barber-v3-photo {
+      filter: grayscale(0%) brightness(1) contrast(1.06);
+      transform: scale(1.06);
+    }
+
+    .barber-v3-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.45) 58%, transparent 100%),
+        linear-gradient(90deg, rgba(0, 140, 255, .24), transparent 48%, rgba(0, 48, 184, .14));
+      pointer-events: none;
+    }
+
+    #barbersGrid > :nth-child(even) .barber-v3-inner::before {
+      background:
+        linear-gradient(to top, rgba(0,0,0,.95) 0%, rgba(0,0,0,.45) 58%, transparent 100%),
+        linear-gradient(90deg, rgba(230, 0, 70, .24), transparent 48%, rgba(147, 0, 47, .14));
+    }
+
+    .barber-v3-overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      min-height: 62%;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      color: #fff;
+      transition: transform .4s ease;
+    }
+
+    .barber-v3-card:hover .barber-v3-overlay,
+    .barber-v3-card:focus-within .barber-v3-overlay {
+      transform: translateY(-5px);
+    }
+
+    .barber-v3-title,
+    #landingRoot[data-theme='light'] .barber-v3-title {
+      margin: 0 0 .35rem;
+      color: #ffffff !important;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.38rem;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .barber-v3-specialty {
+      display: block;
+      margin-bottom: .35rem;
+      color: #8bd8ff;
+      font-size: .78rem;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      text-shadow: 0 0 16px rgba(0, 140, 255, .34);
+    }
+
+    #barbersGrid > :nth-child(even) .barber-v3-specialty {
+      color: #ff9fbd;
+      text-shadow: 0 0 16px rgba(230, 0, 70, .34);
+    }
+
+    .barber-v3-experience {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 6px;
+      color: #cfe5ff;
+      background: rgba(0, 140, 255, .16);
+      border: 1px solid rgba(0, 140, 255, .4);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      box-shadow: 0 0 18px rgba(0, 140, 255, .2);
+    }
+
+    #barbersGrid > :nth-child(even) .barber-v3-experience {
+      color: #ffd4df;
+      background: rgba(230, 0, 70, .16);
+      border-color: rgba(230, 0, 70, .42);
+      box-shadow: 0 0 18px rgba(230, 0, 70, .2);
+    }
+
+    .barber-v3-socials {
+      margin-top: .8rem;
+      display: flex;
+      gap: .75rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .4s ease, transform .4s ease;
+    }
+
+    .barber-v3-card:hover .barber-v3-socials,
+    .barber-v3-card:focus-within .barber-v3-socials {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .barber-v3-socials .social-icon {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(0, 140, 255, .18);
+      border: 1px solid rgba(0, 140, 255, .42);
+      text-decoration: none;
+      box-shadow: 0 0 16px rgba(0, 140, 255, .2);
+      transition: background .25s ease, box-shadow .25s ease, transform .25s ease;
+    }
+
+    #barbersGrid > :nth-child(even) .barber-v3-socials .social-icon {
+      background: rgba(230, 0, 70, .18);
+      border-color: rgba(230, 0, 70, .42);
+      box-shadow: 0 0 16px rgba(230, 0, 70, .2);
+    }
+
+    .barber-v3-socials .social-icon:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 22px rgba(230, 0, 70, .45);
+    }
+
+    #barbersGrid > :nth-child(even) .barber-v3-socials .social-icon:hover {
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 0 22px rgba(0, 140, 255, .45);
+    }
+
+    #landingRoot[data-theme='light'] .barber-v3-card {
+      box-shadow:
+        0 24px 52px rgba(7, 20, 47, .16),
+        0 0 0 1px rgba(255,255,255,.36),
+        0 0 24px rgba(0, 140, 255, .34),
+        -12px 0 28px rgba(0, 140, 255, .25);
+    }
+
+    #landingRoot[data-theme='light'] #barbersGrid > :nth-child(even) .barber-v3-card {
+      box-shadow:
+        0 24px 52px rgba(7, 20, 47, .16),
+        0 0 0 1px rgba(255,255,255,.36),
+        0 0 24px rgba(230, 0, 70, .34),
+        12px 0 28px rgba(230, 0, 70, .25);
+    }
+
+    @media (max-width: 767px) {
+      .barber-v3-card {
+        height: 340px;
+      }
+    }
+
+    .barber-carousel-shell {
+      position: relative;
+      isolation: isolate;
+    }
+
+    /* En desktop: grid normal */
+    #barbersGrid.barber-carousel-track {
+      display: flex;
+      flex-wrap: wrap;
+      overflow-x: visible;
+      scroll-snap-type: none;
+      padding: 0;
+    }
+    #barbersGrid.barber-carousel-track > [class*='col-'] {
+      flex: 0 0 auto;
+      max-width: 100%;
+      scroll-snap-align: none;
+    }
+
+    .barber-carousel-control {
+      position: absolute;
+      top: 50%;
+      z-index: 15;
+      width: 46px;
+      height: 46px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 999px;
+      display: none; /* Oculto en desktop */
+      place-items: center;
+      color: #fff;
+      background: linear-gradient(135deg, var(--blue-electric), var(--blue-main));
+      box-shadow: 0 0 24px rgba(0, 140, 255, .38);
+      transform: translateY(-50%);
+      transition: transform .24s ease, background .24s ease, box-shadow .24s ease;
+    }
+
+    .barber-carousel-control:hover,
+    .barber-carousel-control:focus-visible {
+      background: linear-gradient(135deg, var(--red-electric), var(--red-main));
+      box-shadow: 0 0 28px rgba(230, 0, 70, .46);
+      transform: translateY(-50%) scale(1.06);
+      outline: 0;
+    }
+
+    .barber-carousel-control.prev {
+      left: -10px;
+    }
+
+    .barber-carousel-control.next {
+      right: -10px;
+    }
+
+    #landingRoot[data-theme='light'] .barber-carousel-control {
+      border-color: rgba(0, 48, 184, .18);
+      color: #fff;
+    }
+
+    @media (max-width: 767px) {
+      .barber-carousel-control {
+        top: auto;
+        bottom: -8px;
+        width: 42px;
+        height: 42px;
+      }
+
+      .barber-carousel-control.prev {
+        left: 8px;
+      }
+
+      .barber-carousel-control.next {
+        right: 8px;
+      }
+    }
+
+    /* === SECCIÓN EDITORIAL "EL RIGOR INVISIBLE" (ESTILO ELECTRIC CLUB) === */
+    .v4-method-section {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #020f46 0%, #03081e 50%, #1a000d 100%);
+      border-block: 1px solid rgba(0, 140, 255, 0.22);
+      padding-block: 5.5rem;
+      z-index: 2;
+    }
+
+    .v4-method-section::after {
+      content: '';
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 55%;
+      height: 70%;
+      background: radial-gradient(circle, rgba(0, 140, 255, 0.16) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .v4-method-section::before {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      left: -10%;
+      width: 55%;
+      height: 70%;
+      background: radial-gradient(circle, rgba(230, 0, 70, 0.13) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .v4-method-eyebrow {
+      display: block;
+      margin-bottom: .9rem;
+      color: var(--blue-electric);
+      font-size: .82rem;
+      font-weight: 800;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      font-family: 'Rajdhani', sans-serif;
+      text-shadow: 0 0 12px rgba(0, 140, 255, 0.35);
+    }
+
+    .v4-method-title {
+      max-width: 620px;
+      margin: 0;
+      color: #ffffff;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(2.35rem, 4.8vw, 3.85rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+    }
+
+    .v4-method-divider {
+      width: 5rem;
+      height: 3px;
+      margin: 1.55rem 0;
+      background: linear-gradient(90deg, var(--blue-electric), var(--red-electric));
+      border-radius: 99px;
+      box-shadow: 0 0 12px rgba(0, 140, 255, 0.4);
+    }
+
+    .v4-method-copy {
+      max-width: 560px;
+      color: rgba(237, 234, 242, 0.76);
+      font-size: .98rem;
+      line-height: 1.8;
+      font-family: 'Manrope', sans-serif;
+    }
+
+    .v4-method-list {
+      display: grid;
+      gap: 1.6rem;
+      margin-top: 2.2rem;
+    }
+
+    .v4-method-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.2rem;
+      align-items: start;
+    }
+
+    .v4-method-number {
+      color: var(--red-electric);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      line-height: 1.1;
+      text-shadow: 0 0 12px rgba(230, 0, 70, 0.45);
+    }
+
+    .v4-method-item h3 {
+      margin: 0;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .v4-method-item p {
+      margin: .38rem 0 0;
+      color: rgba(237, 234, 242, 0.64);
+      font-size: .88rem;
+      line-height: 1.65;
+      font-family: 'Manrope', sans-serif;
+    }
+
+    /* Tarjeta comparadora premium */
+    .v4-compare-card {
+      position: relative;
+      overflow: hidden;
+      padding: 1.5rem;
+      border: 1px solid rgba(0, 140, 255, 0.22);
+      border-radius: 1rem;
+      background: rgba(2, 15, 70, 0.46);
+      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.58), 0 0 35px rgba(0, 140, 255, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 5;
+    }
+
+    .v4-compare-head {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+
+    .v4-compare-head h3 {
+      margin: 0;
+      color: #ffffff;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .v4-compare-head p {
+      margin: .35rem 0 0;
+      color: var(--blue-electric);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      font-family: 'Rajdhani', sans-serif;
+      text-shadow: 0 0 8px rgba(0, 140, 255, 0.3);
+    }
+
+    .v4-compare-stage {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      min-height: 280px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: .75rem;
+      background: #03081e;
+      box-shadow: 0 25px 55px rgba(0, 0, 0, 0.65);
+      user-select: none;
+      cursor: ew-resize;
+    }
+
+    .v4-compare-stage img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .v4-compare-after {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .v4-compare-before {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      filter: grayscale(0.85) brightness(.48) contrast(.85);
+      clip-path: inset(0 50% 0 0); /* Muestra 50% por defecto */
+    }
+
+    .v4-compare-handle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      z-index: 4;
+      width: 2px;
+      background: var(--red-electric);
+      transform: translateX(-1px);
+      box-shadow: 0 0 12px rgba(230, 0, 70, 0.9), 0 0 20px rgba(230, 0, 70, 0.4);
+      pointer-events: none;
+    }
+
+    .v4-compare-handle span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2.8rem;
+      height: 2.8rem;
+      display: grid;
+      place-items: center;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      background: var(--blue-electric);
+      color: #ffffff;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 140, 255, 0.6);
+      transform: translate(-50%, -50%);
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .v4-compare-stage:hover .v4-compare-handle span {
+      background: var(--red-electric);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(230, 0, 70, 0.8);
+      transform: translate(-50%, -50%) scale(1.08);
+    }
+
+    .v4-compare-label {
+      position: absolute;
+      z-index: 5;
+      bottom: 1rem;
+      padding: .42rem .72rem;
+      border-radius: .25rem;
+      color: #ffffff;
+      font-size: .62rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, .45);
+      font-family: 'Rajdhani', sans-serif;
+      pointer-events: none;
+    }
+
+    .v4-compare-label.is-before {
+      left: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(3, 8, 22, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .v4-compare-label.is-after {
+      right: 1rem;
+      background: var(--blue-main);
+      border: 1px solid rgba(0, 140, 255, 0.35);
+      box-shadow: 0 0 15px rgba(0, 48, 184, 0.5);
+    }
+
+    @media (max-width: 991.98px) {
+      .v4-method-section {
+        padding-block: 4rem;
+      }
+      .v4-method-title {
+        font-size: 2.35rem;
+      }
+    }
+
+    @media (max-width: 575px) {
+      .v4-method-title {
+        font-size: clamp(1.95rem, 10vw, 2.5rem);
+      }
+      .v4-compare-card {
+        padding: .85rem;
+      }
+      .v4-compare-stage {
+        min-height: 220px;
+        aspect-ratio: 4 / 3;
+      }
+      .v4-compare-head h3 {
+        font-size: 1.25rem;
+      }
+    }
+
+    /* === REGLA DE TEXTO BLANCO PARA SECCIÓN EL RIGOR INVISIBLE === */
+    .rigor-electric-section,
+    .rigor-electric-section h1,
+    .rigor-electric-section h2,
+    .rigor-electric-section h3,
+    .rigor-electric-section h4,
+    .rigor-electric-section p,
+    .rigor-electric-section li,
+    .rigor-electric-section strong,
+    .rigor-electric-section .section-title,
+    .rigor-electric-section .section-subtitle {
+      color: #ffffff !important;
+    }
+
+    #landingRoot[data-theme="light"] .rigor-electric-section,
+    #landingRoot[data-theme="light"] .rigor-electric-section h1,
+    #landingRoot[data-theme="light"] .rigor-electric-section h2,
+    #landingRoot[data-theme="light"] .rigor-electric-section h3,
+    #landingRoot[data-theme="light"] .rigor-electric-section p,
+    #landingRoot[data-theme="light"] .rigor-electric-section span,
+    #landingRoot[data-theme="light"] .rigor-electric-section li {
+      color: #ffffff !important;
+    }
+
+    #landingRoot[data-theme="dark"] .rigor-electric-section,
+    #landingRoot[data-theme="dark"] .rigor-electric-section h1,
+    #landingRoot[data-theme="dark"] .rigor-electric-section h2,
+    #landingRoot[data-theme="dark"] .rigor-electric-section h3,
+    #landingRoot[data-theme="dark"] .rigor-electric-section p,
+    #landingRoot[data-theme="dark"] .rigor-electric-section span,
+    #landingRoot[data-theme="dark"] .rigor-electric-section li {
+      color: #ffffff !important;
+    }
+
+    /* Preservar los acentos eléctricos específicos */
+    .rigor-electric-section .v4-method-eyebrow,
+    #landingRoot[data-theme="light"] .rigor-electric-section .v4-method-eyebrow,
+    #landingRoot[data-theme="dark"] .rigor-electric-section .v4-method-eyebrow {
+      color: var(--blue-electric) !important;
+    }
+
+    .rigor-electric-section .v4-method-number,
+    #landingRoot[data-theme="light"] .rigor-electric-section .v4-method-number,
+    #landingRoot[data-theme="dark"] .rigor-electric-section .v4-method-number {
+      color: var(--red-electric) !important;
+    }
+
+    .rigor-electric-section .v4-compare-head p,
+    #landingRoot[data-theme="light"] .rigor-electric-section .v4-compare-head p,
+    #landingRoot[data-theme="dark"] .rigor-electric-section .v4-compare-head p {
+      color: var(--blue-electric) !important;
+    }
+
+    /* === REDISEÑO DE TARJETAS DE RESERVA COMERCIALES (ESTILO ELECTRIC CLUB) === */
+    .slot-card {
+      flex: 0 0 min(82vw, 290px) !important;
+      border-radius: 22px !important;
+      border: 1px solid rgba(0, 140, 255, .22) !important;
+      padding: 1.25rem 1.25rem !important;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(0, 140, 255, .18), transparent 32%),
+        linear-gradient(145deg, rgba(2, 15, 70, .78), rgba(4, 8, 18, .92)) !important;
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, .35),
+        0 0 26px rgba(0, 140, 255, .10) !important;
+      transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+    }
+
+    .slot-card:nth-child(even) {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(230, 0, 70, .18), transparent 32%),
+        linear-gradient(145deg, rgba(61, 0, 21, .78), rgba(4, 8, 18, .92)) !important;
+      border-color: rgba(230, 0, 70, .22) !important;
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, .35),
+        0 0 26px rgba(230, 0, 70, .10) !important;
+    }
+
+    .slot-card:hover {
+      transform: translateY(-4px) !important;
+      box-shadow:
+        0 22px 48px rgba(0, 0, 0, .45),
+        0 0 30px rgba(0, 140, 255, .20) !important;
+    }
+
+    .slot-card:nth-child(even):hover {
+      box-shadow:
+        0 22px 48px rgba(0, 0, 0, .45),
+        0 0 30px rgba(230, 0, 70, .20) !important;
+    }
+
+    .slot-card strong {
+      display: block !important;
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: clamp(1.2rem, 3.5vw, 1.65rem) !important;
+      line-height: 1.1 !important;
+      color: #ffffff !important;
+      font-weight: 900 !important;
+      margin: .4rem 0 .5rem !important;
+      text-transform: uppercase !important;
+      letter-spacing: .02em !important;
+    }
+
+    .slot-card small {
+      display: block !important;
+      color: rgba(255, 255, 255, 0.72) !important;
+      font-size: clamp(0.72rem, 2vw, 0.8rem) !important;
+      letter-spacing: .08em !important;
+      text-transform: uppercase !important;
+      font-weight: 700 !important;
+    }
+
+    .slot-card span {
+      display: block !important;
+      font-size: clamp(0.68rem, 1.8vw, 0.78rem) !important;
+      font-weight: 800 !important;
+      color: var(--blue-electric) !important;
+      letter-spacing: 0.5px !important;
+      text-transform: none !important;
+      margin-top: .4rem !important;
+    }
+
+    .slot-card:nth-child(even) span {
+      color: var(--red-electric) !important;
+    }
+
+    /* Reglas para Light Theme (Tema Claro) */
+    #landingRoot[data-theme='light'] .slot-card {
+      background: rgba(255, 255, 255, 0.94) !important;
+      border: 1px solid rgba(0, 48, 184, 0.22) !important;
+      box-shadow: 0 16px 36px rgba(2, 15, 70, 0.08) !important;
+    }
+
+    #landingRoot[data-theme='light'] .slot-card:nth-child(even) {
+      border-color: rgba(147, 0, 47, 0.22) !important;
+      box-shadow: 0 16px 36px rgba(61, 0, 21, 0.06) !important;
+    }
+
+    #landingRoot[data-theme='light'] .slot-card strong {
+      color: #111827 !important;
+    }
+
+    #landingRoot[data-theme='light'] .slot-card small {
+      color: #4b5563 !important;
+    }
+
+    #landingRoot[data-theme='light'] .slot-card span {
+      color: var(--blue-main) !important;
+    }
+
+    #landingRoot[data-theme='light'] .slot-card:nth-child(even) span {
+      color: var(--red-main) !important;
+    }
+
+    /* Mostrar y centrar en PC (Escritorio) */
+    @media (min-width: 992px) {
+      .mobile-slot-strip {
+        display: block !important;
+        padding: 3.5rem 0 1.5rem !important;
+      }
+      .slot-head {
+        justify-content: center !important;
+        gap: 12px !important;
+        margin-bottom: 1.5rem !important;
+      }
+      .slot-head h2 {
+        font-size: 1.6rem !important;
+      }
+      .slot-track {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 24px !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+      }
+      .slot-card {
+        flex: 0 1 290px !important;
+        max-width: 290px !important;
+      }
+    }
+
+    /* === ESTILO PREMIUM RESERVAS + MAPA (ESTILO V4 EDITORIAL - ELECTRIC CLUB) === */
+    .reservation-booking-section {
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    /* Formulario panel */
+    .booking-panel.reserve-box {
+      border-radius: 22px !important;
+      border: 1px solid rgba(0, 140, 255, .20) !important;
+      background: linear-gradient(145deg, rgba(2, 15, 70, .55), rgba(4, 8, 18, .85)) !important;
+      box-shadow:
+        0 24px 50px rgba(0, 0, 0, .40),
+        0 0 30px rgba(0, 140, 255, .08) !important;
+      padding: 3rem !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .booking-kicker {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--blue-electric) !important;
+      margin-bottom: .6rem;
+    }
+
+    .booking-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(2rem, 3.5vw, 2.6rem);
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      margin-bottom: .6rem;
+      line-height: 1;
+    }
+
+    .booking-copy {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: .9rem;
+      line-height: 1.5;
+    }
+
+    /* Form Fields */
+    .booking-field label {
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.85);
+      margin-bottom: .45rem;
+    }
+
+    .reserve-form .form-control,
+    .reserve-form .form-select {
+      min-height: 52px;
+      border-radius: 12px;
+      border: 1.5px solid var(--blue-electric) !important;
+      background: rgba(255, 255, 255, .04);
+      color: #ffffff;
+      font-size: .9rem;
+      padding: .375rem 1rem;
+      transition: border-color .24s ease, box-shadow .24s ease, background-color .24s ease;
+    }
+
+    .reserve-form .form-control:focus,
+    .reserve-form .form-select:focus {
+      background: rgba(255, 255, 255, .08);
+      border-color: var(--red-electric) !important;
+      box-shadow: 0 0 14px rgba(230, 0, 70, 0.4) !important;
+      color: #ffffff;
+    }
+
+    .reserve-form .form-control::placeholder {
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* Botón de reserva con gradiente animado y glow */
+    .booking-submit {
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 54px;
+      border: 0 !important;
+      border-radius: 12px !important;
+      font-size: 1.1rem !important;
+      font-weight: 900 !important;
+      letter-spacing: .06em !important;
+      text-transform: uppercase !important;
+      color: #ffffff !important;
+      background: linear-gradient(90deg, var(--blue-deep), var(--blue-main), var(--blue-electric)) !important;
+      box-shadow: 0 12px 28px rgba(0, 140, 255, .28) !important;
+      transition: all .35s ease !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .booking-submit:hover,
+    .booking-submit:focus-visible {
+      background: linear-gradient(90deg, var(--red-deep), var(--red-main), var(--red-electric)) !important;
+      box-shadow: 0 12px 28px rgba(230, 0, 70, .38) !important;
+      transform: translateY(-2px);
+    }
+
+    /* Mapa card V4 Adaptado */
+    .booking-map-card {
+      position: relative;
+      min-height: 640px;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 22px !important;
+      border: 1px solid rgba(230, 0, 70, .20) !important;
+      background: linear-gradient(145deg, rgba(61, 0, 21, .55), rgba(4, 8, 18, .85)) !important;
+      box-shadow:
+        0 24px 50px rgba(0, 0, 0, .40),
+        0 0 30px rgba(230, 0, 70, .08) !important;
+    }
+
+    .booking-map-card iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      filter: grayscale(85%) contrast(1.1) brightness(.65) invert(1) hue-rotate(180deg);
+      transition: filter .7s ease;
+    }
+
+    .booking-map-card:hover iframe {
+      filter: grayscale(35%) contrast(1.05) brightness(.75) invert(1) hue-rotate(180deg);
+    }
+
+    /* Gradients over map to blend visual */
+    .booking-map-card::before,
+    .booking-map-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .booking-map-card::before {
+      background: linear-gradient(180deg, rgba(7, 9, 15, .92) 0%, rgba(7, 9, 15, .50) 48%, rgba(7, 9, 15, .20) 100%);
+    }
+
+    .booking-map-card::after {
+      background: linear-gradient(90deg, rgba(7, 9, 15, .72) 0%, transparent 62%);
+    }
+
+    .booking-map-overlay {
+      position: relative;
+      z-index: 2;
+      min-height: 640px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 3rem 2.5rem 2.5rem;
+      pointer-events: none;
+    }
+
+    .booking-map-content {
+      max-width: 430px;
+    }
+
+    .booking-map-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      margin: .4rem 0 .8rem;
+      line-height: 1;
+    }
+
+    .booking-map-text {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: .9rem;
+      line-height: 1.5;
+    }
+
+    .booking-map-list {
+      display: grid;
+      gap: 1.2rem;
+      margin-top: 1.8rem;
+    }
+
+    .booking-map-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .booking-map-icon {
+      width: 2.3rem;
+      height: 2.3rem;
+      flex: 0 0 2.3rem;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(230, 0, 70, .4);
+      border-radius: 999px;
+      background: rgba(230, 0, 70, .15);
+      color: var(--red-electric);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-size: 1.1rem;
+      box-shadow: 0 0 12px rgba(230, 0, 70, .2);
+    }
+
+    .booking-map-label {
+      display: block;
+      color: #ffffff;
+      font-size: .65rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .booking-map-value {
+      display: block;
+      margin-top: .2rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: .85rem;
+      line-height: 1.35;
+    }
+
+    .booking-map-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      pointer-events: auto;
+    }
+
+    .booking-map-chip {
+      padding: 1rem 1.1rem;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      background: rgba(7, 9, 15, .82);
+      color: #ffffff;
+      box-shadow: 0 16px 42px rgba(0, 0, 0, .4);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      max-width: 260px;
+    }
+
+    .booking-map-chip strong {
+      display: block;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .booking-map-chip span {
+      display: block;
+      margin-top: .2rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: .75rem;
+      line-height: 1.2;
+    }
+
+    .booking-map-foot .btn-ghost {
+      min-height: 48px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 12px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, .05);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: all .25s ease;
+      padding: 0 1.25rem;
+    }
+
+    .booking-map-foot .btn-ghost:hover {
+      background: rgba(255, 255, 255, .15);
+      border-color: rgba(255, 255, 255, .3);
+      transform: translateY(-2px);
+    }
+
+    /* Light Theme Adaptive Overrides */
+    #landingRoot[data-theme='light'] .booking-panel.reserve-box {
+      background: rgba(255, 255, 255, 0.94) !important;
+      border-color: rgba(0, 48, 184, 0.16) !important;
+      box-shadow: 0 24px 50px rgba(0, 48, 184, 0.08) !important;
+    }
+
+    #landingRoot[data-theme='light'] .booking-title,
+    #landingRoot[data-theme='light'] .booking-field label {
+      color: #111827 !important;
+    }
+
+    #landingRoot[data-theme='light'] .booking-copy {
+      color: #4b5563 !important;
+    }
+
+    #landingRoot[data-theme='light'] .reserve-form .form-control,
+    #landingRoot[data-theme='light'] .reserve-form .form-select {
+      background: rgba(17, 24, 39, .03);
+      border-color: var(--blue-electric) !important;
+      color: #111827;
+    }
+
+    #landingRoot[data-theme='light'] .reserve-form .form-control:focus,
+    #landingRoot[data-theme='light'] .reserve-form .form-select:focus {
+      background: rgba(255, 255, 255, 1);
+      border-color: var(--red-electric) !important;
+      box-shadow: 0 0 14px rgba(230, 0, 70, 0.4) !important;
+      color: #111827;
+    }
+
+    #landingRoot[data-theme='light'] .reserve-form .form-control::placeholder {
+      color: #9ca3af;
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-card {
+      background: rgba(255, 255, 255, 0.94) !important;
+      border-color: rgba(147, 0, 47, 0.16) !important;
+      box-shadow: 0 24px 50px rgba(147, 0, 47, 0.06) !important;
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-card iframe {
+      filter: grayscale(35%) contrast(1.05) brightness(.92);
+    }
+    #landingRoot[data-theme='light'] .booking-map-card:hover iframe {
+      filter: grayscale(5%) contrast(1) brightness(1);
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-card::before {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .82) 0%, rgba(255, 255, 255, .42) 48%, rgba(255, 255, 255, .15) 100%);
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-card::after {
+      background: linear-gradient(90deg, rgba(255, 255, 255, .66) 0%, transparent 62%);
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-title,
+    #landingRoot[data-theme='light'] .booking-map-label {
+      color: #111827 !important;
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-text,
+    #landingRoot[data-theme='light'] .booking-map-value {
+      color: #4b5563 !important;
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-chip {
+      background: rgba(255, 255, 255, 0.92);
+      border-color: rgba(17, 24, 39, .08);
+      box-shadow: 0 16px 36px rgba(17, 24, 39, .08);
+      color: #111827;
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-chip strong {
+      color: #111827;
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-chip span {
+      color: #4b5563;
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-foot .btn-ghost {
+      border-color: rgba(17, 24, 39, .15);
+      color: #111827;
+      background: rgba(17, 24, 39, .04);
+    }
+
+    #landingRoot[data-theme='light'] .booking-map-foot .btn-ghost:hover {
+      background: rgba(17, 24, 39, .08);
+      border-color: rgba(17, 24, 39, .25);
+    }
+
+    /* Responsive */
+    @media (max-width: 991.98px) {
+      .booking-panel.reserve-box,
+      .booking-map-card,
+      .booking-map-overlay {
+        min-height: auto;
+      }
+      .booking-panel.reserve-box {
+        padding: 2rem !important;
+      }
+      .booking-map-card,
+      .booking-map-overlay {
+        min-height: 520px;
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      .booking-map-overlay {
+        padding: 2rem 1.5rem 1.5rem;
+      }
+      .booking-map-foot {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .booking-map-chip {
+        max-width: 100%;
+      }
+    }
+
+    /* === SECCIÓN HORARIOS ESTILO V4 (DARK / EDITORIAL / IMMERSIVE) === */
+    .v4-hours-section {
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+      padding: 6rem 0 !important;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(0, 140, 255, 0.15), transparent 30%),
+        linear-gradient(180deg, #07090f 0%, #030509 100%) !important;
+      border-top: 1px solid rgba(0, 140, 255, 0.15) !important;
+    }
+
+    .v4-hours-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, #030509 0%, rgba(3, 5, 9, 0.4) 40%, rgba(3, 5, 9, 0.4) 60%, #030509 100%),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv3.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: .45 !important;
+      filter: saturate(.82) brightness(.62);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Force the background in light/dark themes to be the same */
+    #landingRoot[data-theme='light'] .v4-hours-section,
+    #landingRoot[data-theme='dark'] .v4-hours-section {
+      background:
+        radial-gradient(circle at 12% 12%, rgba(0, 140, 255, 0.15), transparent 30%),
+        linear-gradient(180deg, #07090f 0%, #030509 100%) !important;
+    }
+
+    #landingRoot[data-theme='light'] .v4-hours-section::before,
+    #landingRoot[data-theme='dark'] .v4-hours-section::before {
+      opacity: .45 !important;
+    }
+
+    .v4-hours-copy,
+    .v4-hours-card {
+      position: relative;
+      z-index: 2;
+    }
+
+    .v4-hours-eyebrow {
+      display: block;
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: var(--blue-electric) !important;
+      margin-bottom: .85rem;
+    }
+
+    .v4-hours-title {
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: clamp(2.4rem, 4.5vw, 4.2rem) !important;
+      font-weight: 900 !important;
+      line-height: .95 !important;
+      letter-spacing: 0 !important;
+      color: #ffffff !important;
+      text-transform: uppercase !important;
+    }
+
+    .v4-hours-line {
+      width: 4.6rem;
+      height: 2.5px;
+      margin: 1.65rem 0;
+      background: linear-gradient(90deg, var(--blue-electric), transparent);
+    }
+
+    .v4-hours-desc {
+      max-width: 520px;
+      color: rgba(255, 255, 255, 0.7) !important;
+      font-size: 1rem !important;
+      line-height: 1.7 !important;
+    }
+
+    /* Horarios Card */
+    .v4-hours-card {
+      isolation: isolate;
+      overflow: hidden;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2.5rem !important;
+      border: 1px solid rgba(0, 140, 255, 0.28) !important;
+      border-radius: 1.5rem !important;
+      background:
+        linear-gradient(180deg, rgba(3, 5, 9, 0.85), rgba(7, 9, 15, 0.98)) !important;
+      color: #ffffff !important;
+      text-align: center;
+      box-shadow:
+        0 0 0 1px rgba(0, 140, 255, 0.12),
+        0 24px 60px rgba(0, 0, 0, .48),
+        0 0 34px rgba(0, 140, 255, 0.16) !important;
+    }
+
+    .v4-hours-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(3, 5, 9, 0.88), rgba(7, 9, 15, 0.95)),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv3.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: .55 !important;
+      filter: saturate(.78) brightness(.72);
+    }
+
+    /* Force CARD in both light and dark themes to stay dark and identical */
+    #landingRoot[data-theme='light'] .v4-hours-card,
+    #landingRoot[data-theme='dark'] .v4-hours-card {
+      background: linear-gradient(180deg, rgba(3, 5, 9, 0.85), rgba(7, 9, 15, 0.98)) !important;
+      border-color: rgba(0, 140, 255, 0.28) !important;
+      box-shadow:
+        0 0 0 1px rgba(0, 140, 255, 0.12),
+        0 24px 60px rgba(0, 0, 0, .48),
+        0 0 34px rgba(0, 140, 255, 0.16) !important;
+      color: #ffffff !important;
+    }
+
+    #landingRoot[data-theme='light'] .v4-hours-card::before,
+    #landingRoot[data-theme='dark'] .v4-hours-card::before {
+      opacity: .55 !important;
+    }
+
+    .v4-hours-icon {
+      font-size: 2.2rem;
+      color: var(--blue-electric) !important;
+      margin-bottom: 0.8rem;
+      text-shadow: 0 0 15px rgba(0, 140, 255, 0.4);
+    }
+
+    .v4-hours-card h3 {
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: 1.8rem !important;
+      font-weight: 800 !important;
+      color: #ffffff !important;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+
+    .v4-hours-card-subtitle {
+      font-size: 0.9rem !important;
+      color: rgba(255, 255, 255, 0.7) !important;
+      margin-bottom: 1.2rem;
+    }
+
+    .v4-hours-status {
+      display: inline-block;
+      padding: .45rem 1.10rem;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      background: rgba(0, 140, 255, .15) !important;
+      border: 1px solid rgba(0, 140, 255, .4) !important;
+      color: var(--blue-electric) !important;
+      margin-bottom: 1.8rem;
+      box-shadow: 0 0 16px rgba(0, 140, 255, .25);
+    }
+
+    .v4-hours-table {
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto 1.8rem;
+    }
+
+    .v4-hours-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    /* Force all table rows and text to look exactly the same in both themes */
+    .v4-hours-table td,
+    #landingRoot[data-theme='light'] .v4-hours-table td {
+      padding: .8rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .08) !important;
+      font-size: .92rem !important;
+      color: rgba(255, 255, 255, 0.8) !important;
+      text-align: left;
+    }
+
+    .v4-hours-table tr:last-child td,
+    #landingRoot[data-theme='light'] .v4-hours-table tr:last-child td {
+      border-bottom: 0 !important;
+    }
+
+    .v4-hours-table td:last-child,
+    #landingRoot[data-theme='light'] .v4-hours-table td:last-child {
+      text-align: right !important;
+      font-weight: 700;
+      color: #ffffff !important;
+    }
+
+    .v4-hours-table tr.is-today td,
+    #landingRoot[data-theme='light'] .v4-hours-table tr.is-today td {
+      color: var(--blue-electric) !important;
+      font-weight: 800;
+      border-bottom-color: rgba(0, 140, 255, .3) !important;
+    }
+
+    .v4-hours-table tr.is-today td:last-child,
+    #landingRoot[data-theme='light'] .v4-hours-table tr.is-today td:last-child {
+      color: var(--blue-electric) !important;
+      text-shadow: 0 0 14px rgba(0, 140, 255, 0.45);
+    }
+
+    .v4-hours-mark,
+    #landingRoot[data-theme='light'] .v4-hours-mark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+      color: rgba(255, 255, 255, .15) !important;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .v4-hours-mark span,
+    #landingRoot[data-theme='light'] .v4-hours-mark span {
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, .1) !important;
+    }
+
+    .v4-hours-mark i,
+    #landingRoot[data-theme='light'] .v4-hours-mark i {
+      font-size: .8rem;
+    }
+
+    .v4-hours-footer-text,
+    #landingRoot[data-theme='light'] .v4-hours-footer-text {
+      display: block;
+      text-align: center;
+      font-size: .75rem;
+      color: rgba(255, 255, 255, 0.45) !important;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    /* === SECCIÓN QR ESTILO V4 (DARK / BANNER HORIZONTAL / IMMERSIVE) === */
+    .v4-qr-section {
+      position: relative;
+      overflow: hidden;
+      z-index: 2;
+      background: #030509 !important;
+      padding: 2rem 0 6rem !important;
+    }
+
+    .qr-share-card {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      border: 1px solid rgba(230, 0, 70, .28) !important;
+      border-radius: 1.5rem !important;
+      background:
+        linear-gradient(90deg, rgba(3, 5, 9, 0.94), rgba(7, 9, 15, 0.78)),
+        #030509 !important;
+      color: #ffffff !important;
+      box-shadow:
+        0 0 0 1px rgba(230, 0, 70, .08),
+        0 24px 60px rgba(0, 0, 0, .5),
+        0 0 32px rgba(230, 0, 70, .1) !important;
+    }
+
+    .qr-share-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background:
+        linear-gradient(90deg, rgba(3, 5, 9, 0.9) 0%, rgba(3, 5, 9, 0.6) 50%, rgba(7, 9, 15, 0.85) 100%),
+        url('https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv7.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: .55 !important;
+      filter: saturate(.78);
+    }
+
+    /* Force QR banner in light theme to stay dark */
+    #landingRoot[data-theme='light'] .qr-share-card {
+      background:
+        linear-gradient(90deg, rgba(3, 5, 9, 0.94), rgba(7, 9, 15, 0.78)),
+        #030509 !important;
+      border-color: rgba(230, 0, 70, .28) !important;
+      color: #ffffff !important;
+      box-shadow:
+        0 0 0 1px rgba(230, 0, 70, .08),
+        0 24px 60px rgba(0, 0, 0, .5),
+        0 0 32px rgba(230, 0, 70, .1) !important;
+    }
+
+    #landingRoot[data-theme='light'] .qr-share-card::before {
+      opacity: .55 !important;
+    }
+
+    .qr-share-kicker {
+      display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: .2em;
+      font-size: .72rem;
+      font-weight: 900;
+      color: var(--red-electric) !important;
+      margin-bottom: .6rem;
+    }
+
+    .qr-share-title {
+      font-family: 'Rajdhani', sans-serif !important;
+      font-size: clamp(2rem, 3.8vw, 3rem) !important;
+      font-weight: 900 !important;
+      color: #ffffff !important;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .qr-share-text {
+      color: rgba(255, 255, 255, 0.7) !important;
+      font-size: 0.95rem !important;
+      line-height: 1.6;
+    }
+
+    .qr-share-frame {
+      width: 200px;
+      height: 200px;
+      padding: 0.85rem;
+      border-radius: 1.25rem;
+      border: 1px solid rgba(230, 0, 70, .25);
+      background: #ffffff;
+      box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.45),
+        0 0 20px rgba(230, 0, 70, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .qr-share-card:hover .qr-share-frame {
+      transform: scale(1.03);
+      border-color: var(--red-electric);
+      box-shadow:
+        0 16px 38px rgba(0, 0, 0, 0.55),
+        0 0 28px rgba(230, 0, 70, 0.3);
+    }
+
+    .qr-share-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #ffffff;
+    }
+
+    /* Botón Compartir */
+    .qr-share-link {
+      font-family: 'Rajdhani', sans-serif !important;
+      min-height: 52px;
+      border: 0 !important;
+      border-radius: 12px !important;
+      font-size: 1.05rem !important;
+      font-weight: 900 !important;
+      letter-spacing: .06em !important;
+      text-transform: uppercase !important;
+      color: #ffffff !important;
+      background: linear-gradient(90deg, var(--blue-deep), var(--blue-main), var(--blue-electric)) !important;
+      box-shadow: 0 10px 24px rgba(0, 140, 255, .24) !important;
+      transition: all .3s ease !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .qr-share-link:hover,
+    .qr-share-link:focus-visible {
+      background: linear-gradient(90deg, var(--red-deep), var(--red-main), var(--red-electric)) !important;
+      box-shadow: 0 10px 24px rgba(230, 0, 70, .34) !important;
+      transform: translateY(-2px);
+      color: #ffffff !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 991.98px) {
+      .v4-hours-section {
+        padding: 4rem 0 !important;
+      }
+      .v4-hours-copy {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .v4-hours-line {
+        margin: 1.2rem auto;
+      }
+      .v4-hours-card {
+        min-height: auto;
+        padding: 2.5rem 1.5rem !important;
+      }
+      .qr-share-card {
+        padding: 2.5rem 1.5rem !important;
+        text-align: center;
+      }
+      .qr-share-action {
+        margin-bottom: 1.8rem;
+      }
+    }
+      }
+    }
   </style>
 </head>
 <body>
   <div id="landingRoot" data-theme="light">
-  <nav class="navbar navbar-expand-lg sticky-top topnav">
+  <nav class="navbar navbar-expand-lg sticky-top topnav electric-header">
     <div class="container">
       <a class="navbar-brand brand order-lg-0 ms-lg-0" href="#inicio">BlueRed Barber</a>
       <button class="navbar-toggler custom-toggler collapsed ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#menuNav" aria-controls="menuNav" aria-expanded="false" aria-label="menu">
@@ -1280,56 +4239,63 @@
       </button>
       <div class="collapse navbar-collapse" id="menuNav">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
           <li class="nav-item"><a class="nav-link" href="#servicios">Servicios</a></li>
           <li class="nav-item"><a class="nav-link" href="#barberos">Barberos</a></li>
-          <li class="nav-item"><a class="nav-link" href="#mapa">Mapa</a></li>
+          <li class="nav-item"><a class="nav-link" href="#reservas">Reservar</a></li>
+          <li class="nav-item"><a class="nav-link" href="#mapa">Ubicacion</a></li>
         </ul>
-        <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i> Tema</button>
+        <button id="themeToggle" class="btn btn-theme btn-sm ms-lg-3 mt-3 mt-lg-0" type="button" aria-label="Cambiar tema de la plantilla"><i class="bi bi-moon-stars-fill"></i></button>
       </div>
     </div>
   </nav>
 
-  <header id="inicio" class="hero">
-    <img id="heroImage" src="https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=1920" alt="Cabecera barbería azul profundo y rojo elegante" loading="eager" decoding="async">
+  <header id="inicio" class="hero electric-hero">
+    <img id="heroImage" src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/imagenv5.jpg" alt="Cabecera barberia premium Electric Club" loading="eager" decoding="async">
     <div class="container hero-content">
       <div class="hero-copy">
-        <span class="hero-tag">Reserva hoy, luce impecable</span>
-        <h1 class="hero-title display-4 mt-3 mb-3">Estilo sobrio en azul profundo y rojo elegante</h1>
-        <p class="hero-subtitle lead mb-4">Una propuesta más refinada, con contraste suave y enfoque premium para conversi?n de reservas.</p>
+        <span class="hero-tag">Electric Club Barber</span>
+        <h1 class="hero-title display-4 mt-3 mb-3">Reserva tu corte premium hoy</h1>
+        <p class="hero-subtitle lead mb-4">Barberia oscura, moderna y precisa con experiencia premium, disponibilidad clara y reserva directa en minutos.</p>
         <div class="d-flex flex-wrap gap-2">
           <a href="#reservas" class="btn btn-blue btn-lg px-4">Reservar ahora</a>
           <a href="#servicios" class="btn btn-red btn-lg px-4">Ver servicios</a>
         </div>
         <div class="split-badges">
-          <span><i class="bi bi-check2-circle"></i> 1 solo formulario</span>
-          <span><i class="bi bi-check2-circle"></i> Dise?o responsive</span>
-          <span><i class="bi bi-check2-circle"></i> Tema claro y oscuro</span>
+          <span><i class="bi bi-check2-circle"></i> Reserva directa</span>
+          <span><i class="bi bi-check2-circle"></i> Barberos premium</span>
+          <span><i class="bi bi-check2-circle"></i> Estilo Electric Club</span>
         </div>
       </div>
     </div>
   </header>
 
-  <section class="mobile-slot-strip" aria-label="Disponibilidad r?pida">
+  <section class="mobile-slot-strip" aria-label="Reserva rápida">
     <div class="container">
       <div class="slot-head">
-        <h2>Disponibilidad VIP</h2>
-        <span>Hoy</span>
+        <h2>RESERVA TU MOMENTO</h2>
+        <span>AHORA</span>
       </div>
       <div class="slot-track">
         <article class="slot-card">
-          <small>Corte máster</small>
-          <strong>14:30</strong>
-          <span>Ultimo lugar</span>
+          <small>Tu imagen importa</small>
+          <strong>Reserva ahora</strong>
+          <span>En menos de 1 minuto</span>
         </article>
         <article class="slot-card">
-          <small>Barba real</small>
-          <strong>16:00</strong>
-          <span>Ocupado</span>
+          <small>No te quedes sin cita</small>
+          <strong>Elige tu horario</strong>
+          <span>Rápido, fácil y seguro</span>
         </article>
         <article class="slot-card">
-          <small>Integral</small>
-          <strong>17:20</strong>
-          <span>Reservable</span>
+          <small>Barberos expertos</small>
+          <strong>Define tu estilo</strong>
+          <span>Atención 100% personalizada</span>
+        </article>
+        <article class="slot-card">
+          <small>Sin complicaciones</small>
+          <strong>Reserva directa</strong>
+          <span>Sin llamadas ni esperas</span>
         </article>
       </div>
     </div>
@@ -1346,83 +4312,223 @@
       </div>
     </section>
 
+    <!-- SECCIÓN EDITORIAL: EL RIGOR INVISIBLE -->
+    <section id="metodo" class="v4-method-section rigor-electric-section py-5 py-lg-6">
+      <div class="container position-relative" style="z-index: 5;">
+        <div class="row g-4 g-xl-5 align-items-center">
+          <div class="col-lg-5">
+            <span class="v4-method-eyebrow">La ciencia de la geometría</span>
+            <h2 class="v4-method-title">El Rigor Invisible Detrás de Cada Detalle</h2>
+            <div class="v4-method-divider"></div>
+            <p class="v4-method-copy">
+              No hacemos cortes al azar. Estudiamos facciones, textura, estilo y simetría para crear una experiencia precisa, moderna y memorable.
+            </p>
+            <div class="v4-method-list">
+              <div class="v4-method-item">
+                <span class="v4-method-number">I.</span>
+                <div>
+                  <h3>Geometría craneal adaptativa</h3>
+                  <p>Alineamos el corte con la forma natural del rostro para un acabado limpio y duradero.</p>
+                </div>
+              </div>
+              <div class="v4-method-item">
+                <span class="v4-method-number">II.</span>
+                <div>
+                  <h3>Técnica premium de acabado</h3>
+                  <p>Cuidamos líneas, contornos, barba y textura con precisión profesional.</p>
+                </div>
+              </div>
+              <div class="v4-method-item">
+                <span class="v4-method-number">III.</span>
+                <div>
+                  <h3>Resultado listo para destacar</h3>
+                  <p>Cada servicio está pensado para que el cliente salga con una imagen fuerte, moderna y segura.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <article class="v4-compare-card">
+              <div class="v4-compare-head">
+                <h3>Resultados de Autor</h3>
+                <p>Control visual de simetría y acabado</p>
+              </div>
+              <div class="v4-compare-stage" aria-label="Comparador visual antes y resultado BarberAgency">
+                <img class="v4-compare-after" src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/From-Average-Hair-to-Pinterest-Worthy-Taper.jpg" alt="Resultado final de corte premium" loading="lazy" decoding="async">
+                <div class="v4-compare-before" aria-hidden="true">
+                  <img src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/06/From-Average-Hair-to-Pinterest-Worthy-Taper.jpg" alt="" loading="lazy" decoding="async">
+                </div>
+                <div class="v4-compare-handle" aria-hidden="true">
+                  <span><i class="bi bi-scissors"></i></span>
+                </div>
+                <span class="v4-compare-label is-before">Antes</span>
+                <span class="v4-compare-label is-after">Resultado BarberAgency</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="barberos" class="py-5">
       <div class="container">
         <div class="text-center mb-4">
           <h2>Barberos</h2>
           <p class="text-secondary mb-0">Equipo experto en precisión y tendencia.</p>
         </div>
-        <div class="row g-4" id="barbersGrid"></div>
+        <div class="barber-carousel-shell">
+          <button id="barberCarouselPrev" class="barber-carousel-control prev" type="button" aria-label="Ver barberos anteriores"><i class="bi bi-chevron-left"></i></button>
+          <div class="row g-4 barber-carousel-track" id="barbersGrid"></div>
+          <button id="barberCarouselNext" class="barber-carousel-control next" type="button" aria-label="Ver más barberos"><i class="bi bi-chevron-right"></i></button>
+        </div>
       </div>
     </section>
 
-    <section id="mapa" class="py-5 section-soft">
+    <!-- SECCIÓN HORARIOS (ESTILO V4 EDITORIAL - ELECTRIC CLUB) -->
+    <section id="horarios" class="v4-hours-section py-5 py-lg-6">
       <div class="container">
-        <div class="row g-4 align-items-stretch">
-          <div class="col-lg-8">
-            <div class="panel ratio ratio-21x9 overflow-hidden">
-              <iframe id="landingMapFrame" title="Mapa barbería" src="about:blank" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
+        <div class="row g-4 g-xl-5 align-items-stretch">
+          <!-- Copy (Lado Izquierdo) -->
+          <div class="col-lg-5 v4-hours-copy d-flex flex-column justify-content-center">
+            <span class="v4-hours-eyebrow">Tu tiempo es valioso</span>
+            <h2 class="v4-hours-title">Horarios<br>pensados para<br>reservar sin<br>fricción</h2>
+            <div class="v4-hours-line"></div>
+            <p class="v4-hours-desc">Una vista clara de disponibilidad para elegir el momento ideal antes de completar tu reserva.</p>
           </div>
-          <div class="col-lg-4">
-            <div class="panel p-4 h-100 d-flex flex-column justify-content-between">
-              <div>
-                <h2 class="h3">Llegar También debe ser fácil</h2>
-                <p class="text-secondary">Nuestra Ubicación te permite encontrar la barberia rápido para que tu experiencia sea c?moda de principio a fin.</p>
+          <!-- Tabla (Lado Derecho) -->
+          <div class="col-lg-7 d-flex align-items-center">
+            <article class="v4-hours-card w-100">
+              <div class="v4-hours-icon" aria-hidden="true">
+                <i class="bi bi-clock"></i>
               </div>
-              <a href="#reservas" class="btn btn-blue">Quiero reservar ahora</a>
-            </div>
+              <h3>Estamos para ti</h3>
+              <p class="v4-hours-card-subtitle">Agenda tu visita en el horario que mejor se ajuste a tu día.</p>
+              <span id="v4HoursStatus" class="v4-hours-status">Horario disponible</span>
+              <div class="v4-hours-table">
+                <table aria-label="Horarios de atención">
+                  <tbody id="v4HoursRows"></tbody>
+                </table>
+              </div>
+              <div class="v4-hours-mark" aria-hidden="true">
+                <span></span>
+                <i class="bi bi-scissors"></i>
+                <span></span>
+              </div>
+              <small class="v4-hours-footer-text">Reserva con precisión y vive la experiencia</small>
+            </article>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="reservas" class="py-5">
+    <section id="reservas" class="reservation-booking-section py-5 py-lg-6">
       <div class="container">
-        <div class="row g-4 align-items-stretch">
-          <div class="col-lg-6">
-            <div class="panel p-4 h-100 d-flex flex-column justify-content-center">
-              <h2 class="mb-3">Tu cita lista en menos tiempo</h2>
-              <p class="text-secondary">Elige el servicio que quieres, reserva con tu barbero ideal y asegura un espacio cómodo para verte impecable.</p>
-              <div class="d-grid gap-2">
-                <a href="#inicio" class="btn btn-red">Ver estilo de la barbería</a>
-                <button id="toMap" class="btn btn-ghost" type="button">Ver Ubicación y llegar fácil</button>
+        <div class="row g-4 g-xl-5 align-items-stretch">
+          <!-- Formulario (Lado Izquierdo) -->
+          <div class="col-lg-7">
+            <form id="reservationForm" class="panel reserve-box reserve-form booking-panel p-4 p-md-5 needs-validation" novalidate>
+              <div class="mb-4 mb-md-5">
+                <span class="booking-kicker">Acceso preferente</span>
+                <h2 class="booking-title">Formulario de reserva</h2>
+                <p class="booking-copy">Elige servicio, barbero y horario. Si seleccionas una tarjeta de servicios o barberos, se cargará automáticamente aquí.</p>
               </div>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <form id="reservationForm" class="panel reserve-box needs-validation" novalidate>
-              <h2 class="mb-3">Formulario de reserva</h2>
-              <div class="row g-3">
-                <div class="col-12"><label class="form-label" for="nombre">Nombre y apellido</label><input id="nombre" name="nombre" class="form-control" type="text" required></div>
-                <div class="col-md-6"><label class="form-label" for="telefono">Teléfono</label><input id="telefono" name="telefono" class="form-control" type="tel" required></div>
-                <div class="col-md-6"><label class="form-label" for="email">Correo opcional</label><input id="email" name="email" class="form-control" type="email"></div>
-                <div class="col-md-6"><label class="form-label" for="servicio">Servicio</label><select id="servicio" name="servicio" class="form-select" required></select></div>
-                <div class="col-md-6"><label class="form-label" for="barbero">Barbero</label><select id="barbero" name="barbero" class="form-select" required></select></div>
-                <div class="col-md-6"><label class="form-label" for="fecha">Fecha</label><input id="fecha" name="fecha" class="form-control" type="date" required></div>
-                <div class="col-md-6"><label class="form-label" for="hora">Hora</label><select id="hora" name="hora" class="form-select" required></select></div>
-                <div class="col-12"><label class="form-label" for="notas">Notas</label><textarea id="notas" name="notas" class="form-control" rows="3" placeholder="Detalle de preferencia"></textarea></div>
-                <div class="col-12 d-grid"><button type="submit" class="btn btn-blue btn-lg">Confirmar reserva</button></div>
+              <div class="row g-4">
+                <div class="col-md-6 booking-field">
+                  <label class="form-label" for="nombre">Nombre y apellido</label>
+                  <input id="nombre" name="nombre" class="form-control" type="text" placeholder="Tu nombre completo" required>
+                </div>
+                <div class="col-md-6 booking-field">
+                  <label class="form-label" for="telefono">Teléfono / WhatsApp</label>
+                  <input id="telefono" name="telefono" class="form-control" type="tel" placeholder="Tu número de contacto" required>
+                </div>
+                <div class="col-12 booking-field">
+                  <label class="form-label" for="email">Correo opcional</label>
+                  <input id="email" name="email" class="form-control" type="email" placeholder="correo@ejemplo.com">
+                </div>
+                <div class="col-md-6 booking-field">
+                  <label class="form-label" for="fecha">Fecha</label>
+                  <input id="fecha" name="fecha" class="form-control" type="date" required>
+                </div>
+                <div class="col-md-6 booking-field">
+                  <label class="form-label" for="barbero">Barbero</label>
+                  <select id="barbero" name="barbero" class="form-select" required></select>
+                </div>
+                <div class="col-md-6 booking-field">
+                  <label class="form-label" for="servicio">Servicio</label>
+                  <select id="servicio" name="servicio" class="form-select" required></select>
+                </div>
+                <div class="col-md-6 booking-field">
+                  <label class="form-label" for="hora">Hora</label>
+                  <select id="hora" name="hora" class="form-select" required></select>
+                </div>
+                <div class="col-12 booking-field">
+                  <label class="form-label" for="notas">Notas</label>
+                  <textarea id="notas" name="notas" class="form-control" rows="3" placeholder="Detalle de preferencia"></textarea>
+                </div>
+                <div class="col-12 d-grid">
+                  <button type="submit" class="btn btn-blue btn-lg booking-submit">Confirmar reserva <i class="bi bi-calendar-check ms-2"></i></button>
+                </div>
               </div>
               <div id="reservationAlert" class="alert mt-3 d-none" role="alert"></div>
             </form>
           </div>
+          <!-- Mapa (Lado Derecho) -->
+          <div class="col-lg-5">
+            <div id="mapa" class="booking-map-card">
+              <iframe id="landingMapFrame" title="Mapa" src="about:blank" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+              <div class="booking-map-overlay">
+                <div class="booking-map-content">
+                  <span class="booking-kicker">Ubicación</span>
+                  <h3 class="booking-map-title">Cómo llegar</h3>
+                  <p class="booking-map-text">Estamos en una zona cómoda para que llegues fácil, relajado y listo para tu cita.</p>
+                  <div class="booking-map-list">
+                    <div class="booking-map-item">
+                      <span class="booking-map-icon"><i class="bi bi-geo-alt-fill"></i></span>
+                      <div>
+                        <span class="booking-map-label">Dirección directa</span>
+                        <span class="booking-map-value">La ubicación se actualiza con los datos de la barbería.</span>
+                      </div>
+                    </div>
+                    <div class="booking-map-item">
+                      <span class="booking-map-icon"><i class="bi bi-telephone-fill"></i></span>
+                      <div>
+                        <span class="booking-map-label">Contacto directo</span>
+                        <span class="booking-map-value">Reserva desde el formulario y confirma tu horario.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="booking-map-foot">
+                  <div class="booking-map-chip">
+                    <strong>Google Maps integrado</strong>
+                    <span>Toca el mapa o revisa la ruta desde tu dispositivo.</span>
+                  </div>
+                  <button id="toMap" class="btn btn-ghost" type="button">Ver Ubicación</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="qr-share" class="py-5">
+    <!-- SECCIÓN QR (ESTILO V4 EDITORIAL - ELECTRIC CLUB) -->
+    <section id="qr-share-section" class="v4-qr-section py-5">
       <div class="container">
-        <div class="qr-share-card p-4 p-lg-5">
+        <div id="qr-share" class="qr-share-card p-4 p-lg-5">
           <div class="row g-4 align-items-center">
+            <!-- Copy (Lado Izquierdo) -->
             <div class="col-lg-7">
               <span class="qr-share-kicker">Comparte tu landing</span>
-              <h2 class="mt-2 mb-3">Escanea y reserva tu cita al instante</h2>
-              <p class="mb-3 qr-share-text">Escanea este código QR y envia a tus clientes directo al flujo de reserva en segundos.</p>
-              <a id="landingQrLink" class="qr-share-link" href="#" target="_blank" rel="noopener">Cargando enlace...</a>
+              <h2 class="qr-share-title mt-2 mb-3">Escanea y reserva tu cita al instante</h2>
+              <p class="qr-share-text mb-4">Este código QR lleva a tus clientes directo al flujo de reserva, sin buscar enlaces y sin perder tiempo.</p>
+              <div class="qr-share-action">
+                <a id="landingQrLink" class="qr-share-link px-4 py-3" href="#" target="_blank" rel="noopener">Cargando enlace...</a>
+              </div>
             </div>
-            <div class="col-lg-5">
-              <div class="qr-share-frame mx-auto">
+            <!-- QR Frame (Lado Derecho) -->
+            <div class="col-lg-5 d-flex justify-content-center justify-content-lg-end">
+              <div class="qr-share-frame">
                 <img id="landingQrImage" alt="código QR de la landing" loading="lazy" decoding="async">
               </div>
             </div>
@@ -1497,14 +4603,14 @@
       { id_servicio: 3, nombre: 'Barba premium', precio: 39000, icono: 'bi-bezier2' },
       { id_servicio: 4, nombre: 'Combo corte + barba', precio: 78000, icono: 'bi-lightning-charge' },
       { id_servicio: 5, nombre: 'Limpieza facial', precio: 44000, icono: 'bi-droplet-half' },
-      { id_servicio: 6, nombre: 'Dise?o freestyle', precio: 56000, icono: 'bi-brush' }
+      { id_servicio: 6, nombre: 'Diseño freestyle', precio: 56000, icono: 'bi-brush' }
     ];
 
     const barbers = [
       { id_barbero: 601, nombre: 'Sergio R.', especialidad: 'Fades extremos', experiencia: '8 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero1.1.png' },
       { id_barbero: 602, nombre: 'Miguel C.', especialidad: 'Barba y navaja', experiencia: '9 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero2.1.png' },
       { id_barbero: 603, nombre: 'Andres P.', especialidad: 'Corte ejecutivo', experiencia: '6 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero3.1.png' },
-      { id_barbero: 604, nombre: 'Juan V.', especialidad: 'Dise?o urbano', experiencia: '7 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png' }
+      { id_barbero: 604, nombre: 'Juan V.', especialidad: 'Diseño urbano', experiencia: '7 años', foto: 'https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png' }
     ];
 
     const slots = ['09:00','10:00','11:00','12:00','14:00','15:00','16:00','17:00','18:00'];
@@ -1622,25 +4728,33 @@
       servicesGrid.innerHTML = services.map((s, idx) => {
         const fallback = SERVICE_COVERS[idx % SERVICE_COVERS.length];
         const image = resolveServiceImage(s) || fallback;
+        const formattedNum = String(idx + 1).padStart(2, '0');
         return `
         <div class="${serviceColClass}">
-          <article class="panel service-card" style="cursor:pointer;" data-service-id="${s.id_servicio || s.servicio_id || s.id || ''}" data-service-name="${s.nombre || ''}">
-            <div class="service-visual" style="display:block;height:194px;position:relative;overflow:hidden;">
-              <img src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';">
-              <span class="service-badge"><i class="bi ${s.icono}"></i></span>
-            </div>
-            <div class="service-copy">
-              <div class="icon-pill mb-3 service-icon-desktop"><i class="bi ${s.icono}"></i></div>
-              <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-                <h3 class="h5 mb-0">${s.nombre}</h3>
-                <span class="price-pill">${cop(s.precio)}</span>
+          <article class="service-barber-card" data-service-id="${s.id_servicio || s.servicio_id || s.id || ''}" data-service-name="${s.nombre || ''}">
+            <div class="service-barber-frame">
+              <div class="service-barber-body">
+                <span class="service-barber-number">${formattedNum}</span>
+                <div class="service-barber-photo">
+                  <img src="${image}" alt="${s.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';">
+                  <span class="service-role-badge"><i class="bi ${s.icono}"></i> Servicio</span>
+                </div>
+                <div class="service-barber-info">
+                  <div>
+                    <h3 class="service-barber-name">${s.nombre}</h3>
+                    <div class="service-barber-line"></div>
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                      <span class="service-barber-price">${cop(s.precio)}</span>
+                      <span class="service-barber-chip"><i class="bi bi-clock-history"></i> 45 min aprox.</span>
+                    </div>
+                  </div>
+                  <span class="service-reserve-btn" aria-hidden="true">Reservar <i class="bi bi-arrow-right-short"></i></span>
+                </div>
               </div>
-              <p class="text-secondary mb-2">Trabajo profesional con acabados premium.</p>
-              <small class="service-meta"><i class="bi bi-clock-history"></i> 45 min aprox.</small>
             </div>
           </article>
         </div>
-      `;
+        `;
       }).join('');
     }
 
@@ -1654,15 +4768,41 @@
         const photo = safeSeedText(b.foto) || fallback;
         return `
         <div class="${barberColClass}">
-          <article class="panel barber-card text-center" style="cursor:pointer;" data-barber-id="${b.id_barbero || b.barbero_id || b.id || ''}" data-barber-name="${b.nombre || ''}">
-            <img class="barber-photo mb-3" src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';" style="width:96px;height:96px;object-fit:cover;border-radius:999px;" />
-            <h3 class="h6 mb-1">${b.nombre}</h3>
-            <p class="text-secondary mb-1">${b.especialidad}</p>
-            <small class="text-secondary">${b.experiencia}</small>
+          <article class="barber-v3-card" data-barber-id="${b.id_barbero || b.barbero_id || b.id || ''}" data-barber-name="${b.nombre || ''}">
+            <div class="barber-v3-inner">
+              <img class="barber-v3-photo" src="${photo}" alt="${b.nombre}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${fallback}';" />
+              <div class="barber-v3-overlay">
+                <h3 class="barber-v3-title">${b.nombre}</h3>
+                <span class="barber-v3-specialty">${b.especialidad}</span>
+                <span class="barber-v3-experience"><i class="bi bi-award"></i>${b.experiencia}</span>
+                <div class="barber-v3-socials">
+                  <a href="https://instagram.com" target="_blank" rel="noopener" class="social-icon"><i class="bi bi-instagram"></i></a>
+                  <a href="https://tiktok.com" target="_blank" rel="noopener" class="social-icon"><i class="bi bi-tiktok"></i></a>
+                </div>
+              </div>
+            </div>
           </article>
         </div>
-      `;
+      `;  
       }).join('');
+      setupBarberCarousel();
+    }
+
+    function setupBarberCarousel() {
+      if (!barbersGrid || barbersGrid.dataset.carouselBound === 'true') return;
+      const prev = document.getElementById('barberCarouselPrev');
+      const next = document.getElementById('barberCarouselNext');
+      const scrollAmount = () => {
+        const firstCard = barbersGrid.querySelector('[class*="col-"]');
+        return firstCard ? Math.round(firstCard.getBoundingClientRect().width + 24) : 320;
+      };
+      prev?.addEventListener('click', () => {
+        barbersGrid.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+      });
+      next?.addEventListener('click', () => {
+        barbersGrid.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+      });
+      barbersGrid.dataset.carouselBound = 'true';
     }
 function normalizeDayLabel(value) {
       return safeSeedText(value)
@@ -2045,7 +5185,7 @@ function normalizeDayLabel(value) {
       document.body.classList.toggle('light-mode', theme === 'light');
       localStorage.setItem('bluered_theme_v51', theme);
       if (themeToggle) {
-        themeToggle.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i> Tema' : '<i class="bi bi-moon-stars-fill"></i> Tema';
+        themeToggle.innerHTML = theme === 'dark' ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
       }
     }
 
@@ -2521,8 +5661,8 @@ function normalizeDayLabel(value) {
         .reservation-success-actions a strong{display:block!important;font-size:.9rem!important}
         .reservation-success-actions a small{display:block!important;color:#64748b!important;font-size:.78rem!important;font-weight:500!important}
         #successBtnReset{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;width:calc(100% - 36px)!important;min-height:60px!important;margin:0 18px!important;border:1px solid rgba(255,224,139,.62)!important;border-radius:13px!important;background:linear-gradient(135deg,rgba(245,196,73,.92),rgba(210,145,35,.88))!important;color:#0b0b0d!important;font-size:0!important;font-weight:900!important;box-shadow:0 16px 34px rgba(199,139,28,.24),inset 0 1px 0 rgba(255,255,255,.46)!important;backdrop-filter:blur(12px) saturate(140%)!important;-webkit-backdrop-filter:blur(12px) saturate(140%)!important}
-        #successBtnReset::before{content:"\\F1E2";font-family:"bootstrap-icons";font-size:1.35rem!important}
-        #successBtnReset::after{content:"Nueva reserva\\A Agendar otra cita";white-space:pre-line;font-size:1.18rem!important;line-height:1.22!important;text-align:left!important}
+        #successBtnReset::before{content:"\F1E2";font-family:"bootstrap-icons";font-size:1.35rem!important}
+        #successBtnReset::after{content:"Nueva reserva\A Agendar otra cita";white-space:pre-line;font-size:1.18rem!important;line-height:1.22!important;text-align:left!important}
         @media (max-width:640px){.reservation-success-overlay,.success-overlay{align-items:flex-start!important;padding:14px!important;overflow:auto!important}.reservation-success-card,.success-card,#successCard{width:100%!important;max-width:430px!important;max-height:none!important;margin:10px auto!important;padding:14px!important;border-radius:24px!important}.reservation-success-icon,.success-icon-wrap{width:58px!important;height:58px!important;border-width:6px!important;margin-bottom:10px!important}.reservation-success-title,.success-title{font-size:1.65rem!important}.reservation-success-copy,.success-card-header .text-secondary{font-size:.92rem!important;margin-bottom:14px!important}.reservation-business-summary{min-height:auto!important;padding:16px!important;gap:12px!important;border-radius:18px 18px 0 0!important}.reservation-business-summary::after{display:none!important}.reservation-business-logo{width:56px!important;height:56px!important;flex-basis:56px!important}.reservation-business-copy h4{font-size:1.2rem!important}.reservation-business-copy p{font-size:.82rem!important}.reservation-success-details,.success-details{padding:14px 16px!important}.reservation-success-row,.detail-item{grid-template-columns:1fr!important;gap:5px!important;min-height:auto!important;padding:9px 0!important}.reservation-success-label,.detail-label{font-size:.9rem!important}.reservation-success-label i,.detail-label i{width:30px!important;height:30px!important}.reservation-success-value,.detail-value{text-align:left!important;font-size:.95rem!important}.reservation-whatsapp-target{padding:0 16px 12px!important}.reservation-whatsapp-target input{height:42px!important}.reservation-success-actions{display:grid!important;grid-template-columns:repeat(3,1fr)!important;padding:0 16px 14px!important;gap:9px!important}.reservation-success-actions a,.reservation-success-actions a.is-whatsapp-action{display:grid!important;visibility:visible!important;opacity:1!important;width:54px!important;height:54px!important;min-height:54px!important;place-items:center!important;justify-content:center!important;padding:0!important}.reservation-success-actions a i{font-size:1.55rem!important}.reservation-success-actions a span{display:none!important}#successBtnReset{width:calc(100% - 32px)!important;margin:0 16px!important;min-height:58px!important}#successBtnReset::after{font-size:1rem!important}}
       `;
       document.head.appendChild(style);
@@ -3308,7 +6448,67 @@ function normalizeDayLabel(value) {
         picture_url: foto
       };
     }
+    function formatDisplayHour(value) {
+      const clean = safeSeedText(value);
+      const match = /^(\d{1,2}):(\d{2})/.exec(clean);
+      if (!match) return clean || '-';
+      let hours = Number(match[1]);
+      const minutes = match[2];
+      const suffix = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      return `${hours}:${minutes} ${suffix}`;
+    }
 
+    function getTodayScheduleIndex() {
+      const now = new Date();
+      return Number.isNaN(now.getTime()) ? -1 : now.getDay();
+    }
+
+    function buildHoursDisplayRows() {
+      const dayOrder = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+      const dayLabels = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      const schedulesByDay = new Map();
+
+      inheritedHours.forEach((item) => {
+        const normalizedDay = normalizeDayLabel(item?.dia);
+        if (normalizedDay) schedulesByDay.set(normalizedDay, item);
+      });
+
+      return dayOrder.map((day, index) => {
+        const schedule = schedulesByDay.get(day);
+        const isActive = Boolean(schedule?.activo && schedule?.hora_abre && schedule?.hora_cierra);
+        return {
+          day,
+          index,
+          label: dayLabels[index],
+          time: isActive
+            ? `${formatDisplayHour(schedule.hora_abre)} - ${formatDisplayHour(schedule.hora_cierra)}`
+            : 'Cerrado',
+          isActive
+        };
+      });
+    }
+
+    function renderHoursSection() {
+      const v4HoursRows = document.getElementById('v4HoursRows');
+      const v4HoursStatus = document.getElementById('v4HoursStatus');
+      if (!v4HoursRows || !v4HoursStatus) return;
+      const rows = buildHoursDisplayRows();
+      const todayIndex = getTodayScheduleIndex();
+      const todayRow = rows.find((item) => item.index === todayIndex);
+      const hasActiveHours = rows.some((item) => item.isActive);
+
+      v4HoursStatus.textContent = todayRow
+        ? (todayRow.isActive ? 'Abierto hoy' : 'Cerrado hoy')
+        : (hasActiveHours ? 'Horario disponible' : 'Consulta disponibilidad');
+
+      v4HoursRows.innerHTML = rows.map((item) => `
+        <tr class="${item.index === todayIndex ? 'is-today' : ''}">
+          <td>${item.label}</td>
+          <td>${item.time}</td>
+        </tr>
+      `).join('');
+    }
 
     function applyInheritedCollections(rawServices, rawBarbers, rawHours, rawSlotMin) {
       const nextServices = Array.isArray(rawServices)
@@ -3342,6 +6542,7 @@ function normalizeDayLabel(value) {
       if (typeof renderBarbers === 'function') renderBarbers();
       if (typeof fillSelects === 'function') fillSelects();
       if (typeof populateSelects === 'function') populateSelects();
+      if (typeof renderHoursSection === 'function') renderHoursSection();
     }
 
     function applyBrandingPalette(payload) {
@@ -3403,6 +6604,7 @@ function normalizeDayLabel(value) {
       renderBarbers();
       fillSelects();
       renderLandingQr();
+      if (typeof renderHoursSection === 'function') renderHoursSection();
     }
 
     window.addEventListener('message', (ev) => {
@@ -3549,6 +6751,51 @@ function normalizeDayLabel(value) {
         openBookingForm();
       }
     });
+  </script>
+
+  <!-- Slider de comparación interactivo -->
+  <script>
+    (function() {
+      const stage = document.querySelector('.v4-compare-stage');
+      if (!stage) return;
+      const before = stage.querySelector('.v4-compare-before');
+      const handle = stage.querySelector('.v4-compare-handle');
+
+      function setSliderPosition(clientX) {
+        const rect = stage.getBoundingClientRect();
+        let percentage = ((clientX - rect.left) / rect.width) * 100;
+        if (percentage < 0) percentage = 0;
+        if (percentage > 100) percentage = 100;
+        before.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+        handle.style.left = percentage + '%';
+      }
+
+      let isDragging = false;
+
+      const startDrag = (e) => {
+        isDragging = true;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        setSliderPosition(clientX);
+      };
+
+      const doDrag = (e) => {
+        if (!isDragging) return;
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        setSliderPosition(clientX);
+      };
+
+      const stopDrag = () => {
+        isDragging = false;
+      };
+
+      stage.addEventListener('mousedown', startDrag);
+      window.addEventListener('mousemove', doDrag);
+      window.addEventListener('mouseup', stopDrag);
+
+      stage.addEventListener('touchstart', startDrag, { passive: true });
+      window.addEventListener('touchmove', doDrag, { passive: true });
+      window.addEventListener('touchend', stopDrag);
+    })();
   </script>
 </body>
 </html>
