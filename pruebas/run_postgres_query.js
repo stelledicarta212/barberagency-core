@@ -100,7 +100,7 @@ async function setup() {
           operation: "executeQuery",
           query: "={{ $json.body.query }}",
           options: {
-            queryReplacement: "={{ $json.body.params }}"
+            queryReplacement: "={{ [$node[\"Webhook\"].json.body.params ? $node[\"Webhook\"].json.body.params[0] : null, $node[\"Webhook\"].json.body.params ? $node[\"Webhook\"].json.body.params[1] : null, $node[\"Webhook\"].json.body.params ? $node[\"Webhook\"].json.body.params[2] : null, $node[\"Webhook\"].json.body.params ? $node[\"Webhook\"].json.body.params[3] : null] }}"
           }
         },
         id: "postgres-query",

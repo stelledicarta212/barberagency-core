@@ -271,7 +271,7 @@
       }
     }
 
-    async function triggerCheckoutFlow(barberiaId, userId) {
+    async function triggerCheckoutFlow(barberiaId) {
       hideMessage();
       const continueBtn = document.getElementById("baContinueTemplateBtn");
       const submitBtn = document.getElementById("baSubmitBtn");
@@ -306,7 +306,13 @@
         });
 
         if (!response.ok) {
-          throw new Error(`HTTP Error ${response.status} al crear checkout.`);
+          if (response.status === 401) {
+            throw new Error("Sesión inválida o expirada. Por favor, vuelva a iniciar sesión.");
+          } else if (response.status === 403) {
+            throw new Error("No tiene autorización para administrar esta barbería.");
+          } else {
+            throw new Error(`HTTP Error ${response.status} al crear checkout.`);
+          }
         }
 
         const data = await response.json();
@@ -332,7 +338,7 @@
           retryBtn.style.marginTop = "10px";
           retryBtn.textContent = "Reintentar checkout";
           retryBtn.type = "button";
-          retryBtn.addEventListener("click", () => triggerCheckoutFlow(barberiaId, userId));
+          retryBtn.addEventListener("click", () => triggerCheckoutFlow(barberiaId));
           const msgArea = document.getElementById("baMessage");
           if (msgArea) {
             msgArea.appendChild(retryBtn);
@@ -3516,13 +3522,12 @@
 
         if (draft.billing_selection) {
           const bId = Number(data.barberia_id || (data.barberia && data.barberia.id) || 0);
-          const uId = Number(data.usuario_id || data.user_id || data.owner_id || (data.barberia && data.barberia.owner_id) || 0);
-          if (!bId || !uId) {
-            console.error("Falta barberia_id o usuario_id (owner) para procesar el checkout.", { bId, uId });
-            showMessage("error", "Error crítico de facturación: No se pudo determinar la barbería o el usuario propietario. El proceso de pago ha sido abortado para proteger su cuenta. Por favor, reintente o contacte a soporte.");
+          if (!bId) {
+            console.error("Falta barberia_id para procesar el checkout.", { bId });
+            showMessage("error", "Error crítico de facturación: No se pudo determinar la barbería. El proceso de pago ha sido abortado para proteger su cuenta. Por favor, reintente o contacte a soporte.");
             return;
           }
-          await triggerCheckoutFlow(bId, uId);
+          await triggerCheckoutFlow(bId);
         }
       } catch (error) {
         showMessage(
@@ -3606,13 +3611,12 @@
         persistLandingSeed(payload, data);
         if (draft.billing_selection) {
           const bId = Number(data.barberia_id || (data.barberia && data.barberia.id) || 0);
-          const uId = Number(data.usuario_id || data.user_id || data.owner_id || (data.barberia && data.barberia.owner_id) || 0);
-          if (!bId || !uId) {
-            console.error("Falta barberia_id o usuario_id (owner) para procesar el checkout.", { bId, uId });
-            showMessage("error", "Error crítico de facturación: No se pudo determinar la barbería o el usuario propietario. El proceso de pago ha sido abortado para proteger su cuenta. Por favor, reintente o contacte a soporte.");
+          if (!bId) {
+            console.error("Falta barberia_id para procesar el checkout.", { bId });
+            showMessage("error", "Error crítico de facturación: No se pudo determinar la barbería. El proceso de pago ha sido abortado para proteger su cuenta. Por favor, reintente o contacte a soporte.");
             return;
           }
-          await triggerCheckoutFlow(bId, uId);
+          await triggerCheckoutFlow(bId);
         } else {
           window.location.href = buildLandingBuilderUrl(payload, data);
         }

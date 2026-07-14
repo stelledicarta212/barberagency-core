@@ -6,10 +6,10 @@ const { setup, cleanup, runSQL } = require('./run_postgres_query');
   try {
     await setup();
     console.log('\n========================================');
-    console.log('STARTING CORRECTIVE STAGING MIGRATION (STEP 6)');
+    console.log('STARTING CORRECTIVE STAGING MIGRATION (STEP 7)');
     console.log('========================================\n');
 
-    const migrationPath = path.resolve(__dirname, '../migrations/20260713_2031_billing_backend_role.sql');
+    const migrationPath = path.resolve(__dirname, '../migrations/20260713_2032_harden_billing_worker_role.sql');
     if (!fs.existsSync(migrationPath)) {
       throw new Error(`Migration file not found: ${migrationPath}`);
     }
@@ -99,17 +99,33 @@ const { setup, cleanup, runSQL } = require('./run_postgres_query');
     }
 
     console.log('\nMigration executed successfully. Running postcheck...');
-    const rolesCheck = await runSQL("SELECT rolname, rolsuper, rolbypassrls FROM pg_roles WHERE rolname = 'n8n_billing_worker';");
+    const rolesCheck = await runSQL("SELECT rolname, rolsuper, rolbypassrls, rolcanlogin, rolinherit FROM pg_roles WHERE rolname = 'n8n_billing_worker_role';");
     console.log('Roles Verification:', JSON.stringify(rolesCheck, null, 2));
+
+    const functionsCheck = await runSQL(`
+      SELECT routine_name, security_type
+      FROM information_schema.routines
+      WHERE routine_schema = 'public' AND routine_name = 'billing_create_checkout_backend';
+    `);
+    console.log('Functions Verification:', JSON.stringify(functionsCheck, null, 2));
 
     const grantsCheck = await runSQL(`
       SELECT table_name, privilege_type, grantee 
       FROM information_schema.role_table_grants 
       WHERE table_schema = 'public' 
-        AND grantee = 'n8n_billing_worker'
+        AND grantee = 'n8n_billing_worker_role'
       ORDER BY table_name, privilege_type ASC;
     `);
     console.log('Grants Verification:', JSON.stringify(grantsCheck, null, 2));
+
+    const functionGrantsCheck = await runSQL(`
+      SELECT routine_name, grantee, privilege_type 
+      FROM information_schema.routine_privileges 
+      WHERE routine_schema = 'public' 
+        AND (grantee = 'n8n_billing_worker_role' OR grantee = 'PUBLIC')
+        AND routine_name = 'billing_create_checkout_backend';
+    `);
+    console.log('Function Grants Verification:', JSON.stringify(functionGrantsCheck, null, 2));
 
     console.log('\n========================================');
     console.log('CORRECTIVE MIGRATION COMPLETED SUCCESSFULLY');

@@ -26,7 +26,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const i = $input.first().json || {};\nconst h = i.headers || {};\nlet session_token = '';\nconst authHeader = (h.authorization ?? h.Authorization ?? '').toString().trim();\nif (authHeader.startsWith('Bearer ')) {\n  session_token = authHeader.substring(7).trim();\n} else {\n  const cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\n  const m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\n  if (m) {\n    session_token = m[1];\n  }\n}\nreturn [{ json: { session_token } }];"
+        "jsCode": "const i = $input.first().json || {};\nconst h = i.headers || {};\nlet cookieToken = '';\nlet bearerToken = '';\n\nconst cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\nconst cookieMatch = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\nif (cookieMatch) {\n  cookieToken = cookieMatch[1].trim();\n}\n\nconst authHeader = (h.authorization ?? h.Authorization ?? '').toString().trim();\nif (authHeader.startsWith('Bearer ')) {\n  bearerToken = authHeader.substring(7).trim();\n}\n\nlet session_token = '';\nlet conflict = false;\n\nif (cookieToken && bearerToken) {\n  if (cookieToken !== bearerToken) {\n    conflict = true;\n  } else {\n    session_token = cookieToken;\n  }\n} else if (cookieToken) {\n  session_token = cookieToken;\n} else if (bearerToken) {\n  session_token = bearerToken;\n}\n\nreturn [{ json: { session_token, conflict } }];"
       },
       "id": "code-parse-cookie",
       "name": "Code - parse cookie",
@@ -63,7 +63,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const i = $input.first().json || {};\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\nreturn [{ json: { auth_ok, user_id } }];"
+        "jsCode": "const i = $input.first().json || {};\nconst inputData = $node[\"Code - parse cookie\"].json || {};\n\nlet auth_ok = false;\nlet user_id = 0;\nlet error_message = \"\";\n\nif (inputData.conflict) {\n  error_message = \"Conflicto de sesión: Múltiples tokens contradictorios.\";\n} else if (i.error) {\n  error_message = \"Firma o formato del token inválido: \" + String(i.error);\n} else if (!i.payload) {\n  error_message = \"Payload ausente.\";\n} else {\n  const payload = i.payload;\n  \n  if (payload.exp === undefined || payload.exp === null) {\n    error_message = \"Token no contiene claim exp.\";\n  } else if (payload.user_id === undefined || payload.user_id === null) {\n    error_message = \"Token no contiene claim user_id.\";\n  } else {\n    const rawUserId = Number(payload.user_id);\n    if (!Number.isInteger(rawUserId) || rawUserId <= 0) {\n      error_message = \"User ID debe ser un entero positivo.\";\n    } else if (payload.iss !== 'barberagency_auth') {\n      error_message = \"Issuer no coincide.\";\n    } else if (payload.aud !== 'barberagency_app') {\n      error_message = \"Audience no coincide.\";\n    } else {\n      auth_ok = true;\n      user_id = rawUserId;\n    }\n  }\n}\n\nreturn [{ json: { auth_ok, user_id, error_message } }];"
       },
       "id": "code-check-auth",
       "name": "Code - check auth",
@@ -97,7 +97,7 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "{\n  \"error\": \"UNAUTHORIZED\",\n  \"message\": \"Sesión no válida o expirada.\"\n}",
+        "responseBody": "={\n  \"error\": \"UNAUTHORIZED\",\n  \"message\": \"{{ $json.error_message || 'Sesión no válida o expirada.' }}\"\n}",
         "options": {
           "responseCode": 401
         }
@@ -114,7 +114,10 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SET ROLE authenticated;\nSET request.jwt.claims = '{\"user_id\": \"{{ $node[\"Code - check auth\"].json.user_id }}\"}';\nSELECT * FROM public.billing_create_checkout(\n  {{ $node[\"Webhook Trigger\"].json.body.barberia_id }},\n  (SELECT id FROM public.plan_prices WHERE plan_id = (SELECT id FROM public.planes WHERE code = '{{ $node[\"Webhook Trigger\"].json.body.plan_code || 'barberagency_full' }}') AND name = '{{ $node[\"Webhook Trigger\"].json.body.billing_term || 'monthly' }}' AND active = true LIMIT 1)\n);"
+        "query": "SELECT * FROM public.billing_create_checkout_backend($1, $2, $3, $4);",
+        "options": {
+          "queryReplacement": "={{ [$node[\"Webhook Trigger\"].json.body.barberia_id, $node[\"Webhook Trigger\"].json.body.plan_code || 'barberagency_full', $node[\"Webhook Trigger\"].json.body.billing_term || 'monthly', $node[\"Code - check auth\"].json.user_id] }}"
+        }
       },
       "id": "db-create-checkout",
       "name": "PG - Create Checkout",
@@ -129,7 +132,82 @@
           "id": "SOV6oSyuHI9cxgLF",
           "name": "Postgres account"
         }
-      }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.checkout_id !== undefined }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-db-success",
+      "name": "If - DB Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ ($json.message || '').includes('UNAUTHORIZED') }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-is-unauthorized",
+      "name": "If - Is Unauthorized",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"error\": \"BAD_REQUEST\",\n  \"message\": \"{{ $json.message || 'Error al procesar checkout en base de datos.' }}\"\n}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "id": "respond-bad-request",
+      "name": "Respond - 400 Bad Request",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"error\": \"FORBIDDEN\",\n  \"message\": \"{{ $json.message || 'Acceso denegado.' }}\"\n}",
+        "options": {
+          "responseCode": 403
+        }
+      },
+      "id": "respond-forbidden",
+      "name": "Respond - 403 Forbidden",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1540,
+        140
+      ]
     },
     {
       "parameters": {
@@ -148,8 +226,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        1220,
-        100
+        1340,
+        20
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -161,15 +239,18 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE public.billing_checkouts \nSET provider_checkout_id = '{{ $json.id }}', \n    init_point = '{{ $json.init_point }}',\n    updated_at = now() \nWHERE id = '{{ $node[\"PG - Create Checkout\"].json.checkout_id }}'\nRETURNING id, external_reference, init_point;"
+        "query": "UPDATE public.billing_checkouts SET provider_checkout_id = $1, init_point = $2, updated_at = now() WHERE id = $3 RETURNING id, external_reference, init_point;",
+        "options": {
+          "queryReplacement": "={{ [$json.id, $json.init_point, $node[\"PG - Create Checkout\"].json.checkout_id] }}"
+        }
       },
       "id": "db-save-checkout",
       "name": "PG - Save Checkout Preference",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.4,
       "position": [
-        1420,
-        100
+        1520,
+        20
       ],
       "credentials": {
         "postgres": {
@@ -189,8 +270,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        1620,
-        100
+        1700,
+        20
       ]
     }
   ],
@@ -261,7 +342,43 @@
       "main": [
         [
           {
+            "node": "If - DB Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - DB Success": {
+      "main": [
+        [
+          {
             "node": "MP API Checkout",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If - Is Unauthorized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Is Unauthorized": {
+      "main": [
+        [
+          {
+            "node": "Respond - 403 Forbidden",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - 400 Bad Request",
             "type": "main",
             "index": 0
           }
@@ -347,7 +464,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const i = $input.first().json || {};\nconst h = i.headers || {};\nlet session_token = '';\nconst authHeader = (h.authorization ?? h.Authorization ?? '').toString().trim();\nif (authHeader.startsWith('Bearer ')) {\n  session_token = authHeader.substring(7).trim();\n} else {\n  const cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\n  const m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\n  if (m) {\n    session_token = m[1];\n  }\n}\nreturn [{ json: { session_token } }];"
+          "jsCode": "const i = $input.first().json || {};\nconst h = i.headers || {};\nlet cookieToken = '';\nlet bearerToken = '';\n\nconst cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\nconst cookieMatch = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\nif (cookieMatch) {\n  cookieToken = cookieMatch[1].trim();\n}\n\nconst authHeader = (h.authorization ?? h.Authorization ?? '').toString().trim();\nif (authHeader.startsWith('Bearer ')) {\n  bearerToken = authHeader.substring(7).trim();\n}\n\nlet session_token = '';\nlet conflict = false;\n\nif (cookieToken && bearerToken) {\n  if (cookieToken !== bearerToken) {\n    conflict = true;\n  } else {\n    session_token = cookieToken;\n  }\n} else if (cookieToken) {\n  session_token = cookieToken;\n} else if (bearerToken) {\n  session_token = bearerToken;\n}\n\nreturn [{ json: { session_token, conflict } }];"
         },
         "id": "code-parse-cookie",
         "name": "Code - parse cookie",
@@ -384,7 +501,7 @@
       },
       {
         "parameters": {
-          "jsCode": "const i = $input.first().json || {};\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\nreturn [{ json: { auth_ok, user_id } }];"
+          "jsCode": "const i = $input.first().json || {};\nconst inputData = $node[\"Code - parse cookie\"].json || {};\n\nlet auth_ok = false;\nlet user_id = 0;\nlet error_message = \"\";\n\nif (inputData.conflict) {\n  error_message = \"Conflicto de sesión: Múltiples tokens contradictorios.\";\n} else if (i.error) {\n  error_message = \"Firma o formato del token inválido: \" + String(i.error);\n} else if (!i.payload) {\n  error_message = \"Payload ausente.\";\n} else {\n  const payload = i.payload;\n  \n  if (payload.exp === undefined || payload.exp === null) {\n    error_message = \"Token no contiene claim exp.\";\n  } else if (payload.user_id === undefined || payload.user_id === null) {\n    error_message = \"Token no contiene claim user_id.\";\n  } else {\n    const rawUserId = Number(payload.user_id);\n    if (!Number.isInteger(rawUserId) || rawUserId <= 0) {\n      error_message = \"User ID debe ser un entero positivo.\";\n    } else if (payload.iss !== 'barberagency_auth') {\n      error_message = \"Issuer no coincide.\";\n    } else if (payload.aud !== 'barberagency_app') {\n      error_message = \"Audience no coincide.\";\n    } else {\n      auth_ok = true;\n      user_id = rawUserId;\n    }\n  }\n}\n\nreturn [{ json: { auth_ok, user_id, error_message } }];"
         },
         "id": "code-check-auth",
         "name": "Code - check auth",
@@ -418,7 +535,7 @@
       {
         "parameters": {
           "respondWith": "json",
-          "responseBody": "{\n  \"error\": \"UNAUTHORIZED\",\n  \"message\": \"Sesión no válida o expirada.\"\n}",
+          "responseBody": "={\n  \"error\": \"UNAUTHORIZED\",\n  \"message\": \"{{ $json.error_message || 'Sesión no válida o expirada.' }}\"\n}",
           "options": {
             "responseCode": 401
           }
@@ -435,7 +552,10 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "SET ROLE authenticated;\nSET request.jwt.claims = '{\"user_id\": \"{{ $node[\"Code - check auth\"].json.user_id }}\"}';\nSELECT * FROM public.billing_create_checkout(\n  {{ $node[\"Webhook Trigger\"].json.body.barberia_id }},\n  (SELECT id FROM public.plan_prices WHERE plan_id = (SELECT id FROM public.planes WHERE code = '{{ $node[\"Webhook Trigger\"].json.body.plan_code || 'barberagency_full' }}') AND name = '{{ $node[\"Webhook Trigger\"].json.body.billing_term || 'monthly' }}' AND active = true LIMIT 1)\n);"
+          "query": "SELECT * FROM public.billing_create_checkout_backend($1, $2, $3, $4);",
+          "options": {
+            "queryReplacement": "={{ [$node[\"Webhook Trigger\"].json.body.barberia_id, $node[\"Webhook Trigger\"].json.body.plan_code || 'barberagency_full', $node[\"Webhook Trigger\"].json.body.billing_term || 'monthly', $node[\"Code - check auth\"].json.user_id] }}"
+          }
         },
         "id": "db-create-checkout",
         "name": "PG - Create Checkout",
@@ -450,7 +570,82 @@
             "id": "SOV6oSyuHI9cxgLF",
             "name": "Postgres account"
           }
-        }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.checkout_id !== undefined }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "id": "if-db-success",
+        "name": "If - DB Success",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          1180,
+          100
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ ($json.message || '').includes('UNAUTHORIZED') }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "id": "if-is-unauthorized",
+        "name": "If - Is Unauthorized",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          1340,
+          220
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"error\": \"BAD_REQUEST\",\n  \"message\": \"{{ $json.message || 'Error al procesar checkout en base de datos.' }}\"\n}",
+          "options": {
+            "responseCode": 400
+          }
+        },
+        "id": "respond-bad-request",
+        "name": "Respond - 400 Bad Request",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1540,
+          280
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={\n  \"error\": \"FORBIDDEN\",\n  \"message\": \"{{ $json.message || 'Acceso denegado.' }}\"\n}",
+          "options": {
+            "responseCode": 403
+          }
+        },
+        "id": "respond-forbidden",
+        "name": "Respond - 403 Forbidden",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1540,
+          140
+        ]
       },
       {
         "parameters": {
@@ -469,8 +664,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.1,
         "position": [
-          1220,
-          100
+          1340,
+          20
         ],
         "credentials": {
           "httpHeaderAuth": {
@@ -482,15 +677,18 @@
       {
         "parameters": {
           "operation": "executeQuery",
-          "query": "UPDATE public.billing_checkouts \nSET provider_checkout_id = '{{ $json.id }}', \n    init_point = '{{ $json.init_point }}',\n    updated_at = now() \nWHERE id = '{{ $node[\"PG - Create Checkout\"].json.checkout_id }}'\nRETURNING id, external_reference, init_point;"
+          "query": "UPDATE public.billing_checkouts SET provider_checkout_id = $1, init_point = $2, updated_at = now() WHERE id = $3 RETURNING id, external_reference, init_point;",
+          "options": {
+            "queryReplacement": "={{ [$json.id, $json.init_point, $node[\"PG - Create Checkout\"].json.checkout_id] }}"
+          }
         },
         "id": "db-save-checkout",
         "name": "PG - Save Checkout Preference",
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.4,
         "position": [
-          1420,
-          100
+          1520,
+          20
         ],
         "credentials": {
           "postgres": {
@@ -510,8 +708,8 @@
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.1,
         "position": [
-          1620,
-          100
+          1700,
+          20
         ]
       }
     ],
@@ -582,7 +780,43 @@
         "main": [
           [
             {
+              "node": "If - DB Success",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If - DB Success": {
+        "main": [
+          [
+            {
               "node": "MP API Checkout",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "If - Is Unauthorized",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If - Is Unauthorized": {
+        "main": [
+          [
+            {
+              "node": "Respond - 403 Forbidden",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond - 400 Bad Request",
               "type": "main",
               "index": 0
             }
