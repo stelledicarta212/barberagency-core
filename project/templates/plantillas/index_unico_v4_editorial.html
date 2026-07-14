@@ -5015,7 +5015,7 @@ function normalizeDayLabel(value) {
         branding: buildRuntimeBranding(brandingSource),
         inherited,
         servicios: Array.isArray(servicesVal) ? servicesVal : [],
-        barberos: Array.isArray(barberosVal) ? barbersVal : [],
+        barberos: Array.isArray(barbersVal) ? barbersVal : [],
         horarios: Array.isArray(hoursVal) ? hoursVal : [],
         slot_min: Number(source?.slot_min) || Number(inherited?.slot_min) || 0,
         public_landing_url: safeSeedText(source?.public_landing_url || profile?.public_landing_url),
@@ -5153,10 +5153,10 @@ function normalizeDayLabel(value) {
         : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=`;
       const querySlug = safeSeedText(params.get('slug') || params.get('barberia_slug') || params.get('business_slug'));
       if (querySlug) return querySlug;
-      const storedSlug = getStoredLandingSlug();
-      if (storedSlug) return storedSlug;
       const pathMatch = String(window.location?.pathname || '').match(/^\/b\/([^/]+)\/?$/i);
       if (pathMatch?.[1]) return safeSeedText(decodeURIComponent(pathMatch[1]));
+      const storedSlug = getStoredLandingSlug();
+      if (storedSlug) return storedSlug;
       return safeSeedText(
         runtimeLandingState.profile?.slug ||
         runtimeLandingState.profile?.biz_slug ||
