@@ -26,16 +26,103 @@
     },
     {
       "parameters": {
+        "jsCode": "const i = $input.first().json || {};\nconst h = i.headers || {};\nlet session_token = '';\nconst authHeader = (h.authorization ?? h.Authorization ?? '').toString().trim();\nif (authHeader.startsWith('Bearer ')) {\n  session_token = authHeader.substring(7).trim();\n} else {\n  const cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\n  const m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\n  if (m) {\n    session_token = m[1];\n  }\n}\nreturn [{ json: { session_token } }];"
+      },
+      "id": "code-parse-cookie",
+      "name": "Code - parse cookie",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "verify",
+        "token": "={{ $json.session_token }}",
+        "options": {
+          "algorithm": "HS256"
+        }
+      },
+      "id": "jwt-verify",
+      "name": "JWT - Verify session",
+      "type": "n8n-nodes-base.jwt",
+      "typeVersion": 1,
+      "position": [
+        460,
+        200
+      ],
+      "credentials": {
+        "jwtAuth": {
+          "id": "mNWhzdM1ihAaBkZM",
+          "name": "JWT Auth account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json || {};\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\nreturn [{ json: { auth_ok, user_id } }];"
+      },
+      "id": "code-check-auth",
+      "name": "Code - check auth",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.auth_ok }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-auth",
+      "name": "If - is authenticated",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        820,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"error\": \"UNAUTHORIZED\",\n  \"message\": \"Sesión no válida o expirada.\"\n}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "id": "respond-unauthorized",
+      "name": "Respond - 401 Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1020,
+        320
+      ]
+    },
+    {
+      "parameters": {
         "operation": "executeQuery",
-        "query": "SET ROLE authenticated;\nSET request.jwt.claims = '{\"user_id\": \"{{ $json.body.user_id || 10 }}\"}';\nSELECT * FROM public.billing_create_checkout(\n  {{ $json.body.barberia_id || 10 }},\n  (SELECT id FROM public.plan_prices WHERE plan_id = (SELECT id FROM public.planes WHERE code = '{{ $json.body.plan_code || 'barberagency_full' }}') AND name = '{{ $json.body.billing_term || 'monthly' }}' AND active = true LIMIT 1)\n);"
+        "query": "SET ROLE authenticated;\nSET request.jwt.claims = '{\"user_id\": \"{{ $node[\"Code - check auth\"].json.user_id }}\"}';\nSELECT * FROM public.billing_create_checkout(\n  {{ $node[\"Webhook Trigger\"].json.body.barberia_id }},\n  (SELECT id FROM public.plan_prices WHERE plan_id = (SELECT id FROM public.planes WHERE code = '{{ $node[\"Webhook Trigger\"].json.body.plan_code || 'barberagency_full' }}') AND name = '{{ $node[\"Webhook Trigger\"].json.body.billing_term || 'monthly' }}' AND active = true LIMIT 1)\n);"
       },
       "id": "db-create-checkout",
       "name": "PG - Create Checkout",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.4,
       "position": [
-        300,
-        200
+        1020,
+        100
       ],
       "credentials": {
         "postgres": {
@@ -61,8 +148,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        500,
-        200
+        1220,
+        100
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -81,8 +168,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.4,
       "position": [
-        700,
-        200
+        1420,
+        100
       ],
       "credentials": {
         "postgres": {
@@ -102,8 +189,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        900,
-        200
+        1620,
+        100
       ]
     }
   ],
@@ -112,7 +199,58 @@
       "main": [
         [
           {
+            "node": "Code - parse cookie",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - parse cookie": {
+      "main": [
+        [
+          {
+            "node": "JWT - Verify session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "JWT - Verify session": {
+      "main": [
+        [
+          {
+            "node": "Code - check auth",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - check auth": {
+      "main": [
+        [
+          {
+            "node": "If - is authenticated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - is authenticated": {
+      "main": [
+        [
+          {
             "node": "PG - Create Checkout",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond - 401 Unauthorized",
             "type": "main",
             "index": 0
           }
@@ -209,16 +347,103 @@
       },
       {
         "parameters": {
+          "jsCode": "const i = $input.first().json || {};\nconst h = i.headers || {};\nlet session_token = '';\nconst authHeader = (h.authorization ?? h.Authorization ?? '').toString().trim();\nif (authHeader.startsWith('Bearer ')) {\n  session_token = authHeader.substring(7).trim();\n} else {\n  const cookieHeader = (h.cookie ?? h.Cookie ?? '').toString();\n  const m = cookieHeader.match(/(?:^|;\\s*)ba_session=([^;]+)/);\n  if (m) {\n    session_token = m[1];\n  }\n}\nreturn [{ json: { session_token } }];"
+        },
+        "id": "code-parse-cookie",
+        "name": "Code - parse cookie",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          280,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "operation": "verify",
+          "token": "={{ $json.session_token }}",
+          "options": {
+            "algorithm": "HS256"
+          }
+        },
+        "id": "jwt-verify",
+        "name": "JWT - Verify session",
+        "type": "n8n-nodes-base.jwt",
+        "typeVersion": 1,
+        "position": [
+          460,
+          200
+        ],
+        "credentials": {
+          "jwtAuth": {
+            "id": "mNWhzdM1ihAaBkZM",
+            "name": "JWT Auth account"
+          }
+        },
+        "continueOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const i = $input.first().json || {};\nconst auth_ok = !i.error && !!i.payload?.user_id;\nconst user_id = auth_ok ? Number(i.payload.user_id) : 0;\nreturn [{ json: { auth_ok, user_id } }];"
+        },
+        "id": "code-check-auth",
+        "name": "Code - check auth",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          640,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "boolean": [
+              {
+                "value1": "={{ $json.auth_ok }}",
+                "value2": true
+              }
+            ]
+          }
+        },
+        "id": "if-auth",
+        "name": "If - is authenticated",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 1,
+        "position": [
+          820,
+          200
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"error\": \"UNAUTHORIZED\",\n  \"message\": \"Sesión no válida o expirada.\"\n}",
+          "options": {
+            "responseCode": 401
+          }
+        },
+        "id": "respond-unauthorized",
+        "name": "Respond - 401 Unauthorized",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          1020,
+          320
+        ]
+      },
+      {
+        "parameters": {
           "operation": "executeQuery",
-          "query": "SET ROLE authenticated;\nSET request.jwt.claims = '{\"user_id\": \"{{ $json.body.user_id || 10 }}\"}';\nSELECT * FROM public.billing_create_checkout(\n  {{ $json.body.barberia_id || 10 }},\n  (SELECT id FROM public.plan_prices WHERE plan_id = (SELECT id FROM public.planes WHERE code = '{{ $json.body.plan_code || 'barberagency_full' }}') AND name = '{{ $json.body.billing_term || 'monthly' }}' AND active = true LIMIT 1)\n);"
+          "query": "SET ROLE authenticated;\nSET request.jwt.claims = '{\"user_id\": \"{{ $node[\"Code - check auth\"].json.user_id }}\"}';\nSELECT * FROM public.billing_create_checkout(\n  {{ $node[\"Webhook Trigger\"].json.body.barberia_id }},\n  (SELECT id FROM public.plan_prices WHERE plan_id = (SELECT id FROM public.planes WHERE code = '{{ $node[\"Webhook Trigger\"].json.body.plan_code || 'barberagency_full' }}') AND name = '{{ $node[\"Webhook Trigger\"].json.body.billing_term || 'monthly' }}' AND active = true LIMIT 1)\n);"
         },
         "id": "db-create-checkout",
         "name": "PG - Create Checkout",
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.4,
         "position": [
-          300,
-          200
+          1020,
+          100
         ],
         "credentials": {
           "postgres": {
@@ -244,8 +469,8 @@
         "type": "n8n-nodes-base.httpRequest",
         "typeVersion": 4.1,
         "position": [
-          500,
-          200
+          1220,
+          100
         ],
         "credentials": {
           "httpHeaderAuth": {
@@ -264,8 +489,8 @@
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.4,
         "position": [
-          700,
-          200
+          1420,
+          100
         ],
         "credentials": {
           "postgres": {
@@ -285,8 +510,8 @@
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.1,
         "position": [
-          900,
-          200
+          1620,
+          100
         ]
       }
     ],
@@ -295,7 +520,58 @@
         "main": [
           [
             {
+              "node": "Code - parse cookie",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - parse cookie": {
+        "main": [
+          [
+            {
+              "node": "JWT - Verify session",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "JWT - Verify session": {
+        "main": [
+          [
+            {
+              "node": "Code - check auth",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code - check auth": {
+        "main": [
+          [
+            {
+              "node": "If - is authenticated",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If - is authenticated": {
+        "main": [
+          [
+            {
               "node": "PG - Create Checkout",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Respond - 401 Unauthorized",
               "type": "main",
               "index": 0
             }

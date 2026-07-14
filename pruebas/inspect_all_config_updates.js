@@ -2,7 +2,11 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZWRlNzUwOC05OTdhLTQ0NzUtYjJiOC05YmUyZTNhNmE0MTUiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiOWQ4MDYyMDAtNWM4Ni00ZDQ1LWIyM2ItZDEyYzc2MmMwMGEyIiwiaWF0IjoxNzc1OTIxODk4fQ.S-gQd2FKYczqgzSIqxLv3tWTkS4mJk-lvt0DMAtmfKY';
+const API_KEY = process.env.N8N_API_KEY;
+if (!API_KEY) {
+  console.error("N8N_API_KEY is required.");
+  process.exit(1);
+}
 
 function downloadExecution(executionId) {
   return new Promise((resolve, reject) => {

@@ -2,7 +2,11 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZWRlNzUwOC05OTdhLTQ0NzUtYjJiOC05YmUyZTNhNmE0MTUiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiOWQ4MDYyMDAtNWM4Ni00ZDQ1LWIyM2ItZDEyYzc2MmMwMGEyIiwiaWF0IjoxNzc1OTIxODk4fQ.S-gQd2FKYczqgzSIqxLv3tWTkS4mJk-lvt0DMAtmfKY';
+const token = process.env.N8N_API_KEY;
+if (!token) {
+  console.error("N8N_API_KEY is required.");
+  process.exit(1);
+}
 let tempWorkflowId = null;
 
 function req(method, apiPath, body) {

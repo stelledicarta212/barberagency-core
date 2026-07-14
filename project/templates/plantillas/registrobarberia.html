@@ -299,7 +299,6 @@
           },
           body: JSON.stringify({
             barberia_id: barberiaId,
-            user_id: userId,
             plan_code: "barberagency_full",
             billing_term: draft.billing_selection ? draft.billing_selection.billing_term : "monthly",
             idempotency_key: idempotencyKey
