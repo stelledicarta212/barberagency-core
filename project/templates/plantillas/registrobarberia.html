@@ -59,6 +59,10 @@
 
     window.__BA_WP_ONBOARDING_READY__ = true;
 
+    if (checkPaymentStatusFromUrl()) {
+      return;
+    }
+
     // SECCION: Configuracion de endpoints y llaves de storage.
     window.BA_PANEL_API_BASE_URL =
       (window.BA_PANEL_API_BASE_URL && String(window.BA_PANEL_API_BASE_URL).trim()) ||
@@ -237,6 +241,225 @@
       "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero3.1.png",
       "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png"
     ];
+
+    // SECCION: Facturacion / Mercado Pago Sandbox E2E
+    function extractAndValidateBillingSelection() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const planParam = urlParams.get("plan");
+        const termParam = urlParams.get("term");
+
+        if (!planParam && !termParam) {
+          return null;
+        }
+
+        const plan_code = "barberagency_full";
+        const allowedTerms = ["monthly", "quarterly", "semiannual", "annual"];
+        let billing_term = "monthly";
+        if (termParam && allowedTerms.includes(termParam.toLowerCase())) {
+          billing_term = termParam.toLowerCase();
+        }
+
+        return {
+          plan_code,
+          billing_term,
+          selected_at: new Date().toISOString(),
+          source: "wordpress_pricing"
+        };
+      } catch (_) {
+        return null;
+      }
+    }
+
+    async function triggerCheckoutFlow(barberiaId, userId) {
+      hideMessage();
+      const continueBtn = document.getElementById("baContinueTemplateBtn");
+      const submitBtn = document.getElementById("baSubmitBtn");
+      
+      const setBtnLoading = (loading, text) => {
+        if (continueBtn) {
+          continueBtn.disabled = loading;
+          continueBtn.textContent = text;
+        }
+        if (submitBtn) {
+          submitBtn.disabled = loading;
+          submitBtn.textContent = text;
+        }
+      };
+
+      setBtnLoading(true, "Redirigiendo a checkout...");
+      showMessage("info", "Creando checkout para Mercado Pago Sandbox...");
+
+      try {
+        const idempotencyKey = "ba_chk_" + barberiaId + "_" + (draft.billing_selection ? draft.billing_selection.billing_term : "monthly") + "_" + new Date().getTime();
+        const response = await fetch("https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/billing/prepaid-checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            barberia_id: barberiaId,
+            user_id: userId,
+            plan_code: "barberagency_full",
+            billing_term: draft.billing_selection ? draft.billing_selection.billing_term : "monthly",
+            idempotency_key: idempotencyKey
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP Error ${response.status} al crear checkout.`);
+        }
+
+        const data = await response.json();
+        if (!data || !data.url) {
+          throw new Error("El workflow de checkout no retornó ninguna URL (init_point).");
+        }
+
+        showMessage("success", "Redirigiendo a la pasarela de pagos...");
+        window.location.href = data.url;
+      } catch (error) {
+        console.error("Checkout redirection failed:", error);
+        setBtnLoading(false, "Reintentar checkout");
+        showMessage(
+          "error",
+          `No se pudo iniciar el pago: ${error.message}.`
+        );
+        
+        let retryBtn = document.getElementById("baRetryCheckoutBtn");
+        if (!retryBtn) {
+          retryBtn = document.createElement("button");
+          retryBtn.id = "baRetryCheckoutBtn";
+          retryBtn.className = "ba-action";
+          retryBtn.style.marginTop = "10px";
+          retryBtn.textContent = "Reintentar checkout";
+          retryBtn.type = "button";
+          retryBtn.addEventListener("click", () => triggerCheckoutFlow(barberiaId, userId));
+          const msgArea = document.getElementById("baMessage");
+          if (msgArea) {
+            msgArea.appendChild(retryBtn);
+          }
+        }
+      }
+    }
+
+    function checkPaymentStatusFromUrl() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get("payment_status") || params.get("status");
+        const barberiaId = params.get("barberia_id");
+        if (status && barberiaId) {
+          renderPaymentStatusPage(status, barberiaId);
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
+
+    function renderPaymentStatusPage(status, barberiaId) {
+      const bodyContainer = document.querySelector(".ba-body");
+      if (!bodyContainer) return;
+      
+      let title = "";
+      let message = "";
+      let statusColor = "var(--accent)";
+      let iconHtml = "";
+
+      if (status === "approved" || status === "success") {
+        title = "Pago Recibido";
+        message = "Recibimos tu pago. Estamos confirmando la activación.";
+        statusColor = "var(--success)";
+        iconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:48px;height:48px;color:var(--success)"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+      } else if (status === "pending") {
+        title = "Pago Pendiente";
+        message = "Tu pago está pendiente de confirmación.";
+        statusColor = "var(--accent)";
+        iconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:48px;height:48px;color:var(--accent)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+      } else {
+        title = "Pago Rechazado";
+        message = "No fue posible procesar el pago. Puedes intentarlo nuevamente.";
+        statusColor = "var(--danger)";
+        iconHtml = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:48px;height:48px;color:var(--danger)"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+      }
+
+      bodyContainer.innerHTML = `
+        <div style="max-width: 600px; margin: 40px auto; padding: 30px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15); width: 100%;">
+          <div style="margin-bottom: 20px;">
+            ${iconHtml}
+          </div>
+          <h2 style="font-size: 24px; color: ${statusColor}; margin-bottom: 12px;">${escapeHtml(title)}</h2>
+          <p id="baPaymentStatusText" style="font-size: 16px; color: var(--foreground); line-height: 1.6; margin-bottom: 24px;">
+            ${escapeHtml(message)}
+          </p>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 12px;">
+            <div id="baPaymentPollingSpinner" class="ba-spinner" style="border: 3px solid rgba(255,255,255,0.1); border-radius: 50%; border-top: 3px solid ${statusColor}; width: 24px; height: 24px; animation: spin 1s linear infinite;"></div>
+            <a href="https://barberagency-app.gymh5g.easypanel.host/barberia?barberia_id=${barberiaId}" id="baPaymentDashboardBtn" class="ba-action" style="display: none; width: 100%; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; background: var(--accent); color: var(--surface); text-align: center;">Ir al Dashboard</a>
+            <a href="/registro" style="font-size: 14px; color: var(--accent); text-decoration: underline; margin-top: 10px;">Volver al inicio</a>
+          </div>
+        </div>
+      `;
+
+      if (!document.getElementById("baSpinStyles")) {
+        const style = document.createElement("style");
+        style.id = "baSpinStyles";
+        style.textContent = `
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      pollSubscriptionStatus(barberiaId);
+    }
+
+    async function pollSubscriptionStatus(barberiaId) {
+      const statusElement = document.getElementById("baPaymentStatusText");
+      const subButton = document.getElementById("baPaymentDashboardBtn");
+      const spinner = document.getElementById("baPaymentPollingSpinner");
+      
+      let attempts = 0;
+      const maxAttempts = 60;
+      
+      const interval = setInterval(async () => {
+        attempts++;
+        if (attempts > maxAttempts) {
+          clearInterval(interval);
+          if (statusElement) {
+            statusElement.textContent = "El pago sigue en proceso de confirmación. Puedes ingresar al dashboard para verificar el estado más tarde.";
+          }
+          if (spinner) spinner.style.display = "none";
+          if (subButton) {
+            subButton.style.display = "block";
+          }
+          return;
+        }
+        
+        try {
+          const response = await postgrestFetch(\`/subscriptions?barberia_id=eq.\${barberiaId}&select=status\`, {
+            method: "GET",
+            credentials: "include"
+          });
+          const subs = await response.json();
+          if (subs && subs.length > 0) {
+            const currentStatus = subs[0].status;
+            if (currentStatus === "active") {
+              clearInterval(interval);
+              if (spinner) spinner.style.display = "none";
+              if (statusElement) {
+                statusElement.innerHTML = \`<span style="color:var(--success)">¡Suscripción activada con éxito!</span> Ya puedes acceder a todas las funciones del sistema.\`;
+              }
+              if (subButton) {
+                subButton.style.display = "block";
+                subButton.textContent = "Ingresar al Dashboard";
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Error polling subscription status:", error);
+        }
+      }, 5000);
+    }
 
     // SECCION: Referencias al DOM y estado principal del wizard.
     const progressFill = document.getElementById("baProgressFill");
@@ -509,7 +732,8 @@
             password: ""
           },
           barberos: []
-        }
+        },
+        billing_selection: null
       };
     }
 
@@ -681,9 +905,9 @@
 
     function loadInitialDraft() {
       const editIntent = isEditIntent();
+      const urlBilling = extractAndValidateBillingSelection();
+
       if (!editIntent) {
-        // Si no estamos editando una barberia existente, iniciar limpio.
-        // Evita que aparezcan datos de una barberia anterior guardados en seed/draft.
         try {
           sessionStorage.removeItem(LANDING_SEED_KEY);
         } catch (_) {}
@@ -693,10 +917,16 @@
         try {
           localStorage.removeItem(STORAGE_KEY);
         } catch (_) {}
-        return null;
+
+        const cleanDraft = getDefaultDraft();
+        cleanDraft.billing_selection = urlBilling;
+        return cleanDraft;
       }
 
       const saved = loadDraft();
+      if (saved && urlBilling) {
+        saved.billing_selection = urlBilling;
+      }
       if (saved && editIntent) {
         const identity = getEditIdentity();
         const savedId = Number(saved.barberia_id || saved.barberia?.id || saved.barberia?.barberia_id || 0);
@@ -808,7 +1038,8 @@
         accesos: {
           admin: Object.assign({}, base.accesos.admin, source.accesos && source.accesos.admin ? source.accesos.admin : {}),
           barberos: Array.isArray(source.accesos && source.accesos.barberos) ? source.accesos.barberos : []
-        }
+        },
+        billing_selection: source.billing_selection || base.billing_selection || null
       };
     }
 
@@ -1201,7 +1432,43 @@
         ["días activos", String(activeDays)]
       ].filter((entry) => clean(entry[1]));
 
-      liveSummary.innerHTML = entries.length
+      let planHtml = "";
+      if (draft.billing_selection) {
+        let termLabel = "";
+        let priceLabel = "";
+        switch (draft.billing_selection.billing_term) {
+          case "monthly":
+            termLabel = "Mensual";
+            priceLabel = "50.000 COP";
+            break;
+          case "quarterly":
+            termLabel = "Trimestral";
+            priceLabel = "142.500 COP";
+            break;
+          case "semiannual":
+            termLabel = "Semestral";
+            priceLabel = "270.000 COP";
+            break;
+          case "annual":
+            termLabel = "Anual";
+            priceLabel = "510.000 COP";
+            break;
+        }
+        planHtml = `
+          <article class="ba-summary-item">
+            <div class="ba-summary-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="ba-summary-item-content">
+              <small>Plan Elegido (Informativo)</small>
+              <strong>${escapeHtml(termLabel)} — ${escapeHtml(priceLabel)}</strong>
+              <a href="#" id="baChangePeriodLink" style="font-size:11px;color:var(--accent);text-decoration:underline;display:block;margin-top:2px;">Cambiar periodo</a>
+            </div>
+          </article>
+        `;
+      }
+
+      liveSummary.innerHTML = (entries.length
         ? entries.map((entry) => `
             <article class="ba-summary-item">
               <div class="ba-summary-item-icon">
@@ -1223,7 +1490,21 @@
                 <strong>Tu progreso aparecerá aquí.</strong>
               </div>
             </article>
-          `;
+          `) + planHtml;
+
+      const changeLink = document.getElementById("baChangePeriodLink");
+      if (changeLink) {
+        changeLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          const newTerm = prompt("Selecciona un período de facturación válido:\n- monthly (Mensual: 50.000 COP)\n- quarterly (Trimestral: 142.500 COP)\n- semiannual (Semestral: 270.000 COP)\n- annual (Anual: 510.000 COP)", draft.billing_selection.billing_term);
+          if (newTerm && ["monthly", "quarterly", "semiannual", "annual"].includes(newTerm.toLowerCase().trim())) {
+            draft.billing_selection.billing_term = newTerm.toLowerCase().trim();
+            draft.billing_selection.selected_at = new Date().toISOString();
+            saveDraft();
+            renderLiveSummary();
+          }
+        });
+      }
     }
 
     // SECCION: Render de pasos simples.
@@ -2745,6 +3026,7 @@
       // Algunos workflows legacy de n8n leen campos en raiz.
       return {
         ...payload,
+        billing_selection: draftPayload.billing_selection || null,
         barberia: {
           ...barberia,
           nombre: clean(barberia.nombre),
@@ -3232,6 +3514,17 @@
         onboardingResult = data;
         showMessage("success", data.message || "Barbería creada correctamente.");
         render();
+
+        if (draft.billing_selection) {
+          const bId = Number(data.barberia_id || (data.barberia && data.barberia.id) || 0);
+          const uId = Number(data.usuario_id || data.user_id || data.owner_id || (data.barberia && data.barberia.owner_id) || 0);
+          if (!bId || !uId) {
+            console.error("Falta barberia_id o usuario_id (owner) para procesar el checkout.", { bId, uId });
+            showMessage("error", "Error crítico de facturación: No se pudo determinar la barbería o el usuario propietario. El proceso de pago ha sido abortado para proteger su cuenta. Por favor, reintente o contacte a soporte.");
+            return;
+          }
+          await triggerCheckoutFlow(bId, uId);
+        }
       } catch (error) {
         showMessage(
           "error",
@@ -3312,7 +3605,18 @@
         const { data } = await postOnboardingPayload(payload);
 
         persistLandingSeed(payload, data);
-        window.location.href = buildLandingBuilderUrl(payload, data);
+        if (draft.billing_selection) {
+          const bId = Number(data.barberia_id || (data.barberia && data.barberia.id) || 0);
+          const uId = Number(data.usuario_id || data.user_id || data.owner_id || (data.barberia && data.barberia.owner_id) || 0);
+          if (!bId || !uId) {
+            console.error("Falta barberia_id o usuario_id (owner) para procesar el checkout.", { bId, uId });
+            showMessage("error", "Error crítico de facturación: No se pudo determinar la barbería o el usuario propietario. El proceso de pago ha sido abortado para proteger su cuenta. Por favor, reintente o contacte a soporte.");
+            return;
+          }
+          await triggerCheckoutFlow(bId, uId);
+        } else {
+          window.location.href = buildLandingBuilderUrl(payload, data);
+        }
       } catch (error) {
         // Fallback visual SOLO temporal y bajo flag explicito.
         if (ALLOW_LOCAL_SEED_FALLBACK && isEditIntent() && isPostgrestPermissionError(error)) {

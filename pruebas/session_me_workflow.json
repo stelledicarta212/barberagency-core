@@ -4,7 +4,7 @@
   "id": "iUZCTRli7ghGFrEb",
   "name": "BarberAgency - Session Me v2",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -40,7 +40,7 @@
           "allowedOrigins": "https://barberagency-barberagency.gymh5g.easypanel.host,https://panel-de-barberia.gymh5g.easypanel.host"
         }
       },
-      "webhookId": "4df585fe-ddaa-406d-b717-f56607e7994b"
+      "webhookId": ""
     },
     {
       "id": "4d8beb67-f825-4a55-ba25-e4b7066f266d",
@@ -260,16 +260,16 @@
       "createdAt": "2026-02-26T15:46:49.348Z",
       "role": "workflow:owner",
       "workflowId": "iUZCTRli7ghGFrEb",
-      "projectId": "ajSDxUXg76Ss65zL",
+      "projectId": "",
       "project": {
         "updatedAt": "2026-02-09T14:41:23.917Z",
         "createdAt": "2026-02-09T14:01:19.465Z",
         "id": "ajSDxUXg76Ss65zL",
-        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "name": "Carlos a Alvis <placeholder@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+        "creatorId": ""
       }
     }
   ],
@@ -313,7 +313,7 @@
             "allowedOrigins": "https://barberagency-barberagency.gymh5g.easypanel.host,https://panel-de-barberia.gymh5g.easypanel.host"
           }
         },
-        "webhookId": "4df585fe-ddaa-406d-b717-f56607e7994b"
+        "webhookId": ""
       },
       {
         "id": "4d8beb67-f825-4a55-ba25-e4b7066f266d",

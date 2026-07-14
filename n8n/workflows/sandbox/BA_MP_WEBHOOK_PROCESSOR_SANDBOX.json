@@ -1,0 +1,222 @@
+{
+  "updatedAt": "2026-07-13T23:54:07.046Z",
+  "createdAt": "2026-07-13T23:54:07.046Z",
+  "id": "iUllvDVp6NYJxQ7m",
+  "name": "BA_MP_WEBHOOK_PROCESSOR_SANDBOX",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "trigger",
+      "name": "When Called by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1,
+      "position": [
+        100,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, event_type, payload FROM public.payment_webhook_events WHERE id = '{{ $json.webhook_id }}';"
+      },
+      "id": "fetch-payload",
+      "name": "PG - Fetch Webhook Payload",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        300,
+        200
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.mercadopago.com/v1/payments/{{ $json.payload.data.id }}",
+        "authentication": "predefined",
+        "nodeCredentialType": "httpHeaderAuth",
+        "credentialType": "httpHeaderAuth"
+      },
+      "id": "fetch-mp",
+      "name": "HTTP - Fetch MP Payment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        500,
+        200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CGRkoVsQuGre5o37",
+          "name": "BA_MP_SANDBOX_CRED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "approved"
+            }
+          ]
+        }
+      },
+      "id": "if-approved",
+      "name": "IF Approved",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM public.billing_process_approved_payment(\n  '{{ $json.external_reference }}',\n  '{{ $json.id::text }}',\n  {{ $json.transaction_amount }},\n  {{ $json.fee_details[0] ? $json.fee_details[0].amount : 0 }},\n  '{{ $json.payment_method_id }}'\n);"
+      },
+      "id": "process-payment",
+      "name": "PG - Process Approved Payment",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        900,
+        100
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.payment_webhook_events \nSET processed = true, \n    updated_at = now() \nWHERE id = '{{ $node[\"PG - Fetch Webhook Payload\"].json.id }}';"
+      },
+      "id": "update-webhook",
+      "name": "PG - Update Webhook Status",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        1100,
+        200
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Called by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "PG - Fetch Webhook Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Fetch Webhook Payload": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Fetch MP Payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Fetch MP Payment": {
+      "main": [
+        [
+          {
+            "node": "IF Approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Approved": {
+      "main": [
+        [
+          {
+            "node": "PG - Process Approved Payment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PG - Update Webhook Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Process Approved Payment": {
+      "main": [
+        [
+          {
+            "node": "PG - Update Webhook Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "d0cfdad4-a408-45e7-829f-0bc8a43c7cb8",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-07-13T23:54:07.049Z",
+      "createdAt": "2026-07-13T23:54:07.049Z",
+      "role": "workflow:owner",
+      "workflowId": "iUllvDVp6NYJxQ7m",
+      "projectId": "",
+      "project": {
+        "updatedAt": "2026-02-09T14:41:23.917Z",
+        "createdAt": "2026-02-09T14:01:19.465Z",
+        "id": "ajSDxUXg76Ss65zL",
+        "name": "Carlos a Alvis <placeholder@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": ""
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

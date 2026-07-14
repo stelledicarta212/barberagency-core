@@ -4,7 +4,7 @@
   "id": "SX8JofEZAGEDdsSS",
   "name": "BarberAgency - Landing Save v1",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -22,7 +22,7 @@
         -528,
         0
       ],
-      "webhookId": "c8e09255-0037-4e9d-8e98-00e51817f11b"
+      "webhookId": ""
     },
     {
       "parameters": {
@@ -147,16 +147,16 @@
       "createdAt": "2026-03-16T19:49:38.199Z",
       "role": "workflow:owner",
       "workflowId": "SX8JofEZAGEDdsSS",
-      "projectId": "ajSDxUXg76Ss65zL",
+      "projectId": "",
       "project": {
         "updatedAt": "2026-02-09T14:41:23.917Z",
         "createdAt": "2026-02-09T14:01:19.465Z",
         "id": "ajSDxUXg76Ss65zL",
-        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "name": "Carlos a Alvis <placeholder@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+        "creatorId": ""
       }
     }
   ],
@@ -182,7 +182,7 @@
           -528,
           0
         ],
-        "webhookId": "c8e09255-0037-4e9d-8e98-00e51817f11b"
+        "webhookId": ""
       },
       {
         "parameters": {
