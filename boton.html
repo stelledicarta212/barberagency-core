@@ -10,9 +10,9 @@
   const BA_CREATE_BARBERIA_URL = "/registro-barberias/";
   const BA_PROFILE_URL = "/perfil/";
   const BA_PLANS_URL = "/planes/";
-  const BA_DASHBOARD_URL = "/barberia";
+  const BA_DASHBOARD_URL = "https://barberagency-app.gymh5g.easypanel.host/barberia";
 
-  const BA_SESSION_ME_URL = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/session/me";
+  const BA_SESSION_ME_URL = "https://barberagency-app.gymh5g.easypanel.host/api/session/me";
   const BA_SESSION_LOGOUT_URL = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/session/logout";
 
   const SESSION_KEYS = [
@@ -185,7 +185,7 @@
   function dashboardUrl(barberia) {
     const slug = clean(barberia && barberia.slug);
     const id = Number(barberia && barberia.id);
-    const url = new URL(BA_DASHBOARD_URL);
+    const url = new URL(BA_DASHBOARD_URL, window.location.origin);
     if (id > 0) url.searchParams.set("barberia_id", String(id));
     if (slug) url.searchParams.set("slug", slug);
     return url.toString();
