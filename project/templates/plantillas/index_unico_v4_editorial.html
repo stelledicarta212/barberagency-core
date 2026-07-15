@@ -3092,6 +3092,36 @@
       background: linear-gradient(135deg, #A66A3F, #C48A5A) !important;
       color: #ffffff !important;
     }
+    /* Keep native time options readable in both themes. */
+    .reserve-form .form-select {
+      color-scheme: light;
+    }
+
+    .reserve-form .form-select option,
+    .reserve-form .form-select option:checked {
+      color: #211B16 !important;
+      background-color: #F7F1E8 !important;
+      -webkit-text-fill-color: #211B16;
+    }
+
+    /* The light theme keeps the same dark editorial header treatment. */
+    #landingRoot[data-theme='light'] .topnav,
+    #landingRoot[data-theme='light'] .topnav:has(.navbar-collapse.show) {
+      background: rgba(26, 30, 42, .78) !important;
+      border-color: rgba(255, 255, 255, .08) !important;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, .25) !important;
+    }
+
+    #landingRoot[data-theme='light'] .navbar-brand.brand,
+    #landingRoot[data-theme='light'] .navbar-nav .nav-link,
+    #landingRoot[data-theme='light'] .hero-title,
+    #landingRoot[data-theme='light'] .hero-subtitle {
+      color: #F4EFE8 !important;
+    }
+
+    #landingRoot[data-theme='light'] .custom-toggler .toggler-bar {
+      background-color: #F4EFE8 !important;
+    }
   </style>
 </head>
 <body>
