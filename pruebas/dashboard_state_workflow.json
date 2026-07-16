@@ -4,7 +4,7 @@
   "id": "6JugRzxsOGKBvgWW",
   "name": "BarberAgency - Dashboard State Webhook",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -22,7 +22,7 @@
         100,
         400
       ],
-      "webhookId": "7d0193ce-0b83-447c-82a7-25f05a8ebf65"
+      "webhookId": ""
     },
     {
       "parameters": {
@@ -375,16 +375,16 @@
       "createdAt": "2026-05-25T21:37:48.459Z",
       "role": "workflow:owner",
       "workflowId": "6JugRzxsOGKBvgWW",
-      "projectId": "ajSDxUXg76Ss65zL",
+      "projectId": "",
       "project": {
         "updatedAt": "2026-02-09T14:41:23.917Z",
         "createdAt": "2026-02-09T14:01:19.465Z",
         "id": "ajSDxUXg76Ss65zL",
-        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "name": "Carlos a Alvis <placeholder@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+        "creatorId": ""
       }
     }
   ],
@@ -410,7 +410,7 @@
           100,
           400
         ],
-        "webhookId": "7d0193ce-0b83-447c-82a7-25f05a8ebf65"
+        "webhookId": ""
       },
       {
         "parameters": {

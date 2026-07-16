@@ -4,7 +4,7 @@
   "id": "LsvB2cGDxvNTSL28",
   "name": "registro_barberia",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -22,7 +22,7 @@
       ],
       "id": "27d57cc5-09e0-43d2-96ef-00615f7fa63b",
       "name": "Webhook",
-      "webhookId": "7fa17c93-a961-4a38-9615-f3c3d4a520e5"
+      "webhookId": ""
     },
     {
       "parameters": {
@@ -360,16 +360,16 @@
       "createdAt": "2026-03-11T23:26:21.820Z",
       "role": "workflow:owner",
       "workflowId": "LsvB2cGDxvNTSL28",
-      "projectId": "ajSDxUXg76Ss65zL",
+      "projectId": "",
       "project": {
         "updatedAt": "2026-02-09T14:41:23.917Z",
         "createdAt": "2026-02-09T14:01:19.465Z",
         "id": "ajSDxUXg76Ss65zL",
-        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "name": "Carlos a Alvis <placeholder@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+        "creatorId": ""
       }
     }
   ],
@@ -395,7 +395,7 @@
         ],
         "id": "27d57cc5-09e0-43d2-96ef-00615f7fa63b",
         "name": "Webhook",
-        "webhookId": "7fa17c93-a961-4a38-9615-f3c3d4a520e5"
+        "webhookId": ""
       },
       {
         "parameters": {

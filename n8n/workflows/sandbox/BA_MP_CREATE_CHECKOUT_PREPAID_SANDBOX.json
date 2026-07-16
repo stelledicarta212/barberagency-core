@@ -1,0 +1,355 @@
+{
+  "updatedAt": "2026-07-14T00:40:59.404Z",
+  "createdAt": "2026-07-13T23:54:07.458Z",
+  "id": "uKWA9IwRcUciiuQs",
+  "name": "BA_MP_CREATE_CHECKOUT_PREPAID_SANDBOX",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "barberagency/billing/prepaid-checkout",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        100,
+        200
+      ],
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SET ROLE authenticated;\nSET request.jwt.claims = '{\"user_id\": \"{{ $json.body.user_id || 10 }}\"}';\nSELECT * FROM public.billing_create_checkout(\n  {{ $json.body.barberia_id || 10 }},\n  (SELECT id FROM public.plan_prices WHERE plan_id = (SELECT id FROM public.planes WHERE code = '{{ $json.body.plan_code || 'barberagency_full' }}') AND name = '{{ $json.body.billing_term || 'monthly' }}' AND active = true LIMIT 1)\n);"
+      },
+      "id": "db-create-checkout",
+      "name": "PG - Create Checkout",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        300,
+        200
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mercadopago.com/checkout/preferences",
+        "authentication": "predefined",
+        "nodeCredentialType": "httpHeaderAuth",
+        "credentialType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"items\": [\n    {\n      \"title\": \"Plan BarberAgency SaaS\",\n      \"quantity\": 1,\n      \"currency_id\": \"{{ $node[\"PG - Create Checkout\"].json.currency }}\",\n      \"unit_price\": {{ $node[\"PG - Create Checkout\"].json.amount }}\n    }\n  ],\n  \"external_reference\": \"{{ $node[\"PG - Create Checkout\"].json.external_reference }}\",\n  \"notification_url\": \"https://barberagency-n8n.gymh5g.easypanel.host/webhook/mp-notification\",\n  \"back_urls\": {\n    \"success\": \"https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/?payment_status=approved&barberia_id={{ $node[\"Webhook Trigger\"].json.body.barberia_id }}\",\n    \"failure\": \"https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/?payment_status=rejected&barberia_id={{ $node[\"Webhook Trigger\"].json.body.barberia_id }}\",\n    \"pending\": \"https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/?payment_status=pending&barberia_id={{ $node[\"Webhook Trigger\"].json.body.barberia_id }}\"\n  },\n  \"auto_return\": \"approved\"\n}",
+        "options": {}
+      },
+      "id": "mp-pref",
+      "name": "MP API Checkout",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        500,
+        200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CGRkoVsQuGre5o37",
+          "name": "BA_MP_SANDBOX_CRED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE public.billing_checkouts \nSET provider_checkout_id = '{{ $json.id }}', \n    init_point = '{{ $json.init_point }}',\n    updated_at = now() \nWHERE id = '{{ $node[\"PG - Create Checkout\"].json.checkout_id }}'\nRETURNING id, external_reference, init_point;"
+      },
+      "id": "db-save-checkout",
+      "name": "PG - Save Checkout Preference",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        700,
+        200
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"url\": \"{{ $json.init_point }}\",\n  \"checkout_reference\": \"{{ $node[\"PG - Create Checkout\"].json.external_reference }}\"\n}",
+        "options": {}
+      },
+      "id": "respond-checkout",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "PG - Create Checkout",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Create Checkout": {
+      "main": [
+        [
+          {
+            "node": "MP API Checkout",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MP API Checkout": {
+      "main": [
+        [
+          {
+            "node": "PG - Save Checkout Preference",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Save Checkout Preference": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "074ad31c-4312-4aa0-9da8-5388ccf8a818",
+  "activeVersionId": "074ad31c-4312-4aa0-9da8-5388ccf8a818",
+  "versionCounter": 2,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-07-13T23:54:07.460Z",
+      "createdAt": "2026-07-13T23:54:07.460Z",
+      "role": "workflow:owner",
+      "workflowId": "uKWA9IwRcUciiuQs",
+      "projectId": "",
+      "project": {
+        "updatedAt": "2026-02-09T14:41:23.917Z",
+        "createdAt": "2026-02-09T14:01:19.465Z",
+        "id": "ajSDxUXg76Ss65zL",
+        "name": "Carlos a Alvis <placeholder@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": ""
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": {
+    "updatedAt": "2026-07-14T00:40:59.407Z",
+    "createdAt": "2026-07-14T00:40:59.407Z",
+    "versionId": "074ad31c-4312-4aa0-9da8-5388ccf8a818",
+    "workflowId": "uKWA9IwRcUciiuQs",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "barberagency/billing/prepaid-checkout",
+          "responseMode": "responseNode",
+          "options": {}
+        },
+        "id": "webhook-trigger",
+        "name": "Webhook Trigger",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          100,
+          200
+        ],
+        "webhookId": ""
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "SET ROLE authenticated;\nSET request.jwt.claims = '{\"user_id\": \"{{ $json.body.user_id || 10 }}\"}';\nSELECT * FROM public.billing_create_checkout(\n  {{ $json.body.barberia_id || 10 }},\n  (SELECT id FROM public.plan_prices WHERE plan_id = (SELECT id FROM public.planes WHERE code = '{{ $json.body.plan_code || 'barberagency_full' }}') AND name = '{{ $json.body.billing_term || 'monthly' }}' AND active = true LIMIT 1)\n);"
+        },
+        "id": "db-create-checkout",
+        "name": "PG - Create Checkout",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          300,
+          200
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "SOV6oSyuHI9cxgLF",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.mercadopago.com/checkout/preferences",
+          "authentication": "predefined",
+          "nodeCredentialType": "httpHeaderAuth",
+          "credentialType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"items\": [\n    {\n      \"title\": \"Plan BarberAgency SaaS\",\n      \"quantity\": 1,\n      \"currency_id\": \"{{ $node[\"PG - Create Checkout\"].json.currency }}\",\n      \"unit_price\": {{ $node[\"PG - Create Checkout\"].json.amount }}\n    }\n  ],\n  \"external_reference\": \"{{ $node[\"PG - Create Checkout\"].json.external_reference }}\",\n  \"notification_url\": \"https://barberagency-n8n.gymh5g.easypanel.host/webhook/mp-notification\",\n  \"back_urls\": {\n    \"success\": \"https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/?payment_status=approved&barberia_id={{ $node[\"Webhook Trigger\"].json.body.barberia_id }}\",\n    \"failure\": \"https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/?payment_status=rejected&barberia_id={{ $node[\"Webhook Trigger\"].json.body.barberia_id }}\",\n    \"pending\": \"https://barberagency-barberagency.gymh5g.easypanel.host/registro-barberias/?payment_status=pending&barberia_id={{ $node[\"Webhook Trigger\"].json.body.barberia_id }}\"\n  },\n  \"auto_return\": \"approved\"\n}",
+          "options": {}
+        },
+        "id": "mp-pref",
+        "name": "MP API Checkout",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          500,
+          200
+        ],
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "CGRkoVsQuGre5o37",
+            "name": "BA_MP_SANDBOX_CRED"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "executeQuery",
+          "query": "UPDATE public.billing_checkouts \nSET provider_checkout_id = '{{ $json.id }}', \n    init_point = '{{ $json.init_point }}',\n    updated_at = now() \nWHERE id = '{{ $node[\"PG - Create Checkout\"].json.checkout_id }}'\nRETURNING id, external_reference, init_point;"
+        },
+        "id": "db-save-checkout",
+        "name": "PG - Save Checkout Preference",
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.4,
+        "position": [
+          700,
+          200
+        ],
+        "credentials": {
+          "postgres": {
+            "id": "SOV6oSyuHI9cxgLF",
+            "name": "Postgres account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "{\n  \"url\": \"{{ $json.init_point }}\",\n  \"checkout_reference\": \"{{ $node[\"PG - Create Checkout\"].json.external_reference }}\"\n}",
+          "options": {}
+        },
+        "id": "respond-checkout",
+        "name": "Respond to Webhook",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          900,
+          200
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Trigger": {
+        "main": [
+          [
+            {
+              "node": "PG - Create Checkout",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PG - Create Checkout": {
+        "main": [
+          [
+            {
+              "node": "MP API Checkout",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "MP API Checkout": {
+        "main": [
+          [
+            {
+              "node": "PG - Save Checkout Preference",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "PG - Save Checkout Preference": {
+        "main": [
+          [
+            {
+              "node": "Respond to Webhook",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Carlos a Alvis",
+    "name": null,
+    "description": null,
+    "autosaved": false,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-07-14T00:40:59.601Z",
+        "id": 1845,
+        "workflowId": "uKWA9IwRcUciiuQs",
+        "versionId": "074ad31c-4312-4aa0-9da8-5388ccf8a818",
+        "event": "activated",
+        "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+      }
+    ]
+  }
+}
