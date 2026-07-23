@@ -9,7 +9,18 @@
 # previo a la subida y el uso de UUIDs en la nomenclatura para evitar colisiones).
 
 param(
-    [switch]$TestStaticParsersOnly
+    [switch]$TestStaticParsersOnly,
+    [string]$TASK005_GATE = "GATE_B_STATIC_IMPLEMENTATION_ONLY",
+    [string]$TEMP_ENVIRONMENT_ID = "",
+    [string]$TEMP_DATABASE_NAME = "",
+    [string]$SESSION_ROLE = "",
+    [string]$LOCAL_VALIDATION_ROLE = "",
+    [string]$TEMP_DATABASE_OWNER_ROLE = "",
+    [string]$RESTORE_EXECUTION_ROLE = "",
+    [string]$ADMINISTRATION_ROLE = "",
+    [string[]]$ALLOWED_RESTORED_SCHEMAS = @(),
+    [string[]]$PRODUCTION_BLOCKLIST = @(),
+    [string]$R2_BLOCK_MODE = "FORCED_BLOCKED"
 )
 
 # ==============================================================================
@@ -85,7 +96,29 @@ $PRODUCTION_MUTATION_IMPOSSIBILITY_VALIDATED = "NO"
 $DATABASE_ACL_REPRESENTED_IN_DUMP = "NO"
 $DATABASE_ACL_EXCLUDED_FROM_TEMP_RESTORE = "NO"
 $DATABASE_ACL_RESTORE_EQUIVALENCE_VALIDATED = "NO" # OPCIÓN B: Bloqueado a NO por limitación no resuelta
-$DATABASE_ACL_DECISION = "UNRESOLVED_BLOCKING"
+$DATABASE_ACL_DECISION = "PROPOSED_PENDING_INDEPENDENT_REVIEW"
+
+# Gate B / TASK_005 controlled implementation states.
+# These states are intentionally fail-closed. They document static implementation
+# surfaces only; they do not authorize execution, PostgreSQL access, restore,
+# R2 upload, Stage 2, or continuation to later gates.
+$TASK005_GATE_B_STATIC_IMPLEMENTATION_PRESENT = "YES"
+$TASK005_GATE_B_TECHNICAL_VALIDATION_COMPLETED = "NO"
+$TASK005_GATE_C_STARTED = "NO"
+$TASK005_READY_FOR_TECHNICAL_EXECUTION = "NO"
+$TASK005_ROLE_STRATEGY = "SESSION_ROLE_WITH_EFFECTIVE_PRIVILEGE_ASSERTIONS"
+$TASK005_SESSION_IDENTITY_OBSERVED = "NO"
+$TASK005_INSPECTED_ROLE_PRIVILEGES_OBSERVED = "NO"
+$TASK005_ROLE_MEMBERSHIP_BETWEEN_SESSION_AND_VALIDATION = "NO"
+$TASK005_ROLE_ASSUMPTION_USED = "NO"
+$TASK005_FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED = "YES_FOR_G_N_P_Q_R_S_T_U_V_ONLY"
+$TASK005_PRODUCTION_CONNECTION_ALLOWED = "NO"
+$TASK005_PRODUCTION_CONNECTION_PERFORMED = "NO"
+$TASK005_CANONICAL_FLOW_ORDER = @(
+    "1:original_lines_1715_1716:prepare_container_directory",
+    "2:original_lines_1718_1723:pg_dump_and_manifest",
+    "3:original_lines_2208_2218:check_create_and_restore_temp_database"
+)
 
 # Estados de ciclo de vida de la base de datos temporal
 $TEMP_DB_CREATED = "NO"
@@ -1068,6 +1101,207 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
 }
 
 # ==============================================================================
+# TASK_005 GATE B - STATIC IMPLEMENTATION SURFACES ONLY
+# ==============================================================================
+
+function PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters {
+    param(
+        [string]$TempEnvironmentId,
+        [string]$TempDatabaseName,
+        [string]$SessionRole,
+        [string]$LocalValidationRole,
+        [string]$TempDatabaseOwnerRole,
+        [string]$RestoreExecutionRole,
+        [string]$AdministrationRole,
+        [string[]]$AllowedRestoredSchemas,
+        [string[]]$ProductionBlocklist,
+        [string]$R2BlockMode
+    )
+
+    $result = @{
+        status = "PROPOSED_NOT_IMPLEMENTED"
+        gate = "GATE_B_STATIC_IMPLEMENTATION_ONLY"
+        technical_validation_completed = "NO"
+        production_connection_allowed = "NO"
+        production_connection_performed = "NO"
+        role_strategy = "SESSION_ROLE_WITH_EFFECTIVE_PRIVILEGE_ASSERTIONS"
+        errors = @()
+    }
+
+    $identifier_pattern = '^[a-z0-9_]{3,63}$'
+    $safe_text_pattern = '^[a-zA-Z0-9_.-]{1,128}$'
+
+    $values_to_screen = @($TempEnvironmentId, $TempDatabaseName, $SessionRole, $LocalValidationRole, $TempDatabaseOwnerRole, $RestoreExecutionRole, $AdministrationRole)
+    foreach ($value in $values_to_screen) {
+        if ($null -ne $value -and $value -match "[`r`n`0]") { $result.errors += "database_acl_policy_parameter_invalid:control_character" }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($TempEnvironmentId)) { $result.errors += "database_acl_policy_parameter_invalid:temp_environment_required" }
+    if ([string]::IsNullOrWhiteSpace($TempDatabaseName) -or $TempDatabaseName -notmatch $identifier_pattern) { $result.errors += "database_acl_policy_parameter_invalid:temp_database_name" }
+    if ([string]::IsNullOrWhiteSpace($SessionRole) -or $SessionRole -notmatch $identifier_pattern) { $result.errors += "database_acl_policy_parameter_invalid:session_role" }
+    if ([string]::IsNullOrWhiteSpace($LocalValidationRole) -or $LocalValidationRole -notmatch $identifier_pattern) { $result.errors += "database_acl_policy_parameter_invalid:local_validation_role" }
+    if ([string]::IsNullOrWhiteSpace($TempDatabaseOwnerRole) -or $TempDatabaseOwnerRole -notmatch $identifier_pattern) { $result.errors += "database_acl_policy_parameter_invalid:temp_owner_role" }
+    if ([string]::IsNullOrWhiteSpace($RestoreExecutionRole) -or $RestoreExecutionRole -notmatch $identifier_pattern) { $result.errors += "database_acl_policy_parameter_invalid:restore_execution_role" }
+    if ([string]::IsNullOrWhiteSpace($AdministrationRole) -or $AdministrationRole -notmatch $identifier_pattern) { $result.errors += "database_acl_policy_parameter_invalid:administration_role" }
+    if ($R2BlockMode -ne "FORCED_BLOCKED") { $result.errors += "database_acl_policy_parameter_invalid:r2_not_blocked" }
+    if ($AllowedRestoredSchemas.Count -eq 0) { $result.errors += "database_acl_policy_parameter_invalid:schemas_required" }
+
+    foreach ($schema in $AllowedRestoredSchemas) {
+        if ($schema -notmatch $identifier_pattern) { $result.errors += "database_acl_policy_schema_unexpected:$schema" }
+        if ($schema -in @("pg_catalog", "information_schema", "pg_toast")) { $result.errors += "database_acl_policy_schema_unexpected:system_schema" }
+    }
+
+    foreach ($blocked in $ProductionBlocklist) {
+        if ($null -ne $blocked -and $blocked -notmatch $safe_text_pattern) { $result.errors += "database_acl_policy_parameter_invalid:blocklist" }
+        if ($TempDatabaseName -eq $blocked) { $result.errors += "database_acl_policy_parameter_invalid:production_name_collision" }
+    }
+
+    if ($SessionRole -eq $LocalValidationRole) { $result.errors += "database_acl_policy_role_collision:session_validation" }
+    if ($LocalValidationRole -eq $TempDatabaseOwnerRole) { $result.errors += "database_acl_policy_role_collision:validation_owner" }
+    if ($LocalValidationRole -eq $RestoreExecutionRole) { $result.errors += "database_acl_policy_role_collision:validation_restore" }
+    if ($SessionRole -eq $TempDatabaseOwnerRole) { $result.errors += "database_acl_policy_role_collision:session_owner" }
+    if ($SessionRole -eq $RestoreExecutionRole) { $result.errors += "database_acl_policy_role_collision:session_restore" }
+
+    if ($result.errors.Count -eq 0) { $result.status = "PROPOSED_PARAMETERS_TEXTUALLY_ACCEPTABLE" }
+    return $result
+}
+
+function PROPOSED_NEW_FUNCTION_TestRoleSeparation {
+    param(
+        [string]$SessionRole,
+        [string]$LocalValidationRole,
+        [hashtable]$RoleCatalogSnapshot
+    )
+
+    $result = @{
+        status = "PROPOSED_NOT_IMPLEMENTED"
+        real_session_identity = $SessionRole
+        inspected_role = $LocalValidationRole
+        local_validation_role_login_required = "NOLOGIN"
+        role_membership_between_session_and_validation = "NO"
+        role_assumption_used = "NO"
+        technical_validation_completed = "NO"
+        limitations = @("Catalog assertions inspect effective privileges; they do not prove an actual login session as the inspected role.")
+        errors = @()
+    }
+
+    if ([string]::IsNullOrWhiteSpace($SessionRole)) { $result.errors += "database_acl_policy_parameter_invalid:session_role" }
+    if ([string]::IsNullOrWhiteSpace($LocalValidationRole)) { $result.errors += "database_acl_policy_parameter_invalid:local_validation_role" }
+    if ($SessionRole -eq $LocalValidationRole) { $result.errors += "database_acl_policy_role_collision:session_validation" }
+
+    if ($null -ne $RoleCatalogSnapshot -and $RoleCatalogSnapshot.ContainsKey($LocalValidationRole)) {
+        $validation_role = $RoleCatalogSnapshot[$LocalValidationRole]
+        if ($validation_role.rolcanlogin -ne $false) { $result.errors += "database_acl_policy_role_admin_attribute:login_enabled" }
+        if ($validation_role.rolsuper -eq $true -or $validation_role.rolcreatedb -eq $true -or $validation_role.rolcreaterole -eq $true -or $validation_role.rolreplication -eq $true -or $validation_role.rolbypassrls -eq $true) { $result.errors += "database_acl_policy_role_admin_attribute" }
+        if ($validation_role.member_of -contains $SessionRole) { $result.errors += "database_acl_policy_direct_membership_forbidden" }
+    }
+
+    if ($null -ne $RoleCatalogSnapshot -and $RoleCatalogSnapshot.ContainsKey($SessionRole)) {
+        $session_role_entry = $RoleCatalogSnapshot[$SessionRole]
+        if ($session_role_entry.member_of -contains $LocalValidationRole) { $result.errors += "database_acl_policy_direct_membership_forbidden" }
+    }
+
+    if ($result.errors.Count -eq 0) { $result.status = "PROPOSED_ROLE_STRATEGY_TEXTUALLY_ACCEPTABLE" }
+    return $result
+}
+
+function PROPOSED_NEW_FUNCTION_BuildSchemaAllowlistPayload {
+    param([string[]]$ExpectedSchemas, [string[]]$DiscoveredSchemas)
+
+    $expected = @($ExpectedSchemas | Sort-Object -Unique)
+    $discovered = @($DiscoveredSchemas | Sort-Object -Unique)
+    $missing = @($expected | Where-Object { $_ -notin $discovered })
+    $unexpected = @($discovered | Where-Object { $_ -notin $expected })
+
+    return @{
+        status = "PROPOSED_NOT_IMPLEMENTED"
+        expected_schemas = $expected
+        discovered_schemas = $discovered
+        missing_schemas = $missing
+        unexpected_schemas = $unexpected
+        technical_validation_completed = "NO"
+        error_code = $(if ($missing.Count -gt 0) { "database_acl_policy_schema_missing" } elseif ($unexpected.Count -gt 0) { "database_acl_policy_schema_unexpected" } else { "NONE" })
+    }
+}
+
+function PROPOSED_NEW_FUNCTION_InvokeControlledAclPolicy {
+    param([string]$SessionRole, [string]$LocalValidationRole, [string]$TempDatabaseName, [string[]]$AllowedSchemas)
+
+    return @{
+        status = "PROPOSED_NOT_IMPLEMENTED"
+        real_session_identity = $SessionRole
+        inspected_role = $LocalValidationRole
+        temp_database = $TempDatabaseName
+        allowed_schemas = $AllowedSchemas
+        role_strategy = "SESSION_ROLE_WITH_EFFECTIVE_PRIVILEGE_ASSERTIONS"
+        role_assumption_used = "NO"
+        membership_between_roles = "NO"
+        production_connection_allowed = "NO"
+        production_connection_performed = "NO"
+        technical_validation_completed = "NO"
+        limitations = @("Effective privileges are inspected through catalog assertions; this does not impersonate the inspected role.")
+        required_future_error_codes = @("database_acl_policy_role_missing", "database_acl_policy_role_admin_attribute", "database_acl_policy_direct_membership_forbidden", "database_acl_policy_indirect_membership_forbidden", "database_acl_policy_role_collision", "database_acl_policy_schema_missing", "database_acl_policy_schema_unexpected", "database_acl_policy_owner_mismatch", "database_acl_policy_public_privilege", "database_acl_policy_write_privilege", "database_acl_policy_execute_privilege", "database_acl_policy_default_privilege", "database_acl_policy_acl_semantics_mismatch", "database_acl_policy_post_verification_failed", "database_acl_policy_transaction_failed", "database_acl_policy_exit_propagation_failed")
+    }
+}
+
+function PROPOSED_NEW_FUNCTION_TestExitCodePropagation {
+    param([int]$ExpectedExitCode, [int]$ActualExitCode)
+
+    return @{
+        status = $(if ($ExpectedExitCode -eq $ActualExitCode) { "PROPOSED_EXIT_CODE_MATCH" } else { "PROPOSED_EXIT_CODE_MISMATCH" })
+        expected_exit_code = $ExpectedExitCode
+        actual_exit_code = $ActualExitCode
+        technical_validation_completed = "NO"
+        error_code = $(if ($ExpectedExitCode -eq $ActualExitCode) { "NONE" } else { "database_acl_policy_exit_propagation_failed" })
+    }
+}
+
+function PROPOSED_NEW_FUNCTION_StopPipelineOnAclFailure {
+    param([hashtable]$GateState)
+
+    $required = @("STATIC_POLICY_VALIDATED", "CONTROLLED_TEMP_RESTORE_POLICY_VALIDATED", "DATABASE_ACL_RESTORE_EQUIVALENCE_VALIDATED")
+    $missing = @()
+    foreach ($gate in $required) {
+        if ($null -eq $GateState -or -not $GateState.ContainsKey($gate) -or $GateState[$gate] -ne "YES") { $missing += $gate }
+    }
+
+    return @{
+        status = $(if ($missing.Count -eq 0) { "PROPOSED_GATE_TEXTUALLY_COMPLETE" } else { "PROPOSED_GATE_BLOCKED" })
+        missing_gates = $missing
+        continue_to_gate_c = "NO"
+        continue_to_stage_2 = "NO"
+        continue_to_r2 = "NO"
+        technical_validation_completed = "NO"
+        error_code = $(if ($missing.Count -eq 0) { "NONE" } else { "database_acl_policy_post_verification_failed" })
+    }
+}
+
+$TASK005_STATIC_FIXTURES_AV = @(
+    @{ id = "A"; category = "STATIC_TEXT"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "B"; category = "STATIC_TEXT"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "C"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "D"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "E"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "F"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "G"; category = "FUTURE_TEMP_POSTGRES"; future_temp_database_connection_required = "YES"; production_connection_allowed = "NO"; production_connection_performed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "H"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "I"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "J"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "K"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "L"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "M"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "N"; category = "FUTURE_TEMP_POSTGRES"; future_temp_database_connection_required = "YES"; production_connection_allowed = "NO"; production_connection_performed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "O"; category = "POWERSHELL_STATIC"; future_temp_database_connection_required = "NO"; production_connection_allowed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "P"; category = "FUTURE_TEMP_POSTGRES"; future_temp_database_connection_required = "YES"; production_connection_allowed = "NO"; production_connection_performed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "Q"; category = "FUTURE_TEMP_POSTGRES"; future_temp_database_connection_required = "YES"; production_connection_allowed = "NO"; production_connection_performed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "R"; category = "FUTURE_TEMP_POSTGRES"; future_temp_database_connection_required = "YES"; production_connection_allowed = "NO"; production_connection_performed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "S"; category = "FUTURE_TEMP_POSTGRES"; future_temp_database_connection_required = "YES"; production_connection_allowed = "NO"; production_connection_performed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "T"; category = "FUTURE_TEMP_POSTGRES"; future_temp_database_connection_required = "YES"; production_connection_allowed = "NO"; production_connection_performed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "U"; category = "FUTURE_TEMP_POSTGRES"; future_temp_database_connection_required = "YES"; production_connection_allowed = "NO"; production_connection_performed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" },
+    @{ id = "V"; category = "FUTURE_TEMP_POSTGRES"; future_temp_database_connection_required = "YES"; production_connection_allowed = "NO"; production_connection_performed = "NO"; technical_validation_completed = "NO"; status = "NOT_EXECUTED" }
+)
+
+# ==============================================================================
 # FIXTURES Y PRUEBAS ESTÁTICAS LOCALES (VALIDACIÓN EN MODO MOCK)
 # ==============================================================================
 function Test-StaticParsers {
@@ -1605,6 +1839,10 @@ if ($TestStaticParsersOnly) {
 # EJECUCIÓN TOTAL BAJO EL CATCH/FINALLY GLOBAL (RESPALDO REAL)
 # ==============================================================================
 try {
+    if ($TASK005_GATE -ne "EXPLICIT_TECHNICAL_EXECUTION_AUTHORIZED") {
+        throw "TASK005_GATE_B_STATIC_ONLY_NO_TECHNICAL_EXECUTION_AUTHORIZED"
+    }
+
     # OPCIÓN B: Bloquear el respaldo antes de acceder a producción si no se puede resolver la equivalencia de DATABASE ACL.
     if ($DATABASE_ACL_RESTORE_EQUIVALENCE_VALIDATED -ne "YES") {
         throw "DATABASE_ACL_RESTORE_EQUIVALENCE_UNRESOLVED"
