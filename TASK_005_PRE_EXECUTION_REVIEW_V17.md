@@ -1,8 +1,17 @@
 # TASK_005_PRE_EXECUTION_REVIEW_V17
 
+
+> CANONICAL_NOTICE_TASK_005_SEVENTH_CORRECTION
+>
+> VERSION_NORMATIVA_ACTUAL = TASK_005_V17_SEVENTH_DOCUMENTARY_CORRECTION
+> SECCION_CANONICA_VIGENTE = 12. TASK_005_V17_SEVENTH_DOCUMENTARY_CORRECTION
+> HISTORICAL_SECTIONS_NON_NORMATIVE = YES
+>
+> Las secciones 1 a 11, S y T se conservan unicamente como trazabilidad historica. Ninguna seccion historica autoriza implementacion, ejecucion, backup, restore temporal, produccion, R2, Stage 2, aprobacion tecnica ni merge. Ante cualquier contradiccion prevalece exclusivamente la seccion 12 de septima correccion canonica. Todas las versiones y tablas anteriores quedan marcadas como HISTORICAL_SUPERSEDED_NON_NORMATIVE.
 Este documento resume la sexta correccion exclusivamente documental de `TASK_005_PRE_EXECUTION_REVIEW_V17`, preparada para resolver los cinco hallazgos de la auditoria independiente sobre la quinta correccion. No declara implementacion, ejecucion, validacion tecnica, backup, restauracion, produccion, R2 ni Stage 2.
 
 ## 1. Declaración de Estados de Ejecución y Control
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 | Variable | Estado Reportado |
 | :--- | :--- |
@@ -22,6 +31,7 @@ Este documento resume la sexta correccion exclusivamente documental de `TASK_005
 ---
 
 ## 2. Checklist de Validación Estática (Auditoría Etapa 1)
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 | Métrica / Control | Valor / Cumplimiento |
 | :--- | :--- |
@@ -62,6 +72,7 @@ Este documento resume la sexta correccion exclusivamente documental de `TASK_005
 ---
 
 ## 3. Identificación Física del Archivo Resultante
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 - **Ruta**: `C:/Users/calvi/OneDrive/n8n/Visual studio/barberagency-core/backup_production_database.ps1`
 - **Líneas Físicas Finales**: `2774`
@@ -70,6 +81,7 @@ Este documento resume la sexta correccion exclusivamente documental de `TASK_005
 ---
 
 ## 4. Estructura de Rechazo Estructural y Rejection Codes
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 | Código de Rechazo | Causa de Activación |
 | :--- | :--- |
@@ -90,6 +102,7 @@ Este documento resume la sexta correccion exclusivamente documental de `TASK_005
 ---
 
 ## 5. TASK_005_V17_DATABASE_ACL_POLICY_DESIGN_COMPLETION
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 ### A. Adopción del Modelo Arquitectónico de Equivalencia
 Se adopta formalmente el modelo:
@@ -232,6 +245,7 @@ Para una implementación futura (Etapa 2), se requerirá modificar:
 ---
 
 ## 6. TASK_005_V17_DATABASE_ACL_POLICY_DESIGN_SECOND_CORRECTION
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 ### A. Descubrimiento y Control Seguro de Schemas
 Para evitar restringir el análisis únicamente al esquema por defecto `public`, se implementará una consulta dinámica e inmutable en PostgreSQL que permita listar todos los esquemas restaurados, aplicando la exclusión estricta de esquemas del sistema y temporales:
@@ -601,6 +615,7 @@ Para validar la implementación en un entorno controlado antes de habilitar los 
 ---
 
 ## 7. RIESGOS RESIDUALES
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 1. **Objetos en esquemas no previstos**:
    * *Probabilidad*: Baja.
@@ -626,6 +641,7 @@ Para validar la implementación en un entorno controlado antes de habilitar los 
 ---
 
 ## 8. Criterios de Aceptación y Transición de Gates
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 * **DESIGN_COMPLETE = YES**: Cuando el diseño completo de descubrimiento de esquemas, matriz de privilegios y consultas SQL inmutables es aprobado formalmente por la auditoría independiente.
 * **READY_FOR_IMPLEMENTATION = NO**: **Se mantendrá en NO** durante esta fase documental. Solo podrá pasar a YES tras la autorización explícita para la Etapa 2 de desarrollo.
@@ -637,6 +653,7 @@ Para validar la implementación en un entorno controlado antes de habilitar los 
 ---
 
 ## 9. TASK_005_V17_DATABASE_ACL_POLICY_DESIGN_THIRD_CORRECTION
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 *Nota aclaratoria de prioridad*: Esta sección contiene las especificaciones técnicas completas y corregidas del diseño de seguridad para la equivalencia de restauración de DATABASE ACL, sustituyendo y anulando formalmente todas las propuestas incorrectas de las secciones y correcciones previas de este documento sin eliminar la evidencia de los pasos anteriores.
 
@@ -942,22 +959,22 @@ COMMIT;
 | **D** | Identificador inválido | `$TEMP_DATABASE_NAME = "db; DROP;"`| Validación regex activa | Validador sintáctico | Offline | Aborto | `database_acl_policy_invalid_format`| `STATIC_POLICY_VALIDATED` |
 | **E** | Valor vacío rechazado | `$LOCAL_VALIDATION_ROLE = ""` | Validación regex activa | Validador sintáctico | Offline | Aborto | `database_acl_policy_param_empty` | `STATIC_POLICY_VALIDATED` |
 | **F** | Base igual a producción | Temp = "barber_prod", Prod = "barber_prod" | Restricción cruzada | Inicialización del Script | Offline | Aborto | `database_acl_policy_collision` | `STATIC_POLICY_VALIDATED` |
-| **G** | Rol local inexistente | `val_role` no existe en catálogo | Simulación de prevuelo | Verificación pre-vuelo | Offline | Aborto | `database_acl_policy_role_missing` | `STATIC_POLICY_VALIDATED` |
+| **G** | Rol local inexistente | `val_role` no existe en catálogo | Simulación de prevuelo | Verificación pre-vuelo | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Aborto | `database_acl_policy_role_missing` | TECHNICAL_VALIDATION_COMPLETED_NO |
 | **H** | Ausencia de flags psql | Comando sin `-X` o `-v` | Inspección de string | Generador de comandos | Offline | Aborto | `database_acl_policy_command_invalid`| `STATIC_POLICY_VALIDATED` |
 | **I** | Duplicidad de transacción| SQL con múltiples BEGIN | Parser sintáctico SQL | Validador transaccional | Offline | Aborto | `database_acl_policy_sql_invalid` | `STATIC_POLICY_VALIDATED` |
 | **J** | Detener pipeline ante error| Retorno de comando = 1 | Comando psql falla | Manejador de errores | Offline | Detención | `database_acl_policy_execution_fail`| `STATIC_POLICY_VALIDATED` |
 | **K** | Nombres hardcodeados | String "barber_test" en código | Escaneo de código | Analizador estático | Offline | Aborto | `database_acl_policy_hardcode_found`| `STATIC_POLICY_VALIDATED` |
 | **L** | Secrets en el código | Token o contraseña en string | Analizador de patrones | Analizador estático | Offline | Aborto | `database_acl_policy_secret_found` | `STATIC_POLICY_VALIDATED` |
 | **M** | Excluir esquemas internos| Descubrimiento de `pg_catalog`| Filtro de catálogo | Descubridor de esquemas | Offline | Exclusión | `database_acl_policy_sys_schema` | `STATIC_POLICY_VALIDATED` |
-| **N** | Schema fuera de allowlist| Descubrimiento de `temp_dev` | `$ALLOWED_RESTORED_SCHEMAS`| Validador de esquemas | Offline | Aborto | `database_acl_policy_unexpected_schema`|`STATIC_POLICY_VALIDATED` |
+| **N** | Schema fuera de allowlist| Descubrimiento de `temp_dev` | `$ALLOWED_RESTORED_SCHEMAS`| Validador de esquemas | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Aborto | `database_acl_policy_unexpected_schema`| TECHNICAL_VALIDATION_COMPLETED_NO |
 | **O** | Rol local igual al owner | Val = "postgres", Owner = "postgres" | Restricción cruzada | Validador de roles | Offline | Aborto | `database_acl_policy_identity_conflict`|`STATIC_POLICY_VALIDATED` |
-| **P** | Rol con privilegios admin | `val_role` con `rolsuper=true` | Consulta de catálogo | Verificador pre-vuelo | Offline | Aborto | `database_acl_policy_privilege_escalation`|`STATIC_POLICY_VALIDATED` |
-| **Q** | Membresía admin heredada | `val_role` en `rds_superuser` | Consulta `pg_auth_members` | Verificador pre-vuelo | Offline | Aborto | `database_acl_policy_member_conflict`| `STATIC_POLICY_VALIDATED` |
-| **R** | EXECUTE fuera de allowlist| Concesión de EXECUTE en func | Allowlist vacía activa | Asignador de privilegios | Offline | Aborto | `database_acl_policy_execute_forbidden`|`STATIC_POLICY_VALIDATED` |
-| **S** | Función SECURITY DEFINER | Función con `prosecdef=true` | Consulta `pg_proc` | Validador de funciones | Offline | Aborto | `database_acl_policy_secdef_forbidden`|`STATIC_POLICY_VALIDATED` |
-| **T** | Escritura inesperada | Tabla con `INSERT` permitido | Consulta `has_table_privilege`| Aserciones post-política | Offline | Aborto | `database_acl_policy_assertion_fail` | `STATIC_POLICY_VALIDATED` |
-| **U** | Privilegio PUBLIC (NULL) | `has_database_privilege` = `true`| Aserción de PUBLIC | Aserciones post-política | Offline | Aborto | `database_acl_policy_assertion_fail` | `STATIC_POLICY_VALIDATED` |
-| **V** | Fallo provoca rollback | Transacción con error intermedio | Simulación de error SQL | Motor transaccional psql | Offline | Rollback | `database_acl_policy_rollback` | `STATIC_POLICY_VALIDATED` |
+| **P** | Rol con privilegios admin | `val_role` con `rolsuper=true` | Consulta de catálogo | Verificador pre-vuelo | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Aborto | `database_acl_policy_privilege_escalation`| TECHNICAL_VALIDATION_COMPLETED_NO |
+| **Q** | Membresía admin heredada | `val_role` en `rds_superuser` | Consulta `pg_auth_members` | Verificador pre-vuelo | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Aborto | `database_acl_policy_member_conflict`| TECHNICAL_VALIDATION_COMPLETED_NO |
+| **R** | EXECUTE fuera de allowlist| Concesión de EXECUTE en func | Allowlist vacía activa | Asignador de privilegios | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Aborto | `database_acl_policy_execute_forbidden`| TECHNICAL_VALIDATION_COMPLETED_NO |
+| **S** | Función SECURITY DEFINER | Función con `prosecdef=true` | Consulta `pg_proc` | Validador de funciones | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Aborto | `database_acl_policy_secdef_forbidden`| TECHNICAL_VALIDATION_COMPLETED_NO |
+| **T** | Escritura inesperada | Tabla con `INSERT` permitido | Consulta `has_table_privilege`| Aserciones post-política | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Aborto | `database_acl_policy_assertion_fail` | TECHNICAL_VALIDATION_COMPLETED_NO |
+| **U** | Privilegio PUBLIC (NULL) | `has_database_privilege` = `true`| Aserción de PUBLIC | Aserciones post-política | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Aborto | `database_acl_policy_assertion_fail` | TECHNICAL_VALIDATION_COMPLETED_NO |
+| **V** | Fallo provoca rollback | Transacción con error intermedio | Simulación de error SQL | Motor transaccional psql | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Rollback | `database_acl_policy_rollback` | TECHNICAL_VALIDATION_COMPLETED_NO |
 
 ---
 
@@ -992,6 +1009,7 @@ Para validar la implementación en un entorno controlado antes de habilitar los 
 ---
 
 ## 7. RIESGOS RESIDUALES
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 1. **Objetos en esquemas no previstos**:
    * *Probabilidad*: Baja.
@@ -1017,6 +1035,7 @@ Para validar la implementación en un entorno controlado antes de habilitar los 
 ---
 
 ## 8. Criterios de Aceptación y Transición de Gates
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 * **DESIGN_COMPLETE = YES**: Cuando el diseño completo de descubrimiento de esquemas, matriz de privilegios y consultas SQL inmutables es aprobado formalmente por la auditoría independiente.
 * **READY_FOR_IMPLEMENTATION = NO**: **Se mantendrá en NO** durante esta fase documental. Solo podrá pasar a YES tras la autorización explícita para la Etapa 2 de desarrollo.
@@ -1028,6 +1047,7 @@ Para validar la implementación en un entorno controlado antes de habilitar los 
 ---
 
 ## 10. TASK_005_V17_DATABASE_ACL_POLICY_DESIGN_FOURTH_CORRECTION
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 *Nota aclaratoria de prioridad*: Esta sección contiene las especificaciones técnicas completas y definitivas del diseño de seguridad para la equivalencia de restauración de DATABASE ACL, sustituyendo y anulando formalmente todas las propuestas incorrectas de las secciones y correcciones previas de este documento sin eliminar la evidencia de los pasos anteriores para mantener la trazabilidad de la auditoría.
 
@@ -1089,7 +1109,7 @@ Para eliminar cualquier contradicción sobre privilegios del rol de validación 
 5. **SESSION_ROLE**:
    * *Propósito*: Rol login de un solo propósito para las conexiones de validación de los scripts.
    * *LOGIN / Attributes*: `LOGIN` habilitado, `CONNECTION LIMIT 1`. Carece absolutamente de privilegios administrativos.
-   * *Membresías*: Miembro exclusivo de `LOCAL_VALIDATION_ROLE`.
+   * *Membresias*: HISTORICAL_SUPERSEDED_NON_NORMATIVE. Esta afirmacion queda sustituida por la estrategia canonica de la seccion 12: `SESSION_ROLE` no es miembro de `LOCAL_VALIDATION_ROLE`, no usa `SET ROLE` y solo ejecuta comprobaciones de privilegios efectivos contra el rol objetivo.
    * *Ciclo de vida*: Se crea dinámicamente antes del inicio de la validación y se destruye incondicionalmente tras el drop de la base.
 6. **ADMINISTRATION_ROLE**:
    * *Propósito*: Administrador general del clúster PostgreSQL local.
@@ -1334,22 +1354,22 @@ Si esta consulta devuelve filas, se lanza una excepción `database_acl_policy_in
 | **D** | Identificador inválido | `$TEMP_DATABASE_NAME = "db; DROP;"` | Validación regex | Validador | Offline | Exception | `database_acl_policy_parameter_invalid` | `STATIC_POLICY_VALIDATED` | Diseñado |
 | **E** | Valor vacío | `$LOCAL_VALIDATION_ROLE = ""` | Validación regex | Validador | Offline | Exception | `database_acl_policy_parameter_invalid` | `STATIC_POLICY_VALIDATED` | Diseñado |
 | **F** | Base temporal igual a prod | `$TEMP_DATABASE_NAME = "barberagency_prod"` | Restricción cruzada | Validador | Offline | Exception | `database_acl_policy_role_collision` | `STATIC_POLICY_VALIDATED` | Diseñado |
-| **G** | Rol local inexistente | `val_role` no registrado en pg_roles | Pre-vuelo catálogo | Aserción SQL | Offline | Exception | `database_acl_policy_role_missing` | `STATIC_POLICY_VALIDATED` | Diseñado |
+| **G** | Rol local inexistente | `val_role` no registrado en pg_roles | Pre-vuelo catálogo | Aserción SQL | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | `database_acl_policy_role_missing` | TECHNICAL_VALIDATION_COMPLETED_NO | Diseñado |
 | **H** | Ausencia de flags psql | Comando sin `-X` | Comprobación de cadena | Transportador | Offline | Exception | `database_acl_policy_parameter_invalid` | `STATIC_POLICY_VALIDATED` | Diseñado |
 | **I** | Ausencia de transacción | Comando SQL sin BEGIN/COMMIT | Comprobación de cadena | Transportador | Offline | Exception | `database_acl_policy_transaction_failed`| `STATIC_POLICY_VALIDATED` | Diseñado |
 | **J** | Continuación tras fallo | `$LASTEXITCODE = 1` | Simulación de error | Control de flujo | Offline | Aborto | `database_acl_policy_exit_propagation_failed`|`STATIC_POLICY_VALIDATED` | Diseñado |
 | **K** | Host o usuario hardcodeado | String "barber_test" en código | Análisis estático | Auditor | Offline | Exception | `database_acl_policy_parameter_invalid` | `STATIC_POLICY_VALIDATED` | Diseñado |
 | **L** | Secretos en script | Cadena de contraseña en texto | Análisis estático | Auditor | Offline | Exception | `database_acl_policy_parameter_invalid` | `STATIC_POLICY_VALIDATED` | Diseñado |
 | **M** | Schema interno en allowlist | `$ALLOWED_RESTORED_SCHEMAS = "pg_catalog"` | Restricción cruzada | Validador | Offline | Exception | `database_acl_policy_schema_unexpected` | `STATIC_POLICY_VALIDATED` | Diseñado |
-| **N** | Schema inesperado | Esquema `extra_schema` no permitido | Validación allowlist | Aserción SQL | Offline | Exception | `database_acl_policy_schema_unexpected` | `STATIC_POLICY_VALIDATED` | Diseñado |
+| **N** | Schema inesperado | Esquema `extra_schema` no permitido | Validación allowlist | Aserción SQL | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | `database_acl_policy_schema_unexpected` | TECHNICAL_VALIDATION_COMPLETED_NO | Diseñado |
 | **O** | Colisión de roles | `val_role = postgres` | Restricción cruzada | Validador | Offline | Exception | `database_acl_policy_role_collision` | `STATIC_POLICY_VALIDATED` | Diseñado |
-| **P** | Rol con atributos admin | `val_role` con `rolsuper = true` | Validación catálogo | Aserción SQL | Offline | Exception | `database_acl_policy_role_admin_attribute` | `STATIC_POLICY_VALIDATED` | Diseñado |
-| **Q** | Membresía admin indirecta | `val_role` miembro de `rds_superuser` | Validación recursiva | Aserción SQL | Offline | Exception | `database_acl_policy_indirect_membership_forbidden`|`STATIC_POLICY_VALIDATED` | Diseñado |
-| **R** | EXECUTE fuera de allowlist | Concesión de EXECUTE en func | Allowlist vacía | Aserción SQL | Offline | Exception | `database_acl_policy_execute_privilege` | `STATIC_POLICY_VALIDATED` | Diseñado |
-| **S** | SECURITY DEFINER accesible | Función `prosecdef = true` en catálogo | Validación catálogo | Aserción SQL | Offline | Exception | `database_acl_policy_execute_privilege` | `STATIC_POLICY_VALIDATED` | Diseñado |
-| **T** | Escritura inesperada | Tabla con privilegios INSERT | Aserciones post-acl | Aserción SQL | Offline | Exception | `database_acl_policy_write_privilege` | `STATIC_POLICY_VALIDATED` | Diseñado |
-| **U** | Privilegio PUBLIC (NULL) | PUBLIC con CONNECT en base | Aserciones post-acl | Aserción SQL | Offline | Exception | `database_acl_policy_public_privilege` | `STATIC_POLICY_VALIDATED` | Diseñado |
-| **V** | Fallo antes de COMMIT | Discrepancia en aserciones | Ejecución transaccional | Motor SQL | Offline | Exception | `database_acl_policy_transaction_failed` | `STATIC_POLICY_VALIDATED` | Diseñado |
+| **P** | Rol con atributos admin | `val_role` con `rolsuper = true` | Validación catálogo | Aserción SQL | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | `database_acl_policy_role_admin_attribute` | TECHNICAL_VALIDATION_COMPLETED_NO | Diseñado |
+| **Q** | Membresía admin indirecta | `val_role` miembro de `rds_superuser` | Validación recursiva | Aserción SQL | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | `database_acl_policy_indirect_membership_forbidden`| TECHNICAL_VALIDATION_COMPLETED_NO | Diseñado |
+| **R** | EXECUTE fuera de allowlist | Concesión de EXECUTE en func | Allowlist vacía | Aserción SQL | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | `database_acl_policy_execute_privilege` | TECHNICAL_VALIDATION_COMPLETED_NO | Diseñado |
+| **S** | SECURITY DEFINER accesible | Función `prosecdef = true` en catálogo | Validación catálogo | Aserción SQL | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | `database_acl_policy_execute_privilege` | TECHNICAL_VALIDATION_COMPLETED_NO | Diseñado |
+| **T** | Escritura inesperada | Tabla con privilegios INSERT | Aserciones post-acl | Aserción SQL | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | `database_acl_policy_write_privilege` | TECHNICAL_VALIDATION_COMPLETED_NO | Diseñado |
+| **U** | Privilegio PUBLIC (NULL) | PUBLIC con CONNECT en base | Aserciones post-acl | Aserción SQL | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | `database_acl_policy_public_privilege` | TECHNICAL_VALIDATION_COMPLETED_NO | Diseñado |
+| **V** | Fallo antes de COMMIT | Discrepancia en aserciones | Ejecución transaccional | Motor SQL | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | `database_acl_policy_transaction_failed` | TECHNICAL_VALIDATION_COMPLETED_NO | Diseñado |
 
 ---
 
@@ -1398,6 +1418,7 @@ Si esta consulta devuelve filas, se lanza una excepción `database_acl_policy_in
 ---
 
 ## 11. TASK_005_V17_DATABASE_ACL_POLICY_DESIGN_FIFTH_CORRECTION
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 *Nota aclaratoria de prioridad*: Esta sección contiene las especificaciones técnicas completas, deterministas y definitivas del diseño de seguridad para la equivalencia de restauración de DATABASE ACL, sustituyendo y anulando formalmente todas las propuestas incorrectas de las secciones y correcciones previas de este documento sin eliminar la evidencia de los pasos anteriores para mantener la trazabilidad de la auditoría. Se registra que la cuarta corrección fue rechazada formalmente.
 
@@ -1466,7 +1487,7 @@ Para aislar las validaciones funcionales en el entorno local de pruebas, se defi
    * *Responsabilidad*: Concentrar el conjunto inmutable de mínimos privilegios sobre los esquemas permitidos de pruebas.
 4. **SESSION_ROLE**:
    * *LOGIN*: `LOGIN`. *Attributes*: `CONNECTION LIMIT 1`. Carece de privilegios administrativos.
-   * *Membresías*: Miembro exclusivo de `LOCAL_VALIDATION_ROLE` sin opción de herencia automática de privilegios del owner.
+   * *Membresias*: HISTORICAL_SUPERSEDED_NON_NORMATIVE. Esta afirmacion queda sustituida por la estrategia canonica de la seccion 12: `SESSION_ROLE` no es miembro de `LOCAL_VALIDATION_ROLE`, no usa `SET ROLE` y solo ejecuta comprobaciones de privilegios efectivos contra el rol objetivo.
    * *Responsabilidad*: Ejecutar consultas funcionales del pipeline de validación.
 
 **Consulta Recursiva para Validar Jerarquías y Membresías Transitivas (Prevención de Ciclos)**:
@@ -1710,22 +1731,22 @@ Toda discrepancia detectada abortará la transacción mediante sentencias `RAISE
 | **D** | Identificador inválido | `$TEMP_DATABASE_NAME = "db; DROP;"` | Validación regex | Validador | STATIC_FIXTURE | Offline | Exception | Exception | `database_acl_policy_parameter_invalid` | `1` | `STATIC_POLICY_VALIDATED` | Regex estricta | Inyec. no detectada| Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 | **E** | Valor vacío | `$LOCAL_VALIDATION_ROLE = ""` | Validación regex | Validador | STATIC_FIXTURE | Offline | Exception | Exception | `database_acl_policy_parameter_invalid` | `1` | `STATIC_POLICY_VALIDATED` | Chequeo de longitud| Test con valor | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 | **F** | Base temporal igual a prod | `$TEMP_DATABASE_NAME = "barberagency_prod"` | Restricción cruzada | Validador | STATIC_FIXTURE | Offline | Exception | Exception | `database_acl_policy_role_collision` | `1` | `STATIC_POLICY_VALIDATED` | Comparación directa| Test con valores diff| Salida error | YES | YES | YES | YES | NOT_EXECUTED |
-| **G** | Rol local inexistente | `val_role` no registrado en pg_roles | Pre-vuelo catálogo | Aserción SQL | FUTURE_INTEG_TEST | Offline | Exception | Exception | `database_acl_policy_role_missing` | `1` | `STATIC_POLICY_VALIDATED` | Catálogo mock | Test con rol exist. | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
+| **G** | Rol local inexistente | `val_role` no registrado en pg_roles | Pre-vuelo catálogo | Aserción SQL | FUTURE_INTEG_TEST | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | Exception | `database_acl_policy_role_missing` | `1` | TECHNICAL_VALIDATION_COMPLETED_NO | Catálogo mock | Test con rol exist. | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 | **H** | Ausencia de flags psql | Comando sin `-X` | Comprobación de cadena | Transportador | STATIC_FIXTURE | Offline | Exception | Exception | `database_acl_policy_parameter_invalid` | `1` | `STATIC_POLICY_VALIDATED` | Check substring | Test con flags ok | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 | **I** | Ausencia de transacción | Comando SQL sin BEGIN/COMMIT | Comprobación de cadena | Transportador | STATIC_FIXTURE | Offline | Exception | Exception | `database_acl_policy_transaction_failed`| `1` | `STATIC_POLICY_VALIDATED` | Check regex BEGIN | Test con trans. ok | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 | **J** | Continuación tras fallo | `$LASTEXITCODE = 1` | Simulación de error | Control de flujo | STATIC_FIXTURE | Offline | Aborto | Aborto | `database_acl_policy_exit_propagation_failed`|`1` | `STATIC_POLICY_VALIDATED` | Check exitcode | Test exitcode 0 | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 | **K** | Host o usuario hardcodeado | String "barber_test" en código | Análisis estático | Auditor | STATIC_FIXTURE | Offline | Exception | Exception | `database_acl_policy_parameter_invalid` | `1` | `STATIC_POLICY_VALIDATED` | Check string const | Test con var. | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 | **L** | Secretos en script | Cadena de contraseña en texto | Análisis estático | Auditor | STATIC_FIXTURE | Offline | Exception | Exception | `database_acl_policy_parameter_invalid` | `1` | `STATIC_POLICY_VALIDATED` | Regex patrones secr | Test sin secretos | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 | **M** | Schema interno en allowlist | `$ALLOWED_RESTORED_SCHEMAS = "pg_catalog"` | Restricción cruzada | Validador | STATIC_FIXTURE | Offline | Exception | Exception | `database_acl_policy_schema_unexpected` | `1` | `STATIC_POLICY_VALIDATED` | Check allowlist items| Test con public | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
-| **N** | Schema inesperado | Esquema `extra_schema` no permitido | Validación allowlist | Aserción SQL | FUTURE_INTEG_TEST | Offline | Exception | Exception | `database_acl_policy_schema_unexpected` | `1` | `STATIC_POLICY_VALIDATED` | Catálogo mock | Test con public | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
+| **N** | Schema inesperado | Esquema `extra_schema` no permitido | Validación allowlist | Aserción SQL | FUTURE_INTEG_TEST | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | Exception | `database_acl_policy_schema_unexpected` | `1` | TECHNICAL_VALIDATION_COMPLETED_NO | Catálogo mock | Test con public | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 | **O** | Colisión de roles | `val_role = postgres` | Restricción cruzada | Validador | STATIC_FIXTURE | Offline | Exception | Exception | `database_acl_policy_role_collision` | `1` | `STATIC_POLICY_VALIDATED` | Comparación directa| Test con roles diff| Salida error | YES | YES | YES | YES | NOT_EXECUTED |
-| **P** | Rol con atributos admin | `val_role` con `rolsuper = true` | Catálogo mock | Aserción SQL | FUTURE_INTEG_TEST | Offline | Exception | Exception | `database_acl_policy_role_admin_attribute` | `1` | `STATIC_POLICY_VALIDATED` | Catálogo mock | Test sin superuser | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
-| **Q** | Membresía admin indirecta | `val_role` miembro de `rds_superuser` | Validación recursiva | Aserción SQL | FUTURE_INTEG_TEST | Offline | Exception | Exception | `database_acl_policy_indirect_membership_forbidden`|`1` | `STATIC_POLICY_VALIDATED` | Recursión mock | Test sin membresía | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
-| **R** | EXECUTE fuera de allowlist | Concesión de EXECUTE en func | Allowlist vacía | Aserción SQL | FUTURE_INTEG_TEST | Offline | Exception | Exception | `database_acl_policy_execute_privilege` | `1` | `STATIC_POLICY_VALIDATED` | Check execute privilege| Test sin EXECUTE | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
-| **S** | SECURITY DEFINER accesible | Función `prosecdef = true` en catálogo | Validación catálogo | Aserción SQL | FUTURE_INTEG_TEST | Offline | Exception | Exception | `database_acl_policy_execute_privilege` | `1` | `STATIC_POLICY_VALIDATED` | Check prosecdef | Test con invoker | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
-| **T** | Escritura inesperada | Tabla con privilegios INSERT | Aserciones post-acl | Aserción SQL | FUTURE_INTEG_TEST | Offline | Exception | Exception | `database_acl_policy_write_privilege` | `1` | `STATIC_POLICY_VALIDATED` | Check table privilege | Test con SELECT | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
-| **U** | Privilegio PUBLIC (NULL) | PUBLIC con CONNECT en base | Aserciones post-acl | Aserción SQL | FUTURE_INTEG_TEST | Offline | Exception | Exception | `database_acl_policy_public_privilege` | `1` | `STATIC_POLICY_VALIDATED` | Check base privilege | Test sin connect PUBLIC| Salida error | YES | YES | YES | YES | NOT_EXECUTED |
-| **V** | Fallo antes de COMMIT | Discrepancia en aserciones | Ejecución transaccional | Motor SQL | FUTURE_INTEG_TEST | Offline | Exception | Exception | `database_acl_policy_transaction_failed` | `1` | `STATIC_POLICY_VALIDATED` | Transacción rollback | Test con commit ok | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
+| **P** | Rol con atributos admin | `val_role` con `rolsuper = true` | Catálogo mock | Aserción SQL | FUTURE_INTEG_TEST | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | Exception | `database_acl_policy_role_admin_attribute` | `1` | TECHNICAL_VALIDATION_COMPLETED_NO | Catálogo mock | Test sin superuser | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
+| **Q** | Membresía admin indirecta | `val_role` miembro de `rds_superuser` | Validación recursiva | Aserción SQL | FUTURE_INTEG_TEST | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | Exception | `database_acl_policy_indirect_membership_forbidden`|`1` | TECHNICAL_VALIDATION_COMPLETED_NO | Recursión mock | Test sin membresía | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
+| **R** | EXECUTE fuera de allowlist | Concesión de EXECUTE en func | Allowlist vacía | Aserción SQL | FUTURE_INTEG_TEST | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | Exception | `database_acl_policy_execute_privilege` | `1` | TECHNICAL_VALIDATION_COMPLETED_NO | Check execute privilege| Test sin EXECUTE | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
+| **S** | SECURITY DEFINER accesible | Función `prosecdef = true` en catálogo | Validación catálogo | Aserción SQL | FUTURE_INTEG_TEST | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | Exception | `database_acl_policy_execute_privilege` | `1` | TECHNICAL_VALIDATION_COMPLETED_NO | Check prosecdef | Test con invoker | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
+| **T** | Escritura inesperada | Tabla con privilegios INSERT | Aserciones post-acl | Aserción SQL | FUTURE_INTEG_TEST | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | Exception | `database_acl_policy_write_privilege` | `1` | TECHNICAL_VALIDATION_COMPLETED_NO | Check table privilege | Test con SELECT | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
+| **U** | Privilegio PUBLIC (NULL) | PUBLIC con CONNECT en base | Aserciones post-acl | Aserción SQL | FUTURE_INTEG_TEST | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | Exception | `database_acl_policy_public_privilege` | `1` | TECHNICAL_VALIDATION_COMPLETED_NO | Check base privilege | Test sin connect PUBLIC| Salida error | YES | YES | YES | YES | NOT_EXECUTED |
+| **V** | Fallo antes de COMMIT | Discrepancia en aserciones | Ejecución transaccional | Motor SQL | FUTURE_INTEG_TEST | FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED | Exception | Exception | `database_acl_policy_transaction_failed` | `1` | TECHNICAL_VALIDATION_COMPLETED_NO | Transacción rollback | Test con commit ok | Salida error | YES | YES | YES | YES | NOT_EXECUTED |
 
 ---
 
@@ -1799,6 +1820,7 @@ Esta prueba futura (aún no autorizada) se ejecutará en un entorno totalmente a
 
 
 ### S. RECOVERY_COMPLETION_BLOCK — cierre material de la quinta corrección
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 ```text
 SECTION_ID = TASK_005_V17_DATABASE_ACL_POLICY_DESIGN_FIFTH_CORRECTION
@@ -2327,6 +2349,7 @@ Contratos:
 | Autorización ejecución | Owner autoriza implementación/backup/R2/Stage2. | NO |
 
 ### T. SIXTH_DOCUMENTARY_CORRECTION - respuesta a auditoria independiente
+HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
 ```text
 INDEPENDENT_REVIEW_DECISION = CORRECTION_REQUIRED
@@ -2419,6 +2442,115 @@ Los 17 estados `Resuelto` de la tabla A-R de la quinta correccion fueron reempla
 Las apariciones de `YES`, `READY`, `VALIDATED`, `PASSED`, `APPROVED`, `IMPLEMENTED` o equivalentes solo son admisibles cuando describen una negacion explicita (`NO`), una condicion futura no cumplida, una etiqueta historica o un control documental estatico sustentado. Ninguna aparicion de este documento autoriza implementacion, ejecucion tecnica, Stage 2, R2, produccion, backup real, restore temporal ni merge.
 
 Funciones reales del `.ps1` siguen diferenciadas de funciones propuestas. Las funciones reales permanecen como inventario fisico; las funciones con prefijo `PROPOSED_NEW_FUNCTION_` son contratos futuros y no estan implementadas.
+
+## 12. TASK_005_V17_SEVENTH_DOCUMENTARY_CORRECTION
+
+SEVENTH_CORRECTION_STATUS = PROPOSED_PENDING_INDEPENDENT_REVIEW
+INDEPENDENT_REVIEW_DECISION = CORRECTION_REQUIRED
+SIXTH_CORRECTION_APPROVED = NO
+MERGE_AUTHORIZED = NO
+
+Esta es la unica seccion canonica vigente del documento. Las secciones anteriores son historicas, no normativas y quedan subordinadas a esta seccion.
+
+### 12.1 Estrategia canonica unica de roles
+
+ESTRATEGIA_CANONICA_ROLES = SESSION_ROLE_WITH_EFFECTIVE_PRIVILEGE_ASSERTIONS
+ROLE_STRATEGY_STATUS = PROPOSED_PENDING_INDEPENDENT_REVIEW
+IMPLEMENTED = NO
+VALIDATED = NO
+APPROVED = NO
+
+Alternativas comparadas:
+
+| Alternativa | Resultado documental | Motivo |
+|---|---|---|
+| `SESSION_ROLE` miembro de `LOCAL_VALIDATION_ROLE` | REJECTED_SUPERSEDED | Contradice NOLOGIN/sin membresias y puede introducir herencia no deseada. |
+| `SET ROLE LOCAL_VALIDATION_ROLE` | REJECTED_SUPERSEDED | Requiere membresia o LOGIN, incompatible con la estrategia de rol objetivo NOLOGIN sin membresias. |
+| Membresia temporal controlada | REJECTED_SUPERSEDED | La membresia que se pretende probar como ausente seria introducida por la prueba. |
+| Funcion `SECURITY DEFINER` limitada | RESERVED_EXCEPTION_ONLY | Solo podria evaluarse en una tarea futura especifica por su superficie EXECUTE. |
+| `SESSION_ROLE` separado que comprueba privilegios efectivos de `LOCAL_VALIDATION_ROLE` | PROPOSED_PENDING_INDEPENDENT_REVIEW | Mantiene separacion de identidades, no requiere asumir el rol objetivo y permite probar catalogos/ACL de forma controlada. |
+
+Estrategia seleccionada:
+
+| Pregunta | Definicion canonica |
+|---|---|
+| Identidad que inicia la sesion temporal | `SESSION_ROLE`, LOGIN temporal restringido, no superusuario, sin privilegios administrativos, autorizado solo contra base temporal allowlisted. |
+| Quien crea/administra roles temporales | `ADMINISTRATION_ROLE` o actor operativo temporal equivalente, separado de `SESSION_ROLE` y `LOCAL_VALIDATION_ROLE`; solo en entorno temporal y con evidencia sanitizada. |
+| Identidad bajo la que se ejecutan realmente las comprobaciones | `SESSION_ROLE` ejecuta consultas de catalogo y aserciones de privilegio efectivo sobre `LOCAL_VALIDATION_ROLE`. |
+| Existe membresia entre roles | NO. `SESSION_ROLE` no es miembro directo ni transitivo de `LOCAL_VALIDATION_ROLE`; `LOCAL_VALIDATION_ROLE` no tiene membresias escalables. |
+| Se usa `SET ROLE` | NO. Queda rechazado para la ruta minima porque exige membresia o cambio de LOGIN. |
+| Privilegios minimos | `LOCAL_VALIDATION_ROLE`: CONNECT/USAGE/SELECT estrictamente allowlisted; sin CREATE, TEMP, escritura, EXECUTE, ownership, BYPASSRLS ni membresias. `SESSION_ROLE`: conexion temporal y lectura de catalogos necesaria para aserciones; sin acceso a produccion. |
+| Controles anti-produccion | host/container/db allowlist, production blocklist, `TEMP_ENVIRONMENT_ID`, nombres temporales no productivos, `R2_BLOCK_MODE=FORCED_BLOCKED`, cero credenciales productivas. |
+| Revocacion y limpieza | revocar grants temporales, terminar sesiones temporales, eliminar roles temporales si fueron creados para la prueba, drop de base temporal, limpieza de artefactos y evidencia de cleanup. |
+| Evidencia futura necesaria | logs sanitizados, hashes de artefactos, matriz expected/actual, consultas de catalogo, pruebas positivas/negativas, verificacion de no membresia, no `SET ROLE`, rollback y cleanup. |
+
+Afirmaciones incompatibles de secciones historicas quedan sustituidas por esta estrategia. En particular, cualquier frase que indique o sugiera que `SESSION_ROLE` es miembro de `LOCAL_VALIDATION_ROLE`, que se usa `SET ROLE`, o que las validaciones se ejecutan asumiendo `LOCAL_VALIDATION_ROLE`, queda marcada como `HISTORICAL_SUPERSEDED_NON_NORMATIVE`.
+
+### 12.2 Semantica canonica de fixtures futuros
+
+```text
+CURRENT_DOCUMENTARY_EXECUTION = NO
+FUTURE_TEMP_DATABASE_CONNECTION_REQUIRED = YES_FOR_G_N_P_Q_R_S_T_U_V_ONLY
+PRODUCTION_CONNECTION_ALLOWED = NO
+PRODUCTION_CONNECTION_PERFORMED = NO
+TECHNICAL_VALIDATION_COMPLETED = NO
+STATIC_POLICY_VALIDATED = NO
+CONTROLLED_TEMP_RESTORE_POLICY_VALIDATED = NO
+STATIC_FIXTURES_EXECUTED = NO
+```
+
+Fixtures G, N y P-V no son pruebas offline vigentes. Su ejecucion futura requiere una conexion a PostgreSQL temporal controlado, nunca a produccion. Ningun fixture no ejecutado se considera validado.
+
+### 12.3 Orden canonico del flujo fisico del `.ps1`
+
+| Orden | Lineas fisicas | Operacion canonica |
+|---:|---|---|
+| 1 | 1715-1716 | Preparacion o creacion del directorio del contenedor. |
+| 2 | 1718-1723 | Ejecucion de `pg_dump` y obtencion del manifest. |
+| 3 | 2208-2218 | Comprobacion, creacion y restauracion de la base temporal. |
+
+No existe interpretacion vigente en la que el `.ps1` cree la base temporal antes de `pg_dump`. Toda descripcion anterior que mezcle o altere ese orden queda `HISTORICAL_SUPERSEDED_NON_NORMATIVE`.
+
+### 12.4 Control canonico de versiones anteriores
+
+```text
+HISTORICAL_SECTIONS_NON_NORMATIVE = YES
+CANONICAL_SECTION = 12
+PREVIOUS_SECTIONS_AUTHORIZE_EXECUTION = NO
+PREVIOUS_SECTIONS_AUTHORIZE_IMPLEMENTATION = NO
+PREVIOUS_SECTIONS_AUTHORIZE_STAGE_2 = NO
+PREVIOUS_SECTIONS_AUTHORIZE_R2 = NO
+```
+
+Las secciones historicas se conservan para trazabilidad de auditoria. No son diseno operativo vigente y no pueden usarse para justificar implementacion o ejecucion.
+
+### 12.5 Estados finales de la septima correccion
+
+```text
+SEVENTH_CORRECTION_COMPLETED = PROPOSED_PENDING_INDEPENDENT_REVIEW
+FOUR_AUDIT_FINDINGS_DOCUMENTARILY_ADDRESSED = YES
+SINGLE_CANONICAL_ROLE_STRATEGY_DEFINED = YES
+HISTORICAL_SECTIONS_NON_NORMATIVE = YES
+IMPLEMENTATION_COMPLETED = NO
+TECHNICAL_VALIDATION_COMPLETED = NO
+STATIC_POLICY_VALIDATED = NO
+CONTROLLED_TEMP_RESTORE_POLICY_VALIDATED = NO
+DATABASE_ACL_RESTORE_EQUIVALENCE_VALIDATED = NO
+INDEPENDENT_REVIEW_COMPLETED = NO
+READY_FOR_IMPLEMENTATION = NO
+READY_FOR_STAGE_2 = NO
+READY_FOR_EXPLICIT_EXECUTION_AUTHORIZATION = NO
+
+SCRIPT_MODIFIED = NO
+SCRIPT_EXECUTED = NO
+SQL_EXECUTED = NO
+STATIC_FIXTURES_EXECUTED = NO
+PRODUCTION_ACCESSED = NO
+REAL_BACKUP_EXECUTED = NO
+TEMP_RESTORE_EXECUTED = NO
+R2_UPLOAD_EXECUTED = NO
+MERGE_EXECUTED = NO
+```
 
 Estados inmutables:
 
