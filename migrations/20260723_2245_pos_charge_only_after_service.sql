@@ -1,13 +1,15 @@
 -- Migration: Additive function to enforce charging POS sales only after service is performed ('realizada')
--- Also updates fn_citas_set_y_validar trigger function to allow expanded business states:
--- ('pendiente', 'confirmada', 'en_servicio', 'realizada', 'pagada', 'cancelada', 'no_asistio')
+-- Hardened SECURITY DEFINER with search_path = pg_catalog, public
+-- Restores all original validation rules in fn_citas_set_y_validar() and adds strict state transition enforcement
 -- Base branch: main
--- Date: 2026-07-23
+-- Date: 2026-07-24
 
--- 1. Actualizar función de trigger para permitir todos los estados de cita válidos
+-- 1. Actualizar función de trigger fn_citas_set_y_validar con todas las validaciones originales y matriz estricta de transiciones
 CREATE OR REPLACE FUNCTION public.fn_citas_set_y_validar()
  RETURNS trigger
  LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path = pg_catalog, public
 AS $function$
 DECLARE
   v_duracion_min INT;
@@ -18,45 +20,66 @@ DECLARE
   v_cierra TIME;
   v_slot_min INT;
 BEGIN
-  -- Estado por defecto
+  -- Estado por defecto en inserción
   IF NEW.estado IS NULL THEN
     NEW.estado := 'confirmada';
   END IF;
 
-  IF NEW.estado NOT IN ('pendiente', 'confirmada', 'en_servicio', 'realizada', 'pagada', 'cancelada', 'no_asistio') THEN
-    RAISE EXCEPTION 'Estado inválido: %', NEW.estado;
+  -- Validar transiciones estrictas de estado
+  IF TG_OP = 'INSERT' THEN
+    IF NEW.estado NOT IN ('pendiente', 'confirmada', 'pagada') THEN
+      RAISE EXCEPTION 'Estado inicial inválido para cita: %', NEW.estado;
+    END IF;
+  ELSIF TG_OP = 'UPDATE' THEN
+    IF OLD.estado IS DISTINCT FROM NEW.estado THEN
+      IF OLD.estado = 'pendiente' AND NEW.estado NOT IN ('confirmada', 'cancelada') THEN
+        RAISE EXCEPTION 'Transición de estado inválida: % -> %', OLD.estado, NEW.estado;
+      ELSIF OLD.estado = 'confirmada' AND NEW.estado NOT IN ('en_servicio', 'cancelada', 'no_asistio') THEN
+        RAISE EXCEPTION 'Transición de estado inválida: % -> %', OLD.estado, NEW.estado;
+      ELSIF OLD.estado = 'en_servicio' AND NEW.estado NOT IN ('realizada') THEN
+        RAISE EXCEPTION 'Transición de estado inválida: % -> %', OLD.estado, NEW.estado;
+      ELSIF OLD.estado = 'realizada' AND NEW.estado NOT IN ('pagada') THEN
+        RAISE EXCEPTION 'Transición de estado inválida: % -> %', OLD.estado, NEW.estado;
+      ELSIF OLD.estado IN ('pagada', 'cancelada', 'no_asistio') THEN
+        RAISE EXCEPTION 'No se permite cambiar el estado de una cita en estado final: %', OLD.estado;
+      END IF;
+    END IF;
   END IF;
 
-  -- Validar barbero si está especificado
-  IF NEW.barbero_id IS NOT NULL THEN
-    SELECT barberia_id
-    INTO v_barbero_barberia
-    FROM public.barberos
-    WHERE id = NEW.barbero_id;
-
-    IF v_barbero_barberia IS NULL THEN
-      RAISE EXCEPTION 'Barbero_id % no existe', NEW.barbero_id;
-    END IF;
-
-    IF v_barbero_barberia <> NEW.barberia_id THEN
-      RAISE EXCEPTION 'Barbero no pertenece a la barbería';
-    END IF;
+  -- Validar que la barbería no esté desactivada (soft delete)
+  IF EXISTS (
+    SELECT 1 FROM public.barberias br
+    WHERE br.id = NEW.barberia_id AND br.deleted_at IS NOT NULL
+  ) THEN
+    RAISE EXCEPTION 'Barbería % desactivada', NEW.barberia_id;
   END IF;
 
-  -- Validar servicio y duración si está especificado
-  IF NEW.servicio_id IS NOT NULL THEN
-    SELECT barberia_id, duracion_min
-    INTO v_servicio_barberia, v_duracion_min
-    FROM public.servicios
-    WHERE id = NEW.servicio_id;
+  -- Validar barbero
+  SELECT barberia_id
+  INTO v_barbero_barberia
+  FROM public.barberos
+  WHERE id = NEW.barbero_id;
 
-    IF v_servicio_barberia IS NULL THEN
-      RAISE EXCEPTION 'Servicio_id % no existe', NEW.servicio_id;
-    END IF;
+  IF v_barbero_barberia IS NULL THEN
+    RAISE EXCEPTION 'Barbero_id % no existe', NEW.barbero_id;
+  END IF;
 
-    IF v_servicio_barberia <> NEW.barberia_id THEN
-      RAISE EXCEPTION 'Servicio no pertenece a la barbería';
-    END IF;
+  IF v_barbero_barberia <> NEW.barberia_id THEN
+    RAISE EXCEPTION 'Barbero no pertenece a la barbería';
+  END IF;
+
+  -- Validar servicio y duración
+  SELECT barberia_id, duracion_min
+  INTO v_servicio_barberia, v_duracion_min
+  FROM public.servicios
+  WHERE id = NEW.servicio_id;
+
+  IF v_servicio_barberia IS NULL THEN
+    RAISE EXCEPTION 'Servicio_id % no existe', NEW.servicio_id;
+  END IF;
+
+  IF v_servicio_barberia <> NEW.barberia_id THEN
+    RAISE EXCEPTION 'Servicio no pertenece a la barbería';
   END IF;
 
   -- Obtener slot_min de la barbería
@@ -69,29 +92,54 @@ BEGIN
     v_slot_min := 15;
   END IF;
 
-  -- Validar malla dinámica si hora_inicio está presente
-  IF NEW.hora_inicio IS NOT NULL AND (EXTRACT(MINUTE FROM NEW.hora_inicio)::INT % v_slot_min) <> 0 THEN
+  -- Validar malla dinámica
+  IF (EXTRACT(MINUTE FROM NEW.hora_inicio)::INT % v_slot_min) <> 0 THEN
     RAISE EXCEPTION
       'hora_inicio % no alineada a malla de % minutos',
       NEW.hora_inicio, v_slot_min;
   END IF;
 
-  -- Calcular hora_fin automáticamente si se tiene servicio y hora_inicio
-  IF NEW.hora_inicio IS NOT NULL AND v_duracion_min IS NOT NULL THEN
-    NEW.hora_fin := (NEW.hora_inicio + make_interval(mins => v_duracion_min))::time;
+  -- Calcular hora_fin automáticamente
+  NEW.hora_fin :=
+    (NEW.hora_inicio + make_interval(mins => v_duracion_min))::time;
+
+  -- Validar horario del día
+  v_dia_semana := EXTRACT(DOW FROM NEW.fecha)::INT;
+
+  SELECT hora_abre, hora_cierra
+  INTO v_abre, v_cierra
+  FROM public.horarios
+  WHERE barberia_id = NEW.barberia_id
+    AND dia_semana = v_dia_semana
+    AND activo = true;
+
+  IF v_abre IS NULL OR v_cierra IS NULL THEN
+    RAISE EXCEPTION
+      'No hay horario activo para barbería % día %',
+      NEW.barberia_id, v_dia_semana;
+  END IF;
+
+  IF NEW.hora_inicio < v_abre OR NEW.hora_fin > v_cierra THEN
+    RAISE EXCEPTION
+      'Cita fuera de horario (% - %)',
+      v_abre, v_cierra;
   END IF;
 
   RETURN NEW;
 END;
 $function$;
 
--- 2. Crear o reemplazar función de cobro seguro POS
+-- 2. Crear o reemplazar función de cobro seguro POS (SECURITY DEFINER Blindado)
 CREATE OR REPLACE FUNCTION public.fn_pos_registrar_pago_realizada(
   p_barberia_id INT,
   p_cita_id INT,
   p_monto_total NUMERIC,
   p_metodo_pago TEXT
-) RETURNS JSONB AS $$
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
 DECLARE
   v_cita_estado TEXT;
   v_cita_barberia_id INT;
@@ -180,4 +228,8 @@ BEGIN
     'metodo', v_metodo_normalizado
   );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
+
+-- 3. Permisos mínimos y explícitos
+REVOKE ALL ON FUNCTION public.fn_pos_registrar_pago_realizada(integer, integer, numeric, text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.fn_pos_registrar_pago_realizada(integer, integer, numeric, text) TO postgres;
