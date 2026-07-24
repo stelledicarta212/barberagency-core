@@ -42,7 +42,7 @@ function simulateFnPosCharge(dbCitas, dbPagos, barberiaId, citaId, total, metodo
 // Simulador de la matriz de transiciones estrictas fn_citas_set_y_validar
 function validateStateTransition(opType, oldEstado, newEstado) {
   if (opType === 'INSERT') {
-    if (!['pendiente', 'confirmada', 'pagada'].includes(newEstado)) {
+    if (!['pendiente', 'confirmada'].includes(newEstado)) {
       throw new Error(`Estado inicial inválido para cita: ${newEstado}`);
     }
     return true;

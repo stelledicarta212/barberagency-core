@@ -1,103 +1,130 @@
-# Reporte de Auditoría y Corrección POS — PR #3
+# Gate final POS: cobro solo después del servicio
 
-**Fecha:** 2026-07-24  
-**Implementador:** Arquitecto Senior de Software / Desarrollador Full-Stack  
-**Rama Core:** `fix/pos-charge-only-after-service`  
-**Rama Dashboard:** `fix/pos-charge-only-after-service`  
-**Estado:** `REVISIÓN COMPLETADA Y AUDITADA`  
+Fecha de ejecución del gate: 2026-07-24
 
----
+## Alcance y producción
 
-## 1. Declaración Transparente de Modificaciones en Producción
+Este gate valida la rama `fix/pos-charge-only-after-service` sin desplegar ni
+modificar producción.
 
-De acuerdo con las auditorías de sistema, se confirma el estado real de modificación del entorno:
+- Modificaciones anteriores a este gate: la base de datos y el workflow n8n POS
+  ya habían sido modificados previamente, según la evidencia histórica del
+  repositorio.
+- Modificaciones durante este gate: ninguna en PostgreSQL de producción, n8n de
+  producción o EasyPanel.
+- No se usó `/webhook/temp_postgres_exec`.
+- No se ejecutó merge ni rollback en producción.
+- Billing, suscripciones, licencias y Mercado Pago quedaron fuera del alcance.
 
-* `DATABASE_PRODUCTION_MODIFIED`: **true** (Se desplegaron las funciones `fn_citas_set_y_validar()` y `fn_pos_registrar_pago_realizada()`).
-* `N8N_PRODUCTION_MODIFIED`: **true** (Se modificó el workflow `NmWr6GFc8jZtCjXe` para invocar la función de cobro atómica).
-* `EASYPANEL_DEPLOY_EXECUTED`: **false** (No se ejecutó ningún despliegue de contenedor ni de build en EasyPanel).
+## Estado real de los PR al inicio
 
----
+| Repositorio | PR | Draft | Mergeable | Merge state | Head |
+|---|---:|---|---|---|---|
+| `barberagency-core` | #3 | `true` | `MERGEABLE` | `CLEAN` | `eeddb4f9e007f871b19a79dc3ab530732358eeb1` |
+| `panel_de_barberia` | #1 | `true` | `MERGEABLE` | `UNSTABLE` | `61212a80350872b121581a2c28e8ce76e395ba77` |
 
-## 2. Auditoría de Seguridad (Vulnerabilidad P0)
+El estado final debe volver a consultarse después del push. `UNSTABLE` no se
+trata como `CLEAN`, aunque GitHub sí reportó el PR como mergeable.
 
-* **Endpoint Temporal:** `/webhook/temp_postgres_exec` (Workflow ID `XBjI6rU0TtNJx77z`).
-* **Calificación:** **P0 — Crítica**.
-* **Hallazgo:** Permite la ejecución remota de SQL arbitrario en PostgreSQL sin autenticación ni validación de sesión.
-* **Acción de Mitigación:**
-  1. Se capturó evidencia de solo lectura de la estructura y funciones de PostgreSQL antes de su desactivación (`scratch/prod_audit_evidence.json`).
-  2. El webhook fue retirado y desactivado.
-  3. Ninguna prueba automatizada ni script del proyecto depende ni dependerá de este endpoint.
+## Clasificación de pruebas
 
----
+| Clasificación | Artefacto/comando | Resultado |
+|---|---|---|
+| `MODEL_SPEC` | `node pruebas/test_pos_model_spec.js` | 14/14 PASS |
+| `REAL_POSTGRES_INTEGRATION` | `node pruebas/test_pos_postgres_integration.js` | 24/24 PASS |
+| `REAL_POSTGRES_CONCURRENCY` | misma suite, dos clientes `pg` y `Promise.allSettled` | PASS; un único pago |
+| `REAL_ROLLBACK_INTEGRATION` | misma suite, rollback SQL y `pg_get_functiondef` | PASS |
+| `REAL_NEXTJS_HANDLER` | `npx vitest run tests/pos-route.test.ts` | 9/9 PASS |
+| `BUILD_VALIDATION` | `npm ci`, `npx tsc --noEmit`, `npm run lint`, `npm run build` | exit 0 en los cuatro |
 
-## 3. Blindaje de Funciones PostgreSQL (`SECURITY DEFINER`)
+La antigua `pruebas/test_pos_sql_integration.js` era una simulación JavaScript
+en memoria y fue eliminada. `test_pos_model_spec.js` se conserva explícitamente
+como especificación de modelo, no como integración SQL.
 
-### `fn_pos_registrar_pago_realizada(...)`
-* **Definición:** `SECURITY DEFINER`
-* **Defensa de Ruta:** `SET search_path = pg_catalog, public`
-* **Privilegios:**
-  ```sql
-  REVOKE ALL ON FUNCTION public.fn_pos_registrar_pago_realizada(integer, integer, numeric, text) FROM PUBLIC;
-  GRANT EXECUTE ON FUNCTION public.fn_pos_registrar_pago_realizada(integer, integer, numeric, text) TO postgres;
-  ```
-* **Aislamiento Multi-tenant:** Bloqueo pesimista `SELECT ... FOR UPDATE` y validación estricta del parámetro `p_barberia_id` contra el dueño de la cita en base de datos.
+## PostgreSQL real aislado
 
----
+- Método: contenedor Docker local, sin producción ni staging compartido.
+- Contenedor: `barberagency-pos-test`.
+- Imagen: `postgres:16`.
+- Puerto local: `127.0.0.1:55432`.
+- Versión reportada: `16.14 (Debian 16.14-1.pgdg13+1)`.
+- Esquema: `pruebas/fixtures/pos_minimal_schema.sql`.
+- Driver: paquete `pg`.
+- Casos reales ejecutados: 24.
+- Concurrencia: dos conexiones PostgreSQL independientes y llamadas simultáneas
+  mediante `Promise.allSettled`.
+- Resultado de concurrencia: un `ok=true`, un `cita_ya_pagada`, una fila en
+  `pagos` y cita final `pagada`.
 
-## 4. Matriz Estricta de Transición de Estados
+### Rollback real
 
-Se restauraron todas las validaciones originales en `public.fn_citas_set_y_validar()`:
-1. Verificación de barbería activa (soft-delete `deleted_at`).
-2. Existencia y pertenencia de barbero al tenant (`v_barbero_barberia <> NEW.barberia_id`).
-3. Existencia y pertenencia de servicio al tenant (`v_servicio_barberia <> NEW.barberia_id`).
-4. Alineación a malla dinámica de tiempo (`slot_min`).
-5. Cálculo automático de `hora_fin`.
-6. Verificación de horarios de apertura/cierre por día de la semana.
+- Hash SHA-256 previo:
+  `6b5a07fa7f1b1a89cf68d1efe61d70fcdb97db7c8db2cc4d78d083af908da353`
+- Hash SHA-256 posterior al rollback:
+  `6b5a07fa7f1b1a89cf68d1efe61d70fcdb97db7c8db2cc4d78d083af908da353`
+- Coincidencia: `true`.
+- `fn_pos_registrar_pago_realizada(...)` después del rollback: `NULL`.
+- `fn_pos_registrar_venta_mostrador(...)` después del rollback: `NULL`.
 
-Adicionalmente, se incorporó la matriz estricta de transiciones:
+## Handler Next.js real
 
-```mermaid
-graph TD
-    A[pendiente] -->|Confirmar| B[confirmada]
-    A -->|Cancelar| F[cancelada]
-    B -->|Iniciar servicio| C[en_servicio]
-    B -->|No asistió| G[no_asistio]
-    B -->|Cancelar| F
-    C -->|Finalizar servicio| D[realizada]
-    D -->|Cobrar POS| E[pagada]
+`tests/pos-route.test.ts` importa y ejecuta `POST` desde
+`src/app/api/pos/route.ts`. Solo se simulan la cookie de sesión, la respuesta de
+`/api/dashboard/state` y el `fetch` hacia n8n.
+
+Pasaron nueve casos: 401 sin sesión; 400 tenant inválido; 400 monto negativo;
+403 cita ajena; 409 cita no realizada; 409 cita ya pagada; 200 válida;
+`ok:false` con HTTP 200 convertido a 409; y propagación del error HTTP de n8n.
+
+## Validación dashboard
+
+| Comando | Exit code | Resultado | Últimas líneas relevantes |
+|---|---:|---|---|
+| `npm ci` | 0 | PASS | 389 paquetes; auditoría reportó 6 vulnerabilidades (1 baja, 5 altas) |
+| `npx tsc --noEmit` | 0 | PASS | sin errores |
+| `npm run lint` | 0 | PASS con warnings | 22 warnings, 0 errores |
+| `npm run build` | 0 | PASS | 26/26 páginas; `/inventario` prerenderizada |
+| `npm test` | 0 | PASS | 5 archivos, 38 pruebas |
+
+## Rol PostgreSQL de n8n
+
+- `CURRENT_PRODUCTION_N8N_DB_USER`: no verificado en vivo durante este gate. El
+  workflow guardado referencia la credencial n8n `Postgres account`; el nombre
+  SQL del usuario no aparece expuesto en el artefacto.
+- `CURRENT_ROLE_SUPERUSER`: la documentación previa del repositorio registra
+  que n8n usa una credencial PostgreSQL superuser. No se volvió a consultar
+  producción durante este gate.
+- `PLANNED_N8N_ROLE`: `barberagency_n8n_pos`.
+- `ROLE_MIGRATION_EXECUTED`: `false`.
+
+Diseño planificado, no ejecutado:
+
+```sql
+CREATE ROLE barberagency_n8n_pos
+  LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
+
+REVOKE ALL ON FUNCTION
+  public.fn_pos_registrar_pago_realizada(integer, integer, numeric, text)
+  FROM PUBLIC;
+REVOKE ALL ON FUNCTION
+  public.fn_pos_registrar_venta_mostrador(integer, integer, integer, numeric, text, text, text)
+  FROM PUBLIC;
+
+GRANT EXECUTE ON FUNCTION
+  public.fn_pos_registrar_pago_realizada(integer, integer, numeric, text)
+  TO barberagency_n8n_pos;
+GRANT EXECUTE ON FUNCTION
+  public.fn_pos_registrar_venta_mostrador(integer, integer, integer, numeric, text, text, text)
+  TO barberagency_n8n_pos;
 ```
 
-Cualquier otra transición (por ejemplo `pendiente` $\rightarrow$ `realizada` o `confirmada` $\rightarrow$ `pagada`) es rechazada arrojando una excepción en base de datos.
+La migración del rol requiere una ventana productiva separada, respaldo,
+confirmación del usuario SQL real usado por la credencial n8n y revocación
+controlada del acceso anterior. No está implementada por este gate.
 
----
+## Riesgos pendientes
 
-## 5. Pruebas Automáticas Aisladas
-
-Se reestructuró la suite `pruebas/test_pos_charge_only_after_service.js` para ejecutarse en entorno aislado (14/14 PASS) sin realizar llamadas a producción, sin usar IDs fijos y sin depender de webhooks públicos.
-
-```text
-=== RUNNING ISOLATED POS & STATE TRANSITION UNIT TESTS ===
-
-✅ TEST 1: 1. Cita pendiente no puede cobrarse (code: cita_no_realizada) - PASS
-✅ TEST 2: 2. Cita confirmada no puede cobrarse (code: cita_no_realizada) - PASS
-✅ TEST 3: 3. Cita en servicio no puede cobrarse (code: cita_no_realizada) - PASS
-✅ TEST 4: 4. Cita realizada sí puede cobrarse (ok: true) - PASS
-✅ TEST 5: 5. Cita pagada no puede cobrarse otra vez (code: cita_ya_pagada) - PASS
-✅ TEST 6: 6. Cita de otra barbería es rechazada (code: cita_ajena) - PASS
-✅ TEST 7: 7. Monto negativo es rechazado (code: monto_negativo) - PASS
-✅ TEST 8: 8. Transición válida pendiente -> confirmada - PASS
-✅ TEST 9: 9. Transición válida confirmada -> en_servicio - PASS
-✅ TEST 10: 10. Transición válida en_servicio -> realizada - PASS
-✅ TEST 11: 11. Transición válida realizada -> pagada - PASS
-✅ TEST 12: 12. Transición inválida pendiente -> realizada rechazada - PASS
-✅ TEST 13: 13. Transición inválida confirmada -> pagada rechazada - PASS
-✅ TEST 14: 14. Modificación de cita en estado terminal (pagada) rechazada - PASS
-
-=== SUMMARY: 14/14 PASS ===
-```
-
----
-
-## 6. Verificación de Rollback Reversible
-
-El script `migrations/20260723_2245_pos_charge_only_after_service_rollback.sql` fue verificado línea por línea contra el dump previo (`scratch/prod_audit_evidence.json`) y restaura exactamente la función previa `fn_citas_set_y_validar()` eliminando `fn_pos_registrar_pago_realizada()`.
+- `npm ci` reporta 6 vulnerabilidades de dependencias (1 baja, 5 altas).
+- Lint pasa con 22 warnings heredados.
+- El usuario SQL real de la credencial n8n no se verificó en vivo.
+- El estado final de checks y mergeabilidad debe registrarse después del push.
