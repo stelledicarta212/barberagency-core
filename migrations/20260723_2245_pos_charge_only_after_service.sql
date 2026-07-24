@@ -1,6 +1,6 @@
 -- Migration: Additive function to enforce charging POS sales only after service is performed ('realizada')
 -- Hardened SECURITY DEFINER with search_path = pg_catalog, public
--- Restores all original validation rules in fn_citas_set_y_validar() and adds strict state transition enforcement
+-- Enforces fn_citas_set_y_validar state transitions & strictly verifies public.pagos existence for 'pagada' state
 -- Base branch: main
 -- Date: 2026-07-24
 
@@ -19,15 +19,27 @@ DECLARE
   v_abre TIME;
   v_cierra TIME;
   v_slot_min INT;
+  v_has_pago BOOLEAN;
 BEGIN
   -- Estado por defecto en inserción
   IF NEW.estado IS NULL THEN
     NEW.estado := 'confirmada';
   END IF;
 
+  -- Protección de estado 'pagada': Requiere obligatoriamente un registro existente en public.pagos
+  IF NEW.estado = 'pagada' THEN
+    SELECT EXISTS (
+      SELECT 1 FROM public.pagos WHERE cita_id = NEW.id
+    ) INTO v_has_pago;
+
+    IF NOT v_has_pago THEN
+      RAISE EXCEPTION 'No se permite establecer el estado pagada sin un registro de pago asociado en public.pagos';
+    END IF;
+  END IF;
+
   -- Validar transiciones estrictas de estado
   IF TG_OP = 'INSERT' THEN
-    IF NEW.estado NOT IN ('pendiente', 'confirmada', 'pagada') THEN
+    IF NEW.estado NOT IN ('pendiente', 'confirmada') THEN
       RAISE EXCEPTION 'Estado inicial inválido para cita: %', NEW.estado;
     END IF;
   ELSIF TG_OP = 'UPDATE' THEN
@@ -129,7 +141,7 @@ BEGIN
 END;
 $function$;
 
--- 2. Crear o reemplazar función de cobro seguro POS (SECURITY DEFINER Blindado)
+-- 2. Crear o reemplazar función de cobro seguro POS para cita agendada (SECURITY DEFINER Blindado)
 CREATE OR REPLACE FUNCTION public.fn_pos_registrar_pago_realizada(
   p_barberia_id INT,
   p_cita_id INT,
@@ -209,7 +221,7 @@ BEGIN
     );
   END IF;
 
-  -- 8. Insertar pago en public.pagos (sin ON CONFLICT DO UPDATE)
+  -- 8. Insertar pago en public.pagos PRIMERO (para satisfacer la restricción del trigger al actualizar estado)
   INSERT INTO public.pagos (cita_id, total, metodo, pagado_en, barberia_id)
   VALUES (p_cita_id, p_monto_total, v_metodo_normalizado, NOW(), p_barberia_id)
   RETURNING id INTO v_pago_id;
@@ -230,6 +242,77 @@ BEGIN
 END;
 $$;
 
--- 3. Permisos mínimos y explícitos
+-- 3. Crear función dedicada para venta de mostrador directa (sin cita agendada previa)
+CREATE OR REPLACE FUNCTION public.fn_pos_registrar_venta_mostrador(
+  p_barberia_id INT,
+  p_barbero_id INT,
+  p_servicio_id INT,
+  p_monto_total NUMERIC,
+  p_metodo_pago TEXT,
+  p_cliente_nombre TEXT DEFAULT 'Cliente Mostrador',
+  p_cliente_tel TEXT DEFAULT NULL
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+DECLARE
+  v_cita_id INT;
+  v_pago_id INT;
+  v_metodo_normalizado TEXT;
+  v_hora_inicio TIME := CURRENT_TIME;
+BEGIN
+  -- 1. Validar monto no negativo
+  IF p_monto_total IS NULL OR p_monto_total < 0 THEN
+    RETURN jsonb_build_object(
+      'ok', false,
+      'code', 'monto_negativo',
+      'message', 'No se permiten montos negativos.'
+    );
+  END IF;
+
+  -- 2. Normalizar método de pago
+  IF LOWER(COALESCE(p_metodo_pago, '')) LIKE '%efectivo%' THEN
+    v_metodo_normalizado := 'efectivo';
+  ELSE
+    v_metodo_normalizado := 'digital';
+  END IF;
+
+  -- 3. Crear cita en estado inicial 'confirmada'
+  INSERT INTO public.citas (
+    barberia_id, barbero_id, servicio_id, fecha, hora_inicio, cliente_nombre, cliente_tel, estado
+  ) VALUES (
+    p_barberia_id, p_barbero_id, p_servicio_id, CURRENT_DATE, v_hora_inicio, COALESCE(p_cliente_nombre, 'Cliente Mostrador'), p_cliente_tel, 'confirmada'
+  ) RETURNING id INTO v_cita_id;
+
+  -- 4. Transicionar a 'en_servicio' y luego 'realizada' respetando el ciclo de vida
+  UPDATE public.citas SET estado = 'en_servicio' WHERE id = v_cita_id AND barberia_id = p_barberia_id;
+  UPDATE public.citas SET estado = 'realizada' WHERE id = v_cita_id AND barberia_id = p_barberia_id;
+
+  -- 5. Insertar pago en public.pagos
+  INSERT INTO public.pagos (cita_id, total, metodo, pagado_en, barberia_id)
+  VALUES (v_cita_id, p_monto_total, v_metodo_normalizado, NOW(), p_barberia_id)
+  RETURNING id INTO v_pago_id;
+
+  -- 6. Transicionar estado a 'pagada'
+  UPDATE public.citas
+  SET estado = 'pagada'
+  WHERE id = v_cita_id AND barberia_id = p_barberia_id;
+
+  RETURN jsonb_build_object(
+    'ok', true,
+    'message', 'Venta de mostrador registrada correctamente',
+    'cita_id', v_cita_id,
+    'pago_id', v_pago_id,
+    'total', p_monto_total,
+    'metodo', v_metodo_normalizado
+  );
+END;
+$$;
+
+-- 4. Permisos mínimos y explícitos (REVOKE FROM PUBLIC, GRANT TO ROL OPERATIVO POS / POSTGRES)
 REVOKE ALL ON FUNCTION public.fn_pos_registrar_pago_realizada(integer, integer, numeric, text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.fn_pos_registrar_venta_mostrador(integer, integer, integer, numeric, text, text, text) FROM PUBLIC;
+
 GRANT EXECUTE ON FUNCTION public.fn_pos_registrar_pago_realizada(integer, integer, numeric, text) TO postgres;
+GRANT EXECUTE ON FUNCTION public.fn_pos_registrar_venta_mostrador(integer, integer, integer, numeric, text, text, text) TO postgres;
