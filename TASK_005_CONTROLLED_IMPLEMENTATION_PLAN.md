@@ -297,3 +297,42 @@ TECHNICAL_VALIDATION_COMPLETED = NO
 ```
 
 El estado `SCRIPT_MODIFIED = YES_STATIC_ONLY` significa que el archivo PowerShell fue modificado como texto/codigo estatico dentro del PR. No significa ejecucion, importacion, dot-source, sintaxis validada por PowerShell, SQL ejecutado, fixtures ejecutados, conexion a PostgreSQL, uso de produccion, backups, restauraciones, Docker, SSH, R2, Stage 2 ni merge.
+
+## 15. Cierre aprobado de correccion documental de Gate B
+
+```text
+TASK = TASK_005-GATE-B-CORRECTION
+RECORDED_AT = 2026-07-28 14:30:23 -05:00
+TIMEZONE = America/Bogota
+CORRECTION_COMMIT = 5b08883546ae438bedc2cb6e4b818e9d73b7c870
+INDEPENDENT_AUDIT = ANTIGRAVITY
+AUDIT_DECISION = GATE_B_DOCUMENTARY_CORRECTION_APPROVED
+AUDIT_MODE = READ_ONLY
+REMAINING_FINDINGS = 0
+BLOCKING_FINDINGS = 0
+DOCUMENTARY_CORRECTION_CLOSED = YES
+GATE_B_DOCUMENTARY_CORRECTION = CLOSED_APPROVED
+GATE_B_COMPLETE = OPEN_PENDING_REQUIREMENTS
+CANONICAL_PR_FILE = backup_production_database.ps1
+CANONICAL_PR_COMMIT = 1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c
+CANONICAL_PHYSICAL_LINE_COUNT = 3012
+CANONICAL_SHA256 = fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb
+CANONICAL_SIZE_BYTES = 192962
+SCRIPT_MODIFIED = YES_STATIC_ONLY
+SCRIPT_EXECUTED = NO
+SQL_EXECUTED = NO
+FIXTURES_EXECUTED = NO
+CREDENTIALS_ACCESSED = NO
+POSTGRESQL_ACCESSED = NO
+PRODUCTION_ACCESSED = NO
+BACKUP_EXECUTED = NO
+PR_2_OPEN = YES
+PR_2_DRAFT = YES
+PR_2_MERGED = NO
+MERGE_AUTHORIZED = NO
+GATE_C_STARTED = NO
+```
+
+La aprobacion independiente cierra solo la correccion documental posterior a Gate B. No autoriza ejecucion tecnica, ejecucion del PowerShell, backup, SQL, fixtures, credenciales, PostgreSQL, produccion, merge, Gate C ni continuacion automatica.
+
+Gate B completo queda pendiente de evaluacion separada porque siguen faltando evidencias dinamicas y aprobaciones humanas expresas para validaciones tecnicas, fixtures, PostgreSQL temporal y revision posterior del diff.
