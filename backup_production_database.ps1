@@ -1424,6 +1424,54 @@ function Test-StaticParsers {
         throw "Test failed: Fixture O role collision"
     }
 
+    # ---- FIXTURES OFFLINE DE TRANSPORTE Y GATES B3 (H, I, J) ----
+    $psql_transport_valid = 'psql -X -v ON_ERROR_STOP=1 --dbname task005_temp_db'
+    $psql_transport_missing_x = 'psql -v ON_ERROR_STOP=1 --dbname task005_temp_db'
+    $psql_transport_missing_on_error_stop = 'psql -X --dbname task005_temp_db'
+    if ($psql_transport_valid -notmatch '(^|\s)psql(\s|$)' -or $psql_transport_valid -notmatch '(^|\s)-X(\s|$)' -or $psql_transport_valid -notmatch '(^|\s)-v\s+ON_ERROR_STOP=1(\s|$)') {
+        throw "Test failed: Fixture H positive psql flags"
+    }
+    if ($psql_transport_missing_x -match '(^|\s)-X(\s|$)' -or $psql_transport_missing_on_error_stop -match '(^|\s)-v\s+ON_ERROR_STOP=1(\s|$)') {
+        throw "Test failed: Fixture H negative psql flags"
+    }
+
+    $acl_sql_valid = @'
+BEGIN;
+SELECT 1;
+COMMIT;
+'@
+    $acl_sql_missing_transaction = 'SELECT 1;'
+    $acl_sql_duplicate_commit = @'
+BEGIN;
+SELECT 1;
+COMMIT;
+COMMIT;
+'@
+    $valid_begin_count = ([regex]::Matches($acl_sql_valid, '(?im)^\s*BEGIN\s*;?\s*$')).Count
+    $valid_commit_count = ([regex]::Matches($acl_sql_valid, '(?im)^\s*COMMIT\s*;?\s*$')).Count
+    $missing_begin_count = ([regex]::Matches($acl_sql_missing_transaction, '(?im)^\s*BEGIN\s*;?\s*$')).Count
+    $missing_commit_count = ([regex]::Matches($acl_sql_missing_transaction, '(?im)^\s*COMMIT\s*;?\s*$')).Count
+    $duplicate_commit_count = ([regex]::Matches($acl_sql_duplicate_commit, '(?im)^\s*COMMIT\s*;?\s*$')).Count
+    if ($valid_begin_count -ne 1 -or $valid_commit_count -ne 1) {
+        throw "Test failed: Fixture I positive transaction"
+    }
+    if (($missing_begin_count -ne 0 -or $missing_commit_count -ne 0) -or $duplicate_commit_count -le 1) {
+        throw "Test failed: Fixture I negative transaction"
+    }
+
+    $fixture_j_exit_mismatch = PROPOSED_NEW_FUNCTION_TestExitCodePropagation -ExpectedExitCode 0 -ActualExitCode 1
+    if ($fixture_j_exit_mismatch.status -ne "PROPOSED_EXIT_CODE_MISMATCH" -or $fixture_j_exit_mismatch.error_code -ne "database_acl_policy_exit_propagation_failed") {
+        throw "Test failed: Fixture J exit propagation"
+    }
+    $fixture_j_gate_block = PROPOSED_NEW_FUNCTION_StopPipelineOnAclFailure @{
+        STATIC_POLICY_VALIDATED = "YES"
+        CONTROLLED_TEMP_RESTORE_POLICY_VALIDATED = "NO"
+        DATABASE_ACL_RESTORE_EQUIVALENCE_VALIDATED = "NO"
+    }
+    if ($fixture_j_gate_block.status -ne "PROPOSED_GATE_BLOCKED" -or $fixture_j_gate_block.continue_to_stage_2 -ne "NO" -or $fixture_j_gate_block.continue_to_r2 -ne "NO" -or $fixture_j_gate_block.error_code -ne "database_acl_policy_post_verification_failed") {
+        throw "Test failed: Fixture J gate stop"
+    }
+
     # Construir registries activos simulados para 15 y 16 basados en contratos completos
     $mock_reg_15 = @{}
     foreach ($k in $global:TOC_CONTRACTS.Keys) {
