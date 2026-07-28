@@ -457,7 +457,6 @@ function New-TOC-Contract(
 ) {
     return @{
         Descriptor = $descriptor
-        descriptor = $descriptor
         RecognitionPriority = $priority
         SupportedGrammar = $grammar
         SupportedVersions = $versions
@@ -568,17 +567,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
     }
     if ($total_q % 2 -ne 0) {
         return [ordered]@{
-            Valid = $false; valid = $false; status = "invalid"
-            Recognized = $false; recognized = $false
-            Descriptor = $null; descriptor = $null
+            Valid = $false; status = "invalid"
+            Recognized = $false
+            Descriptor = $null
             DumpId = $null; dump_id = $null
             CatalogOid = $null; catalog_oid = $null
             ObjectOid = $null; object_oid = $null
-            Schema = $null; schema = $null
-            Name = $null; name = $null
-            Table = $null; table = $null
-            Owner = $null; owner = $null
-            Components = @{}; components = @{}
+            Schema = $null
+            Name = $null
+            Table = $null
+            Owner = $null
+            Components = @{}
             QualifiedIdentity = $null; identity = $null
             SupportedGrammar = $null; supported_grammar = $null
             SupportedVersion = $null; supported_version = $null
@@ -603,17 +602,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
         $tokens = Tokenize-TOC-Line $rest_str
         if ($tokens.Count -lt 2) {
             return [ordered]@{
-                Valid = $false; valid = $false; status = "invalid"
-                Recognized = $false; recognized = $false
-                Descriptor = $null; descriptor = $null
+                Valid = $false; status = "invalid"
+                Recognized = $false
+                Descriptor = $null
                 DumpId = $dump_id; dump_id = $dump_id
                 CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                 ObjectOid = $object_oid; object_oid = $object_oid
-                Schema = $null; schema = $null
-                Name = $null; name = $null
-                Table = $null; table = $null
-                Owner = $null; owner = $null
-                Components = @{}; components = @{}
+                Schema = $null
+                Name = $null
+                Table = $null
+                Owner = $null
+                Components = @{}
                 QualifiedIdentity = $null; identity = $null
                 SupportedGrammar = $null; supported_grammar = $null
                 SupportedVersion = $null; supported_version = $null
@@ -658,17 +657,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
 
         if ($null -eq $matched_key) {
             return [ordered]@{
-                Valid = $false; valid = $false; status = "invalid"
-                Recognized = $false; recognized = $false
-                Descriptor = $null; descriptor = $null
+                Valid = $false; status = "invalid"
+                Recognized = $false
+                Descriptor = $null
                 DumpId = $dump_id; dump_id = $dump_id
                 CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                 ObjectOid = $object_oid; object_oid = $object_oid
-                Schema = $null; schema = $null
-                Name = $null; name = $null
-                Table = $null; table = $null
-                Owner = $null; owner = $null
-                Components = @{}; components = @{}
+                Schema = $null
+                Name = $null
+                Table = $null
+                Owner = $null
+                Components = @{}
                 QualifiedIdentity = $null; identity = $null
                 SupportedGrammar = $null; supported_grammar = $null
                 SupportedVersion = $null; supported_version = $null
@@ -684,17 +683,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
             $next_tok = $tokens[$matched_len]
             if ($next_tok -match '^[A-Z_]+$' -and $descriptor_words.Contains($next_tok.ToUpper())) {
                 return [ordered]@{
-                    Valid = $false; valid = $false; status = "invalid"
-                    Recognized = $true; recognized = $true
-                    Descriptor = $matched_key; descriptor = $matched_key
+                    Valid = $false; status = "invalid"
+                    Recognized = $true
+                    Descriptor = $matched_key
                     DumpId = $dump_id; dump_id = $dump_id
                     CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                     ObjectOid = $object_oid; object_oid = $object_oid
-                    Schema = $null; schema = $null
-                    Name = $null; name = $null
-                    Table = $null; table = $null
-                    Owner = $null; owner = $null
-                    Components = @{}; components = @{}
+                    Schema = $null
+                    Name = $null
+                    Table = $null
+                    Owner = $null
+                    Components = @{}
                     QualifiedIdentity = $null; identity = $null
                     SupportedGrammar = $null; supported_grammar = $null
                     SupportedVersion = $null; supported_version = $null
@@ -712,17 +711,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
         foreach ($rk in $keys_req) {
             if (-not $contract.Contains($rk)) {
                 return [ordered]@{
-                    Valid = $false; valid = $false; status = "invalid"
-                    Recognized = $true; recognized = $true
-                    Descriptor = $matched_key; descriptor = $matched_key
+                    Valid = $false; status = "invalid"
+                    Recognized = $true
+                    Descriptor = $matched_key
                     DumpId = $dump_id; dump_id = $dump_id
                     CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                     ObjectOid = $object_oid; object_oid = $object_oid
-                    Schema = $null; schema = $null
-                    Name = $null; name = $null
-                    Table = $null; table = $null
-                    Owner = $null; owner = $null
-                    Components = @{}; components = @{}
+                    Schema = $null
+                    Name = $null
+                    Table = $null
+                    Owner = $null
+                    Components = @{}
                     QualifiedIdentity = $null; identity = $null
                     SupportedGrammar = $null; supported_grammar = $null
                     SupportedVersion = $null; supported_version = $null
@@ -738,17 +737,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
         if ($null -ne $expected_version) {
             if (-not $contract.SupportedVersions.Contains($expected_version)) {
                 return [ordered]@{
-                    Valid = $false; valid = $false; status = "invalid"
-                    Recognized = $true; recognized = $true
-                    Descriptor = $matched_key; descriptor = $matched_key
+                    Valid = $false; status = "invalid"
+                    Recognized = $true
+                    Descriptor = $matched_key
                     DumpId = $dump_id; dump_id = $dump_id
                     CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                     ObjectOid = $object_oid; object_oid = $object_oid
-                    Schema = $null; schema = $null
-                    Name = $null; name = $null
-                    Table = $null; table = $null
-                    Owner = $null; owner = $null
-                    Components = @{}; components = @{}
+                    Schema = $null
+                    Name = $null
+                    Table = $null
+                    Owner = $null
+                    Components = @{}
                     QualifiedIdentity = $null; identity = $null
                     SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                     SupportedVersion = $expected_version; supported_version = $expected_version
@@ -787,17 +786,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
 
         if (-not $count_valid) {
             return [ordered]@{
-                Valid = $false; valid = $false; status = "invalid"
-                Recognized = $true; recognized = $true
-                Descriptor = $matched_key; descriptor = $matched_key
+                Valid = $false; status = "invalid"
+                Recognized = $true
+                Descriptor = $matched_key
                 DumpId = $dump_id; dump_id = $dump_id
                 CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                 ObjectOid = $object_oid; object_oid = $object_oid
-                Schema = $null; schema = $null
-                Name = $null; name = $null
-                Table = $null; table = $null
-                Owner = $null; owner = $null
-                Components = @{}; components = @{}
+                Schema = $null
+                Name = $null
+                Table = $null
+                Owner = $null
+                Components = @{}
                 QualifiedIdentity = $null; identity = $null
                 SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                 SupportedVersion = $expected_version; supported_version = $expected_version
@@ -812,17 +811,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
         $parsed = & $contract.Parser $rem_tokens $contract
         if ($parsed.ContainsKey("error")) {
             return [ordered]@{
-                Valid = $false; valid = $false; status = "invalid"
-                Recognized = $true; recognized = $true
-                Descriptor = $matched_key; descriptor = $matched_key
+                Valid = $false; status = "invalid"
+                Recognized = $true
+                Descriptor = $matched_key
                 DumpId = $dump_id; dump_id = $dump_id
                 CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                 ObjectOid = $object_oid; object_oid = $object_oid
-                Schema = $null; schema = $null
-                Name = $null; name = $null
-                Table = $null; table = $null
-                Owner = $null; owner = $null
-                Components = @{}; components = @{}
+                Schema = $null
+                Name = $null
+                Table = $null
+                Owner = $null
+                Components = @{}
                 QualifiedIdentity = $null; identity = $null
                 SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                 SupportedVersion = $expected_version; supported_version = $expected_version
@@ -838,17 +837,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
             $key_name = $comp.Substring(0,1).ToUpper() + $comp.Substring(1).ToLower()
             if (-not $parsed.ContainsKey($key_name) -or $null -eq $parsed[$key_name] -or $parsed[$key_name].ToString().Trim().Length -eq 0) {
                 return [ordered]@{
-                    Valid = $false; valid = $false; status = "invalid"
-                    Recognized = $true; recognized = $true
-                    Descriptor = $matched_key; descriptor = $matched_key
+                    Valid = $false; status = "invalid"
+                    Recognized = $true
+                    Descriptor = $matched_key
                     DumpId = $dump_id; dump_id = $dump_id
                     CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                     ObjectOid = $object_oid; object_oid = $object_oid
-                    Schema = $null; schema = $null
-                    Name = $null; name = $null
-                    Table = $null; table = $null
-                    Owner = $null; owner = $null
-                    Components = @{}; components = @{}
+                    Schema = $null
+                    Name = $null
+                    Table = $null
+                    Owner = $null
+                    Components = @{}
                     QualifiedIdentity = $null; identity = $null
                     SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                     SupportedVersion = $expected_version; supported_version = $expected_version
@@ -883,17 +882,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
             $comp_name = $key.ToLower()
             if (-not $allowed_comps.Contains($comp_name)) {
                 return [ordered]@{
-                    Valid = $false; valid = $false; status = "invalid"
-                    Recognized = $true; recognized = $true
-                    Descriptor = $matched_key; descriptor = $matched_key
+                    Valid = $false; status = "invalid"
+                    Recognized = $true
+                    Descriptor = $matched_key
                     DumpId = $dump_id; dump_id = $dump_id
                     CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                     ObjectOid = $object_oid; object_oid = $object_oid
-                    Schema = $null; schema = $null
-                    Name = $null; name = $null
-                    Table = $null; table = $null
-                    Owner = $null; owner = $null
-                    Components = @{}; components = @{}
+                    Schema = $null
+                    Name = $null
+                    Table = $null
+                    Owner = $null
+                    Components = @{}
                     QualifiedIdentity = $null; identity = $null
                     SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                     SupportedVersion = $expected_version; supported_version = $expected_version
@@ -913,17 +912,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
         # Check Schema, Name, Owner Rules
         if (-not (& $contract.SchemaRule $schema)) {
             return [ordered]@{
-                Valid = $false; valid = $false; status = "invalid"
-                Recognized = $true; recognized = $true
-                Descriptor = $matched_key; descriptor = $matched_key
+                Valid = $false; status = "invalid"
+                Recognized = $true
+                Descriptor = $matched_key
                 DumpId = $dump_id; dump_id = $dump_id
                 CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                 ObjectOid = $object_oid; object_oid = $object_oid
-                Schema = $schema; schema = $schema
-                Name = $name; name = $name
-                Table = $table; table = $table
-                Owner = $owner; owner = $owner
-                Components = @{}; components = @{}
+                Schema = $schema
+                Name = $name
+                Table = $table
+                Owner = $owner
+                Components = @{}
                 QualifiedIdentity = $null; identity = $null
                 SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                 SupportedVersion = $expected_version; supported_version = $expected_version
@@ -936,17 +935,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
 
         if (-not (& $contract.NameRule $name)) {
             return [ordered]@{
-                Valid = $false; valid = $false; status = "invalid"
-                Recognized = $true; recognized = $true
-                Descriptor = $matched_key; descriptor = $matched_key
+                Valid = $false; status = "invalid"
+                Recognized = $true
+                Descriptor = $matched_key
                 DumpId = $dump_id; dump_id = $dump_id
                 CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                 ObjectOid = $object_oid; object_oid = $object_oid
-                Schema = $schema; schema = $schema
-                Name = $name; name = $name
-                Table = $table; table = $table
-                Owner = $owner; owner = $owner
-                Components = @{}; components = @{}
+                Schema = $schema
+                Name = $name
+                Table = $table
+                Owner = $owner
+                Components = @{}
                 QualifiedIdentity = $null; identity = $null
                 SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                 SupportedVersion = $expected_version; supported_version = $expected_version
@@ -959,17 +958,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
 
         if (-not (& $contract.OwnerRule $owner)) {
             return [ordered]@{
-                Valid = $false; valid = $false; status = "invalid"
-                Recognized = $true; recognized = $true
-                Descriptor = $matched_key; descriptor = $matched_key
+                Valid = $false; status = "invalid"
+                Recognized = $true
+                Descriptor = $matched_key
                 DumpId = $dump_id; dump_id = $dump_id
                 CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                 ObjectOid = $object_oid; object_oid = $object_oid
-                Schema = $schema; schema = $schema
-                Name = $name; name = $name
-                Table = $table; table = $table
-                Owner = $owner; owner = $owner
-                Components = @{}; components = @{}
+                Schema = $schema
+                Name = $name
+                Table = $table
+                Owner = $owner
+                Components = @{}
                 QualifiedIdentity = $null; identity = $null
                 SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                 SupportedVersion = $expected_version; supported_version = $expected_version
@@ -984,17 +983,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
         $det_rejection = & $contract.DeterministicRejectionRule $parsed
         if ($null -ne $det_rejection) {
             return [ordered]@{
-                Valid = $false; valid = $false; status = "invalid"
-                Recognized = $true; recognized = $true
-                Descriptor = $matched_key; descriptor = $matched_key
+                Valid = $false; status = "invalid"
+                Recognized = $true
+                Descriptor = $matched_key
                 DumpId = $dump_id; dump_id = $dump_id
                 CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                 ObjectOid = $object_oid; object_oid = $object_oid
-                Schema = $schema; schema = $schema
-                Name = $name; name = $name
-                Table = $table; table = $table
-                Owner = $owner; owner = $owner
-                Components = @{}; components = @{}
+                Schema = $schema
+                Name = $name
+                Table = $table
+                Owner = $owner
+                Components = @{}
                 QualifiedIdentity = $null; identity = $null
                 SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                 SupportedVersion = $expected_version; supported_version = $expected_version
@@ -1013,17 +1012,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
 
         if ($null -eq $identity -or $identity.Length -eq 0) {
             return [ordered]@{
-                Valid = $false; valid = $false; status = "invalid"
-                Recognized = $true; recognized = $true
-                Descriptor = $matched_key; descriptor = $matched_key
+                Valid = $false; status = "invalid"
+                Recognized = $true
+                Descriptor = $matched_key
                 DumpId = $dump_id; dump_id = $dump_id
                 CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
                 ObjectOid = $object_oid; object_oid = $object_oid
-                Schema = $schema; schema = $schema
-                Name = $name; name = $name
-                Table = $table; table = $table
-                Owner = $owner; owner = $owner
-                Components = @{}; components = @{}
+                Schema = $schema
+                Name = $name
+                Table = $table
+                Owner = $owner
+                Components = @{}
                 QualifiedIdentity = $null; identity = $null
                 SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
                 SupportedVersion = $expected_version; supported_version = $expected_version
@@ -1057,17 +1056,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
         $ver_str = if ($null -ne $expected_version) { $expected_version } else { "15/16" }
 
         return [ordered]@{
-            Valid = $true; valid = $true; status = "valid"
-            Recognized = $true; recognized = $true
-            Descriptor = $matched_key; descriptor = $matched_key
+            Valid = $true; status = "valid"
+            Recognized = $true
+            Descriptor = $matched_key
             DumpId = $dump_id; dump_id = $dump_id
             CatalogOid = $catalog_oid; catalog_oid = $catalog_oid
             ObjectOid = $object_oid; object_oid = $object_oid
-            Schema = $schema; schema = $schema
-            Name = $name; name = $name
-            Table = $table; table = $table
-            Owner = $owner; owner = $owner
-            Components = $components; components = $components
+            Schema = $schema
+            Name = $name
+            Table = $table
+            Owner = $owner
+            Components = $components
             QualifiedIdentity = $identity; identity = $identity
             SupportedGrammar = $contract.SupportedGrammar; supported_grammar = $contract.SupportedGrammar
             SupportedVersion = $ver_str; supported_version = $ver_str
@@ -1079,17 +1078,17 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
     }
 
     return [ordered]@{
-        Valid = $false; valid = $false; status = "invalid"
-        Recognized = $false; recognized = $false
-        Descriptor = $null; descriptor = $null
+        Valid = $false; status = "invalid"
+        Recognized = $false
+        Descriptor = $null
         DumpId = $null; dump_id = $null
         CatalogOid = $null; catalog_oid = $null
         ObjectOid = $null; object_oid = $null
-        Schema = $null; schema = $null
-        Name = $null; name = $null
-        Table = $null; table = $null
-        Owner = $null; owner = $null
-        Components = @{}; components = @{}
+        Schema = $null
+        Name = $null
+        Table = $null
+        Owner = $null
+        Components = @{}
         QualifiedIdentity = $null; identity = $null
         SupportedGrammar = $null; supported_grammar = $null
         SupportedVersion = $null; supported_version = $null
