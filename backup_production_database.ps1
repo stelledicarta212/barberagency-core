@@ -270,7 +270,7 @@ function Tokenize-TOC-Line($rem_str) {
     if ($current.Trim().Length -gt 0) {
         $tokens += $current.Trim()
     }
-    return $tokens
+    return ,$tokens
 }
 
 # Reglas reutilizables para validaciones de contratos individuales
@@ -413,11 +413,11 @@ $global:Parser_CommentACL = {
 
 $global:Parser_DefaultAcl = {
     param($tokens, $contract)
-    if ($tokens.Count -lt 3) { return @{ error = "missing_required_field" } }
-    if ($tokens.Count -gt 3) { return @{ error = "unexpected_extra_field" } }
+    if ($tokens.Count -lt 4) { return @{ error = "missing_required_field" } }
+    if ($tokens.Count -gt 4) { return @{ error = "unexpected_extra_field" } }
     if ($tokens[0] -ne "-") { return @{ error = "schema_token_mismatch" } }
-    if ($tokens[1] -ne "DEFAULT ACL") { return @{ error = "name_token_mismatch" } }
-    return @{ Valid = $true; Schema = "-"; Name = "DEFAULT ACL"; Owner = $tokens[2] }
+    if ($tokens[1] -ne "DEFAULT" -or $tokens[2] -ne "ACL") { return @{ error = "name_token_mismatch" } }
+    return @{ Valid = $true; Schema = "-"; Name = "DEFAULT ACL"; Owner = $tokens[3] }
 }
 
 $global:Parser_DatabaseAcl = {
@@ -426,7 +426,7 @@ $global:Parser_DatabaseAcl = {
     if ($tokens.Count -gt 4) { return @{ error = "unexpected_extra_field" } }
     if ($tokens[0] -ne "-") { return @{ error = "schema_token_mismatch" } }
     if ($tokens[1] -ne "DATABASE") { return @{ error = "unsupported_descriptor_grammar" } }
-    return @{ Valid = $true; Schema = "-"; Name = $tokens[2]; Owner = $tokens[3] }
+    return @{ Valid = $true; Schema = "-"; Keyword = $tokens[1]; Name = $tokens[2]; Owner = $tokens[3] }
 }
 
 $global:Parser_DatabaseProperties = {
@@ -520,7 +520,7 @@ $global:TOC_CONTRACTS["RULE"] = New-TOC-Contract "RULE" 4 "STANDARD" @("15", "16
 $global:TOC_CONTRACTS["BLOB"] = New-TOC-Contract "BLOB" 4 "GLOBAL" @("15", "16") @("schema", "name", "owner") @() 3 $global:Rule_SchemaDash $global:Rule_Any $global:Rule_OwnerRequired $global:Builder_Standard "STANDARD" $true $global:Rejection_None $global:Parser_Global
 $global:TOC_CONTRACTS["BLOB DATA"] = New-TOC-Contract "BLOB DATA" 9 "GLOBAL" @("15", "16") @("schema", "name", "owner") @() 3 $global:Rule_SchemaDash $global:Rule_Any $global:Rule_OwnerRequired $global:Builder_Standard "STANDARD" $true $global:Rejection_None $global:Parser_Global
 $global:TOC_CONTRACTS["ACL"] = New-TOC-Contract "ACL" 3 "ACL" @("15", "16") @("schema", "name", "owner") @() 3 $global:Rule_Any $global:Rule_Any $global:Rule_OwnerRequired $global:Builder_Standard "STANDARD" $true $global:Rejection_None $global:Parser_CommentACL
-$global:TOC_CONTRACTS["DEFAULT ACL"] = New-TOC-Contract "DEFAULT ACL" 11 "DEFAULT_ACL" @("15", "16") @("schema", "name", "owner") @() 3 $global:Rule_SchemaDash $global:Rule_Any $global:Rule_OwnerRequired $global:Builder_DefaultAcl "STANDARD" $true $global:Rejection_None $global:Parser_DefaultAcl
+$global:TOC_CONTRACTS["DEFAULT ACL"] = New-TOC-Contract "DEFAULT ACL" 11 "DEFAULT_ACL" @("15", "16") @("schema", "name", "owner") @() 4 $global:Rule_SchemaDash $global:Rule_Any $global:Rule_OwnerRequired $global:Builder_DefaultAcl "STANDARD" $true $global:Rejection_None $global:Parser_DefaultAcl
 $global:TOC_CONTRACTS["TABLE ATTACH"] = New-TOC-Contract "TABLE ATTACH" 12 "STANDARD" @("15", "16") @("schema", "name", "owner") @() 3 $global:Rule_SchemaRequired $global:Rule_Any $global:Rule_OwnerRequired $global:Builder_Standard "STANDARD" $true $global:Rejection_None $global:Parser_Standard
 $global:TOC_CONTRACTS["STATISTICS"] = New-TOC-Contract "STATISTICS" 10 "STANDARD" @("15", "16") @("schema", "name", "owner") @() 3 $global:Rule_SchemaRequired $global:Rule_Any $global:Rule_OwnerRequired $global:Builder_Standard "STANDARD" $true $global:Rejection_None $global:Parser_Standard
 $global:TOC_CONTRACTS["TRANSFORM"] = New-TOC-Contract "TRANSFORM" 9 "GLOBAL" @("15", "16") @("schema", "name", "owner") @() 3 $global:Rule_SchemaDash $global:Rule_Any $global:Rule_OwnerRequired $global:Builder_Standard "STANDARD" $true $global:Rejection_None $global:Parser_Global
@@ -808,7 +808,7 @@ function Parse-TOC-Structural-Line($line, $active_registry, $expected_version = 
         }
 
         # Invoke parser
-        $parsed = & $contract.Parser $rem_tokens $contract
+        $parsed = & $contract.Parser -tokens $rem_tokens -contract $contract
         if ($parsed.ContainsKey("error")) {
             return [ordered]@{
                 Valid = $false; status = "invalid"
