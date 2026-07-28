@@ -1328,6 +1328,102 @@ function Test-StaticParsers {
     $sig = Normalize-Complex-Signature("public.Calculate_Sum( NUMERIC(10,2), INT )")
     if ($sig -ne "public.calculate_sum(numeric(10,2),int)") { throw "Test failed: Normalize-Complex-Signature" }
 
+    # ---- FIXTURES OFFLINE DE PARAMETROS B2 (C, D, E, F, O) ----
+    $param_valid = PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters `
+        -TempEnvironmentId "task005_temp_env" `
+        -TempDatabaseName "task005_temp_db" `
+        -SessionRole "task005_session_role" `
+        -LocalValidationRole "task005_validation_role" `
+        -TempDatabaseOwnerRole "task005_owner_role" `
+        -RestoreExecutionRole "task005_restore_role" `
+        -AdministrationRole "task005_admin_role" `
+        -AllowedRestoredSchemas @("public") `
+        -ProductionBlocklist @("barberagency_prod", "postgres") `
+        -R2BlockMode "FORCED_BLOCKED"
+    if ($param_valid.status -ne "PROPOSED_PARAMETERS_TEXTUALLY_ACCEPTABLE" -or $param_valid.errors.Count -ne 0) {
+        throw "Test failed: B2 positive parameter contract"
+    }
+
+    # C. Parametro obligatorio ausente: TEMP_DATABASE_NAME = null
+    $fixture_c = PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters `
+        -TempEnvironmentId "task005_temp_env" `
+        -TempDatabaseName $null `
+        -SessionRole "task005_session_role" `
+        -LocalValidationRole "task005_validation_role" `
+        -TempDatabaseOwnerRole "task005_owner_role" `
+        -RestoreExecutionRole "task005_restore_role" `
+        -AdministrationRole "task005_admin_role" `
+        -AllowedRestoredSchemas @("public") `
+        -ProductionBlocklist @("barberagency_prod", "postgres") `
+        -R2BlockMode "FORCED_BLOCKED"
+    if ($fixture_c.status -ne "PROPOSED_NOT_IMPLEMENTED" -or $fixture_c.errors -notcontains "database_acl_policy_parameter_invalid:temp_database_name") {
+        throw "Test failed: Fixture C parameter missing"
+    }
+
+    # D. Identificador invalido por clase y caracter de control
+    $fixture_d = PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters `
+        -TempEnvironmentId "task005_temp_env" `
+        -TempDatabaseName "db;drop" `
+        -SessionRole "task005_session_role" `
+        -LocalValidationRole "bad`nrole" `
+        -TempDatabaseOwnerRole "task005_owner_role" `
+        -RestoreExecutionRole "task005_restore_role" `
+        -AdministrationRole "task005_admin_role" `
+        -AllowedRestoredSchemas @("public") `
+        -ProductionBlocklist @("barberagency_prod", "postgres") `
+        -R2BlockMode "FORCED_BLOCKED"
+    if ($fixture_d.errors -notcontains "database_acl_policy_parameter_invalid:temp_database_name" -or $fixture_d.errors -notcontains "database_acl_policy_parameter_invalid:control_character" -or $fixture_d.errors -notcontains "database_acl_policy_parameter_invalid:local_validation_role") {
+        throw "Test failed: Fixture D invalid identifier"
+    }
+
+    # E. Valor vacio rechazado
+    $fixture_e = PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters `
+        -TempEnvironmentId "task005_temp_env" `
+        -TempDatabaseName "task005_temp_db" `
+        -SessionRole "task005_session_role" `
+        -LocalValidationRole "" `
+        -TempDatabaseOwnerRole "task005_owner_role" `
+        -RestoreExecutionRole "task005_restore_role" `
+        -AdministrationRole "task005_admin_role" `
+        -AllowedRestoredSchemas @("public") `
+        -ProductionBlocklist @("barberagency_prod", "postgres") `
+        -R2BlockMode "FORCED_BLOCKED"
+    if ($fixture_e.errors -notcontains "database_acl_policy_parameter_invalid:local_validation_role") {
+        throw "Test failed: Fixture E empty value"
+    }
+
+    # F. Base temporal igual a nombre bloqueado de produccion
+    $fixture_f = PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters `
+        -TempEnvironmentId "task005_temp_env" `
+        -TempDatabaseName "barberagency_prod" `
+        -SessionRole "task005_session_role" `
+        -LocalValidationRole "task005_validation_role" `
+        -TempDatabaseOwnerRole "task005_owner_role" `
+        -RestoreExecutionRole "task005_restore_role" `
+        -AdministrationRole "task005_admin_role" `
+        -AllowedRestoredSchemas @("public") `
+        -ProductionBlocklist @("barberagency_prod", "postgres") `
+        -R2BlockMode "FORCED_BLOCKED"
+    if ($fixture_f.errors -notcontains "database_acl_policy_parameter_invalid:production_name_collision") {
+        throw "Test failed: Fixture F production collision"
+    }
+
+    # O. Colision de roles entre rol de validacion y owner/admin
+    $fixture_o = PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters `
+        -TempEnvironmentId "task005_temp_env" `
+        -TempDatabaseName "task005_temp_db" `
+        -SessionRole "task005_session_role" `
+        -LocalValidationRole "shared_role" `
+        -TempDatabaseOwnerRole "shared_role" `
+        -RestoreExecutionRole "task005_restore_role" `
+        -AdministrationRole "task005_admin_role" `
+        -AllowedRestoredSchemas @("public") `
+        -ProductionBlocklist @("barberagency_prod", "postgres") `
+        -R2BlockMode "FORCED_BLOCKED"
+    if ($fixture_o.errors -notcontains "database_acl_policy_role_collision:validation_owner") {
+        throw "Test failed: Fixture O role collision"
+    }
+
     # Construir registries activos simulados para 15 y 16 basados en contratos completos
     $mock_reg_15 = @{}
     foreach ($k in $global:TOC_CONTRACTS.Keys) {
