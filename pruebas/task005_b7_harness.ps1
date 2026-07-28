@@ -1,10 +1,36 @@
 # pruebas/task005_b7_harness.ps1
-# Harness script for TASK-005 B7 controlled validation of PostgreSQL privileges (R, S, T, U, V)
+# Harness script for TASK-005 B7 correction: controlled validation of PostgreSQL privileges (R, S, T, U, V)
 
-$containerName = "task005_b7_tmp_local_only_disposable"
+# Generate synthetic password dynamically (ephemeral and random)
+$adminPassword = [Guid]::NewGuid().ToString("N")
+$containerName = "task005_b7_correction_tmp_local_only_disposable"
 $dbName = "task005_b7_tmp_db"
 $adminUser = "task005_b7_tmp_admin"
-$adminPassword = "disposable_temp_password_123!"
+
+$script:globalFail = $false
+
+# Helper for assertions
+function Assert-TestCase {
+    param(
+        [string]$testName,
+        $expected,
+        $actual,
+        [string]$message
+    )
+    $pass = ($expected -eq $actual)
+    Write-Output "TEST_CASE: $testName"
+    Write-Output "EXPECTED: $expected"
+    Write-Output "ACTUAL: $actual"
+    Write-Output "ASSERTION: $message"
+    if ($pass) {
+        Write-Output "PASS/FAIL: PASS"
+        Write-Output "EXIT_CODE: 0`n"
+    } else {
+        Write-Output "PASS/FAIL: FAIL"
+        Write-Output "EXIT_CODE: 1`n"
+        $script:globalFail = $true
+    }
+}
 
 # 1. Spin up container
 Write-Output "Spinning up Docker container for B7..."
@@ -26,8 +52,8 @@ try {
     $retries = 30
     $ready = $false
     while ($retries -gt 0 -and -not $ready) {
-        docker exec $containerName pg_isready -U $adminUser -d $dbName > $null 2>&1
-        if ($LASTEXITCODE -eq 0) {
+        $check = "SELECT 1;" | docker exec -i $containerName psql -U $adminUser -d $dbName 2>&1
+        if ($LASTEXITCODE -eq 0 -and $check -match "1") {
             $ready = $true
         } else {
             Start-Sleep -Seconds 1
@@ -53,6 +79,11 @@ try {
         }
     }
     Write-Output "ENVIRONMENT_CLASSIFICATION = LOCAL_DOCKER_TEMPORARY"
+    Write-Output "PORTS_PUBLISHED = NO"
+    Write-Output "PROJECT_MOUNTS = NO"
+    Write-Output "REAL_CREDENTIALS = NO"
+    Write-Output "REAL_DATA = NO"
+    Write-Output "EXTERNAL_POSTGRESQL = NO"
 
     # Create synthetic schemas, roles and functions
     Write-Output "`n--- Creating Synthetic Objects in PostgreSQL ---"
@@ -81,6 +112,7 @@ try {
         return [ordered]@{
             matched = $matched
             output = $output.Trim()
+            exit_code = $LASTEXITCODE
         }
     }
 
@@ -103,18 +135,17 @@ try {
         END IF;
     END $$;
 '@
-    $resR = Test-AclQuery -sql $checkR_sql -expectedError "database_acl_policy_execute_privilege"
-    Write-Output "Item R Negative Test: matched=$($resR.matched) / output=$($resR.output)"
-    
+    $resR_neg = Test-AclQuery -sql $checkR_sql -expectedError "database_acl_policy_execute_privilege"
+    Assert-TestCase -testName "Item_R_Negative" -expected $true -actual $resR_neg.matched -message "Must detect unauthorized EXECUTE privilege"
+
     "REVOKE EXECUTE ON FUNCTION task005_b7_schema.task005_b7_func_reg() FROM task005_b7_val_role;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     $resR_pos = Test-AclQuery -sql $checkR_sql -expectedError "database_acl_policy_execute_privilege"
-    Write-Output "Item R Positive Test: matched=$($resR_pos.matched) (should be False) / output=$($resR_pos.output)"
+    Assert-TestCase -testName "Item_R_Positive" -expected $false -actual $resR_pos.matched -message "Must pass when EXECUTE privilege is revoked"
 
     # ==========================================
     # ITEM S: SECURITY DEFINER accesible
     # ==========================================
     Write-Output "`n--- Testing Item S (SECURITY DEFINER) ---"
-    # To test Item S negative case, we grant execute to PUBLIC again on the secdef function
     "GRANT EXECUTE ON FUNCTION task005_b7_schema.task005_b7_func_secdef() TO PUBLIC;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     
     $checkS_sql = @'
@@ -131,12 +162,12 @@ try {
         END IF;
     END $$;
 '@
-    $resS = Test-AclQuery -sql $checkS_sql -expectedError "database_acl_policy_execute_privilege"
-    Write-Output "Item S Negative Test: matched=$($resS.matched) / output=$($resS.output)"
-    
+    $resS_neg = Test-AclQuery -sql $checkS_sql -expectedError "database_acl_policy_execute_privilege"
+    Assert-TestCase -testName "Item_S_Negative" -expected $true -actual $resS_neg.matched -message "Must detect SECURITY DEFINER executable by PUBLIC"
+
     "REVOKE EXECUTE ON FUNCTION task005_b7_schema.task005_b7_func_secdef() FROM PUBLIC;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     $resS_pos = Test-AclQuery -sql $checkS_sql -expectedError "database_acl_policy_execute_privilege"
-    Write-Output "Item S Positive Test: matched=$($resS_pos.matched) (should be False) / output=$($resS_pos.output)"
+    Assert-TestCase -testName "Item_S_Positive" -expected $false -actual $resS_pos.matched -message "Must pass when SECURITY DEFINER is restricted"
 
     # ==========================================
     # ITEM T: escritura inesperada
@@ -156,31 +187,42 @@ try {
         END IF;
     END $$;
 '@
-    $resT = Test-AclQuery -sql $checkT_sql -expectedError "database_acl_policy_write_privilege"
-    Write-Output "Item T Negative Test: matched=$($resT.matched) / output=$($resT.output)"
+    $resT_neg = Test-AclQuery -sql $checkT_sql -expectedError "database_acl_policy_write_privilege"
+    Assert-TestCase -testName "Item_T_Negative" -expected $true -actual $resT_neg.matched -message "Must detect unauthorized table write privileges"
 
     "REVOKE INSERT ON TABLE task005_b7_schema.task005_b7_table FROM task005_b7_val_role;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     $resT_pos = Test-AclQuery -sql $checkT_sql -expectedError "database_acl_policy_write_privilege"
-    Write-Output "Item T Positive Test: matched=$($resT_pos.matched) (should be False) / output=$($resT_pos.output)"
+    Assert-TestCase -testName "Item_T_Positive" -expected $false -actual $resT_pos.matched -message "Must pass when write privileges are absent"
 
     # ==========================================
     # ITEM U: privilegio PUBLIC con ACL NULL
     # ==========================================
-    Write-Output "`n--- Testing Item U (PUBLIC privileges) ---"
+    Write-Output "`n--- Testing Item U (PUBLIC privileges via acldefault) ---"
+    # Create a new function that inherits default privileges (null proacl) so PUBLIC has EXECUTE privilege by default
+    "CREATE FUNCTION task005_b7_schema.task005_b7_func_def_null() RETURNS int LANGUAGE plpgsql AS 'BEGIN RETURN 3; END';" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
+
+    # The SQL policy checks specifically for function having null proacl AND public execute
     $checkU_sql = @'
     DO $$
     BEGIN
-        IF has_database_privilege('public', current_database(), 'CONNECT') THEN
+        IF EXISTS (
+            SELECT 1 FROM pg_proc p
+            JOIN pg_namespace n ON n.oid = p.pronamespace
+            WHERE n.nspname = 'task005_b7_schema'
+              AND p.proacl IS NULL
+              AND has_function_privilege('public', p.oid, 'EXECUTE')
+        ) THEN
             RAISE EXCEPTION 'database_acl_policy_public_privilege';
         END IF;
     END $$;
 '@
-    $resU = Test-AclQuery -sql $checkU_sql -expectedError "database_acl_policy_public_privilege"
-    Write-Output "Item U Negative Test: matched=$($resU.matched) / output=$($resU.output)"
+    $resU_neg = Test-AclQuery -sql $checkU_sql -expectedError "database_acl_policy_public_privilege"
+    Assert-TestCase -testName "Item_U_Negative" -expected $true -actual $resU_neg.matched -message "Must detect default EXECUTE to PUBLIC on null proacl function"
 
-    "REVOKE CONNECT ON DATABASE $dbName FROM PUBLIC;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
+    # Revoke default privilege to populate proacl (non-null) and restrict PUBLIC
+    "REVOKE EXECUTE ON FUNCTION task005_b7_schema.task005_b7_func_def_null() FROM PUBLIC;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     $resU_pos = Test-AclQuery -sql $checkU_sql -expectedError "database_acl_policy_public_privilege"
-    Write-Output "Item U Positive Test: matched=$($resU_pos.matched) (should be False) / output=$($resU_pos.output)"
+    Assert-TestCase -testName "Item_U_Positive" -expected $false -actual $resU_pos.matched -message "Must pass when default public EXECUTE is revoked (proacl non-null)"
 
     # ==========================================
     # ITEM V: error antes de COMMIT exige rollback
@@ -188,23 +230,41 @@ try {
     Write-Output "`n--- Testing Item V (Rollback on Error) ---"
     "CREATE TABLE task005_b7_schema.task005_b7_persist (id int);" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     
+    # We execute a transaction that inserts, then raises exception.
+    # We check that the exception raised is precisely "database_acl_policy_transaction_failed".
     $checkV_sql = @'
     BEGIN;
     INSERT INTO task005_b7_schema.task005_b7_persist VALUES (42);
     RAISE EXCEPTION 'database_acl_policy_transaction_failed';
     COMMIT;
 '@
-    $resV = Test-AclQuery -sql $checkV_sql -expectedError "database_acl_policy_transaction_failed"
-    
+    $resV_neg = Test-AclQuery -sql $checkV_sql -expectedError "database_acl_policy_transaction_failed"
+    Assert-TestCase -testName "Item_V_Negative" -expected $true -actual $resV_neg.matched -message "Must catch precise transaction failed exception"
+
+    # Confirm rollback occurred: no rows exist in table
     $persistedCount = ("SELECT COUNT(*) FROM task005_b7_schema.task005_b7_persist;" | docker exec -i $containerName psql -U $adminUser -d $dbName -t -A).Trim()
-    Write-Output "Persisted rows count (expected 0): $persistedCount"
-    
-    if ($persistedCount -eq 0) {
-        Write-Output "RESULT V: Rollback verified. Transaction failed successfully without persisting changes."
-    } else {
-        throw "Item V failed: rows persisted after exception!"
-    }
+    Assert-TestCase -testName "Item_V_Rollback" -expected "0" -actual $persistedCount -message "Transaction changes must be rolled back on error"
+
+    # Positive test: successful insert/commit transaction
+    $checkV_pos_sql = @'
+    BEGIN;
+    INSERT INTO task005_b7_schema.task005_b7_persist VALUES (100);
+    COMMIT;
+'@
+    $resV_pos = Test-AclQuery -sql $checkV_pos_sql -expectedError "database_acl_policy_transaction_failed"
+    Assert-TestCase -testName "Item_V_Positive" -expected $false -actual $resV_pos.matched -message "Must succeed and commit when no exception is raised"
+
+    $persistedCountPos = ("SELECT COUNT(*) FROM task005_b7_schema.task005_b7_persist;" | docker exec -i $containerName psql -U $adminUser -d $dbName -t -A).Trim()
+    Assert-TestCase -testName "Item_V_Persist" -expected "1" -actual $persistedCountPos -message "Succeeded transaction must persist changes"
 
 } finally {
     Invoke-Cleanup
+}
+
+if ($script:globalFail) {
+    Write-Output "Harness result: FAIL"
+    exit 1
+} else {
+    Write-Output "Harness result: PASS"
+    exit 0
 }
