@@ -1200,6 +1200,31 @@ function PROPOSED_NEW_FUNCTION_TestRoleSeparation {
         if ($session_role_entry.member_of -contains $LocalValidationRole) { $result.errors += "database_acl_policy_direct_membership_forbidden" }
     }
 
+    if ($null -ne $RoleCatalogSnapshot) {
+        $visited = @{}
+        $stack = @($SessionRole)
+        while ($stack.Count -gt 0) {
+            $current = $stack[0]
+            $stack = @($stack | Select-Object -Skip 1)
+            if ($visited.ContainsKey($current)) { continue }
+            $visited[$current] = $true
+            if ($current -eq $LocalValidationRole -and $current -ne $SessionRole) {
+                $result.errors += "database_acl_policy_indirect_membership_forbidden"
+                break
+            }
+            if ($RoleCatalogSnapshot.ContainsKey($current)) {
+                foreach ($parent in @($RoleCatalogSnapshot[$current].member_of)) {
+                    if ($parent -eq $LocalValidationRole) {
+                        $result.errors += "database_acl_policy_indirect_membership_forbidden"
+                        $stack = @()
+                        break
+                    }
+                    if (-not $visited.ContainsKey($parent)) { $stack += $parent }
+                }
+            }
+        }
+    }
+
     if ($result.errors.Count -eq 0) { $result.status = "PROPOSED_ROLE_STRATEGY_TEXTUALLY_ACCEPTABLE" }
     return $result
 }
@@ -1226,18 +1251,33 @@ function PROPOSED_NEW_FUNCTION_BuildSchemaAllowlistPayload {
 function PROPOSED_NEW_FUNCTION_InvokeControlledAclPolicy {
     param([string]$SessionRole, [string]$LocalValidationRole, [string]$TempDatabaseName, [string[]]$AllowedSchemas)
 
+    $errors = @()
+    $identifier_pattern = '^[a-z0-9_]{3,63}$'
+    if ([string]::IsNullOrWhiteSpace($SessionRole) -or $SessionRole -notmatch $identifier_pattern) { $errors += "database_acl_policy_parameter_invalid:session_role" }
+    if ([string]::IsNullOrWhiteSpace($LocalValidationRole) -or $LocalValidationRole -notmatch $identifier_pattern) { $errors += "database_acl_policy_parameter_invalid:local_validation_role" }
+    if ([string]::IsNullOrWhiteSpace($TempDatabaseName) -or $TempDatabaseName -notmatch $identifier_pattern) { $errors += "database_acl_policy_parameter_invalid:temp_database_name" }
+    if ($AllowedSchemas.Count -eq 0) { $errors += "database_acl_policy_schema_missing" }
+    foreach ($schema in $AllowedSchemas) {
+        if ($schema -notmatch $identifier_pattern) { $errors += "database_acl_policy_schema_unexpected:$schema" }
+        if ($schema -in @("pg_catalog", "information_schema", "pg_toast")) { $errors += "database_acl_policy_schema_unexpected:system_schema" }
+    }
+
     return @{
-        status = "PROPOSED_NOT_IMPLEMENTED"
+        status = $(if ($errors.Count -eq 0) { "PROPOSED_ACL_POLICY_TEXTUALLY_READY" } else { "PROPOSED_ACL_POLICY_TEXTUALLY_BLOCKED" })
         real_session_identity = $SessionRole
         inspected_role = $LocalValidationRole
         temp_database = $TempDatabaseName
         allowed_schemas = $AllowedSchemas
+        transport_args = @("-X", "-v", "ON_ERROR_STOP=1", "--dbname", $TempDatabaseName)
+        sql_transport = "STDIN_ONLY"
+        command_execution_allowed = "NO"
         role_strategy = "SESSION_ROLE_WITH_EFFECTIVE_PRIVILEGE_ASSERTIONS"
         role_assumption_used = "NO"
         membership_between_roles = "NO"
         production_connection_allowed = "NO"
         production_connection_performed = "NO"
         technical_validation_completed = "NO"
+        errors = $errors
         limitations = @("Effective privileges are inspected through catalog assertions; this does not impersonate the inspected role.")
         required_future_error_codes = @("database_acl_policy_role_missing", "database_acl_policy_role_admin_attribute", "database_acl_policy_direct_membership_forbidden", "database_acl_policy_indirect_membership_forbidden", "database_acl_policy_role_collision", "database_acl_policy_schema_missing", "database_acl_policy_schema_unexpected", "database_acl_policy_owner_mismatch", "database_acl_policy_public_privilege", "database_acl_policy_write_privilege", "database_acl_policy_execute_privilege", "database_acl_policy_default_privilege", "database_acl_policy_acl_semantics_mismatch", "database_acl_policy_post_verification_failed", "database_acl_policy_transaction_failed", "database_acl_policy_exit_propagation_failed")
     }
@@ -1524,6 +1564,84 @@ COMMIT;
     }
     if ($fixture_m_negative.errors -notcontains "database_acl_policy_schema_unexpected:system_schema") {
         throw "Test failed: Fixture M negative schema scan"
+    }
+
+    # ---- VALIDACION OFFLINE DE CONTRATOS Y SUPERFICIES S.15 (B5) ----
+    $b5_params_ok = PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters `
+        -TempEnvironmentId "task005_temp_env" `
+        -TempDatabaseName "task005_temp_db" `
+        -SessionRole "task005_session_role" `
+        -LocalValidationRole "task005_validation_role" `
+        -TempDatabaseOwnerRole "task005_owner_role" `
+        -RestoreExecutionRole "task005_restore_role" `
+        -AdministrationRole "task005_admin_role" `
+        -AllowedRestoredSchemas @("public") `
+        -ProductionBlocklist @("barberagency_prod") `
+        -R2BlockMode "FORCED_BLOCKED"
+    if ($b5_params_ok.status -ne "PROPOSED_PARAMETERS_TEXTUALLY_ACCEPTABLE" -or $b5_params_ok.technical_validation_completed -ne "NO" -or $b5_params_ok.production_connection_performed -ne "NO") {
+        throw "Test failed: B5 TestDatabaseAclParameters contract"
+    }
+
+    $role_catalog_ok = @{
+        task005_session_role = @{ rolcanlogin = $true; rolsuper = $false; rolcreatedb = $false; rolcreaterole = $false; rolreplication = $false; rolbypassrls = $false; member_of = @() }
+        task005_validation_role = @{ rolcanlogin = $false; rolsuper = $false; rolcreatedb = $false; rolcreaterole = $false; rolreplication = $false; rolbypassrls = $false; member_of = @() }
+    }
+    $b5_role_ok = PROPOSED_NEW_FUNCTION_TestRoleSeparation -SessionRole "task005_session_role" -LocalValidationRole "task005_validation_role" -RoleCatalogSnapshot $role_catalog_ok
+    if ($b5_role_ok.status -ne "PROPOSED_ROLE_STRATEGY_TEXTUALLY_ACCEPTABLE" -or $b5_role_ok.role_assumption_used -ne "NO" -or $b5_role_ok.technical_validation_completed -ne "NO") {
+        throw "Test failed: B5 TestRoleSeparation positive contract"
+    }
+    $role_catalog_bad = @{
+        task005_session_role = @{ rolcanlogin = $true; rolsuper = $false; rolcreatedb = $false; rolcreaterole = $false; rolreplication = $false; rolbypassrls = $false; member_of = @("task005_bridge_role") }
+        task005_bridge_role = @{ rolcanlogin = $false; rolsuper = $false; rolcreatedb = $false; rolcreaterole = $false; rolreplication = $false; rolbypassrls = $false; member_of = @("task005_validation_role") }
+        task005_validation_role = @{ rolcanlogin = $false; rolsuper = $false; rolcreatedb = $false; rolcreaterole = $false; rolreplication = $false; rolbypassrls = $false; member_of = @() }
+    }
+    $b5_role_bad = PROPOSED_NEW_FUNCTION_TestRoleSeparation -SessionRole "task005_session_role" -LocalValidationRole "task005_validation_role" -RoleCatalogSnapshot $role_catalog_bad
+    if ($b5_role_bad.errors -notcontains "database_acl_policy_indirect_membership_forbidden") {
+        throw "Test failed: B5 TestRoleSeparation negative contract"
+    }
+
+    $b5_schema_ok = PROPOSED_NEW_FUNCTION_BuildSchemaAllowlistPayload -ExpectedSchemas @("public", "app") -DiscoveredSchemas @("app", "public")
+    $b5_schema_bad = PROPOSED_NEW_FUNCTION_BuildSchemaAllowlistPayload -ExpectedSchemas @("public") -DiscoveredSchemas @("public", "extra")
+    if ($b5_schema_ok.error_code -ne "NONE" -or $b5_schema_ok.missing_schemas.Count -ne 0 -or $b5_schema_ok.unexpected_schemas.Count -ne 0) {
+        throw "Test failed: B5 BuildSchemaAllowlistPayload positive contract"
+    }
+    if ($b5_schema_bad.error_code -ne "database_acl_policy_schema_unexpected" -or $b5_schema_bad.unexpected_schemas -notcontains "extra") {
+        throw "Test failed: B5 BuildSchemaAllowlistPayload negative contract"
+    }
+
+    $b5_acl_policy = PROPOSED_NEW_FUNCTION_InvokeControlledAclPolicy -SessionRole "task005_session_role" -LocalValidationRole "task005_validation_role" -TempDatabaseName "task005_temp_db" -AllowedSchemas @("public")
+    if ($b5_acl_policy.status -ne "PROPOSED_ACL_POLICY_TEXTUALLY_READY" -or $b5_acl_policy.command_execution_allowed -ne "NO" -or $b5_acl_policy.sql_transport -ne "STDIN_ONLY" -or $b5_acl_policy.transport_args -notcontains "-X" -or $b5_acl_policy.transport_args -notcontains "ON_ERROR_STOP=1" -or $b5_acl_policy.technical_validation_completed -ne "NO") {
+        throw "Test failed: B5 InvokeControlledAclPolicy positive contract"
+    }
+    $b5_acl_policy_bad = PROPOSED_NEW_FUNCTION_InvokeControlledAclPolicy -SessionRole "task005_session_role" -LocalValidationRole "task005_validation_role" -TempDatabaseName "task005_temp_db" -AllowedSchemas @("pg_catalog")
+    if ($b5_acl_policy_bad.status -ne "PROPOSED_ACL_POLICY_TEXTUALLY_BLOCKED" -or $b5_acl_policy_bad.errors -notcontains "database_acl_policy_schema_unexpected:system_schema") {
+        throw "Test failed: B5 InvokeControlledAclPolicy negative contract"
+    }
+
+    $b5_exit_ok = PROPOSED_NEW_FUNCTION_TestExitCodePropagation -ExpectedExitCode 0 -ActualExitCode 0
+    $b5_exit_bad = PROPOSED_NEW_FUNCTION_TestExitCodePropagation -ExpectedExitCode 0 -ActualExitCode 1
+    if ($b5_exit_ok.status -ne "PROPOSED_EXIT_CODE_MATCH" -or $b5_exit_ok.error_code -ne "NONE") {
+        throw "Test failed: B5 TestExitCodePropagation positive contract"
+    }
+    if ($b5_exit_bad.status -ne "PROPOSED_EXIT_CODE_MISMATCH" -or $b5_exit_bad.error_code -ne "database_acl_policy_exit_propagation_failed") {
+        throw "Test failed: B5 TestExitCodePropagation negative contract"
+    }
+
+    $b5_gate_ok = PROPOSED_NEW_FUNCTION_StopPipelineOnAclFailure @{
+        STATIC_POLICY_VALIDATED = "YES"
+        CONTROLLED_TEMP_RESTORE_POLICY_VALIDATED = "YES"
+        DATABASE_ACL_RESTORE_EQUIVALENCE_VALIDATED = "YES"
+    }
+    $b5_gate_bad = PROPOSED_NEW_FUNCTION_StopPipelineOnAclFailure @{
+        STATIC_POLICY_VALIDATED = "YES"
+        CONTROLLED_TEMP_RESTORE_POLICY_VALIDATED = "NO"
+        DATABASE_ACL_RESTORE_EQUIVALENCE_VALIDATED = "NO"
+    }
+    if ($b5_gate_ok.status -ne "PROPOSED_GATE_TEXTUALLY_COMPLETE" -or $b5_gate_ok.continue_to_gate_c -ne "NO" -or $b5_gate_ok.error_code -ne "NONE") {
+        throw "Test failed: B5 StopPipelineOnAclFailure positive contract"
+    }
+    if ($b5_gate_bad.status -ne "PROPOSED_GATE_BLOCKED" -or $b5_gate_bad.missing_gates.Count -ne 2 -or $b5_gate_bad.continue_to_stage_2 -ne "NO" -or $b5_gate_bad.continue_to_r2 -ne "NO") {
+        throw "Test failed: B5 StopPipelineOnAclFailure negative contract"
     }
 
     # Construir registries activos simulados para 15 y 16 basados en contratos completos
