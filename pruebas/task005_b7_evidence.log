@@ -1,0 +1,64 @@
+﻿Spinning up Docker container for B7...
+Waiting for database to accept connections...
+PostgreSQL Version: PostgreSQL 16.14 (Debian 16.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+Checking blocklist and identity...
+ENVIRONMENT_CLASSIFICATION = LOCAL_DOCKER_TEMPORARY
+
+--- Creating Synthetic Objects in PostgreSQL ---
+
+--- Testing Item R (EXECUTE Allowlist) ---
+Item R Negative Test: matched=True / output=docker : ERROR:  database_acl_policy_execute_privilege
+En C:\Users\calvi\OneDrive\n8n\Visual studio\barberagency-core\.codex-worktrees\task-005-sixth-docum
+entary-correction\pruebas\task005_b7_harness.ps1: 79 Carácter: 26
++ ... ut = $sql | docker exec -i $containerName psql -U $adminUser -d $dbNa ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR:  databas...ecute_privilege:String) [], RemoteEx 
+   ception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+CONTEXT:  PL/pgSQL function inline_code_block line 9 at RAISE
+Item R Positive Test: matched=False (should be False) / output=DO
+
+--- Testing Item S (SECURITY DEFINER) ---
+Item S Negative Test: matched=True / output=docker : ERROR:  database_acl_policy_execute_privilege:security_definer_accessible_to_public
+En C:\Users\calvi\OneDrive\n8n\Visual studio\barberagency-core\.codex-worktrees\task-005-sixth-docum
+entary-correction\pruebas\task005_b7_harness.ps1: 79 Carácter: 26
++ ... ut = $sql | docker exec -i $containerName psql -U $adminUser -d $dbNa ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR:  databas...sible_to_public:String) [], RemoteEx 
+   ception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+CONTEXT:  PL/pgSQL function inline_code_block line 10 at RAISE
+Item S Positive Test: matched=False (should be False) / output=DO
+
+--- Testing Item T (Write Privileges) ---
+Item T Negative Test: matched=True / output=docker : ERROR:  database_acl_policy_write_privilege
+En C:\Users\calvi\OneDrive\n8n\Visual studio\barberagency-core\.codex-worktrees\task-005-sixth-docum
+entary-correction\pruebas\task005_b7_harness.ps1: 79 Carácter: 26
++ ... ut = $sql | docker exec -i $containerName psql -U $adminUser -d $dbNa ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR:  databas...write_privilege:String) [], RemoteEx 
+   ception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+CONTEXT:  PL/pgSQL function inline_code_block line 8 at RAISE
+Item T Positive Test: matched=False (should be False) / output=DO
+
+--- Testing Item U (PUBLIC privileges) ---
+Item U Negative Test: matched=True / output=docker : ERROR:  database_acl_policy_public_privilege
+En C:\Users\calvi\OneDrive\n8n\Visual studio\barberagency-core\.codex-worktrees\task-005-sixth-docum
+entary-correction\pruebas\task005_b7_harness.ps1: 79 Carácter: 26
++ ... ut = $sql | docker exec -i $containerName psql -U $adminUser -d $dbNa ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR:  databas...ublic_privilege:String) [], RemoteEx 
+   ception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+CONTEXT:  PL/pgSQL function inline_code_block line 4 at RAISE
+Item U Positive Test: matched=False (should be False) / output=DO
+
+--- Testing Item V (Rollback on Error) ---
+Persisted rows count (expected 0): 0
+RESULT V: Rollback verified. Transaction failed successfully without persisting changes.
+Cleaning up B7 container task005_b7_tmp_local_only_disposable...
