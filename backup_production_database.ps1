@@ -1472,6 +1472,60 @@ COMMIT;
         throw "Test failed: Fixture J gate stop"
     }
 
+    # ---- FIXTURES OFFLINE DE SCANNERS B4 (K, L, M) ----
+    $infra_safe_mock = 'host=task005-temp.internal; user=task005_session_role; database=task005_temp_db'
+    $infra_hardcoded_mock = 'host=barberagency-prod.internal; user=barber_test; database=barberagency_prod'
+    $infra_blocklist_patterns = @('barberagency_prod', 'barber_test', 'production', 'prod.internal')
+    $infra_safe_hits = @($infra_blocklist_patterns | Where-Object { $infra_safe_mock -match [regex]::Escape($_) })
+    $infra_hardcoded_hits = @($infra_blocklist_patterns | Where-Object { $infra_hardcoded_mock -match [regex]::Escape($_) })
+    if ($infra_safe_hits.Count -ne 0) {
+        throw "Test failed: Fixture K positive static infrastructure scan"
+    }
+    if ($infra_hardcoded_hits.Count -lt 2) {
+        throw "Test failed: Fixture K negative static infrastructure scan"
+    }
+
+    $secret_safe_mock = 'password=<redacted>; token=<placeholder>; access_key_id=<not-set>'
+    $secret_literal_mock = 'password=PlainText123!; token=ghp_abcdefghijklmnopqrstuvwxyz123456; AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
+    $secret_patterns = @('(?i)password\s*=\s*(?!<redacted>|<placeholder>)[^\s;]+', '(?i)token\s*=\s*(?!<redacted>|<placeholder>)[A-Za-z0-9_]{20,}', '(?i)AWS_SECRET_ACCESS_KEY\s*=\s*[A-Za-z0-9/+=]{20,}')
+    $secret_safe_hits = @($secret_patterns | Where-Object { $secret_safe_mock -match $_ })
+    $secret_literal_hits = @($secret_patterns | Where-Object { $secret_literal_mock -match $_ })
+    if ($secret_safe_hits.Count -ne 0) {
+        throw "Test failed: Fixture L positive static secret scan"
+    }
+    if ($secret_literal_hits.Count -lt 2) {
+        throw "Test failed: Fixture L negative static secret scan"
+    }
+
+    $fixture_m_positive = PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters `
+        -TempEnvironmentId "task005_temp_env" `
+        -TempDatabaseName "task005_temp_db" `
+        -SessionRole "task005_session_role" `
+        -LocalValidationRole "task005_validation_role" `
+        -TempDatabaseOwnerRole "task005_owner_role" `
+        -RestoreExecutionRole "task005_restore_role" `
+        -AdministrationRole "task005_admin_role" `
+        -AllowedRestoredSchemas @("public") `
+        -ProductionBlocklist @("barberagency_prod", "postgres") `
+        -R2BlockMode "FORCED_BLOCKED"
+    $fixture_m_negative = PROPOSED_NEW_FUNCTION_TestDatabaseAclParameters `
+        -TempEnvironmentId "task005_temp_env" `
+        -TempDatabaseName "task005_temp_db" `
+        -SessionRole "task005_session_role" `
+        -LocalValidationRole "task005_validation_role" `
+        -TempDatabaseOwnerRole "task005_owner_role" `
+        -RestoreExecutionRole "task005_restore_role" `
+        -AdministrationRole "task005_admin_role" `
+        -AllowedRestoredSchemas @("pg_catalog") `
+        -ProductionBlocklist @("barberagency_prod", "postgres") `
+        -R2BlockMode "FORCED_BLOCKED"
+    if ($fixture_m_positive.errors.Count -ne 0) {
+        throw "Test failed: Fixture M positive schema scan"
+    }
+    if ($fixture_m_negative.errors -notcontains "database_acl_policy_schema_unexpected:system_schema") {
+        throw "Test failed: Fixture M negative schema scan"
+    }
+
     # Construir registries activos simulados para 15 y 16 basados en contratos completos
     $mock_reg_15 = @{}
     foreach ($k in $global:TOC_CONTRACTS.Keys) {
