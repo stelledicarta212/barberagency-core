@@ -7,9 +7,16 @@ EXECUTION_AUTHORIZED = NO
 SOURCE_DOCUMENT = TASK_005_PRE_EXECUTION_REVIEW_V17.md
 SOURCE_APPROVED_COMMIT = 1c58f1ac3e3a41fba2c5ebff0c62ed17193eded7
 CANONICAL_ROLE_STRATEGY = SESSION_ROLE_WITH_EFFECTIVE_PRIVILEGE_ASSERTIONS
+GATE_B_CANONICAL_SCRIPT_IDENTITY = YES
+CANONICAL_PR_FILE = backup_production_database.ps1
+CANONICAL_PR_COMMIT = 1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c
+CANONICAL_PHYSICAL_LINE_COUNT = 3012
+CANONICAL_SHA256 = fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb
+SCRIPT_MODIFIED = YES_STATIC_ONLY
+SCRIPT_EXECUTED = NO
 ```
 
-Este documento prepara una futura implementacion controlada de TASK_005. No implementa cambios, no modifica `backup_production_database.ps1`, no ejecuta pruebas tecnicas, no accede a PostgreSQL, no accede a produccion, no realiza backups/restauraciones, no usa Docker/SSH/R2 y no autoriza Stage 2.
+Este documento prepara una implementacion controlada de TASK_005 y queda alineado con el resultado de Gate B: `backup_production_database.ps1` fue modificado unicamente de forma estatica en el commit `1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c`. El PowerShell nunca fue ejecutado; no se ejecuto SQL ni fixtures; no se accedio a PostgreSQL, produccion, Docker, SSH, R2, backups, restauraciones ni Stage 2.
 
 ## 1. Proposito y alcance
 
@@ -25,7 +32,7 @@ Alcance permitido de este plan:
 
 Fuera de alcance:
 
-- modificar o ejecutar PowerShell;
+- ejecutar PowerShell;
 - ejecutar SQL o fixtures;
 - conectarse a PostgreSQL;
 - acceder a produccion;
@@ -38,7 +45,8 @@ Fuera de alcance:
 | Fuente | Identidad | Uso normativo |
 |---|---|---|
 | `TASK_005_PRE_EXECUTION_REVIEW_V17.md` | commit `1c58f1ac3e3a41fba2c5ebff0c62ed17193eded7` | Septima correccion documental aprobada. |
-| `backup_production_database.ps1` | SHA-256 `d82f72bc0bab5725975540426443b46dc8f01494cdc9ae5f72c19524f4cc9fe9` | Archivo futuro de implementacion, inmutable en esta tarea. |
+| `backup_production_database.ps1` | SHA-256 vigente `fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb`; 3012 lineas fisicas; commit `1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c` | Archivo modificado solo de forma estatica en Gate B; no ejecutado. |
+| Identidad historica previa del `.ps1` | SHA-256 `d82f72bc0bab5725975540426443b46dc8f01494cdc9ae5f72c19524f4cc9fe9`; 175805 bytes; 2774 lineas fisicas | HISTORICAL_SUPERSEDED_NON_NORMATIVE. |
 | Estrategia de roles | `SESSION_ROLE_WITH_EFFECTIVE_PRIVILEGE_ASSERTIONS` | Unica estrategia canonica permitida para la propuesta futura. |
 | PR #2 | `https://github.com/stelledicarta212/barberagency-core/pull/2` | Contenedor documental draft; no autoriza merge. |
 
@@ -67,7 +75,7 @@ Limites obligatorios para una futura tarea de implementacion:
 
 ## 4. Cambios propuestos en PowerShell
 
-Todos los cambios son propuestas futuras. Ninguno esta implementado.
+Los cambios de Gate B fueron implementados solo como codigo estatico en `backup_production_database.ps1`. No fueron ejecutados ni validados tecnicamente; Gate C queda pendiente para revision independiente del diff.
 
 | Funcion o seccion afectada | Comportamiento actual | Comportamiento futuro esperado | Motivo | Entradas | Salidas | Errores controlados | Invariantes de seguridad | Evidencia necesaria | Rollback | Estado |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -218,7 +226,7 @@ Rollback futuro limitado a codigo:
 - no usar `git reset --hard` sobre worktrees con cambios ajenos;
 - preservar evidencia de diff, commit y revert;
 - destruir unicamente recursos temporales creados por la tarea autorizada;
-- validar que `backup_production_database.ps1` vuelve al hash esperado o al hash aprobado por la tarea futura.
+- validar que `backup_production_database.ps1` vuelve al hash aprobado por Gate B (`fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb`) o al hash aprobado por una tarea futura independiente.
 
 ## 11. Evidencias requeridas
 
@@ -262,7 +270,7 @@ IMPLEMENTATION_COMPLETED = NO
 TECHNICAL_VALIDATION_COMPLETED = NO
 STATIC_FIXTURES_EXECUTED = NO
 TEMP_DATABASE_FIXTURES_EXECUTED = NO
-SCRIPT_MODIFIED = NO
+SCRIPT_MODIFIED = YES_STATIC_ONLY
 SCRIPT_EXECUTED = NO
 SQL_EXECUTED = NO
 PRODUCTION_ACCESSED = NO
@@ -274,3 +282,18 @@ READY_FOR_STAGE_2 = NO
 READY_FOR_EXPLICIT_EXECUTION_AUTHORIZATION = NO
 MERGE_AUTHORIZED = NO
 ```
+
+
+## 14. Correccion documental posterior a Gate B
+
+```text
+GATE_B_STATIC_IMPLEMENTATION_COMMIT = 1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c
+CANONICAL_PR_FILE = backup_production_database.ps1
+CANONICAL_PHYSICAL_LINE_COUNT = 3012
+CANONICAL_SHA256 = fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb
+SCRIPT_MODIFIED = YES_STATIC_ONLY
+SCRIPT_EXECUTED = NO
+TECHNICAL_VALIDATION_COMPLETED = NO
+```
+
+El estado `SCRIPT_MODIFIED = YES_STATIC_ONLY` significa que el archivo PowerShell fue modificado como texto/codigo estatico dentro del PR. No significa ejecucion, importacion, dot-source, sintaxis validada por PowerShell, SQL ejecutado, fixtures ejecutados, conexion a PostgreSQL, uso de produccion, backups, restauraciones, Docker, SSH, R2, Stage 2 ni merge.

@@ -10,6 +10,17 @@
 > Las secciones 1 a 11, S y T se conservan unicamente como trazabilidad historica. Ninguna seccion historica autoriza implementacion, ejecucion, backup, restore temporal, produccion, R2, Stage 2, aprobacion tecnica ni merge. Ante cualquier contradiccion prevalece exclusivamente la seccion 12 de septima correccion canonica. Todas las versiones y tablas anteriores quedan marcadas como HISTORICAL_SUPERSEDED_NON_NORMATIVE.
 Este documento resume la sexta correccion exclusivamente documental de `TASK_005_PRE_EXECUTION_REVIEW_V17`, preparada para resolver los cinco hallazgos de la auditoria independiente sobre la quinta correccion. No declara implementacion, ejecucion, validacion tecnica, backup, restauracion, produccion, R2 ni Stage 2.
 
+> GATE_B_CANONICAL_SCRIPT_IDENTITY
+>
+> CANONICAL_PR_FILE = backup_production_database.ps1
+> CANONICAL_PR_COMMIT = 1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c
+> CANONICAL_PHYSICAL_LINE_COUNT = 3012
+> CANONICAL_SHA256 = fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb
+> SCRIPT_MODIFIED = YES_STATIC_ONLY
+> SCRIPT_EXECUTED = NO
+>
+> Los valores historicos previos SHA-256 d82f72bc0bab5725975540426443b46dc8f01494cdc9ae5f72c19524f4cc9fe9, tamano 175805 bytes y 2774 lineas fisicas se conservan exclusivamente como HISTORICAL_SUPERSEDED_NON_NORMATIVE. No son la identidad fisica vigente del PR despues de Gate B.
+
 ## 1. Declaración de Estados de Ejecución y Control
 HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabilidad y no define la politica vigente.
 
@@ -76,7 +87,7 @@ HISTORICAL_SUPERSEDED_NON_NORMATIVE: esta seccion se conserva solo como trazabil
 
 - **Ruta**: `C:/Users/calvi/OneDrive/n8n/Visual studio/barberagency-core/backup_production_database.ps1`
 - **Líneas Físicas Finales**: `2774`
-- **SHA-256 Final**: `d82f72bc0bab5725975540426443b46dc8f01494cdc9ae5f72c19524f4cc9fe9`
+- **SHA-256 Hist?rico No Normativo**: `d82f72bc0bab5725975540426443b46dc8f01494cdc9ae5f72c19524f4cc9fe9`
 
 ---
 
@@ -1849,12 +1860,12 @@ Identidad física verificada de `backup_production_database.ps1`:
 
 | Atributo | Valor |
 |---|---|
-| SHA-256 | `d82f72bc0bab5725975540426443b46dc8f01494cdc9ae5f72c19524f4cc9fe9` |
+| SHA-256 hist?rico no normativo | `d82f72bc0bab5725975540426443b46dc8f01494cdc9ae5f72c19524f4cc9fe9` |
 | Tamaño bytes | `175805` |
 | Líneas físicas | `2774` |
 | Líneas lógicas | `2774` |
 | Termina con salto de línea | `YES` |
-| Diff Git del `.ps1` | `NONE` |
+| Diff Git del `.ps1` | `HISTORICAL_SUPERSEDED_NON_NORMATIVE` |
 
 Parámetro real confirmado:
 
@@ -2360,7 +2371,7 @@ PR_CREATED = NO
 COMMIT_CREATED = NO
 PUSH_EXECUTED = NO
 REMOTE_VALIDATION_PERFORMED = NO
-SCRIPT_MODIFIED = NO
+SCRIPT_MODIFIED = YES_STATIC_ONLY
 SCRIPT_EXECUTED = NO
 SQL_EXECUTED = NO
 ```
@@ -2524,6 +2535,20 @@ PREVIOUS_SECTIONS_AUTHORIZE_R2 = NO
 
 Las secciones historicas se conservan para trazabilidad de auditoria. No son diseno operativo vigente y no pueden usarse para justificar implementacion o ejecucion.
 
+
+### 12.6 Identidad fisica canonica posterior a Gate B
+
+```text
+CANONICAL_PR_FILE = backup_production_database.ps1
+CANONICAL_PR_COMMIT = 1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c
+CANONICAL_PHYSICAL_LINE_COUNT = 3012
+CANONICAL_SHA256 = fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb
+SCRIPT_MODIFIED = YES_STATIC_ONLY
+SCRIPT_EXECUTED = NO
+```
+
+La modificacion del PowerShell fue exclusivamente estatica. No hubo ejecucion del script, SQL, fixtures, PostgreSQL, produccion, Docker, SSH, R2, backups ni restauraciones.
+
 ### 12.5 Estados finales de la septima correccion
 
 ```text
@@ -2541,7 +2566,7 @@ READY_FOR_IMPLEMENTATION = NO
 READY_FOR_STAGE_2 = NO
 READY_FOR_EXPLICIT_EXECUTION_AUTHORIZATION = NO
 
-SCRIPT_MODIFIED = NO
+SCRIPT_MODIFIED = YES_STATIC_ONLY
 SCRIPT_EXECUTED = NO
 SQL_EXECUTED = NO
 STATIC_FIXTURES_EXECUTED = NO
@@ -2569,7 +2594,7 @@ READY_FOR_EXPLICIT_EXECUTION_AUTHORIZATION = NO
 INDEPENDENT_REVIEW_COMPLETED = NO
 READY_FOR_IMPLEMENTATION = NO
 
-SCRIPT_MODIFIED = NO
+SCRIPT_MODIFIED = YES_STATIC_ONLY
 SCRIPT_EXECUTED = NO
 STATIC_FIXTURES_EXECUTED = NO
 SQL_EXECUTED = NO
