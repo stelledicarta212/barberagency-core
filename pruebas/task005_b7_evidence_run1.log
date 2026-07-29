@@ -59,7 +59,7 @@ PASS/FAIL: PASS
 EXIT_CODE: 0
 
 
---- Testing Item U (PUBLIC privileges via acldefault) ---
+--- Testing Item U (PUBLIC privileges via acldefault/aclexplode) ---
 TEST_CASE: Item_U_Negative
 EXPECTED: True
 ACTUAL: True
@@ -104,5 +104,13 @@ ASSERTION: Succeeded transaction must persist changes
 PASS/FAIL: PASS
 EXIT_CODE: 0
 
-Cleaning up B7 container task005_b7_correction_tmp_local_only_disposable...
+--- Testing Assertion Mechanism Mismatch Check ---
+TEST_CASE: Item_V_Negative_Harness_Mismatch
+EXPECTED: True
+ACTUAL: False
+ASSERTION: Harness must detect unmatched exception
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+Cleaning up B7 container task005_b7_second_correction_tmp_local_only_disposable...
 Harness result: PASS

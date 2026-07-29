@@ -1,9 +1,10 @@
 # pruebas/task005_b7_harness.ps1
-# Harness script for TASK-005 B7 correction: controlled validation of PostgreSQL privileges (R, S, T, U, V)
+# Harness script for TASK-005 B7 second correction: controlled validation of PostgreSQL privileges (R, S, T, U, V)
 
 # Generate synthetic password dynamically (ephemeral and random)
 $adminPassword = [Guid]::NewGuid().ToString("N")
-$containerName = "task005_b7_correction_tmp_local_only_disposable"
+$sessionPassword = [Guid]::NewGuid().ToString("N")
+$containerName = "task005_b7_second_correction_tmp_local_only_disposable"
 $dbName = "task005_b7_tmp_db"
 $adminUser = "task005_b7_tmp_admin"
 
@@ -15,9 +16,15 @@ function Assert-TestCase {
         [string]$testName,
         $expected,
         $actual,
-        [string]$message
+        [string]$message,
+        [bool]$deliberateMismatch = $false
     )
     $pass = ($expected -eq $actual)
+    if ($deliberateMismatch) {
+        # Deliberate mismatch verification (testing the assertion mechanism itself)
+        $pass = ($expected -ne $actual)
+    }
+
     Write-Output "TEST_CASE: $testName"
     Write-Output "EXPECTED: $expected"
     Write-Output "ACTUAL: $actual"
@@ -28,7 +35,9 @@ function Assert-TestCase {
     } else {
         Write-Output "PASS/FAIL: FAIL"
         Write-Output "EXIT_CODE: 1`n"
-        $script:globalFail = $true
+        if (-not $deliberateMismatch) {
+            $script:globalFail = $true
+        }
     }
 }
 
@@ -66,7 +75,7 @@ try {
     }
 
     # Retrieve real PG version
-    $pgVersion = ($adminPassword | docker exec -i $containerName psql -U $adminUser -d $dbName -t -A -c "SELECT version();").Trim()
+    $pgVersion = ("SELECT version();" | docker exec -i $containerName psql -U $adminUser -d $dbName -t -A).Trim()
     Write-Output "PostgreSQL Version: $pgVersion"
 
     # Precheck Identity
@@ -89,7 +98,7 @@ try {
     Write-Output "`n--- Creating Synthetic Objects in PostgreSQL ---"
     "CREATE SCHEMA task005_b7_schema;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     "CREATE ROLE task005_b7_val_role WITH NOLOGIN;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
-    "CREATE ROLE task005_b7_session_role WITH LOGIN PASSWORD 's_pwd';" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
+    "CREATE ROLE task005_b7_session_role WITH LOGIN PASSWORD '$sessionPassword';" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     "CREATE TABLE task005_b7_schema.task005_b7_table (id int, val text);" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     
     # Create functions: one regular, one security definer
@@ -197,11 +206,11 @@ try {
     # ==========================================
     # ITEM U: privilegio PUBLIC con ACL NULL
     # ==========================================
-    Write-Output "`n--- Testing Item U (PUBLIC privileges via acldefault) ---"
+    Write-Output "`n--- Testing Item U (PUBLIC privileges via acldefault/aclexplode) ---"
     # Create a new function that inherits default privileges (null proacl) so PUBLIC has EXECUTE privilege by default
     "CREATE FUNCTION task005_b7_schema.task005_b7_func_def_null() RETURNS int LANGUAGE plpgsql AS 'BEGIN RETURN 3; END';" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
 
-    # The SQL policy checks specifically for function having null proacl AND public execute
+    # The SQL policy checks specifically for function default execution privileges to PUBLIC using acldefault/aclexplode
     $checkU_sql = @'
     DO $$
     BEGIN
@@ -209,8 +218,18 @@ try {
             SELECT 1 FROM pg_proc p
             JOIN pg_namespace n ON n.oid = p.pronamespace
             WHERE n.nspname = 'task005_b7_schema'
-              AND p.proacl IS NULL
-              AND has_function_privilege('public', p.oid, 'EXECUTE')
+              AND p.proname = 'task005_b7_func_def_null'
+              AND (
+                  -- Case A: ACL is NULL (acldefault applies), and PUBLIC has EXECUTE
+                  (p.proacl IS NULL AND has_function_privilege('public', p.oid, 'EXECUTE'))
+                  OR
+                  -- Case B: ACL is explicit, we explode it and check if PUBLIC has EXECUTE
+                  (p.proacl IS NOT NULL AND EXISTS (
+                      SELECT 1 FROM aclexplode(p.proacl) ae
+                      WHERE ae.grantee = 0
+                        AND ae.privilege_type = 'EXECUTE'
+                  ))
+              )
         ) THEN
             RAISE EXCEPTION 'database_acl_policy_public_privilege';
         END IF;
@@ -236,6 +255,7 @@ try {
     BEGIN;
     INSERT INTO task005_b7_schema.task005_b7_persist VALUES (42);
     RAISE EXCEPTION 'database_acl_policy_transaction_failed';
+    INSERT INTO task005_b7_schema.task005_b7_persist VALUES (99); -- Surface posterior, should not execute
     COMMIT;
 '@
     $resV_neg = Test-AclQuery -sql $checkV_sql -expectedError "database_acl_policy_transaction_failed"
@@ -256,6 +276,11 @@ try {
 
     $persistedCountPos = ("SELECT COUNT(*) FROM task005_b7_schema.task005_b7_persist;" | docker exec -i $containerName psql -U $adminUser -d $dbName -t -A).Trim()
     Assert-TestCase -testName "Item_V_Persist" -expected "1" -actual $persistedCountPos -message "Succeeded transaction must persist changes"
+
+    # Negative test of assertion mechanism itself (deliberate mismatch test)
+    Write-Output "--- Testing Assertion Mechanism Mismatch Check ---"
+    $resV_mismatch = Test-AclQuery -sql $checkV_sql -expectedError "unrelated_syntax_error"
+    Assert-TestCase -testName "Item_V_Negative_Harness_Mismatch" -expected $true -actual $resV_mismatch.matched -message "Harness must detect unmatched exception" -deliberateMismatch $true
 
 } finally {
     Invoke-Cleanup

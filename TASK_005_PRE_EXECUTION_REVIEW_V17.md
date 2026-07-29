@@ -2239,6 +2239,9 @@ Ante cualquier error se bloquean validación funcional, empaquetado, backup, upl
 
 #### S.13 Fixtures A-V con 20 columnas exactas
 
+> [!NOTE]
+> Los ítems G, N, P y Q fueron validados y cerrados en el Bloque B6 (Evidencia B6). Los ítems R, S, T, U y V fueron validados y cerrados en el Bloque B7 y su respectiva corrección (Evidencia B7).
+
 | ID | objetivo | entrada estática | precondición | unidad futura | tipo de prueba | modo de aislamiento | oráculo | resultado esperado | código exacto | exit status | gate | control de falso positivo | control de falso negativo | evidencia | ausencia de secretos | ausencia de conexión | ausencia de credenciales | ausencia de ejecución | estado |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | A | DATABASE ACL reconocido y rechazado | línea TOC `DATABASE ACL` | registry cargado | parser TOC | STATIC_FIXTURE | offline | rechazo determinista | `Valid=false` | `global_descriptor_forbidden` | 1 | STATIC_POLICY_VALIDATED | descriptor exacto | mutación descriptor | salida parser | YES | NO | NO | NO | NOT_EXECUTED |
