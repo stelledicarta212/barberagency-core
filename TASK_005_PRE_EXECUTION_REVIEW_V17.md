@@ -2750,3 +2750,31 @@ R_S_T_U_V_ATTRIBUTION = B7
 ```
 
 `NEW_COMMIT` debe registrarse desde Git en la entrega final posterior al commit; no se inserta dentro de este mismo archivo para evitar una referencia criptograficamente auto-invalida.
+
+## 15. TASK_005_GATE_B_AND_B7_FINAL_CLOSURE
+
+```text
+B7_STATUS = CLOSED
+B7_RESULT = APPROVED
+B7_APPROVED_COMMIT = 18adbe9b8955dbdd144f2b30ced212b7c6afd2cf
+GATE_B_STATUS = CLOSED
+GATE_B_RESULT = PASSED
+GATE_B_CLOSED_BY_HUMAN_AUTHORIZATION = YES
+GATE_B_EVIDENCE_COMMIT = 18adbe9b8955dbdd144f2b30ced212b7c6afd2cf
+B1_B7_ALL_APPROVED = YES
+PENDING_GATE_B_CONTROLS = 0
+GATE_B_CLOSURE = COMPLETED
+MASTER_DOCUMENT_UPDATED = YES
+PRODUCTION_ACCESSED = NO
+EASYPANEL_ACCESSED = NO
+POSTGRESQL_EXTERNAL_ACCESSED = NO
+SECRETS_READ = NO
+ENV_FILES_READ = NO
+BACKUP_RESTORE = NO
+MERGE_DEPLOY = NO
+B8_AUTHORIZED = NO
+GATE_C_AUTHORIZED = NO
+```
+
+Por autorización humana expresa del implementador técnico y auditor, habiéndose verificado la aprobación final de todos los bloques B1 a B7, la coincidencia total del exit code de PowerShell con el exit code del arnés, y la ausencia de accesos a entornos reales de producción, se declara formalmente cerrado el bloque B7 y se aprueba y cierra de forma definitiva el Gate B de TASK-005.
+
