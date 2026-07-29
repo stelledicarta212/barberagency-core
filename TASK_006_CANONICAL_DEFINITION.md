@@ -297,3 +297,20 @@ EVIDENCE_FILE = pruebas/task006_documentary_readiness_evidence_20260729T170127Z.
 ```
 
 Esta ejecucion fue exclusivamente documental. No ejecuto Gate 006-E, produccion, PostgreSQL externo, Docker, SQL, migraciones, backup, R2, n8n externo, Mercado Pago, deploy, PR, merge ni TASK-007.
+
+## 27. Cierre documental de TASK-006 — 2026-07-29
+
+```text
+TASK_006_CLOSURE_DECISION = APPROVED_BY_OWNER_DELEGATION
+TASK_006_AUDIT_STATUS = PASSED_INDEPENDENT_AUDIT
+TASK_006_AUDIT_COMMIT = fe66798d9a38c35547a29c0347a09a3b8ff6f874
+TASK_006_CLOSURE_RESULT = PASSED
+TASK_006_FINAL_STATUS = CLOSED
+TASK_006_CLOSURE_COMMIT = PENDING_CURRENT_COMMIT
+GATES_006_A_TO_006_D = PASSED
+GATE_006_E_RESULT = PENDING_SEPARATE_OWNER_AUTHORIZATION
+PRODUCTION_GO = NOT_AUTHORIZED
+TASK_007_STARTED = NO
+```
+
+El cierre documental de TASK-006 no constituye GO productivo y no ejecuta Gate 006-E. La propuesta de TASK-007 queda separada y pendiente de aprobacion humana.
