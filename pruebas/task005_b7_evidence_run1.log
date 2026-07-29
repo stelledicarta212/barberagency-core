@@ -1,6 +1,7 @@
-﻿RUN_SEQUENCE: 1
-RUN_ID: b196ed49-ff85-48c0-bee8-f364ccb093f8
-RUN_STARTED_AT_UTC: 2026-07-29T01:20:33.0441751Z
+﻿SANITIZED_COMMAND: powershell.exe -NoProfile -ExecutionPolicy Bypass -File pruebas/task005_b7_harness.ps1 -runSequence 1
+RUN_SEQUENCE: 1
+RUN_ID: 26220c9a-acd3-4126-8408-4c31cc0d3f67
+RUN_STARTED_AT_UTC: 2026-07-29T01:40:34.9603547Z
 Spinning up Docker container for B7...
 Waiting for database to accept connections...
 PostgreSQL Version: PostgreSQL 16.14 (Debian 16.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
@@ -121,6 +122,8 @@ EXIT_CODE: 0
 
 Cleaning up B7 container task005_b7_second_correction_tmp_local_only_disposable...
 CLEANUP_STATUS: SUCCESS
-RUN_FINISHED_AT_UTC: 2026-07-29T01:20:45.8904659Z
+RUN_FINISHED_AT_UTC: 2026-07-29T01:40:46.5240200Z
 Harness result: PASS
 HARNESS_GLOBAL_EXIT_CODE: 0
+POWERSHELL_REAL_EXIT_CODE: 0
+BLOCK_EXIT_CODE: 0
