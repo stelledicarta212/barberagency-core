@@ -2617,6 +2617,62 @@ TASK_005_AUDIT_STATUS = PENDING
 
 Motivo de bloqueo: Gate G requiere auditoria independiente y Gate H requiere decision humana separada sobre Stage 2. Codex no debe auditar su propio trabajo ni iniciar TASK-006.
 
+### 12.4.2 Cierre documental de TASK-005 — 2026-07-29
+
+El Owner aprobo Gate H y autorizo el cierre documental de TASK-005 con alcance limitado. La autorizacion no incluye produccion, EasyPanel, PostgreSQL externo o productivo, datos reales, migraciones productivas, despliegues, credenciales, archivos `.env`, cambios productivos de RLS/permisos, R2 real, n8n externo, Mercado Pago, pagos reales, merge, PR ni TASK-007.
+
+```text
+TASK_005_AUDITED_COMMIT = 493b161c6b0358e9629bf1d07f10780ffb3792aa
+TASK_005_GATE_G_RESULT = APPROVED
+TASK_005_GATE_G_AUDIT_STATUS = PASSED
+TASK_005_GATE_H_RESULT = APPROVED_BY_OWNER
+TASK_005_GATE_H_APPROVED_BY = Owner
+TASK_005_GATE_H_APPROVED_AT_AMERICA_BOGOTA = 2026-07-29 10:26:40 -05:00
+TASK_005_EXECUTION_RESULT = PASSED
+TASK_005_AUDIT_STATUS = PASSED
+TASK_005_FINAL_STATUS = CLOSED
+CRITICAL_FINDINGS = 0
+MAJOR_FINDINGS = 0
+MINOR_FINDINGS = 0
+```
+
+Correccion documental del hash fisico:
+
+```text
+EVIDENCE_FILE = pruebas/task005_accelerated_gate_ef_evidence_20260729T150223Z.md
+PHYSICAL_FILE_SHA256 = 6659466f494aa471e78ad77a9bb03c19f0f4aed03c65ed1e6f0ce3c25c0327af
+PREVIOUS_REPRESENTATION_SHA256 = a09b4003f40e08078a003fd1d8b39528f2472ab4f157c60c7fc4ad62e4471c6f
+HASH_OBSERVATION = El valor anterior corresponde a otra representacion de contenido por normalizacion LF/CRLF y se conserva como historial no normativo.
+```
+
+Confirmaciones:
+
+```text
+GATE_D_REEXECUTED = NO
+GATE_E_REEXECUTED = NO
+GATE_F_REEXECUTED = NO
+PRODUCTION_ACCESSED = NO
+EASYPANEL_ACCESSED = NO
+POSTGRESQL_EXTERNAL_ACCESSED = NO
+ENV_FILES_READ = NO
+SECRETS_READ = NO
+R2_ACCESSED = NO
+N8N_EXTERNAL_ACCESSED = NO
+MERCADOPAGO_ACCESSED = NO
+PAYMENTS_EXECUTED = NO
+DEPLOY_EXECUTED = NO
+PR_CREATED = NO
+MERGE_EXECUTED = NO
+```
+
+Evidencia de cierre:
+
+```text
+TASK_005_CLOSURE_EVIDENCE = pruebas/task005_closure_and_task006_discovery_20260729T152640Z.md
+```
+
+TASK-006 no fue ejecutada porque no se encontro una definicion canonica versionada inequivoca en el worktree auditado.
+
 ### 12.5 Estados finales de la septima correccion
 
 ```text
