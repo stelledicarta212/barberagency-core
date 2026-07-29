@@ -113,11 +113,11 @@ try {
     "CREATE ROLE task005_b7_val_role WITH NOLOGIN;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     "CREATE ROLE task005_b7_session_role WITH LOGIN PASSWORD '$sessionPassword';" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     "CREATE TABLE task005_b7_schema.task005_b7_table (id int, val text);" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
-    
+
     # Create functions: one regular, one security definer
     "CREATE FUNCTION task005_b7_schema.task005_b7_func_reg() RETURNS int LANGUAGE plpgsql AS 'BEGIN RETURN 1; END';" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     "CREATE FUNCTION task005_b7_schema.task005_b7_func_secdef() RETURNS int SECURITY DEFINER LANGUAGE plpgsql AS 'BEGIN RETURN 2; END';" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
-    
+
     # Revoke default EXECUTE from PUBLIC on both functions
     "REVOKE EXECUTE ON FUNCTION task005_b7_schema.task005_b7_func_reg() FROM PUBLIC;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
     "REVOKE EXECUTE ON FUNCTION task005_b7_schema.task005_b7_func_secdef() FROM PUBLIC;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
@@ -143,13 +143,13 @@ try {
     # ==========================================
     Write-Output "`n--- Testing Item R (EXECUTE Allowlist) ---"
     "GRANT EXECUTE ON FUNCTION task005_b7_schema.task005_b7_func_reg() TO task005_b7_val_role;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
-    
+
     $checkR_sql = @'
     DO $$
     BEGIN
         IF EXISTS (
-            SELECT 1 FROM pg_proc p 
-            JOIN pg_namespace n ON n.oid = p.pronamespace 
+            SELECT 1 FROM pg_proc p
+            JOIN pg_namespace n ON n.oid = p.pronamespace
             WHERE n.nspname = 'task005_b7_schema'
               AND has_function_privilege('task005_b7_val_role', p.oid, 'EXECUTE')
         ) THEN
@@ -169,13 +169,13 @@ try {
     # ==========================================
     Write-Output "`n--- Testing Item S (SECURITY DEFINER) ---"
     "GRANT EXECUTE ON FUNCTION task005_b7_schema.task005_b7_func_secdef() TO PUBLIC;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
-    
+
     $checkS_sql = @'
     DO $$
     BEGIN
         IF EXISTS (
-            SELECT 1 FROM pg_proc p 
-            JOIN pg_namespace n ON n.oid = p.pronamespace 
+            SELECT 1 FROM pg_proc p
+            JOIN pg_namespace n ON n.oid = p.pronamespace
             WHERE n.nspname = 'task005_b7_schema'
               AND p.prosecdef = true
               AND has_function_privilege('public', p.oid, 'EXECUTE')
@@ -196,13 +196,13 @@ try {
     # ==========================================
     Write-Output "`n--- Testing Item T (Write Privileges) ---"
     "GRANT INSERT ON TABLE task005_b7_schema.task005_b7_table TO task005_b7_val_role;" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
-    
+
     $checkT_sql = @'
     DO $$
     BEGIN
         IF EXISTS (
-            SELECT 1 FROM information_schema.role_table_grants 
-            WHERE grantee = 'task005_b7_val_role' 
+            SELECT 1 FROM information_schema.role_table_grants
+            WHERE grantee = 'task005_b7_val_role'
               AND privilege_type IN ('INSERT', 'UPDATE', 'DELETE', 'TRUNCATE')
         ) THEN
             RAISE EXCEPTION 'database_acl_policy_write_privilege';
@@ -253,7 +253,7 @@ try {
     # ==========================================
     Write-Output "`n--- Testing Item V (Rollback on Error) ---"
     "CREATE TABLE task005_b7_schema.task005_b7_persist (id int);" | docker exec -i $containerName psql -U $adminUser -d $dbName | Out-Null
-    
+
     # We execute a transaction that inserts, then raises exception.
     # We check that the exception raised is precisely "database_acl_policy_transaction_failed".
     $checkV_sql = @'

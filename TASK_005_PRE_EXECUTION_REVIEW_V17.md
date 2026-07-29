@@ -13,9 +13,14 @@ Este documento resume la sexta correccion exclusivamente documental de `TASK_005
 > GATE_B_CANONICAL_SCRIPT_IDENTITY
 >
 > CANONICAL_PR_FILE = backup_production_database.ps1
-> CANONICAL_PR_COMMIT = 1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c
-> CANONICAL_PHYSICAL_LINE_COUNT = 3012
-> CANONICAL_SHA256 = fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb
+> CANONICAL_PR_COMMIT = e343d397a37733b1a6373abe92c3f55d91b2221c
+> CANONICAL_PHYSICAL_LINE_COUNT = 3327
+> CANONICAL_SIZE_BYTES = 209946
+> CANONICAL_SHA256 = 6417A81228196D7D7142BDBA9CCE646764EF6082E1DB25B265A8353E5E9CEDA3
+> IDENTITY_SOURCE_COMMIT = e343d397a37733b1a6373abe92c3f55d91b2221c
+> HISTORICAL_STATIC_GATE_B_COMMIT = 1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c
+> HISTORICAL_STATIC_GATE_B_PHYSICAL_LINE_COUNT = 3012
+> HISTORICAL_STATIC_GATE_B_SHA256 = fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb
 > SCRIPT_MODIFIED = YES_STATIC_ONLY
 > SCRIPT_EXECUTED = NO
 >
@@ -2557,13 +2562,17 @@ Las secciones historicas se conservan para trazabilidad de auditoria. No son dis
 
 ```text
 CANONICAL_PR_FILE = backup_production_database.ps1
-CANONICAL_PR_COMMIT = 1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c
-CANONICAL_PHYSICAL_LINE_COUNT = 3012
-CANONICAL_SHA256 = fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb
+CANONICAL_PR_COMMIT = e343d397a37733b1a6373abe92c3f55d91b2221c
+CANONICAL_PHYSICAL_LINE_COUNT = 3327
+CANONICAL_SIZE_BYTES = 209946
+CANONICAL_SHA256 = 6417A81228196D7D7142BDBA9CCE646764EF6082E1DB25B265A8353E5E9CEDA3
+IDENTITY_SOURCE_COMMIT = e343d397a37733b1a6373abe92c3f55d91b2221c
+HISTORICAL_STATIC_GATE_B_COMMIT = 1aafd25e01d47aeb91cbdc2cd3737cf64d9c510c
+HISTORICAL_STATIC_GATE_B_PHYSICAL_LINE_COUNT = 3012
+HISTORICAL_STATIC_GATE_B_SHA256 = fbe69b3f4a6d65b7052649e8711244f25aa89fed060970170b2b802951145fcb
 SCRIPT_MODIFIED = YES_STATIC_ONLY
 SCRIPT_EXECUTED = NO
 ```
-
 La modificacion del PowerShell fue exclusivamente estatica. No hubo ejecucion del script, SQL, fixtures, PostgreSQL, produccion, Docker, SSH, R2, backups ni restauraciones.
 
 ### 12.5 Estados finales de la septima correccion
@@ -2777,4 +2786,3 @@ GATE_C_AUTHORIZED = NO
 ```
 
 Por autorización humana expresa del implementador técnico y auditor, habiéndose verificado la aprobación final de todos los bloques B1 a B7, la coincidencia total del exit code de PowerShell con el exit code del arnés, y la ausencia de accesos a entornos reales de producción, se declara formalmente cerrado el bloque B7 y se aprueba y cierra de forma definitiva el Gate B de TASK-005.
-
