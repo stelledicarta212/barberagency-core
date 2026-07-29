@@ -1,5 +1,9 @@
-# pruebas/task005_b7_harness.ps1
-# Harness script for TASK-005 B7 second correction: controlled validation of PostgreSQL privileges (R, S, T, U, V)
+param(
+    [int]$runSequence = 1
+)
+
+$runId = [Guid]::NewGuid().ToString()
+$startedAtUtc = [DateTime]::UtcNow.ToString("o")
 
 # Generate synthetic password dynamically (ephemeral and random)
 $adminPassword = [Guid]::NewGuid().ToString("N")
@@ -9,6 +13,10 @@ $dbName = "task005_b7_tmp_db"
 $adminUser = "task005_b7_tmp_admin"
 
 $script:globalFail = $false
+
+Write-Output "RUN_SEQUENCE: $runSequence"
+Write-Output "RUN_ID: $runId"
+Write-Output "RUN_STARTED_AT_UTC: $startedAtUtc"
 
 # Helper for assertions
 function Assert-TestCase {
@@ -53,6 +61,11 @@ if ($LASTEXITCODE -ne 0) {
 function Invoke-Cleanup {
     Write-Output "Cleaning up B7 container $containerName..."
     docker rm -f $containerName | Out-Null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Output "CLEANUP_STATUS: SUCCESS"
+    } else {
+        Write-Output "CLEANUP_STATUS: FAILED"
+    }
 }
 
 try {
@@ -297,6 +310,8 @@ try {
 
 } finally {
     Invoke-Cleanup
+    $finishedAtUtc = [DateTime]::UtcNow.ToString("o")
+    Write-Output "RUN_FINISHED_AT_UTC: $finishedAtUtc"
 }
 
 if ($script:globalFail) {

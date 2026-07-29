@@ -2239,8 +2239,22 @@ Ante cualquier error se bloquean validación funcional, empaquetado, backup, upl
 
 #### S.13 Fixtures A-V con 20 columnas exactas
 
+```text
+INVENTORY_34_34_REQUIREMENT = RETIRED_BY_OWNER_DECISION
+INVENTORY_CANONICAL_SOURCE = FIXTURES_A_V
+INVENTORY_SCOPE = TASK_005_TECHNICAL_FIXTURES_ONLY
+INVENTORY_EXPECTED = 22
+INVENTORY_ACTUAL = 22
+INVENTORY_DUPLICATES = 0
+INVENTORY_OMISSIONS = 0
+S_1_S_17_INVENTORY_SCOPE = EXCLUDED
+H01_H17_INVENTORY_SCOPE = EXCLUDED
+G_N_P_Q_ATTRIBUTION = B6
+R_S_T_U_V_ATTRIBUTION = B7
+```
+
 > [!NOTE]
-> Los ítems G, N, P y Q fueron validados y cerrados en el Bloque B6 (Evidencia B6). Los ítems R, S, T, U y V fueron validados y cerrados en el Bloque B7 y su respectiva corrección (Evidencia B7).
+> Por decisión humana contractual posterior del Owner (Owner Decision), el requisito ambiguo de un inventario 34/34 ha sido sustituido y retirado de este alcance técnico (`INVENTORY_34_34_REQUIREMENT = RETIRED_BY_OWNER_DECISION`). El inventario técnico canonico de TASK-005 consta exactamente de los 22 fixtures técnicos A–V (`INVENTORY_EXPECTED = 22`). Se excluyen del conteo técnico las secciones de diseño S.1–S.17 y los hallazgos históricos H01–H17 para evitar ambigüedades, preservando intactos sus contenidos históricos. Los ítems G, N, P y Q fueron validados y cerrados en el Bloque B6 (Evidencia B6). Los ítems R, S, T, U y V fueron validados y cerrados en el Bloque B7 y su respectiva corrección (Evidencia B7).
 
 | ID | objetivo | entrada estática | precondición | unidad futura | tipo de prueba | modo de aislamiento | oráculo | resultado esperado | código exacto | exit status | gate | control de falso positivo | control de falso negativo | evidencia | ausencia de secretos | ausencia de conexión | ausencia de credenciales | ausencia de ejecución | estado |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
