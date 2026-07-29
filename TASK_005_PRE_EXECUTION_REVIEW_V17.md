@@ -2821,9 +2821,52 @@ MERCADOPAGO_ACCESSED = NO
 ENV_FILES_READ = NO
 SECRETS_READ = NO
 B8_DEFINITION_STATUS = NOT_DEFINED
+B8_REQUIRED = NO
 B8_AUTHORIZED = NO
 B8_EXECUTED = NO
-NEXT_ACTION = Solicitar auditoria independiente read-only del cierre de Gate D
+GATE_D_AUDIT_RESULT = APPROVED
+GATE_D_AUDIT_STATUS = PASSED
+GATE_D_AUDIT_EVIDENCE = pruebas/task005_gate_d_independent_audit_evidence_20260729T143523Z.md
+NEXT_STAGE_CANONICAL_NAME = Gate E — PostgreSQL temporal aislado
+NEXT_STAGE_STATUS = PENDING_SEPARATE_PREPARATION_AND_AUTHORIZATION
+NEXT_STAGE_EXECUTION_AUTHORIZED = NO
+NEXT_ACTION = Solicitar auditoria independiente read-only del registro documental antes de preparar Gate E
 ```
 
-Gate D queda cerrado exclusivamente para la validacion estatica local de parsers. Este cierre no autoriza B8, Gate E, Gate F, PostgreSQL temporal, backup, restauracion, R2, produccion, merge ni deploy.
+Gate D queda cerrado y auditado exclusivamente para la validacion estatica local de parsers. Este cierre auditado no autoriza B8, Gate E, Gate F, PostgreSQL temporal, backup, restauracion, R2, produccion, merge ni deploy.
+
+## 17. TASK_005_GATE_D_INDEPENDENT_AUDIT_DOCUMENTATION
+
+```text
+TASK = TASK_005_GATE_D_AUDIT_DOCUMENTATION
+MODE = CONTROLLED_DOCUMENTATION_UPDATE
+GATE_D_RESULT = PASSED
+GATE_D_STATUS = CLOSED
+GATE_D_AUDIT_RESULT = APPROVED
+GATE_D_AUDIT_STATUS = PASSED
+GATE_D_EXECUTION_EVIDENCE = pruebas/task005_gate_d_static_parsers_evidence_20260729T135918Z.md
+GATE_D_AUDIT_EVIDENCE = pruebas/task005_gate_d_independent_audit_evidence_20260729T143523Z.md
+AUDITED_COMMIT = 936def21d86c4b15885cb05443cdad5456034299
+AUDITED_PARENT = 2ce67480d4bbcb6f239b843dfb9007649ba2e7e9
+DIRECT_PARENT_VERIFIED = YES
+B8_DEFINITION_STATUS = NOT_DEFINED
+B8_REQUIRED = NO
+B8_AUTHORIZED = NO
+B8_EXECUTED = NO
+NEXT_STAGE_CANONICAL_NAME = Gate E — PostgreSQL temporal aislado
+NEXT_STAGE_STATUS = PENDING_SEPARATE_PREPARATION_AND_AUTHORIZATION
+NEXT_STAGE_EXECUTION_AUTHORIZED = NO
+GATE_E_EXECUTION_AUTHORIZED = NO
+PRODUCTION_ACCESSED = NO
+EASYPANEL_ACCESSED = NO
+POSTGRESQL_EXTERNAL_ACCESSED = NO
+R2_ACCESSED = NO
+BACKUP_EXECUTED = NO
+RESTORE_EXECUTED = NO
+DOCKER_EXECUTED = NO
+SQL_EXECUTED = NO
+MERGE_EXECUTED = NO
+DEPLOY_EXECUTED = NO
+```
+
+Este registro documenta el resultado aprobado de la auditoria independiente read-only de Gate D. No modifica el alcance tecnico de TASK-005, no cierra TASK-005 completo y no autoriza Gate E ni ninguna etapa operativa posterior.
