@@ -2575,6 +2575,48 @@ SCRIPT_EXECUTED = NO
 ```
 La modificacion del PowerShell fue exclusivamente estatica. No hubo ejecucion del script, SQL, fixtures, PostgreSQL, produccion, Docker, SSH, R2, backups ni restauraciones.
 
+### 12.4.1 Ejecucion local acelerada Gate E/F — 2026-07-29
+
+Despues del cierre de Gate D se ejecuto una validacion local y aislada para los Gates E y F, sin produccion, sin EasyPanel, sin PostgreSQL externo, sin R2, sin n8n externo, sin Mercado Pago y sin lectura de `.env` o secretos.
+
+Evidencia consolidada:
+
+```text
+EVIDENCE_FILE = pruebas/task005_accelerated_gate_ef_evidence_20260729T150223Z.md
+EVIDENCE_SHA256 = a09b4003f40e08078a003fd1d8b39528f2472ab4f157c60c7fc4ad62e4471c6f
+```
+
+Estado verificado:
+
+```text
+GATE_D_STATUS = CLOSED
+GATE_D_REEXECUTED = NO
+GATE_E_RESULT = PASSED
+GATE_F_RESULT = PASSED
+GATE_G_RESULT = BLOCKED_PENDING_INDEPENDENT_AUDIT
+GATE_H_RESULT = BLOCKED_PENDING_HUMAN_DECISION
+TEMPORARY_POSTGRES_USED = YES
+TEMPORARY_POSTGRES_ISOLATION_VERIFIED = YES
+TEMP_DATABASE_FIXTURES_EXECUTED = YES
+SYNTHETIC_TEMP_RESTORE_EXECUTED = YES
+REAL_BACKUP_EXECUTED = NO
+REAL_RESTORE_EXECUTED = NO
+PRODUCTION_ACCESSED = NO
+POSTGRESQL_EXTERNAL_ACCESSED = NO
+ENV_FILES_READ = NO
+SECRETS_READ = NO
+R2_ACCESSED = NO
+N8N_EXTERNAL_ACCESSED = NO
+MERCADOPAGO_ACCESSED = NO
+B8_REQUIRED = NO
+B8_EXECUTED = NO
+TASK_005_EXECUTION_RESULT = BLOCKED
+TASK_005_STATUS = BLOCKED_PENDING_INDEPENDENT_AUDIT_AND_STAGE_2_DECISION
+TASK_005_AUDIT_STATUS = PENDING
+```
+
+Motivo de bloqueo: Gate G requiere auditoria independiente y Gate H requiere decision humana separada sobre Stage 2. Codex no debe auditar su propio trabajo ni iniciar TASK-006.
+
 ### 12.5 Estados finales de la septima correccion
 
 ```text
