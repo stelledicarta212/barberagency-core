@@ -3,7 +3,7 @@
   "createdAt": "2026-05-25T21:37:48.456Z",
   "id": "6JugRzxsOGKBvgWW",
   "name": "BarberAgency - Dashboard State Webhook",
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -21,7 +21,7 @@
         100,
         400
       ],
-      "webhookId": "4cf6e03b-780b-42ec-b214-01607dfd2f97"
+      "webhookId": ""
     },
     {
       "parameters": {
@@ -373,7 +373,7 @@
       "createdAt": "2026-05-25T21:37:48.459Z",
       "role": "workflow:owner",
       "workflowId": "6JugRzxsOGKBvgWW",
-      "projectId": "ajSDxUXg76Ss65zL"
+      "projectId": ""
     }
   ],
   "activeVersion": {
@@ -397,7 +397,7 @@
           100,
           400
         ],
-        "webhookId": "4cf6e03b-780b-42ec-b214-01607dfd2f97"
+        "webhookId": ""
       },
       {
         "parameters": {

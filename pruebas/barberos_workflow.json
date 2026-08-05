@@ -4,7 +4,7 @@
   "id": "h3JdyaI26GbRqrzE",
   "name": "BarberAgency - Dashboard Barberos Admin",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -43,7 +43,7 @@
         100,
         300
       ],
-      "webhookId": "854a2edd-b9f6-4129-8f51-718313aa5f6e"
+      "webhookId": ""
     },
     {
       "parameters": {
@@ -513,16 +513,16 @@
       "createdAt": "2026-05-26T21:34:59.854Z",
       "role": "workflow:owner",
       "workflowId": "h3JdyaI26GbRqrzE",
-      "projectId": "ajSDxUXg76Ss65zL",
+      "projectId": "",
       "project": {
         "updatedAt": "2026-02-09T14:41:23.917Z",
         "createdAt": "2026-02-09T14:01:19.465Z",
         "id": "ajSDxUXg76Ss65zL",
-        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "name": "Carlos a Alvis <placeholder@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+        "creatorId": ""
       }
     }
   ],
@@ -569,7 +569,7 @@
           100,
           300
         ],
-        "webhookId": "854a2edd-b9f6-4129-8f51-718313aa5f6e"
+        "webhookId": ""
       },
       {
         "parameters": {

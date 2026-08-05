@@ -1,0 +1,249 @@
+{
+  "updatedAt": "2026-07-13T23:54:07.652Z",
+  "createdAt": "2026-07-13T23:54:07.652Z",
+  "id": "nNKA5mbrhxvGEAtL",
+  "name": "BA_BILLING_OUTBOX_PROCESSOR_SANDBOX",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "barberagency/billing/outbox-worker",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "worker-trigger",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        100,
+        200
+      ],
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT outbox_id AS id, event_type, payload FROM public.billing_outbox_claim_batch(\n  'worker-sandbox', \n  5, \n  300\n);"
+      },
+      "id": "claim-batch",
+      "name": "PG - Claim Outbox Batch",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        300,
+        200
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://postman-echo.com/post",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"event_id\": \"{{ $json.id }}\",\n  \"event_type\": \"{{ $json.event_type }}\",\n  \"payload\": {{ JSON.stringify($json.payload) }}\n}",
+        "options": {}
+      },
+      "id": "simulate-notification",
+      "name": "HTTP - Simulate Notification",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        500,
+        200
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !!$json.data }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-success",
+      "name": "IF Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        700,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM public.billing_outbox_mark_processed('{{ $node[\"PG - Claim Outbox Batch\"].json.id }}');"
+      },
+      "id": "mark-processed",
+      "name": "PG - Mark Processed",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        900,
+        100
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM public.billing_outbox_mark_failed(\n  '{{ $node[\"PG - Claim Outbox Batch\"].json.id }}', \n  'worker_error', \n  'Failed to send notification', \n  10\n);"
+      },
+      "id": "mark-failed",
+      "name": "PG - Mark Failed",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        900,
+        300
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"ok\": true\n}",
+        "options": {}
+      },
+      "id": "respond-worker",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        200
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "PG - Claim Outbox Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Claim Outbox Batch": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Simulate Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Simulate Notification": {
+      "main": [
+        [
+          {
+            "node": "IF Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Success": {
+      "main": [
+        [
+          {
+            "node": "PG - Mark Processed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "PG - Mark Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Mark Processed": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PG - Mark Failed": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": null,
+  "versionId": "671a42e3-de55-4a3a-9811-4f12bc4f9085",
+  "activeVersionId": null,
+  "versionCounter": 1,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-07-13T23:54:07.654Z",
+      "createdAt": "2026-07-13T23:54:07.654Z",
+      "role": "workflow:owner",
+      "workflowId": "nNKA5mbrhxvGEAtL",
+      "projectId": "",
+      "project": {
+        "updatedAt": "2026-02-09T14:41:23.917Z",
+        "createdAt": "2026-02-09T14:01:19.465Z",
+        "id": "ajSDxUXg76Ss65zL",
+        "name": "Carlos a Alvis <placeholder@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": ""
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

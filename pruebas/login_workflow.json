@@ -4,7 +4,7 @@
   "id": "oAQzjkGzCuCjT1EP",
   "name": "BarberAgency - Dashboard Password Login",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -22,7 +22,7 @@
         100,
         300
       ],
-      "webhookId": "5889ac41-4f98-4ab9-a461-75cc5d8ed836"
+      "webhookId": ""
     },
     {
       "parameters": {
@@ -237,16 +237,16 @@
       "createdAt": "2026-05-26T16:07:43.909Z",
       "role": "workflow:owner",
       "workflowId": "oAQzjkGzCuCjT1EP",
-      "projectId": "ajSDxUXg76Ss65zL",
+      "projectId": "",
       "project": {
         "updatedAt": "2026-02-09T14:41:23.917Z",
         "createdAt": "2026-02-09T14:01:19.465Z",
         "id": "ajSDxUXg76Ss65zL",
-        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "name": "Carlos a Alvis <placeholder@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+        "creatorId": ""
       }
     }
   ],
@@ -272,7 +272,7 @@
           100,
           300
         ],
-        "webhookId": "5889ac41-4f98-4ab9-a461-75cc5d8ed836"
+        "webhookId": ""
       },
       {
         "parameters": {

@@ -1,0 +1,129 @@
+{
+  "updatedAt": "2026-04-01T00:15:18.205Z",
+  "createdAt": "2026-04-01T00:02:58.716Z",
+  "id": "eBUyejoMu0CLmMe9",
+  "name": "CREATE_PAYMENT_MP_FIXED",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "create-payment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f03bd37a-b5ec-44da-ab0d-8b3bb16ebb6a",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        608,
+        -16
+      ],
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mercadopago.com/checkout/preferences",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ YOUR_SANDBOX_TOKEN }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"items\": [\n    {\n      \"title\": \"Plan Barbería\",\n      \"quantity\": 1,\n      \"currency_id\": \"COP\",\n      \"unit_price\": 20000\n    }\n  ],\n  \"external_reference\": \"{{ $json.barberia_id || '3' }}\",\n  \"notification_url\": \"https://barberagency-n8n.gymh5g.easypanel.host/webhook/mp-webhook\",\n  \"back_urls\": {\n    \"success\": \"https://tu-sitio.com/success\",\n    \"failure\": \"https://tu-sitio.com/failure\"\n  },\n  \"auto_return\": \"approved\"\n}",
+        "options": {}
+      },
+      "id": "f0b59db2-9a7a-4084-9d69-89422136c390",
+      "name": "Create Payment MP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        912,
+        -16
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"url\": \"{{$json.init_point}}\"\n}",
+        "options": {}
+      },
+      "id": "0483fc70-d7e1-4931-8cbd-b083d8899f08",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        -16
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create Payment MP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Payment MP": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "8c061ce8-45ad-4b88-8361-7bc93b11aff8",
+  "activeVersionId": null,
+  "versionCounter": 11,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-04-01T00:02:58.720Z",
+      "createdAt": "2026-04-01T00:02:58.720Z",
+      "role": "workflow:owner",
+      "workflowId": "eBUyejoMu0CLmMe9",
+      "projectId": "",
+      "project": {
+        "updatedAt": "2026-02-09T14:41:23.917Z",
+        "createdAt": "2026-02-09T14:01:19.465Z",
+        "id": "ajSDxUXg76Ss65zL",
+        "name": "Carlos a Alvis <placeholder@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": ""
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}

@@ -4,7 +4,7 @@
   "id": "Qeou40pYsQPg2ROK",
   "name": "BarberAgency - Dashboard Publicar Admin",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -43,7 +43,7 @@
         100,
         300
       ],
-      "webhookId": "7bfe67c4-bc52-4f0c-86ee-5a0384d35835"
+      "webhookId": ""
     },
     {
       "parameters": {
@@ -444,16 +444,16 @@
       "createdAt": "2026-06-05T00:48:05.998Z",
       "role": "workflow:owner",
       "workflowId": "Qeou40pYsQPg2ROK",
-      "projectId": "ajSDxUXg76Ss65zL",
+      "projectId": "",
       "project": {
         "updatedAt": "2026-02-09T14:41:23.917Z",
         "createdAt": "2026-02-09T14:01:19.465Z",
         "id": "ajSDxUXg76Ss65zL",
-        "name": "Carlos a Alvis <carlosalbertoalvisrodriguez@gmail.com>",
+        "name": "Carlos a Alvis <placeholder@example.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
+        "creatorId": ""
       }
     }
   ],
@@ -500,7 +500,7 @@
           100,
           300
         ],
-        "webhookId": "7bfe67c4-bc52-4f0c-86ee-5a0384d35835"
+        "webhookId": ""
       },
       {
         "parameters": {

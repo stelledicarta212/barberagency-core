@@ -1,0 +1,219 @@
+{
+  "updatedAt": "2026-03-31T23:45:04.220Z",
+  "createdAt": "2026-03-31T22:52:41.606Z",
+  "id": "Oss4Znf14ZIi8LMu",
+  "name": "MP_WEBHOOK_SUBSCRIPTION_FIXED",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mp-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "f85d34dd-906a-4f7a-a23a-3fea06e488e4",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        224
+      ],
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.type }}",
+              "value2": "payment"
+            }
+          ]
+        }
+      },
+      "id": "3adf313f-5ecd-436a-88f7-168f4f7e7305",
+      "name": "IF Type = payment",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "value2": "approved"
+            }
+          ]
+        }
+      },
+      "id": "7e429c9f-7f54-45f1-bdfe-edeb9d52a935",
+      "name": "IF Approved",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO subscriptions (\n  barberia_id,\n  plan_id,\n  status,\n  estado,\n  period_start,\n  period_end,\n  provider,\n  provider_ref\n)\nVALUES (\n  {{ $json.external_reference }},\n  1,\n  'active',\n  'activa',\n  now(),\n  now() + interval '30 days',\n  'mercadopago',\n  '{{ $json.id }}'\n)\nON CONFLICT (barberia_id)\nDO UPDATE SET\n  plan_id = EXCLUDED.plan_id,\n  status = 'active',\n  estado = 'activa',\n  period_start = now(),\n  period_end = now() + interval '30 days',\n  updated_at = now();",
+        "options": {}
+      },
+      "id": "bf3cefdb-70eb-4f4c-89c5-a91f66a0b941",
+      "name": "Upsert Subscription",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2,
+      "position": [
+        1952,
+        128
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "SOV6oSyuHI9cxgLF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "49f1e182-670a-4ac5-b45f-232dd10cb901",
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        2160,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mercadopago.com/v1/payments/{{$json.body.data.id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ YOUR_SANDBOX_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1552,
+        96
+      ],
+      "id": "08fc1158-4ca8-47cc-92b6-cffb41f63026",
+      "name": "Get Payment MP"
+    }
+  ],
+  "connections": {
+    "IF Type = payment": {
+      "main": [
+        [
+          {
+            "node": "Get Payment MP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Approved": {
+      "main": [
+        [
+          {
+            "node": "Upsert Subscription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Subscription": {
+      "main": [
+        [
+          {
+            "node": "Respond",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "IF Type = payment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Payment MP": {
+      "main": [
+        [
+          {
+            "node": "IF Approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "fdc8bc6e-cfd2-4721-a4ea-b727944ddfc1",
+  "activeVersionId": null,
+  "versionCounter": 43,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "shared": [
+    {
+      "updatedAt": "2026-03-31T22:52:41.610Z",
+      "createdAt": "2026-03-31T22:52:41.610Z",
+      "role": "workflow:owner",
+      "workflowId": "Oss4Znf14ZIi8LMu",
+      "projectId": "",
+      "project": {
+        "updatedAt": "2026-02-09T14:41:23.917Z",
+        "createdAt": "2026-02-09T14:01:19.465Z",
+        "id": "ajSDxUXg76Ss65zL",
+        "name": "Carlos a Alvis <placeholder@example.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": ""
+      }
+    }
+  ],
+  "tags": [],
+  "activeVersion": null
+}
