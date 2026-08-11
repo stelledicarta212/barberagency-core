@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-05T20:37:44.542Z",
+  "updatedAt": "2026-06-09T23:49:30.739Z",
   "createdAt": "2026-02-26T15:46:49.343Z",
   "id": "iUZCTRli7ghGFrEb",
   "name": "BarberAgency - Session Me v2",
@@ -104,7 +104,7 @@
       "parameters": {
         "resource": "database",
         "operation": "executeQuery",
-        "query": "\nWITH input AS (\n  SELECT\n    COALESCE($1::boolean, false) AS auth_ok,\n    COALESCE($2::int, 0) AS user_id_in,\n    NULLIF(trim(COALESCE($3::text, '')), '') AS message_in,\n    COALESCE(NULLIF(trim($4::text), ''), 'https://barberagency-barberagency.gymh5g.easypanel.host') AS cors_origin\n),\nresolved AS (\n  SELECT u.id AS user_id, u.email, u.nombre, u.plan_id\n  FROM public.usuarios u\n  JOIN input i ON u.id = i.user_id_in\n  LIMIT 1\n),\nowned_barberias AS (\n  SELECT DISTINCT ON (b.id)\n    b.id,\n    b.slug,\n    b.nombre,\n    x.role\n  FROM public.barberias b\n  JOIN resolved r ON true\n  JOIN LATERAL (\n    SELECT 'owner'::text AS role WHERE b.owner_id = r.user_id\n    UNION ALL\n    SELECT bm.rol::text AS role FROM public.barberia_miembros bm\n    WHERE bm.barberia_id = b.id \n      AND (bm.usuario_id = r.user_id OR lower(bm.email) = lower(r.email))\n      AND bm.activo = true\n  ) x ON true\n  WHERE b.deleted_at IS NULL\n  ORDER BY b.id DESC, CASE x.role WHEN 'owner' THEN 1 WHEN 'admin' THEN 2 WHEN 'barbero' THEN 3 WHEN 'cajero' THEN 4 ELSE 5 END ASC\n),\ncurrent_barberia AS (\n  SELECT *\n  FROM owned_barberias\n  ORDER BY id DESC\n  LIMIT 1\n)\nSELECT\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN true ELSE false END AS ok,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN 200 ELSE 401 END AS status_code,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN NULL ELSE COALESCE(i.message_in, 'Sesion no valida') END AS message,\n  i.cors_origin,\n  (SELECT user_id FROM resolved LIMIT 1) AS user_id,\n  (SELECT email FROM resolved LIMIT 1) AS email,\n  (SELECT nombre FROM resolved LIMIT 1) AS nombre,\n  (SELECT plan_id FROM resolved LIMIT 1) AS plan_id,\n  CASE WHEN (SELECT plan_id FROM resolved LIMIT 1) IS NULL THEN false ELSE true END AS puede_crear_barberia,\n  COALESCE((SELECT count(*) FROM owned_barberias), 0)::int AS barberias_count,\n  COALESCE((SELECT row_to_json(current_barberia) FROM current_barberia), NULL) AS current_barberia,\n  COALESCE((SELECT json_agg(owned_barberias) FROM owned_barberias), '[]'::json) AS barberias\nFROM input i;\n    ",
+        "query": "WITH input AS (\n  SELECT\n    COALESCE($1::boolean, false) AS auth_ok,\n    COALESCE($2::int, 0) AS user_id_in,\n    NULLIF(trim(COALESCE($3::text, '')), '') AS message_in,\n    COALESCE(NULLIF(trim($4::text), ''), 'https://barberagency-barberagency.gymh5g.easypanel.host') AS cors_origin\n),\nresolved AS (\n  SELECT u.id AS user_id, u.email, u.nombre, u.plan_id\n  FROM public.usuarios u\n  JOIN input i ON u.id = i.user_id_in\n  LIMIT 1\n),\nowned_barberias AS (\n  SELECT DISTINCT ON (b.id)\n    b.id,\n    b.slug,\n    b.nombre,\n    x.role\n  FROM public.barberias b\n  JOIN resolved r ON true\n  JOIN LATERAL (\n    SELECT 'owner'::text AS role WHERE b.owner_id = r.user_id\n    UNION ALL\n    SELECT bm.rol::text AS role FROM public.barberia_miembros bm\n    WHERE bm.barberia_id = b.id \n      AND bm.usuario_id = r.user_id\n      AND bm.activo = true\n  ) x ON true\n  WHERE b.deleted_at IS NULL\n  ORDER BY b.id DESC, CASE x.role WHEN 'owner' THEN 1 WHEN 'admin' THEN 2 WHEN 'barbero' THEN 3 WHEN 'cajero' THEN 4 ELSE 5 END ASC\n),\ncurrent_barberia AS (\n  SELECT *\n  FROM owned_barberias\n  ORDER BY id DESC\n  LIMIT 1\n)\nSELECT\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN true ELSE false END AS ok,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN 200 ELSE 401 END AS status_code,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN NULL ELSE COALESCE(i.message_in, 'Sesion no valida') END AS message,\n  i.cors_origin,\n  (SELECT user_id FROM resolved LIMIT 1) AS user_id,\n  (SELECT email FROM resolved LIMIT 1) AS email,\n  (SELECT nombre FROM resolved LIMIT 1) AS nombre,\n  (SELECT plan_id FROM resolved LIMIT 1) AS plan_id,\n  CASE WHEN (SELECT plan_id FROM resolved LIMIT 1) IS NULL THEN false ELSE true END AS puede_crear_barberia,\n  COALESCE((SELECT count(*) FROM owned_barberias), 0)::int AS barberias_count,\n  COALESCE((SELECT row_to_json(current_barberia) FROM current_barberia), NULL) AS current_barberia,\n  COALESCE((SELECT json_agg(owned_barberias) FROM owned_barberias), '[]'::json) AS barberias\nFROM input i;",
         "options": {
           "queryReplacement": "={{ [Boolean($json.auth_ok), Number($json.user_id ?? 0), ($json.message ?? \"\").toString(), ($json.cors_origin ?? \"\").toString()] }}"
         }
@@ -249,11 +249,13 @@
   },
   "staticData": null,
   "meta": null,
+  "nodeGroups": [],
   "pinData": null,
-  "versionId": "134d5cdd-dd95-4a4e-a1e3-1da3a15b5890",
-  "activeVersionId": "134d5cdd-dd95-4a4e-a1e3-1da3a15b5890",
-  "versionCounter": 24,
+  "versionId": "15b4944f-7b16-413f-a8c8-231dad8deff7",
+  "activeVersionId": "15b4944f-7b16-413f-a8c8-231dad8deff7",
+  "versionCounter": 26,
   "triggerCount": 1,
+  "sourceWorkflowId": null,
   "shared": [
     {
       "updatedAt": "2026-02-26T15:46:49.348Z",
@@ -269,15 +271,16 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
       }
     }
   ],
   "tags": [],
   "activeVersion": {
-    "updatedAt": "2026-06-05T20:37:44.543Z",
-    "createdAt": "2026-06-05T20:37:44.543Z",
-    "versionId": "134d5cdd-dd95-4a4e-a1e3-1da3a15b5890",
+    "updatedAt": "2026-06-09T23:49:30.741Z",
+    "createdAt": "2026-06-09T23:49:30.741Z",
+    "versionId": "15b4944f-7b16-413f-a8c8-231dad8deff7",
     "workflowId": "iUZCTRli7ghGFrEb",
     "nodes": [
       {
@@ -377,7 +380,7 @@
         "parameters": {
           "resource": "database",
           "operation": "executeQuery",
-          "query": "\nWITH input AS (\n  SELECT\n    COALESCE($1::boolean, false) AS auth_ok,\n    COALESCE($2::int, 0) AS user_id_in,\n    NULLIF(trim(COALESCE($3::text, '')), '') AS message_in,\n    COALESCE(NULLIF(trim($4::text), ''), 'https://barberagency-barberagency.gymh5g.easypanel.host') AS cors_origin\n),\nresolved AS (\n  SELECT u.id AS user_id, u.email, u.nombre, u.plan_id\n  FROM public.usuarios u\n  JOIN input i ON u.id = i.user_id_in\n  LIMIT 1\n),\nowned_barberias AS (\n  SELECT DISTINCT ON (b.id)\n    b.id,\n    b.slug,\n    b.nombre,\n    x.role\n  FROM public.barberias b\n  JOIN resolved r ON true\n  JOIN LATERAL (\n    SELECT 'owner'::text AS role WHERE b.owner_id = r.user_id\n    UNION ALL\n    SELECT bm.rol::text AS role FROM public.barberia_miembros bm\n    WHERE bm.barberia_id = b.id \n      AND (bm.usuario_id = r.user_id OR lower(bm.email) = lower(r.email))\n      AND bm.activo = true\n  ) x ON true\n  WHERE b.deleted_at IS NULL\n  ORDER BY b.id DESC, CASE x.role WHEN 'owner' THEN 1 WHEN 'admin' THEN 2 WHEN 'barbero' THEN 3 WHEN 'cajero' THEN 4 ELSE 5 END ASC\n),\ncurrent_barberia AS (\n  SELECT *\n  FROM owned_barberias\n  ORDER BY id DESC\n  LIMIT 1\n)\nSELECT\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN true ELSE false END AS ok,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN 200 ELSE 401 END AS status_code,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN NULL ELSE COALESCE(i.message_in, 'Sesion no valida') END AS message,\n  i.cors_origin,\n  (SELECT user_id FROM resolved LIMIT 1) AS user_id,\n  (SELECT email FROM resolved LIMIT 1) AS email,\n  (SELECT nombre FROM resolved LIMIT 1) AS nombre,\n  (SELECT plan_id FROM resolved LIMIT 1) AS plan_id,\n  CASE WHEN (SELECT plan_id FROM resolved LIMIT 1) IS NULL THEN false ELSE true END AS puede_crear_barberia,\n  COALESCE((SELECT count(*) FROM owned_barberias), 0)::int AS barberias_count,\n  COALESCE((SELECT row_to_json(current_barberia) FROM current_barberia), NULL) AS current_barberia,\n  COALESCE((SELECT json_agg(owned_barberias) FROM owned_barberias), '[]'::json) AS barberias\nFROM input i;\n    ",
+          "query": "WITH input AS (\n  SELECT\n    COALESCE($1::boolean, false) AS auth_ok,\n    COALESCE($2::int, 0) AS user_id_in,\n    NULLIF(trim(COALESCE($3::text, '')), '') AS message_in,\n    COALESCE(NULLIF(trim($4::text), ''), 'https://barberagency-barberagency.gymh5g.easypanel.host') AS cors_origin\n),\nresolved AS (\n  SELECT u.id AS user_id, u.email, u.nombre, u.plan_id\n  FROM public.usuarios u\n  JOIN input i ON u.id = i.user_id_in\n  LIMIT 1\n),\nowned_barberias AS (\n  SELECT DISTINCT ON (b.id)\n    b.id,\n    b.slug,\n    b.nombre,\n    x.role\n  FROM public.barberias b\n  JOIN resolved r ON true\n  JOIN LATERAL (\n    SELECT 'owner'::text AS role WHERE b.owner_id = r.user_id\n    UNION ALL\n    SELECT bm.rol::text AS role FROM public.barberia_miembros bm\n    WHERE bm.barberia_id = b.id \n      AND (bm.usuario_id = r.user_id OR lower(bm.email) = lower(r.email))\n      AND bm.activo = true\n  ) x ON true\n  WHERE b.deleted_at IS NULL\n  ORDER BY b.id DESC, CASE x.role WHEN 'owner' THEN 1 WHEN 'admin' THEN 2 WHEN 'barbero' THEN 3 WHEN 'cajero' THEN 4 ELSE 5 END ASC\n),\ncurrent_barberia AS (\n  SELECT *\n  FROM owned_barberias\n  ORDER BY id DESC\n  LIMIT 1\n)\nSELECT\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN true ELSE false END AS ok,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN 200 ELSE 401 END AS status_code,\n  CASE WHEN i.auth_ok AND EXISTS (SELECT 1 FROM resolved) THEN NULL ELSE COALESCE(i.message_in, 'Sesion no valida') END AS message,\n  i.cors_origin,\n  (SELECT user_id FROM resolved LIMIT 1) AS user_id,\n  (SELECT email FROM resolved LIMIT 1) AS email,\n  (SELECT nombre FROM resolved LIMIT 1) AS nombre,\n  (SELECT plan_id FROM resolved LIMIT 1) AS plan_id,\n  CASE WHEN (SELECT plan_id FROM resolved LIMIT 1) IS NULL THEN false ELSE true END AS puede_crear_barberia,\n  COALESCE((SELECT count(*) FROM owned_barberias), 0)::int AS barberias_count,\n  COALESCE((SELECT row_to_json(current_barberia) FROM current_barberia), NULL) AS current_barberia,\n  COALESCE((SELECT json_agg(owned_barberias) FROM owned_barberias), '[]'::json) AS barberias\nFROM input i;",
           "options": {
             "queryReplacement": "={{ [Boolean($json.auth_ok), Number($json.user_id ?? 0), ($json.message ?? \"\").toString(), ($json.cors_origin ?? \"\").toString()] }}"
           }
@@ -516,16 +519,17 @@
         ]
       }
     },
+    "nodeGroups": [],
     "authors": "Carlos a Alvis",
     "name": null,
     "description": null,
     "autosaved": false,
     "workflowPublishHistory": [
       {
-        "createdAt": "2026-06-05T20:37:44.687Z",
-        "id": 1664,
+        "createdAt": "2026-06-09T23:49:31.031Z",
+        "id": 1742,
         "workflowId": "iUZCTRli7ghGFrEb",
-        "versionId": "134d5cdd-dd95-4a4e-a1e3-1da3a15b5890",
+        "versionId": "15b4944f-7b16-413f-a8c8-231dad8deff7",
         "event": "activated",
         "userId": "4ede7508-997a-4475-b2b8-9be2e3a6a415"
       }
