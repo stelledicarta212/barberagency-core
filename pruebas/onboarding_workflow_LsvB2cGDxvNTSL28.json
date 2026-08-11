@@ -39,52 +39,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "WITH input AS (\n  SELECT\n    COALESCE($1::boolean, false) AS auth_ok,\n    COALESCE($2::int, 0) AS auth_user_id,\n    COALESCE($3::int, 0) AS barberia_id,\n    NULLIF(trim(COALESCE($4::text, '')), '') AS slug_input,\n    NULLIF(trim(COALESCE($5::text, '')), '') AS nombre,\n    NULLIF(trim(COALESCE($6::text, '')), '') AS telefono,\n    NULLIF(lower(trim(COALESCE($7::text, ''))), '') AS admin_email,\n    NULLIF(trim(COALESCE($8::text, '')), '') AS direccion,\n    NULLIF(trim(COALESCE($9::text, '')), '') AS ciudad,\n    GREATEST(5, COALESCE($10::int, 15)) AS slot_min\n),\nauth_user AS (\n  SELECT u.id, u.email\n  FROM public.usuarios u\n  JOIN input i ON u.id = i.auth_user_id\n  WHERE i.auth_ok = true\n  LIMIT 1\n),\nowned_existing AS (\n  SELECT b.id, b.slug\n  FROM public.barberias b\n  JOIN input i ON b.id = i.barberia_id\n  JOIN auth_user au ON b.owner_id = au.id\n  WHERE i.barberia_id > 0\n    AND b.deleted_at IS NULL\n  LIMIT 1\n),\nclean AS (\n  SELECT\n    i.*,\n    COALESCE(\n      NULLIF(regexp_replace(lower(trim(i.slug_input)), '[^a-z0-9]+', '-', 'g'), ''),\n      NULLIF(regexp_replace(lower(trim(i.nombre)), '[^a-z0-9]+', '-', 'g'), ''),\n      'barberia'\n    ) AS base_slug\n  FROM input i\n),\nfinal_slug AS (\n  SELECT CASE\n    WHEN EXISTS (SELECT 1 FROM owned_existing)\n      THEN (SELECT slug FROM owned_existing LIMIT 1)\n    WHEN EXISTS (SELECT 1 FROM public.barberias b WHERE b.slug = clean.base_slug)\n      THEN clean.base_slug || '-' || substring(md5(random()::text), 1, 6)\n    ELSE clean.base_slug\n  END AS slug\n  FROM clean\n),\nupdated AS (\n  UPDATE public.barberias b\n  SET\n    nombre = COALESCE(c.nombre, b.nombre),\n    email_contacto = COALESCE(c.admin_email, au.email, b.email_contacto),\n    telefono = COALESCE(c.telefono, b.telefono, ''),\n    direccion = COALESCE(c.direccion, b.direccion),\n    ciudad = COALESCE(c.ciudad, b.ciudad),\n    slot_min = COALESCE(c.slot_min, b.slot_min, 15)\n  FROM clean c\n  CROSS JOIN auth_user au\n  CROSS JOIN owned_existing oe\n  WHERE b.id = oe.id\n  RETURNING b.id, b.slug, b.nombre, b.owner_id, b.slot_min, b.direccion, b.ciudad\n),\ninserted AS (\n  INSERT INTO public.barberias\n    (nombre, slug, email_contacto, telefono, direccion, ciudad, slot_min, estado, owner_id, created_at)\n  SELECT\n    COALESCE(c.nombre, 'Barberia'),\n    fs.slug,\n    COALESCE(c.admin_email, au.email),\n    COALESCE(c.telefono, ''),\n    c.direccion,\n    c.ciudad,\n    c.slot_min,\n    'activa',\n    au.id,\n    NOW()\n  FROM clean c\n  JOIN auth_user au ON true\n  CROSS JOIN final_slug fs\n  WHERE c.barberia_id <= 0\n  RETURNING id, slug, nombre, owner_id, slot_min, direccion, ciudad\n),\nresult AS (\n  SELECT * FROM updated\n  UNION ALL\n  SELECT * FROM inserted\n)\nSELECT\n  COALESCE((SELECT true FROM result LIMIT 1), false) AS ok,\n  CASE\n    WHEN NOT (SELECT auth_ok FROM input LIMIT 1) THEN 'Sesion no valida'\n    WHEN NOT EXISTS (SELECT 1 FROM auth_user) THEN 'Usuario de sesion no encontrado'\n    WHEN (SELECT barberia_id FROM input LIMIT 1) > 0 AND NOT EXISTS (SELECT 1 FROM owned_existing) THEN 'La barberia no pertenece al usuario de sesion'\n    WHEN NOT EXISTS (SELECT 1 FROM result) THEN 'No se pudo crear o actualizar barberia'\n    WHEN EXISTS (SELECT 1 FROM updated) THEN 'Barberia actualizada'\n    ELSE 'Barberia creada'\n  END AS message,\n  (SELECT id FROM result LIMIT 1) AS id,\n  (SELECT slug FROM result LIMIT 1) AS slug,\n  (SELECT nombre FROM result LIMIT 1) AS nombre,\n  (SELECT owner_id FROM result LIMIT 1) AS owner_id,\n  (SELECT slot_min FROM result LIMIT 1) AS slot_min,\n  (SELECT direccion FROM result LIMIT 1) AS direccion,\n  (SELECT ciudad FROM result LIMIT 1) AS ciudad;",
-        "options": {
-          "queryReplacement": "={{ [Boolean($json.auth_ok), Number($json.auth_user_id ?? 0), Number($json.barberia_id ?? $json.barberia?.id ?? $json.draft?.barberia?.id ?? 0), ($json.slug ?? $json.barberia?.slug ?? $json.draft?.barberia?.slug ?? \"\").toString(), ($json.nombre ?? $json.barberia?.nombre ?? $json.draft?.barberia?.nombre ?? \"\").toString(), ($json.telefono ?? $json.barberia?.telefono ?? $json.draft?.barberia?.telefono ?? \"\").toString(), ($json.admin?.email ?? $json.accesos?.admin?.email ?? $json.draft?.accesos?.admin?.email ?? $json.admin_email ?? \"\").toString(), ($json.direccion ?? $json.barberia?.direccion ?? $json.draft?.barberia?.direccion ?? \"\").toString(), ($json.ciudad ?? $json.barberia?.ciudad ?? $json.draft?.barberia?.ciudad ?? \"\").toString(), Number($json.slot_min ?? $json.barberia?.slot_min ?? $json.draft?.barberia?.slot_min ?? 15)] }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2,
-      "position": [
-        80,
-        -32
-      ],
-      "id": "17a88802-da28-4806-9e41-aa9dbbe8aa67",
-      "name": "Crear barberia",
-      "credentials": {
-        "postgres": {
-          "id": "SOV6oSyuHI9cxgLF",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "UPDATE barberias\nSET logo_url = $1\nWHERE id = $2",
-        "options": {
-          "queryReplacement": "={{ [$json.logo_url, Number($node[\"Crear barberia\"].json[\"id\"])] }}"
-        }
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2,
-      "position": [
-        672,
-        224
-      ],
-      "id": "1450dc4c-58f9-4b36-8ccc-741c5a54b3bb",
-      "name": "Guardar logo_url",
-      "credentials": {
-        "postgres": {
-          "id": "SOV6oSyuHI9cxgLF",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "respondWith": "json",
         "responseBody": "={{ $node[\"Crear barberia\"].json.ok ? { success: true, ok: true, message: \"Barberia registrada correctamente\", barberia_id: $node[\"Crear barberia\"].json.id, slug: $node[\"Crear barberia\"].json.slug, owner_id: $node[\"Crear barberia\"].json.owner_id } : { success: false, ok: false, message: $node[\"Crear barberia\"].json.message } }}",
         "options": {
@@ -122,78 +76,10 @@
     },
     {
       "parameters": {
-        "jsCode": "const inputItems = $input.all();\nlet incomingLogo;\ntry { incomingLogo = $('Webhook').first().binary?.logo; } catch (e) {}\nif (!incomingLogo) {\n  try { incomingLogo = $items('Webhook', 0, 0)[0]?.binary?.logo; } catch (e) {}\n}\nif (!incomingLogo) throw new Error('No se recibio binary.logo en el webhook');\nreturn inputItems.map((item) => { item.binary = item.binary || {}; item.binary.logo = incomingLogo; return item; });"
-      },
-      "id": "d7f5aa9e-2e8b-4b3a-9f0a-54d5b2d9116f",
-      "name": "Adjuntar logo",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        144,
-        176
-      ]
-    },
-    {
-      "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "logo_url",
-              "value": "={{$json.source_url}}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "6e7e2231-5af5-4c8e-9b6a-d8f6adf5efab",
-      "name": "generar_logo_url",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
-      "position": [
-        480,
-        336
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://barberagency-barberagency.gymh5g.easypanel.host/wp-json/wp/v2/media",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "wordpressApi",
-        "sendBody": true,
-        "contentType": "multipart-form-data",
-        "bodyParameters": {
-          "parameters": [
-            {
-              "parameterType": "formBinaryData",
-              "name": "file",
-              "inputDataFieldName": "logo"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "1c4a4a31-66b3-4f91-8af4-a88ca7d67c21",
-      "name": "Subir logo WP Media",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        368,
-        80
-      ],
-      "credentials": {
-        "wordpressApi": {
-          "id": "ZR3aSWFD4wwrFB2J",
-          "name": "Wordpress account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "operation": "executeQuery",
-        "query": "\nWITH input AS (\n  SELECT\n    $1::int AS barberia_id,\n    COALESCE($2::jsonb, '{}'::jsonb) AS draft\n),\nvalid_input AS (\n  SELECT *\n  FROM input\n  WHERE barberia_id > 0\n),\nadmin_data AS (\n  SELECT\n    NULLIF(trim(COALESCE(draft->'accesos'->'admin'->>'nombre', draft->'admin'->>'nombre', '')), '') AS nombre,\n    NULLIF(lower(trim(COALESCE(draft->'accesos'->'admin'->>'email', draft->'admin'->>'email', ''))), '') AS email,\n    NULLIF(trim(COALESCE(draft->'accesos'->'admin'->>'password', draft->'admin'->>'password', '')), '') AS password\n  FROM valid_input\n),\nadmin_upsert AS (\n  INSERT INTO public.usuarios (nombre, email, role, password_hash)\n  SELECT\n    COALESCE(nombre, 'Administrador'),\n    email,\n    'admin',\n    CASE WHEN password IS NULL THEN NULL ELSE public.fn_password_hash(password) END\n  FROM admin_data\n  WHERE email IS NOT NULL\n  ON CONFLICT (email) DO UPDATE\n  SET\n    nombre = COALESCE(NULLIF(EXCLUDED.nombre, ''), public.usuarios.nombre),\n    role = 'admin',\n    password_hash = COALESCE(EXCLUDED.password_hash, public.usuarios.password_hash)\n  RETURNING id, nombre, email, role\n),\nowner_update AS (\n  SELECT b.id, b.slug, b.owner_id\n  FROM public.barberias b\n  JOIN valid_input i ON b.id = i.barberia_id\n  LIMIT 1\n),\nservice_cleanup AS (\n  DELETE FROM public.servicios s\n  USING valid_input i\n  WHERE s.barberia_id = i.barberia_id\n    AND NOT EXISTS (SELECT 1 FROM public.citas c WHERE c.barberia_id = i.barberia_id)\n  RETURNING s.id\n),\nservice_cleanup_guard AS (\n  SELECT count(*) AS total FROM service_cleanup\n),\nservice_rows AS (\n  SELECT\n    i.barberia_id,\n    NULLIF(trim(item->>'nombre'), '') AS nombre,\n    COALESCE(NULLIF(item->>'duracion_min', '')::int, 30) AS duracion_min,\n    COALESCE(NULLIF(item->>'precio', '')::numeric, 0) AS precio,\n    COALESCE(NULLIF(trim(COALESCE(item->>'imagen_url', item->>'image_url', item->>'foto', '')), ''), NULL) AS imagen_url\n  FROM valid_input i\n  CROSS JOIN LATERAL jsonb_array_elements(COALESCE(i.draft->'servicios', '[]'::jsonb)) item\n),\nservices_insert AS (\n  INSERT INTO public.servicios (barberia_id, nombre, duracion_min, precio, activo, imagen_url)\n  SELECT barberia_id, nombre, duracion_min, precio, true, imagen_url\n  FROM service_rows\n  WHERE nombre IS NOT NULL\n  RETURNING id\n),\nhour_rows AS (\n  SELECT\n    i.barberia_id,\n    COALESCE(\n      NULLIF(item->>'dia_semana', '')::int,\n      CASE lower(trim(COALESCE(item->>'dia', item->>'day', '')))\n        WHEN 'domingo' THEN 0\n        WHEN 'dom' THEN 0\n        WHEN 'sunday' THEN 0\n        WHEN 'lunes' THEN 1\n        WHEN 'lun' THEN 1\n        WHEN 'monday' THEN 1\n        WHEN 'martes' THEN 2\n        WHEN 'mar' THEN 2\n        WHEN 'tuesday' THEN 2\n        WHEN 'miercoles' THEN 3\n        WHEN 'miércoles' THEN 3\n        WHEN 'mie' THEN 3\n        WHEN 'mié' THEN 3\n        WHEN 'wednesday' THEN 3\n        WHEN 'jueves' THEN 4\n        WHEN 'jue' THEN 4\n        WHEN 'thursday' THEN 4\n        WHEN 'viernes' THEN 5\n        WHEN 'vie' THEN 5\n        WHEN 'friday' THEN 5\n        WHEN 'sabado' THEN 6\n        WHEN 'sábado' THEN 6\n        WHEN 'sab' THEN 6\n        WHEN 'sáb' THEN 6\n        WHEN 'saturday' THEN 6\n        ELSE NULL\n      END\n    ) AS dia_semana,\n    COALESCE((item->>'activo')::boolean, true) AS activo,\n    NULLIF(trim(item->>'hora_abre'), '')::time AS hora_abre,\n    NULLIF(trim(item->>'hora_cierra'), '')::time AS hora_cierra\n  FROM valid_input i\n  CROSS JOIN LATERAL jsonb_array_elements(COALESCE(i.draft->'horarios', '[]'::jsonb)) item\n),\nhours_insert AS (\n  INSERT INTO public.horarios (barberia_id, dia_semana, activo, hora_abre, hora_cierra)\n  SELECT barberia_id, dia_semana, activo, hora_abre, hora_cierra\n  FROM hour_rows\n  WHERE dia_semana BETWEEN 0 AND 6 AND hora_abre IS NOT NULL AND hora_cierra IS NOT NULL\n  ON CONFLICT (barberia_id, dia_semana)\n  DO UPDATE SET\n    activo = EXCLUDED.activo,\n    hora_abre = EXCLUDED.hora_abre,\n    hora_cierra = EXCLUDED.hora_cierra\n  RETURNING id\n),\nbarber_cleanup AS (\n  DELETE FROM public.barberos b\n  USING valid_input i\n  WHERE b.barberia_id = i.barberia_id\n    AND NOT EXISTS (SELECT 1 FROM public.citas c WHERE c.barberia_id = i.barberia_id)\n  RETURNING b.id\n),\nbarber_cleanup_guard AS (\n  SELECT count(*) AS total FROM barber_cleanup\n),\nbarber_access AS (\n  SELECT\n    row_number() OVER () AS rn,\n    NULLIF(trim(COALESCE(item->>'nombre', item->>'name', '')), '') AS nombre,\n    NULLIF(lower(trim(COALESCE(item->>'email', ''))), '') AS email,\n    NULLIF(trim(COALESCE(item->>'password', '')), '') AS password,\n    COALESCE((item->>'activo')::boolean, true) AS activo,\n    COALESCE(NULLIF(trim(COALESCE(item->>'foto_url', item->>'foto', item->>'avatar_url', '')), ''), NULL) AS foto_url\n  FROM valid_input i\n  CROSS JOIN LATERAL jsonb_array_elements(COALESCE(i.draft->'accesos'->'barberos', i.draft->'barberos', '[]'::jsonb)) item\n),\nbarber_access_distinct AS (\n  SELECT DISTINCT ON (email)\n    nombre,\n    email,\n    password\n  FROM barber_access\n  WHERE email IS NOT NULL\n  ORDER BY email, rn\n),\nbarber_users AS (\n  INSERT INTO public.usuarios (nombre, email, role, password_hash)\n  SELECT\n    COALESCE(nombre, 'Barbero'),\n    email,\n    'barbero',\n    CASE WHEN password IS NULL THEN NULL ELSE public.fn_password_hash(password) END\n  FROM barber_access_distinct\n  ON CONFLICT (email) DO UPDATE\n  SET\n    nombre = COALESCE(NULLIF(EXCLUDED.nombre, ''), public.usuarios.nombre),\n    role = 'barbero',\n    password_hash = COALESCE(EXCLUDED.password_hash, public.usuarios.password_hash)\n  RETURNING id, nombre, email, role\n),\nunlink_previous_barbers AS (\n  UPDATE public.barberos b\n  SET usuario_id = NULL\n  FROM barber_users bu, valid_input i\n  WHERE b.usuario_id = bu.id\n    AND b.barberia_id <> i.barberia_id\n  RETURNING b.id, b.nombre, b.barberia_id\n),\nunlink_guard AS (\n  SELECT count(*) AS total FROM unlink_previous_barbers\n),\nbarber_rows AS (\n  SELECT\n    i.barberia_id,\n    ba.nombre,\n    ba.activo,\n    ba.foto_url,\n    bu.id AS usuario_id\n  FROM valid_input i\n  JOIN barber_access ba ON true\n  LEFT JOIN barber_users bu ON bu.email = ba.email\n  CROSS JOIN unlink_guard ug\n  WHERE ba.nombre IS NOT NULL\n),\nbarbers_insert AS (\n  INSERT INTO public.barberos (barberia_id, nombre, activo, foto_url, usuario_id)\n  SELECT barberia_id, nombre, activo, foto_url, usuario_id\n  FROM barber_rows\n  RETURNING id, nombre, usuario_id\n)\nSELECT json_build_object(\n  'ok', true,\n  'barberia', (SELECT row_to_json(owner_update) FROM owner_update LIMIT 1),\n  'admin', (SELECT row_to_json(admin_upsert) FROM admin_upsert LIMIT 1),\n  'servicios_insertados', (SELECT count(*) FROM services_insert),\n  'horarios_insertados', (SELECT count(*) FROM hours_insert),\n  'barberos_insertados', (SELECT count(*) FROM barbers_insert),\n  'barberos_linked', COALESCE((SELECT json_agg(barbers_insert) FROM barbers_insert), '[]'::json),\n  'message', 'Fuente de verdad sincronizada'\n) AS result;\n",
+        "query": "WITH input AS (\n  SELECT\n    COALESCE(::boolean, false) AS auth_ok,\n    COALESCE(::int, 0) AS auth_user_id,\n    COALESCE(::int, 0) AS barberia_id_in,\n    NULLIF(trim(COALESCE(::text, '')), '') AS slug_input,\n    NULLIF(trim(COALESCE(::text, '')), '') AS nombre_input,\n    NULLIF(trim(COALESCE(::text, '')), '') AS telefono_input,\n    NULLIF(lower(trim(COALESCE(::text, ''))), '') AS admin_email_input,\n    NULLIF(trim(COALESCE(::text, '')), '') AS direccion_input,\n    NULLIF(trim(COALESCE(::text, '')), '') AS ciudad_input,\n    GREATEST(5, COALESCE(0::int, 15)) AS slot_min_input,\n    COALESCE(1::jsonb, '{}'::jsonb) AS draft\n),\nauth_user AS (\n  SELECT u.id, u.email\n  FROM public.usuarios u\n  JOIN input i ON u.id = i.auth_user_id\n  WHERE i.auth_ok = true\n  LIMIT 1\n),\nadmin_data AS (\n  SELECT\n    NULLIF(trim(COALESCE(i.draft->'accesos'->'admin'->>'nombre', i.draft->'admin'->>'nombre', '')), '') AS nombre,\n    NULLIF(lower(trim(COALESCE(i.draft->'accesos'->'admin'->>'email', i.draft->'admin'->>'email', i.admin_email_input, ''))), '') AS email,\n    NULLIF(trim(COALESCE(i.draft->'accesos'->'admin'->>'password', i.draft->'admin'->>'password', '')), '') AS password\n  FROM input i\n),\nadmin_upsert AS (\n  SELECT u.id, u.nombre, u.email, u.role\n  FROM public.usuarios u\n  JOIN admin_data ad ON lower(u.email) = ad.email\n  UNION ALL\n  INSERT INTO public.usuarios (nombre, email, role, password_hash)\n  SELECT\n    COALESCE(ad.nombre, 'Administrador'),\n    ad.email,\n    'admin',\n    CASE WHEN ad.password IS NULL THEN NULL ELSE public.fn_password_hash(ad.password) END\n  FROM admin_data ad\n  WHERE ad.email IS NOT NULL AND NOT EXISTS (SELECT 1 FROM public.usuarios u2 WHERE lower(u2.email) = ad.email)\n  ON CONFLICT (email) DO UPDATE\n  SET\n    nombre = COALESCE(NULLIF(EXCLUDED.nombre, ''), public.usuarios.nombre),\n    role = 'admin',\n    password_hash = COALESCE(EXCLUDED.password_hash, public.usuarios.password_hash)\n  RETURNING id, nombre, email, role\n),\neffective_owner AS (\n  SELECT id, email FROM admin_upsert LIMIT 1\n  UNION ALL\n  SELECT id, email FROM auth_user LIMIT 1\n  LIMIT 1\n),\nowned_existing AS (\n  SELECT b.id, b.slug\n  FROM public.barberias b\n  JOIN input i ON b.id = i.barberia_id_in\n  JOIN effective_owner eo ON b.owner_id = eo.id\n  WHERE i.barberia_id_in > 0\n    AND b.deleted_at IS NULL\n  LIMIT 1\n),\nclean_slug AS (\n  SELECT\n    i.*,\n    COALESCE(\n      NULLIF(regexp_replace(lower(trim(i.slug_input)), '[^a-z0-9]+', '-', 'g'), ''),\n      NULLIF(regexp_replace(lower(trim(i.nombre_input)), '[^a-z0-9]+', '-', 'g'), ''),\n      'barberia'\n    ) AS base_slug\n  FROM input i\n),\nfinal_slug AS (\n  SELECT CASE\n    WHEN EXISTS (SELECT 1 FROM owned_existing)\n      THEN (SELECT slug FROM owned_existing LIMIT 1)\n    WHEN EXISTS (SELECT 1 FROM public.barberias b WHERE b.slug = cs.base_slug)\n      THEN cs.base_slug || '-' || substring(md5(random()::text), 1, 6)\n    ELSE cs.base_slug\n  END AS slug\n  FROM clean_slug cs\n),\nbarberia_upsert AS (\n  UPDATE public.barberias b\n  SET\n    nombre = COALESCE(c.nombre_input, b.nombre),\n    email_contacto = COALESCE(c.admin_email_input, eo.email, b.email_contacto),\n    telefono = COALESCE(c.telefono_input, b.telefono, ''),\n    direccion = COALESCE(c.direccion_input, b.direccion),\n    ciudad = COALESCE(c.ciudad_input, b.ciudad),\n    slot_min = COALESCE(c.slot_min_input, b.slot_min, 15)\n  FROM clean_slug c\n  CROSS JOIN effective_owner eo\n  CROSS JOIN owned_existing oe\n  WHERE b.id = oe.id\n  RETURNING b.id, b.slug, b.nombre, b.owner_id\n  UNION ALL\n  INSERT INTO public.barberias\n    (nombre, slug, email_contacto, telefono, direccion, ciudad, slot_min, estado, owner_id, created_at)\n  SELECT\n    COALESCE(c.nombre_input, 'Barberia'),\n    fs.slug,\n    COALESCE(c.admin_email_input, eo.email),\n    COALESCE(c.telefono_input, ''),\n    c.direccion_input,\n    c.ciudad_input,\n    c.slot_min_input,\n    'activa',\n    eo.id,\n    NOW()\n  FROM clean_slug c\n  JOIN effective_owner eo ON true\n  CROSS JOIN final_slug fs\n  WHERE c.barberia_id_in <= 0\n  RETURNING id, slug, nombre, owner_id\n),\ntarget_barberia AS (\n  SELECT id, slug, nombre, owner_id FROM barberia_upsert LIMIT 1\n),\nowner_membership_insert AS (\n  INSERT INTO public.barberia_miembros (barberia_id, usuario_id, email, rol, activo)\n  SELECT tb.id, eo.id, eo.email, 'owner', true\n  FROM target_barberia tb\n  CROSS JOIN effective_owner eo\n  ON CONFLICT (barberia_id, usuario_id) DO UPDATE\n  SET rol = 'owner', activo = true\n  RETURNING id\n),\nservice_cleanup AS (\n  DELETE FROM public.servicios s\n  USING target_barberia tb\n  WHERE s.barberia_id = tb.id\n    AND NOT EXISTS (SELECT 1 FROM public.citas c WHERE c.barberia_id = tb.id)\n  RETURNING s.id\n),\nservice_rows AS (\n  SELECT\n    tb.id AS barberia_id,\n    NULLIF(trim(item->>'nombre'), '') AS nombre,\n    COALESCE(NULLIF(item->>'duracion_min', '')::int, 30) AS duracion_min,\n    COALESCE(NULLIF(item->>'precio', '')::numeric, 0) AS precio,\n    COALESCE(NULLIF(trim(COALESCE(item->>'imagen_url', item->>'image_url', item->>'foto', '')), ''), NULL) AS imagen_url\n  FROM target_barberia tb\n  CROSS JOIN input i\n  CROSS JOIN LATERAL jsonb_array_elements(COALESCE(i.draft->'servicios', '[]'::jsonb)) item\n),\nservices_insert AS (\n  INSERT INTO public.servicios (barberia_id, nombre, duracion_min, precio, activo, imagen_url)\n  SELECT barberia_id, nombre, duracion_min, precio, true, imagen_url\n  FROM service_rows\n  WHERE nombre IS NOT NULL\n  RETURNING id\n),\nhour_rows AS (\n  SELECT\n    tb.id AS barberia_id,\n    COALESCE(\n      NULLIF(item->>'dia_semana', '')::int,\n      CASE lower(trim(COALESCE(item->>'dia', item->>'day', '')))\n        WHEN 'domingo' THEN 0 WHEN 'dom' THEN 0 WHEN 'sunday' THEN 0\n        WHEN 'lunes' THEN 1 WHEN 'lun' THEN 1 WHEN 'monday' THEN 1\n        WHEN 'martes' THEN 2 WHEN 'mar' THEN 2 WHEN 'tuesday' THEN 2\n        WHEN 'miercoles' THEN 3 WHEN 'miércoles' THEN 3 WHEN 'mie' THEN 3 WHEN 'mié' THEN 3 WHEN 'wednesday' THEN 3\n        WHEN 'jueves' THEN 4 WHEN 'jue' THEN 4 WHEN 'thursday' THEN 4\n        WHEN 'viernes' THEN 5 WHEN 'vie' THEN 5 WHEN 'friday' THEN 5\n        WHEN 'sabado' THEN 6 WHEN 'sábado' THEN 6 WHEN 'sab' THEN 6 WHEN 'sáb' THEN 6 WHEN 'saturday' THEN 6\n        ELSE NULL\n      END\n    ) AS dia_semana,\n    COALESCE((item->>'activo')::boolean, true) AS activo,\n    NULLIF(trim(item->>'hora_abre'), '')::time AS hora_abre,\n    NULLIF(trim(item->>'hora_cierra'), '')::time AS hora_cierra\n  FROM target_barberia tb\n  CROSS JOIN input i\n  CROSS JOIN LATERAL jsonb_array_elements(COALESCE(i.draft->'horarios', '[]'::jsonb)) item\n),\nhours_insert AS (\n  INSERT INTO public.horarios (barberia_id, dia_semana, activo, hora_abre, hora_cierra)\n  SELECT barberia_id, dia_semana, activo, hora_abre, hora_cierra\n  FROM hour_rows\n  WHERE dia_semana BETWEEN 0 AND 6 AND hora_abre IS NOT NULL AND hora_cierra IS NOT NULL\n  ON CONFLICT (barberia_id, dia_semana)\n  DO UPDATE SET\n    activo = EXCLUDED.activo,\n    hora_abre = EXCLUDED.hora_abre,\n    hora_cierra = EXCLUDED.hora_cierra\n  RETURNING id\n),\nbarber_cleanup AS (\n  DELETE FROM public.barberos b\n  USING target_barberia tb\n  WHERE b.barberia_id = tb.id\n    AND NOT EXISTS (SELECT 1 FROM public.citas c WHERE c.barberia_id = tb.id)\n  RETURNING b.id\n),\nbarber_access AS (\n  SELECT\n    row_number() OVER () AS rn,\n    NULLIF(trim(COALESCE(item->>'nombre', item->>'name', '')), '') AS nombre,\n    NULLIF(lower(trim(COALESCE(item->>'email', ''))), '') AS email,\n    NULLIF(trim(COALESCE(item->>'password', '')), '') AS password,\n    COALESCE((item->>'activo')::boolean, true) AS activo,\n    COALESCE(NULLIF(trim(COALESCE(item->>'foto_url', item->>'foto', item->>'avatar_url', '')), ''), NULL) AS foto_url\n  FROM input i\n  CROSS JOIN LATERAL jsonb_array_elements(COALESCE(i.draft->'accesos'->'barberos', i.draft->'barberos', '[]'::jsonb)) item\n),\nbarber_access_distinct AS (\n  SELECT DISTINCT ON (email)\n    nombre, email, password\n  FROM barber_access\n  WHERE email IS NOT NULL\n  ORDER BY email, rn\n),\nbarber_users AS (\n  INSERT INTO public.usuarios (nombre, email, role, password_hash)\n  SELECT\n    COALESCE(nombre, 'Barbero'), email, 'barbero',\n    CASE WHEN password IS NULL THEN NULL ELSE public.fn_password_hash(password) END\n  FROM barber_access_distinct\n  ON CONFLICT (email) DO UPDATE\n  SET\n    nombre = COALESCE(NULLIF(EXCLUDED.nombre, ''), public.usuarios.nombre),\n    role = 'barbero',\n    password_hash = COALESCE(EXCLUDED.password_hash, public.usuarios.password_hash)\n  RETURNING id, nombre, email, role\n),\nbarber_rows AS (\n  SELECT\n    tb.id AS barberia_id,\n    ba.nombre,\n    ba.activo,\n    ba.foto_url,\n    bu.id AS usuario_id\n  FROM target_barberia tb\n  JOIN barber_access ba ON true\n  LEFT JOIN barber_users bu ON bu.email = ba.email\n  WHERE ba.nombre IS NOT NULL\n),\nbarbers_insert AS (\n  INSERT INTO public.barberos (barberia_id, nombre, activo, foto_url, usuario_id)\n  SELECT barberia_id, nombre, activo, foto_url, usuario_id\n  FROM barber_rows\n  RETURNING id, nombre, usuario_id\n)\nSELECT json_build_object(\n  'ok', (SELECT id FROM target_barberia LIMIT 1) IS NOT NULL,\n  'message', 'Onboarding atómico completado',\n  'id', (SELECT id FROM target_barberia LIMIT 1),\n  'slug', (SELECT slug FROM target_barberia LIMIT 1),\n  'nombre', (SELECT nombre FROM target_barberia LIMIT 1),\n  'owner_id', (SELECT owner_id FROM target_barberia LIMIT 1),\n  'servicios_count', (SELECT count(*) FROM services_insert),\n  'horarios_count', (SELECT count(*) FROM hours_insert),\n  'barberos_count', (SELECT count(*) FROM barbers_insert)\n) AS result;",
         "options": {
-          "queryReplacement": "={{ [Number($node[\"Crear barberia\"].json[\"id\"] ?? 0), JSON.stringify($node[\"Code - session claims\"].json.draft ?? $node[\"Code - session claims\"].json ?? {})] }}"
+          "queryReplacement": "={{ [Boolean(.auth_ok), Number(.auth_user_id ?? 0), Number(.barberia_id ?? .barberia?.id ?? .draft?.barberia?.id ?? 0), (.slug ?? .barberia?.slug ?? .draft?.barberia?.slug ?? \"\").toString(), (.nombre ?? .barberia?.nombre ?? .draft?.barberia?.nombre ?? \"\").toString(), (.telefono ?? .barberia?.telefono ?? .draft?.barberia?.telefono ?? \"\").toString(), (.admin?.email ?? .accesos?.admin?.email ?? .draft?.accesos?.admin?.email ?? .admin_email ?? \"\").toString(), (.direccion ?? .barberia?.direccion ?? .draft?.barberia?.direccion ?? \"\").toString(), (.ciudad ?? .barberia?.ciudad ?? .draft?.barberia?.ciudad ?? \"\").toString(), Number(.slot_min ?? .barberia?.slot_min ?? .draft?.barberia?.slot_min ?? 15), JSON.stringify(.draft ??  ?? {})] }}"
         }
       },
       "id": "sync-source-truth",
@@ -278,7 +164,7 @@
       "main": [
         [
           {
-            "node": "Crear barberia",
+            "node": "Sincronizar fuente verdad",
             "type": "main",
             "index": 0
           }
