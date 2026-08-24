@@ -107,6 +107,7 @@ async function applyBaseline(database, include1500 = true, include1600 = true) {
   ];
   if (include1500) files.push('migrations/20260803_1500_wc012_provision_ba_app.sql');
   if (include1600) files.push('migrations/20260810_1600_wc012_payment_security_remediation.sql');
+  if (include1600) files.push('migrations/20260810_1700_wc006_runtime_license_transition.sql');
   for (const file of files) await applySql(database, file);
 }
 
@@ -507,14 +508,17 @@ async function main() {
   try {
     await applyBaseline(dbName, true, true);
     await applySql(dbName, 'migrations/20260810_1600_wc012_payment_security_remediation.sql');
+    await applySql(dbName, 'migrations/20260810_1700_wc006_runtime_license_transition.sql');
     const fixtures = await ensureFixtures(dbName);
     await runCrossTenant(dbName, fixtures);
     await runOutbox(dbName);
     await configureTemporaryRolePasswords(dbName);
     await runRoles(dbName);
+    await applySql(dbName, 'migrations/20260810_1700_wc006_runtime_license_transition_rollback.sql');
     await applySql(dbName, 'migrations/20260810_1600_wc012_payment_security_remediation_rollback.sql');
     const afterRollback = await withClient(dbName, (c) => snapshot(c));
     await applySql(dbName, 'migrations/20260810_1600_wc012_payment_security_remediation.sql');
+    await applySql(dbName, 'migrations/20260810_1700_wc006_runtime_license_transition.sql');
     const afterReapply = await withClient(dbName, (c) => snapshot(c));
     report.rollback_reapply = {
       after_rollback_counts: afterRollback,

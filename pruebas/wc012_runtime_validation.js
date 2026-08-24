@@ -122,6 +122,7 @@ async function main() {
     'migrations/20260803_1400_wc011_harden_payment_reconciliation.sql',
     'migrations/20260803_1500_wc012_provision_ba_app.sql',
     'migrations/20260810_1600_wc012_payment_security_remediation.sql',
+    'migrations/20260810_1700_wc006_runtime_license_transition.sql',
   ].map((f) => path.join(root, f));
 
   await withClient(env.STAGING_DB_NAME, async (c) => {
@@ -265,8 +266,11 @@ async function main() {
     });
 
     const rollbackFile = path.join(root, 'migrations/20260810_1600_wc012_payment_security_remediation_rollback.sql');
+    const wc006RollbackFile = path.join(root, 'migrations/20260810_1700_wc006_runtime_license_transition_rollback.sql');
+    await applySql(dbName, wc006RollbackFile);
     await applySql(dbName, rollbackFile);
     await applySql(dbName, path.join(root, 'migrations/20260810_1600_wc012_payment_security_remediation.sql'));
+    await applySql(dbName, path.join(root, 'migrations/20260810_1700_wc006_runtime_license_transition.sql'));
 
     console.log(JSON.stringify({
       database: dbName,

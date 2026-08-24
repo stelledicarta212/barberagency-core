@@ -34,6 +34,20 @@ async function cleanupRecoveryFixtures() {
         `);
     }
 
+    if (invoiceList) {
+        await runSQL(`
+            DELETE FROM public.business_license_events
+            WHERE license_id IN (
+                SELECT id FROM public.business_licenses
+                WHERE metadata->>'invoice_id' IN (${invoiceList})
+            );
+        `);
+        await runSQL(`
+            DELETE FROM public.business_licenses
+            WHERE metadata->>'invoice_id' IN (${invoiceList});
+        `);
+    }
+
     await runSQL(`
         DELETE FROM public.payment_transactions
         WHERE provider_payment_id = '${PROVIDER_REF}'
@@ -77,7 +91,19 @@ async function cleanupCheckoutFixtures(checkoutId) {
     const invoiceIds = invoiceRows.map((row) => row.id);
     const invoiceList = invoiceIds.map((id) => `'${id}'`).join(',');
 
-    if (!invoiceList) return;
+        if (!invoiceList) return;
+
+    await runSQL(`
+        DELETE FROM public.business_license_events
+        WHERE license_id IN (
+            SELECT id FROM public.business_licenses
+            WHERE metadata->>'invoice_id' IN (${invoiceList})
+        );
+    `);
+    await runSQL(`
+        DELETE FROM public.business_licenses
+        WHERE metadata->>'invoice_id' IN (${invoiceList});
+    `);
 
     const transactionRows = await runSQL(`
         SELECT pt.id
@@ -135,16 +161,46 @@ async function main() {
         await runSQL('RESET ROLE;');
         await cleanupCheckoutFixtures(checkoutId);
 
+        await runSQL(`
+            UPDATE public.billing_checkouts
+               SET provider_checkout_id = '${PROVIDER_REF}',
+                   owner_user_id = 10
+             WHERE id = '${checkoutId}';
+        `);
+
         const invoice = await runSQL(`
             INSERT INTO public.billing_invoices (id, barberia_id, amount, currency, status, due_date, metadata)
-            VALUES (gen_random_uuid(), 10, 50000.00, 'COP', 'open', now(), jsonb_build_object('checkout_id', '${checkoutId}'))
+            VALUES (
+                gen_random_uuid(),
+                10,
+                50000.00,
+                'COP',
+                'open',
+                now(),
+                jsonb_build_object(
+                    'checkout_id', '${checkoutId}',
+                    'external_reference', '${extRef}',
+                    'provider_checkout_id', '${PROVIDER_REF}',
+                    'provider_payment_id', '${PROVIDER_REF}',
+                    'provider_event_id', '${PROVIDER_REF}',
+                    'billing_term', 'monthly'
+                )
+            )
             RETURNING id;
         `);
         const invoiceId = invoice[0].id;
 
         await runSQL(`
-            INSERT INTO public.payment_attempts (id, barberia_id, invoice_id, amount, currency, provider, provider_ref, status, created_at)
-            VALUES ('${ATTEMPT_ID}', 10, '${invoiceId}', 50000.00, 'COP', 'mercadopago', '${PROVIDER_REF}', 'pending', now() - interval '2 hours');
+            INSERT INTO public.payment_attempts (
+                id, barberia_id, invoice_id, amount, currency, provider, provider_ref, status,
+                provider_event_id, provider_checkout_id, external_reference, expected_amount,
+                expected_currency, provider_transaction_amount, provider_currency_id, created_at
+            )
+            VALUES (
+                '${ATTEMPT_ID}', 10, '${invoiceId}', 50000.00, 'COP', 'mercadopago', '${PROVIDER_REF}', 'pending',
+                '${PROVIDER_REF}', '${PROVIDER_REF}', '${extRef}', 50000.00,
+                'COP', 50000.00, 'COP', now() - interval '2 hours'
+            );
         `);
 
         // Test Case A: Mercado Pago approved but webhook not received
