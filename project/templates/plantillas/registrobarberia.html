@@ -1101,6 +1101,7 @@
 
     function validateBarberRows(rows) {
       const isEdit = isEditIntent();
+      const adminEmail = clean(draft.accesos && draft.accesos.admin && draft.accesos.admin.email).toLowerCase();
       const normalized = rows.map((row, index) => ({
         _index: index + 1,
         id: Number(row.id || 0) || 0,
@@ -1146,6 +1147,7 @@
 
       return {
         ok: true,
+        adminAlsoBarber: Boolean(adminEmail && filled.some((row) => row.email === adminEmail)),
         rows: filled.map((row) => ({
           id: row.id || undefined,
           usuario_id: row.usuario_id || undefined,
@@ -1920,6 +1922,8 @@
 
     // SECCION: Resumen final y acciones posteriores a crear la barberia.
     function buildReviewCards() {
+      const normalizedAdminEmail = clean(draft.accesos.admin.email).toLowerCase();
+      const adminAlsoBarber = Boolean(normalizedAdminEmail && getBarberRows().some((row) => clean(row.email).toLowerCase() === normalizedAdminEmail));
       const activeDays = (draft.horarios || [])
         .filter((item) => item.activo)
         .map((item) => {
@@ -2008,6 +2012,7 @@
                   <span class="ba-detail-label">Email de acceso</span>
                   <span class="ba-detail-val" style="word-break: break-all;">${escapeHtml(draft.accesos.admin.email || 'Sin email')}</span>
                 </div>
+                ${adminAlsoBarber ? '<p class="ba-helper">El administrador también trabaja como barbero. Se reutilizará el mismo usuario y se conservará el acceso administrativo.</p>' : ''}
               </div>
             </article>
 
@@ -2778,14 +2783,7 @@
 
     // SECCION: Helpers de comunicacion con PostgREST.
     function getOnboardingEndpointCandidates() {
-      const candidateList = [
-        clean(window.BA_ONBOARDING_ENDPOINT),
-        clean(API_URL),
-        DEFAULT_ONBOARDING_ENDPOINT,
-        DEFAULT_ONBOARDING_ENDPOINT_ALT,
-        DEFAULT_ONBOARDING_ENDPOINT_LEGACY
-      ].filter(Boolean);
-      return Array.from(new Set(candidateList));
+      return ["/api/onboarding/complete"];
     }
 
     function toPositiveInt(value) {
