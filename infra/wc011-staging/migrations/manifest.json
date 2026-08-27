@@ -1,0 +1,75 @@
+{
+  "project": "barberagency-wc011",
+  "environment": "staging",
+  "manifest_version": "1.0",
+  "WC011_REQUIRED_MIGRATIONS": [
+    {
+      "filename": "20260713_2033_add_billing_auditor_readonly.sql",
+      "sha256": "3261FB5E3475BE3CE1A5F11C8D063C23A07499B5638F4420B4EC3A24DF05E64B",
+      "order": 1,
+      "purpose": "Creación del rol de auditoría readonly",
+      "classification": "REQUIRED_DEPENDENCY"
+    },
+    {
+      "filename": "20260713_2034_harden_billing_audit_access.sql",
+      "sha256": "3D647B1A2110279A0C8F28CEE4D824C6A9822383F986AEC4F7032AA3B0DD8816",
+      "order": 2,
+      "purpose": "Hardenización de accesos y RLS de auditoría",
+      "classification": "REQUIRED_DEPENDENCY"
+    },
+    {
+      "filename": "20260803_1200_wc004_license_schema.sql",
+      "sha256": "83BFB87077686598232D14459505B9A92C601A7E14145E180A42FA675FBA11B4",
+      "order": 3,
+      "purpose": "Estructuras de licencias y auditoría WooCommerce-BarberAgency",
+      "classification": "REQUIRED_DIRECT"
+    },
+    {
+      "filename": "20260803_1400_wc011_harden_payment_reconciliation.sql",
+      "sha256": "2106D9388E3531BC997262A42855F29C233EDCA3D50B305A3325509EB0A00BD4",
+      "order": 4,
+      "purpose": "Reconciliación de cobros físicos segura e idempotente",
+      "classification": "REQUIRED_DIRECT"
+    },
+    {
+      "filename": "20260803_1500_wc012_provision_ba_app.sql",
+      "sha256": "4AD6F7316CB46F26C727A614421D49661EF742A4B7DF450DF4E828AE2A10DD42",
+      "order": 5,
+      "purpose": "Provisión del rol acotado ba_app para integración n8n/workers",
+      "classification": "SUPERSEDED_BY_WC012_1600"
+    },
+    {
+      "filename": "20260810_1600_wc012_payment_security_remediation.sql",
+      "sha256": "64C3074DF311E6EF81EB26C1C06A2ADD25573DDE9902DE23B727E5A48AC86FD3",
+      "order": 6,
+      "purpose": "Remediacion WC-012 de roles separados, firma, monto/moneda, binding e idempotencia",
+      "classification": "REQUIRED_DIRECT_SUPERSEDING"
+    },
+    {
+      "filename": "20260826_1200_wc011_starter_provisioning.sql",
+      "sha256": "3D74CC2EFB0AF3D13690C65E212917264700DF6A4DB5562F2F45DDFE71783C8E",
+      "order": 7,
+      "purpose": "Starter plan auto provisioning in onboarding",
+      "classification": "REQUIRED_DIRECT"
+    },
+    {
+      "filename": "20260826_1300_wc011_reserva_entitlement_check.sql",
+      "sha256": "B1882102B0E9941C83C5AB5243100B8F05FB12A9EF480409DDE56A10B6CC3B3C",
+      "order": 8,
+      "purpose": "Enforce subscription check in booking creation",
+      "classification": "REQUIRED_DIRECT"
+    }
+  ],
+  "WC011_EXCLUDED_MIGRATIONS": [
+    {
+      "filename": "20260723_2245_pos_charge_only_after_service.sql",
+      "purpose": "Lógica POS de citas",
+      "classification": "UNRELATED"
+    },
+    {
+      "filename": "20260803_1300_atomic_onboarding.sql",
+      "purpose": "Lógica de onboarding atómico",
+      "classification": "UNRELATED"
+    }
+  ]
+}
