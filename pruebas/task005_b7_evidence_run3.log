@@ -1,0 +1,129 @@
+﻿SANITIZED_COMMAND: powershell.exe -NoProfile -ExecutionPolicy Bypass -File pruebas/task005_b7_harness.ps1 -runSequence 3
+RUN_SEQUENCE: 3
+RUN_ID: b762f21b-067f-436f-9ad8-ac24e2bb6eba
+RUN_STARTED_AT_UTC: 2026-07-29T01:40:58.8854775Z
+Spinning up Docker container for B7...
+Waiting for database to accept connections...
+PostgreSQL Version: PostgreSQL 16.14 (Debian 16.14-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+Checking blocklist and identity...
+ENVIRONMENT_CLASSIFICATION = LOCAL_DOCKER_TEMPORARY
+PORTS_PUBLISHED = NO
+PROJECT_MOUNTS = NO
+REAL_CREDENTIALS = NO
+REAL_DATA = NO
+EXTERNAL_POSTGRESQL = NO
+
+--- Creating Synthetic Objects in PostgreSQL ---
+
+--- Testing Item R (EXECUTE Allowlist) ---
+TEST_CASE: Item_R_Negative
+EXPECTED: True
+ACTUAL: True
+ASSERTION: Must detect unauthorized EXECUTE privilege
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+TEST_CASE: Item_R_Positive
+EXPECTED: False
+ACTUAL: False
+ASSERTION: Must pass when EXECUTE privilege is revoked
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+
+--- Testing Item S (SECURITY DEFINER) ---
+TEST_CASE: Item_S_Negative
+EXPECTED: True
+ACTUAL: True
+ASSERTION: Must detect SECURITY DEFINER executable by PUBLIC
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+TEST_CASE: Item_S_Positive
+EXPECTED: False
+ACTUAL: False
+ASSERTION: Must pass when SECURITY DEFINER is restricted
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+
+--- Testing Item T (Write Privileges) ---
+TEST_CASE: Item_T_Negative
+EXPECTED: True
+ACTUAL: True
+ASSERTION: Must detect unauthorized table write privileges
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+TEST_CASE: Item_T_Positive
+EXPECTED: False
+ACTUAL: False
+ASSERTION: Must pass when write privileges are absent
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+
+--- Testing Item U (PUBLIC privileges via acldefault/aclexplode) ---
+TEST_CASE: Item_U_Negative
+EXPECTED: True
+ACTUAL: True
+ASSERTION: Must detect default EXECUTE to PUBLIC on null proacl function
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+TEST_CASE: Item_U_Positive
+EXPECTED: False
+ACTUAL: False
+ASSERTION: Must pass when default public EXECUTE is revoked (proacl non-null)
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+
+--- Testing Item V (Rollback on Error) ---
+TEST_CASE: Item_V_Negative
+EXPECTED: True
+ACTUAL: True
+ASSERTION: Must catch precise transaction failed exception
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+TEST_CASE: Item_V_Rollback
+EXPECTED: 0
+ACTUAL: 0
+ASSERTION: Transaction changes must be rolled back on error
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+TEST_CASE: Item_V_Positive
+EXPECTED: False
+ACTUAL: False
+ASSERTION: Must succeed and commit when no exception is raised
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+TEST_CASE: Item_V_Persist
+EXPECTED: 1
+ACTUAL: 1
+ASSERTION: Succeeded transaction must persist changes
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+--- Testing Assertion Mechanism Mismatch Check ---
+DELIBERATE_MISMATCH = YES
+EXPECTED_ASSERTION_FAILURE = YES
+OBSERVED_ASSERTION_FAILURE = YES
+MISMATCH_TEST_RESULT = PASS
+TEST_CASE: Item_V_Negative_Harness_Mismatch
+EXPECTED: True
+ACTUAL: True
+ASSERTION: Harness must detect unmatched exception
+PASS/FAIL: PASS
+EXIT_CODE: 0
+
+Cleaning up B7 container task005_b7_second_correction_tmp_local_only_disposable...
+CLEANUP_STATUS: SUCCESS
+RUN_FINISHED_AT_UTC: 2026-07-29T01:41:10.7333367Z
+Harness result: PASS
+HARNESS_GLOBAL_EXIT_CODE: 0
+POWERSHELL_REAL_EXIT_CODE: 0
+BLOCK_EXIT_CODE: 0
