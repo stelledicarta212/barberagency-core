@@ -23,6 +23,7 @@ const sandbox = {
   URL,
   URLSearchParams,
   safeSeedText(value) { return value == null ? '' : String(value).trim(); },
+  safeUrl(value) { return value == null ? '' : String(value).trim(); },
   buildRuntimeBranding(value = {}) { return { ...value }; },
   pickFirstImage(...values) { return values.find(Boolean) || ''; },
   safeImageUrl(value) { return value == null ? '' : String(value).trim(); },

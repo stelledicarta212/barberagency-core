@@ -2994,13 +2994,60 @@ function normalizeDayLabel(value) {
       return values.find((value) => typeof value === 'string' && value.trim().length > 0) || '';
     }
 
-    function normalizeImageUrl(value) {
+
+    const ALLOWED_PREVIEW_ORIGINS = new Set([
+      'https://barberagency-barberagency.gymh5g.easypanel.host',
+      'https://barberagency-app.gymh5g.easypanel.host',
+      'https://barberagency.com',
+      'https://www.barberagency.com'
+    ]);
+
+    function isSafeUrl(url) {
+      if (!url || typeof url !== 'string') return false;
+      const trimmed = url.trim();
+      if (!trimmed) return false;
+      if (/^(javascript|vbscript):/i.test(trimmed)) return false;
+      if (/^data:/i.test(trimmed)) return /^data:image\/(png|jpe?g|webp|gif);base64,[a-z0-9+/=]+$/i.test(trimmed);
+      if (trimmed.startsWith('/') || trimmed.startsWith('./') || trimmed.startsWith('wp-content/')) return true;
+      try {
+        const parsed = new URL(trimmed, window.location.href);
+        return parsed.protocol === 'https:' || ((parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') && parsed.protocol === 'http:');
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function safeUrl(value) {
       const raw = safeSeedText(value);
-      if (!raw) return '';
-      if (/^(https?:\/\/|data:image\/)/i.test(raw)) return raw;
+      if (!raw || !isSafeUrl(raw)) return '';
       if (raw.startsWith('/wp-content/')) return `${window.location.origin}${raw}`;
       if (raw.startsWith('wp-content/')) return `${window.location.origin}/${raw}`;
       return raw;
+    }
+
+    function isAllowedPreviewOrigin(origin) {
+      if (!origin || typeof origin !== 'string') return false;
+      if (window.location.origin && origin === window.location.origin) return true;
+      if (ALLOWED_PREVIEW_ORIGINS.has(origin)) return true;
+      if (window.location.protocol === 'file:' && (origin === 'null' || origin === '')) return true;
+      if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) return true;
+      return false;
+    }
+
+    function isAllowedPreviewSource(source) {
+      if (!source) return false;
+      return source === window.parent || source === window.opener;
+    }
+
+    function isAllowedPreviewEnvelope(data) {
+      if (!data || typeof data !== 'object') return false;
+      return data.source === 'ba-editor' ||
+        data.type === 'BA_BRANDING_UPDATE' ||
+        data.type === 'BA_EDITOR_PREVIEW_UPDATE';
+    }
+
+    function normalizeImageUrl(value) {
+      return safeUrl(value);
     }
 
     function safeImageUrl(url) {
@@ -3318,12 +3365,12 @@ function normalizeDayLabel(value) {
         barberos: Array.isArray(source?.barberos) ? source.barberos : Array.isArray(inherited?.barberos) ? inherited.barberos : [],
         horarios: Array.isArray(source?.horarios) ? source.horarios : Array.isArray(inherited?.horarios) ? inherited.horarios : [],
         slot_min: Number(source?.slot_min) || Number(inherited?.slot_min) || 0,
-        public_landing_url: safeSeedText(source?.public_landing_url || profile?.public_landing_url),
-        reservation_url: safeSeedText(source?.reservation_url || source?.url_reservas || profile?.reservation_url || profile?.url_reservas),
+        public_landing_url: safeUrl(source?.public_landing_url || profile?.public_landing_url),
+        reservation_url: safeUrl(source?.reservation_url || source?.url_reservas || profile?.reservation_url || profile?.url_reservas),
         direccion: safeSeedText(source?.direccion || profile?.direccion || inherited?.direccion || profile?.location_address || inherited?.location_address),
         location_address: safeSeedText(source?.location_address || profile?.location_address || source?.direccion || profile?.direccion || inherited?.location_address || inherited?.direccion),
-        location_map_url: safeSeedText(source?.location_map_url || profile?.location_map_url || source?.maps_url || profile?.maps_url || source?.map_url || profile?.map_url),
-        qr_url: safeSeedText(source?.qr_url || profile?.qr_url)
+        location_map_url: safeUrl(source?.location_map_url || profile?.location_map_url || source?.maps_url || profile?.maps_url || source?.map_url || profile?.map_url),
+        qr_url: safeUrl(source?.qr_url || profile?.qr_url)
       };
     }
 
@@ -3702,18 +3749,24 @@ function normalizeDayLabel(value) {
     }
 
     window.addEventListener('message', (ev) => {
+      const isEmbeddedOrPopup = (window.self !== window.top) || Boolean(window.opener);
+      if (!isEmbeddedOrPopup) return;
+      if (!isAllowedPreviewOrigin(ev?.origin)) return;
+      if (!isAllowedPreviewSource(ev?.source)) return;
+      if (!isAllowedPreviewEnvelope(ev?.data)) return;
+
       const data = ev?.data || {};
-      if (data?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(data.public_landing_url);
-      if (data?.reservation_url) window.BA_RESERVATION_URL = safeSeedText(data.reservation_url);
-      if (data?.qr_url) window.BA_QR_URL = safeSeedText(data.qr_url);
+      if (data?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeUrl(data.public_landing_url);
+      if (data?.reservation_url) window.BA_RESERVATION_URL = safeUrl(data.reservation_url);
+      if (data?.qr_url) window.BA_QR_URL = safeUrl(data.qr_url);
       if (data?.source === 'ba-editor') {
         applyBrandingPalette(data);
       }
       if (data.type !== 'BA_BRANDING_UPDATE') return;
       const payload = data.payload || {};
-      if (payload?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeSeedText(payload.public_landing_url);
-      if (payload?.reservation_url) window.BA_RESERVATION_URL = safeSeedText(payload.reservation_url);
-      if (payload?.qr_url) window.BA_QR_URL = safeSeedText(payload.qr_url);
+      if (payload?.public_landing_url) window.BA_PUBLIC_LANDING_URL = safeUrl(payload.public_landing_url);
+      if (payload?.reservation_url) window.BA_RESERVATION_URL = safeUrl(payload.reservation_url);
+      if (payload?.qr_url) window.BA_QR_URL = safeUrl(payload.qr_url);
       applyBrandingPalette(payload);
       applyInheritedCollections(
         payload.services || payload.inherited_services || payload.servicios,
