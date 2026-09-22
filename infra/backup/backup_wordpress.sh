@@ -10,7 +10,9 @@ set -euo pipefail
 CONFIG_FILE="${BACKUP_CONFIG:-/etc/barberagency/backup.env}"
 if [[ -f "$CONFIG_FILE" ]]; then
   # shellcheck source=/dev/null
+  set -a
   source "$CONFIG_FILE"
+  set +a
 elif [[ "${1:-}" != "--dry-run" ]]; then
   echo "[$(date -u +%FT%TZ)] [FATAL] Configuration file $CONFIG_FILE not found." >&2
   exit 1
@@ -119,9 +121,9 @@ echo "[$(date -u +%FT%TZ)] [INFO] Executing ${DUMP_BIN} on ${RESOLVED_WP_DB_CONT
 docker exec "${RESOLVED_WP_DB_CONTAINER}" "${DUMP_BIN}" -u "${WP_DB_USER}" -p"${WP_DB_PASS}" "${WP_DB_NAME}" | gzip > "${WP_DB_FILE}"
 echo "[$(date -u +%FT%TZ)] [INFO] WordPress database dump completed: $(stat -c%s "${WP_DB_FILE}") bytes."
 
-# 2. Archive wp-content/uploads from WordPress application container
+# 2. Archive wp-content/uploads from WordPress application container (/code/wp-content)
 echo "[$(date -u +%FT%TZ)] [INFO] Archiving wp-content/uploads from ${RESOLVED_WP_CONTAINER}..."
-docker exec "${RESOLVED_WP_CONTAINER}" tar -czf - -C /var/www/html/wp-content uploads > "${WP_UPLOADS_FILE}" || true
+docker exec "${RESOLVED_WP_CONTAINER}" tar -czf - -C /code/wp-content uploads > "${WP_UPLOADS_FILE}" || true
 echo "[$(date -u +%FT%TZ)] [INFO] wp-content/uploads archive completed: $(stat -c%s "${WP_UPLOADS_FILE}") bytes."
 
 # 3. Checksums

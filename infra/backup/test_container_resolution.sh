@@ -12,7 +12,9 @@ CONFIG_FILE="${BACKUP_CONFIG:-/etc/barberagency/backup.env}"
 if [[ -f "$CONFIG_FILE" ]]; then
   echo "[INFO] Loading configuration from ${CONFIG_FILE}..."
   # shellcheck source=/dev/null
+  set -a
   source "$CONFIG_FILE"
+  set +a
 else
   echo "[INFO] No config file at ${CONFIG_FILE}; evaluating with environment defaults."
 fi

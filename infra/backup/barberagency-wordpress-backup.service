@@ -1,0 +1,14 @@
+[Unit]
+Description=BarberAgency WordPress Database and Uploads Offsite Backup Service
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/barberagency/backup.env
+ExecStart=/usr/local/bin/backup_wordpress.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

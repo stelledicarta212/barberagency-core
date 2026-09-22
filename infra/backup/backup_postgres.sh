@@ -10,7 +10,9 @@ set -euo pipefail
 CONFIG_FILE="${BACKUP_CONFIG:-/etc/barberagency/backup.env}"
 if [[ -f "$CONFIG_FILE" ]]; then
   # shellcheck source=/dev/null
+  set -a
   source "$CONFIG_FILE"
+  set +a
 elif [[ "${1:-}" != "--dry-run" ]]; then
   echo "[$(date -u +%FT%TZ)] [FATAL] Configuration file $CONFIG_FILE not found." >&2
   exit 1

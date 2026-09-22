@@ -1,0 +1,11 @@
+[Unit]
+Description=Run BarberAgency WordPress Backup Daily
+Unit=barberagency-wordpress-backup.service
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+Persistent=true
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target
