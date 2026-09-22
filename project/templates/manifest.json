@@ -3,6 +3,7 @@
     "template_id": "v2",
     "name": "Esencia Premium",
     "file": "project/templates/plantillas/index_unico_v2.html",
+    "sha256": "5591efd84f87def86dfa987f86ce9c597dc23ba9a8a6db0a51e27a44dab45c34",
     "active": true,
     "legacy_wp_page_id": 1558
   },
@@ -10,6 +11,7 @@
     "template_id": "v3",
     "name": "V3",
     "file": "project/templates/plantillas/index_unico_v3_nueva.html",
+    "sha256": "d75df6b6860591828566f63802feebcb9b5865f749bc36be75d9702e7e68faff",
     "active": true,
     "legacy_wp_page_id": 1563
   },
@@ -17,6 +19,7 @@
     "template_id": "v4",
     "name": "V4",
     "file": "project/templates/plantillas/index_unico_v4_editorial.html",
+    "sha256": "9741a98cde6f2c15c9e49e0b2f95d01db75907d2e6460edd965bdc61de8ceebc",
     "active": true,
     "legacy_wp_page_id": 1568
   },
@@ -24,6 +27,7 @@
     "template_id": "v5",
     "name": "V5",
     "file": "project/templates/plantillas/index_unico_v5_1_azul_rojo_elegante.html",
+    "sha256": "d5bb78504250b84159803877e2449a0d9ce56101982d01a0d94a978043ab8615",
     "active": true,
     "legacy_wp_page_id": 3687
   },
@@ -31,6 +35,7 @@
     "template_id": "v6",
     "name": "V6",
     "file": "project/templates/plantillas/index_unico_v6_negro_dorado.html",
+    "sha256": "ab058bd71c6af6bb05cc62120a929d731bbc0a0c9d93b38322ddb0e24eb22a49",
     "active": true,
     "legacy_wp_page_id": 1578
   },
@@ -38,6 +43,7 @@
     "template_id": "v7",
     "name": "V7",
     "file": "project/templates/plantillas/index_unicov7.html",
+    "sha256": "d7e599202ba8379b59f0a1cfb334ad3562cdd754982b4a26563252163856c48a",
     "active": true,
     "legacy_wp_page_id": null
   },
@@ -45,14 +51,16 @@
     "template_id": "v8",
     "name": "Neón Oscuro Eléctrico",
     "file": "project/templates/plantillas/index_unico_v8_neon_oscuro.html",
-    "active": true,
+    "sha256": null,
+    "active": false,
     "legacy_wp_page_id": null
   },
   "electric-club": {
     "template_id": "electric-club",
     "name": "Electric Club",
     "file": "project/templates/plantillas/index_unico_v6_electric_club.html",
-    "active": true,
+    "sha256": "3ae4ae421d7adfdc282d31d76b3dba4e90898a74a75f22aee2774effae6571e8",
+    "active": false,
     "legacy_wp_page_id": null
   }
 }
