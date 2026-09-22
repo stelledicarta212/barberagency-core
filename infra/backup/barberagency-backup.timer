@@ -1,0 +1,11 @@
+[Unit]
+Description=Run BarberAgency PostgreSQL Backup Hourly
+Unit=barberagency-backup.service
+
+[Timer]
+OnCalendar=*-*-* *:00:00
+Persistent=true
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target
