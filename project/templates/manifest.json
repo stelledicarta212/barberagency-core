@@ -19,7 +19,7 @@
     "template_id": "v4",
     "name": "V4",
     "file": "project/templates/plantillas/index_unico_v4_editorial.html",
-    "sha256": "d25ae555f1093eaaf4d521228802d70ea83c1ff473dd77eb15549c64400c61314",
+    "sha256": "d25ae555f1093eaaf4d52122802d70ea83c1ff473dd77eb15549c64400c61314",
     "active": true,
     "legacy_wp_page_id": 1568
   },
