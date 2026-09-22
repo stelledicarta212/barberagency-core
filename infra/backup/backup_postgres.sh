@@ -2,25 +2,68 @@
 # ==============================================================================
 # BarberAgency — Production PostgreSQL Hourly Offsite Backup Script
 # Fail-closed, encrypted, integrity-checked with SHA-256
+# Resilient to EasyPanel dynamic container names via image ancestor discovery
 # ==============================================================================
 set -euo pipefail
 
 # 1. Load root-only configuration
 CONFIG_FILE="${BACKUP_CONFIG:-/etc/barberagency/backup.env}"
-if [[ ! -f "$CONFIG_FILE" ]]; then
+if [[ -f "$CONFIG_FILE" ]]; then
+  # shellcheck source=/dev/null
+  source "$CONFIG_FILE"
+elif [[ "${1:-}" != "--dry-run" ]]; then
   echo "[$(date -u +%FT%TZ)] [FATAL] Configuration file $CONFIG_FILE not found." >&2
   exit 1
+else
+  echo "[$(date -u +%FT%TZ)] [WARN] Configuration file $CONFIG_FILE not found; proceeding in dry-run mode." >&2
 fi
-# shellcheck source=/dev/null
-source "$CONFIG_FILE"
 
-# Required configuration variables:
-# PG_CONTAINER (e.g. barberagency_postgres or barberagency_db)
+# Required configuration variables (for backup execution):
 # PG_DATABASE (e.g. barberagency)
 # PG_USER (e.g. postgres)
 # S3_BUCKET (e.g. barberagency-backups)
-# S3_ENDPOINT (e.g. https://... or default AWS)
+# S3_ENDPOINT (optional custom S3 endpoint)
 # BACKUP_LOCAL_DIR (e.g. /var/backups/barberagency/postgres)
+# Optional override:
+# PG_CONTAINER (if unset, auto-detected via ancestor=postgres:17)
+
+resolve_postgres_container() {
+  if [[ -n "${PG_CONTAINER:-}" ]]; then
+    echo "[$(date -u +%FT%TZ)] [INFO] Using explicit PG_CONTAINER override: ${PG_CONTAINER}" >&2
+    echo "${PG_CONTAINER}"
+    return 0
+  fi
+
+  echo "[$(date -u +%FT%TZ)] [INFO] Resolving PostgreSQL container dynamically (filter: ancestor=postgres:17)..." >&2
+  local matches=()
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && matches+=("$line")
+  done < <(docker ps --filter "ancestor=postgres:17" --format "{{.Names}}")
+
+  local count="${#matches[@]}"
+  if [[ "${count}" -eq 0 ]]; then
+    echo "[$(date -u +%FT%TZ)] [FATAL] No running PostgreSQL container found matching ancestor=postgres:17. Fail-closed." >&2
+    exit 1
+  elif [[ "${count}" -gt 1 ]]; then
+    echo "[$(date -u +%FT%TZ)] [FATAL] Ambiguous PostgreSQL containers found (${count}): ${matches[*]}. Fail-closed." >&2
+    exit 1
+  fi
+
+  local resolved="${matches[0]}"
+  echo "[$(date -u +%FT%TZ)] [INFO] Resolved PostgreSQL container: ${resolved}" >&2
+  echo "${resolved}"
+}
+
+RESOLVED_PG_CONTAINER=$(resolve_postgres_container)
+
+# Support dry-run mode for container resolution and tool verification without executing backup
+if [[ "${1:-}" == "--dry-run" ]]; then
+  echo "[$(date -u +%FT%TZ)] [DRY-RUN] Target PostgreSQL container: ${RESOLVED_PG_CONTAINER}"
+  echo "[$(date -u +%FT%TZ)] [DRY-RUN] Verifying pg_dump binary presence inside container..."
+  docker exec "${RESOLVED_PG_CONTAINER}" which pg_dump
+  echo "[$(date -u +%FT%TZ)] [DRY-RUN] Resolution and binary check successful (POSTGRES_MATCHES=1)."
+  exit 0
+fi
 
 BACKUP_LOCAL_DIR="${BACKUP_LOCAL_DIR:-/var/backups/barberagency/postgres}"
 mkdir -p "$BACKUP_LOCAL_DIR"
@@ -32,12 +75,12 @@ LOCAL_DUMP_PATH="${BACKUP_LOCAL_DIR}/${BACKUP_FILENAME}"
 CHECKSUM_FILE="${LOCAL_DUMP_PATH}.sha256"
 METADATA_FILE="${LOCAL_DUMP_PATH}.json"
 
-echo "[$(date -u +%FT%TZ)] [INFO] Starting PostgreSQL backup for ${PG_DATABASE}..."
+echo "[$(date -u +%FT%TZ)] [INFO] Starting PostgreSQL backup for ${PG_DATABASE} using container ${RESOLVED_PG_CONTAINER}..."
 
-# 2. Execute pg_dump custom format (-Fc) directly from Docker container
+# 2. Execute pg_dump custom format (-Fc) directly from resolved Docker container
 # -Fc includes schemas, tables, data, sequences, functions, views, triggers, RLS, indexes, constraints
 START_SEC=$(date +%s)
-docker exec -t "${PG_CONTAINER}" pg_dump -U "${PG_USER}" -d "${PG_DATABASE}" -Fc > "${LOCAL_DUMP_PATH}"
+docker exec "${RESOLVED_PG_CONTAINER}" pg_dump -U "${PG_USER}" -d "${PG_DATABASE}" -Fc > "${LOCAL_DUMP_PATH}"
 END_SEC=$(date +%s)
 DUMP_DURATION=$((END_SEC - START_SEC))
 
@@ -66,7 +109,8 @@ cat << EOF > "${METADATA_FILE}"
   "sha256": "${SHA256_HASH}",
   "format": "custom",
   "compression": "zlib_in_pgdump",
-  "duration_seconds": ${DUMP_DURATION}
+  "duration_seconds": ${DUMP_DURATION},
+  "container": "${RESOLVED_PG_CONTAINER}"
 }
 EOF
 
