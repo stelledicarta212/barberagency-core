@@ -3,7 +3,7 @@
     "template_id": "v2",
     "name": "Esencia Premium",
     "file": "project/templates/plantillas/index_unico_v2.html",
-    "sha256": "5591efd84f87def86dfa987f86ce9c597dc23ba9a8a6db0a51e27a44dab45c34",
+    "sha256": "368d4aeee4dd370b80a433c60428ce102b946e16069e6e47a64c18f4bbb9547d",
     "active": true,
     "legacy_wp_page_id": 1558
   },
@@ -11,7 +11,7 @@
     "template_id": "v3",
     "name": "V3",
     "file": "project/templates/plantillas/index_unico_v3_nueva.html",
-    "sha256": "d75df6b6860591828566f63802feebcb9b5865f749bc36be75d9702e7e68faff",
+    "sha256": "01a64756a1619e0c62a99c4f0ba4793d65789e83718bda1e7d26ef0c5ea93789",
     "active": true,
     "legacy_wp_page_id": 1563
   },
@@ -19,7 +19,7 @@
     "template_id": "v4",
     "name": "V4",
     "file": "project/templates/plantillas/index_unico_v4_editorial.html",
-    "sha256": "9741a98cde6f2c15c9e49e0b2f95d01db75907d2e6460edd965bdc61de8ceebc",
+    "sha256": "d25ae555f1093eaaf4d521228802d70ea83c1ff473dd77eb15549c64400c61314",
     "active": true,
     "legacy_wp_page_id": 1568
   },
@@ -27,7 +27,7 @@
     "template_id": "v5",
     "name": "V5",
     "file": "project/templates/plantillas/index_unico_v5_1_azul_rojo_elegante.html",
-    "sha256": "d5bb78504250b84159803877e2449a0d9ce56101982d01a0d94a978043ab8615",
+    "sha256": "65c43204c53b307d8bddc4154f5ef15e5d36fb52b60fea5df944a0bea20a2dd5",
     "active": true,
     "legacy_wp_page_id": 3687
   },
@@ -35,7 +35,7 @@
     "template_id": "v6",
     "name": "V6",
     "file": "project/templates/plantillas/index_unico_v6_negro_dorado.html",
-    "sha256": "ab058bd71c6af6bb05cc62120a929d731bbc0a0c9d93b38322ddb0e24eb22a49",
+    "sha256": "f0f61ed3843f867b28d1dc20c868db18b1e047f93b42b71fb7466029e9baf0bb",
     "active": true,
     "legacy_wp_page_id": 1578
   },
@@ -43,7 +43,7 @@
     "template_id": "v7",
     "name": "V7",
     "file": "project/templates/plantillas/index_unicov7.html",
-    "sha256": "d7e599202ba8379b59f0a1cfb334ad3562cdd754982b4a26563252163856c48a",
+    "sha256": "58c76f32ac80b68d69d30ec0d975c70f85c1878ea7ce9b9d5285e7cfde899b25",
     "active": true,
     "legacy_wp_page_id": null
   },
