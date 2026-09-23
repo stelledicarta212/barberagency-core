@@ -44,8 +44,8 @@ function makeRequest(url, method, headers = {}, body = null) {
 
 (async () => {
   let originalHash = null;
-  const email = 'calvis590@gmail.com';
-  const tempPassword = 'temp_password_123';
+  const email = process.env.TEST_USER_EMAIL || 'user@example.com';
+  const tempPassword = process.env.TEST_TEMP_PASSWORD || 'temp_password_123';
 
   try {
     // 1. Setup DB and backup hash

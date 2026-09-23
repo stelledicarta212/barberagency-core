@@ -5,7 +5,8 @@ if (!process.argv.includes('--override-guardrail')) {
 
 const https = require('https');
 
-const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZWRlNzUwOC05OTdhLTQ0NzUtYjJiOC05YmUyZTNhNmE0MTUiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiOWQ4MDYyMDAtNWM4Ni00ZDQ1LWIyM2ItZDEyYzc2MmMwMGEyIiwiaWF0IjoxNzc1OTIxODk4fQ.S-gQd2FKYczqgzSIqxLv3tWTkS4mJk-lvt0DMAtmfKY';
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') });
+const token = process.env.N8N_API_KEY;
 const WORKFLOW_ID = 'iUZCTRli7ghGFrEb';
 const HOST = 'barberagency-n8n.gymh5g.easypanel.host';
 

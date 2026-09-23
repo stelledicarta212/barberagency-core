@@ -70,9 +70,9 @@ async function loginAndGetCookie(email, password) {
 (async () => {
   let ownerHash = null;
   let adminHash = null;
-  const ownerEmail = 'pildorasdeautomatizacion@gmail.com';
-  const adminEmail = 'calvis590@gmail.com';
-  const tempPassword = 'temp_password_123';
+  const ownerEmail = process.env.TEST_OWNER_EMAIL || 'owner@example.com';
+  const adminEmail = process.env.TEST_ADMIN_EMAIL || 'admin@example.com';
+  const tempPassword = process.env.TEST_TEMP_PASSWORD || 'temp_password_123';
 
   try {
     await setup();

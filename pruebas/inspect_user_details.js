@@ -12,21 +12,24 @@ const { setup, cleanup, runSQL } = require('./run_postgres_query');
     `);
     console.log('Barberia 198:', barberia);
 
-    console.log('\n--- Querying User calvis590@gmail.com details ---');
+    const email1 = process.env.TEST_USER_EMAIL_1 || 'user1@example.com';
+    const email2 = process.env.TEST_USER_EMAIL_2 || 'user2@example.com';
+
+    console.log(`\n--- Querying User ${email1} details ---`);
     const user = await runSQL(`
       SELECT id, email, role, nombre 
       FROM public.usuarios 
-      WHERE email = 'calvis590@gmail.com';
-    `);
-    console.log('User:', user);
+      WHERE email = $1;
+    `, [email1]);
+    console.log('User 1:', user);
 
-    console.log('\n--- Querying User pildorasdeautomatizacion@gmail.com details ---');
+    console.log(`\n--- Querying User ${email2} details ---`);
     const user2 = await runSQL(`
       SELECT id, email, role, nombre 
       FROM public.usuarios 
-      WHERE email = 'pildorasdeautomatizacion@gmail.com';
-    `);
-    console.log('User pildoras:', user2);
+      WHERE email = $1;
+    `, [email2]);
+    console.log('User 2:', user2);
 
   } catch (e) {
     console.error('Error:', e);

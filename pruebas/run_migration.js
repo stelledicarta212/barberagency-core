@@ -35,18 +35,19 @@ const { setup, cleanup, runSQL } = require('./run_postgres_query');
     `);
     console.log('Owners migrated:', migrationResult);
 
-    // 3. Create explicit member for calvis590@gmail.com on barberia 198
-    console.log('Creating explicit admin access for calvis590@gmail.com on barberia 198...');
+    // 3. Create explicit member for initial admin on barberia 198
+    const initialAdminEmail = (process.env.INITIAL_ADMIN_EMAIL || 'admin@example.com').toLowerCase();
+    console.log(`Creating explicit admin access for ${initialAdminEmail} on barberia 198...`);
     const adminResult = await runSQL(`
       INSERT INTO public.barberia_miembros (barberia_id, usuario_id, email, rol, activo)
-      SELECT 198, u.id, 'calvis590@gmail.com', 'admin', true
+      SELECT 198, u.id, $1, 'admin', true
       FROM public.usuarios u
-      WHERE lower(u.email) = 'calvis590@gmail.com'
+      WHERE lower(u.email) = $1
         AND NOT EXISTS (
           SELECT 1 FROM public.barberia_miembros bm 
-          WHERE bm.barberia_id = 198 AND lower(bm.email) = 'calvis590@gmail.com'
+          WHERE bm.barberia_id = 198 AND lower(bm.email) = $1
         );
-    `);
+    `, [initialAdminEmail]);
     console.log('Admin record inserted:', adminResult);
 
     // 4. Enable RLS and Create Policies

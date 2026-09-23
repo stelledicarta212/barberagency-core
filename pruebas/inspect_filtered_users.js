@@ -4,11 +4,9 @@ const { setup, cleanup, runSQL } = require('./run_postgres_query');
   try {
     await setup();
     console.log('--- TARGET USERS ---');
-    const emails = [
-      'pildorasdeautomatizacion@gmail.com',
-      'carlosalbertoalvisrodriguez@gmail.com',
-      'barberopruab4@gmail.com'
-    ];
+    const emails = process.env.TEST_TARGET_EMAILS
+      ? process.env.TEST_TARGET_EMAILS.split(',').map(e => e.trim().toLowerCase())
+      : ['owner@example.com', 'admin@example.com', 'barbero@example.com'];
     const users = await runSQL(
       `SELECT id, email, nombre, role FROM public.usuarios WHERE lower(email) = ANY($1);`,
       [emails]

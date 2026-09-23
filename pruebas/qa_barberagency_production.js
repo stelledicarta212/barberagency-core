@@ -71,8 +71,8 @@ async function loginAndGetCookie(email, password) {
   console.log('=== STARTING DEEP QA AUDIT ON PRODUCTION ===');
   const qaResults = [];
   let ownerHash = null;
-  const ownerEmail = 'pildorasdeautomatizacion@gmail.com';
-  const tempPassword = 'temp_password_123';
+  const ownerEmail = process.env.QA_OWNER_EMAIL || 'owner@example.com';
+  const tempPassword = process.env.QA_TEMP_PASSWORD || 'temp_password_123';
 
   try {
     await setup();

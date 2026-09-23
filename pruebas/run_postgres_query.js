@@ -1,7 +1,10 @@
 const https = require('https');
 const fs = require('fs');
-
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0ZWRlNzUwOC05OTdhLTQ0NzUtYjJiOC05YmUyZTNhNmE0MTUiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiOWQ4MDYyMDAtNWM4Ni00ZDQ1LWIyM2ItZDEyYzc2MmMwMGEyIiwiaWF0IjoxNzc1OTIxODk4fQ.S-gQd2FKYczqgzSIqxLv3tWTkS4mJk-lvt0DMAtmfKY';
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env.local') });
+const token = process.env.N8N_API_KEY;
+if (!token) {
+  throw new Error('N8N_API_KEY environment variable is required');
+}
 let tempWorkflowId = null;
 
 function req(method, apiPath, body) {
@@ -168,16 +171,127 @@ async function cleanup() {
   }
 }
 
-async function runSQL(query, params = []) {
-  const res = await callWebhook({ query, params });
-  return res.data;
+async function runSQL(query, credId = 'SOV6oSyuHI9cxgLF', continueOnFail = false) {
+  const uniquePath = `temp_pg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const workflowDefinition = {
+    name: `Temp Postgres Exec Webhook ${uniquePath}`,
+    nodes: [
+      {
+        parameters: {
+          httpMethod: "POST",
+          path: uniquePath,
+          responseMode: "responseNode"
+        },
+        id: "webhook-trigger",
+        name: "Webhook",
+        type: "n8n-nodes-base.webhook",
+        typeVersion: 2.1,
+        position: [100, 300]
+      },
+      {
+        parameters: {
+          operation: "executeQuery",
+          query: query
+        },
+        id: "postgres-query",
+        name: "PG - execute query",
+        type: "n8n-nodes-base.postgres",
+        typeVersion: 2.4,
+        position: [300, 300],
+        credentials: {
+          postgres: {
+            id: credId
+          }
+        },
+        continueOnFail: continueOnFail
+      },
+      {
+        parameters: {
+          jsCode: "const all = $input.all().map(item => item.json);\nreturn [{ json: { results: all } }];"
+        },
+        id: "aggregate-results",
+        name: "Aggregate Results",
+        type: "n8n-nodes-base.code",
+        typeVersion: 2,
+        position: [500, 300]
+      },
+      {
+        parameters: {
+          respondWith: "text",
+          responseBody: "={{ JSON.stringify($json.results) }}"
+        },
+        id: "respond-node",
+        name: "Respond to Webhook",
+        type: "n8n-nodes-base.respondToWebhook",
+        typeVersion: 1.1,
+        position: [700, 300]
+      }
+    ],
+    connections: {
+      "Webhook": {
+        "main": [[{ node: "PG - execute query", type: "main", index: 0 }]]
+      },
+      "PG - execute query": {
+        "main": [[{ node: "Aggregate Results", type: "main", index: 0 }]]
+      },
+      "Aggregate Results": {
+        "main": [[{ node: "Respond to Webhook", type: "main", index: 0 }]]
+      }
+    },
+    settings: {
+      executionOrder: "v1"
+    }
+  };
+
+  const wf = await req('POST', '/api/v1/workflows', workflowDefinition);
+  await req('POST', `/api/v1/workflows/${wf.id}/activate`);
+  
+  await new Promise(r => setTimeout(r, 2500));
+
+  let result;
+  try {
+    const data = JSON.stringify({});
+    const res = await new Promise((resolve, reject) => {
+      const options = {
+        hostname: 'barberagency-n8n.gymh5g.easypanel.host',
+        port: 443,
+        path: `/webhook/${uniquePath}`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(data)
+        }
+      };
+      const r = https.request(options, (res) => {
+        let raw = '';
+        res.on('data', c => raw += c);
+        res.on('end', () => {
+          let parsed;
+          try { parsed = raw ? JSON.parse(raw) : {}; } catch { parsed = { raw }; }
+          resolve({ status: res.statusCode, data: parsed });
+        });
+      });
+      r.on('error', reject);
+      r.write(data);
+      r.end();
+    });
+
+    if (res.status !== 200) {
+      throw new Error(`Execution HTTP ${res.status}: ${JSON.stringify(res.data)}`);
+    }
+    result = res.data;
+  } finally {
+    await req('POST', `/api/v1/workflows/${wf.id}/deactivate`).catch(() => {});
+    await req('DELETE', `/api/v1/workflows/${wf.id}`).catch(() => {});
+    await new Promise(r => setTimeout(r, 1000));
+  }
+  return result;
 }
 
 module.exports = {
-  setup,
-  cleanup,
   runSQL,
-  callWebhook
+  callWebhook,
+  req
 };
 
 // If run directly, run a quick query to test:

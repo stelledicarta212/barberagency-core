@@ -1,26 +1,38 @@
+# Dependencies
 node_modules/
+
+# Environment files and credentials
 .env
 .env.*
-!.env.example
+*.env
+*.env.*
+!*.env.example
+!*.env.*.example
+!staging.env.example
+!backup.env.example
 
+# Next.js & Build outputs
 .next/
 dist/
 build/
 coverage/
 
+# OS files
 .DS_Store
 Thumbs.db
 
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Temporary test files
 tmp_*.html
 tmp_*.json
 tmp_*.js
 
-# Panel repo lives as a sibling folder: ../panel_de_barberia
+# Panel repo lives as a sibling folder
 _tmp_panel_de_barberia/
 _work_panel_de_barberia/
 
@@ -28,36 +40,23 @@ _work_panel_de_barberia/
 scratch/
 pos_workflow*.json
 
+# IDE config
 .idea/
 .vscode/
 
-# Local workflow exports with secrets
-MedFlow_AI_Workflow_CORREGIDO_PRO.full.json
-_wf_patch.json
-_wf_payload.json
-_wf_raw.json
+# Local worktrees
+.codex-worktrees/
 
-# Local workflow exports with secrets
-MedFlow_AI_Workflow_CORREGIDO_PRO.full.json
-_wf_patch.json
-_wf_payload.json
-_wf_raw.json
+# Test executions & dumps containing JWTs, credentials, or PII
+pruebas/diagnostic_output.json
+pruebas/execution_*.json
+pruebas/state_*.json
+pruebas/state_198_response.json
+pruebas/*_creds*.json
+pruebas/postgres_creds.json
+pruebas/seed_n8n_credentials.js
+pruebas/backups/
 
-# Local workflow exports with secrets
-MedFlow_AI_Workflow_CORREGIDO_PRO.full.json
-_wf_patch.json
-_wf_payload.json
-_wf_raw.json
-# Local workflow exports with secrets
-MedFlow_AI_Workflow_CORREGIDO_PRO.full.json
-_wf_patch.json
-_wf_payload.json
-_wf_raw.json
-# Local workflow exports with secrets
-MedFlow_AI_Workflow_CORREGIDO_PRO.full.json
-_wf_patch.json
-_wf_payload.json
-_wf_raw.json
 # Local workflow exports with secrets
 MedFlow_AI_Workflow_CORREGIDO_PRO.full.json
 _wf_patch.json

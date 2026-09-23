@@ -44,8 +44,8 @@ function testLogin(payload) {
   console.log('=== TEST DIRECTO A N8N LOGIN ENDPOINT ===');
   try {
     const result = await testLogin({
-      email: 'pildorasdeautomatizacion@gmail.com',
-      password: 'contrasena_incorrecta_para_pruebas',
+      email: process.env.TEST_LOGIN_EMAIL || 'test-login@example.com',
+      password: process.env.TEST_LOGIN_PASSWORD || 'contrasena_incorrecta_para_pruebas',
       barberia_id: 198,
       slug: 'barberia-prueba-4'
     });
