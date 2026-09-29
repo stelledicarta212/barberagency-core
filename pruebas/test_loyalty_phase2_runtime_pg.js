@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS public.citas (
 
 CREATE TABLE IF NOT EXISTS public.pagos (
   id SERIAL PRIMARY KEY,
-  barberia_id INT NOT NULL REFERENCES public.barberias(id) ON DELETE CASCADE,
+  barberia_id INT REFERENCES public.barberias(id) ON DELETE CASCADE,
   cita_id INT REFERENCES public.citas(id) ON DELETE SET NULL,
   monto NUMERIC(10,2) NOT NULL DEFAULT 0,
   estado TEXT NOT NULL DEFAULT 'pendiente',
@@ -358,7 +358,9 @@ INSERT INTO public.pagos (id, barberia_id, cita_id, monto, estado, created_at) V
   (7003, 1, 1003, 35000, 'pendiente', now() - INTERVAL '20 minutes'),
   (7004, 1, 1004, 25000, 'pagado', now() - INTERVAL '15 minutes'),
   (7005, 1, 1005, 30000, 'pagado', now() - INTERVAL '2 hours'),
-  (8001, 2, 2001, 50000, 'pagado', now() - INTERVAL '30 minutes');
+  (8001, 2, 2001, 50000, 'pagado', now() - INTERVAL '30 minutes'),
+  (7008, 1, 2001, 30000, 'pagado', now() - INTERVAL '10 minutes'),
+  (7009, NULL, 1001, 30000, 'pagado', now() - INTERVAL '5 minutes');
 
 COMMIT;
 `;
@@ -411,12 +413,26 @@ const accAnon = runAsRpc(12, 'public.ba_loyalty_acumular_pago(7004)');
 assert(accAnon.success === false && accAnon.status === 'anonymous_customer');
 console.log('  ✓ Appointment without customer: anonymous_customer');
 
-// 5.4 Payment created before accrual_start_at (pago 7005 created 2 hours ago, start was 1 hour ago)
+// 5.4 Payment without its canonical tenant is rejected before any ledger write
+const accNullTenant = runAsRpc(12, 'public.ba_loyalty_acumular_pago(7009)');
+assert(accNullTenant.success === false && accNullTenant.status === 'invalid_payment_tenant');
+assert(queryJson("SELECT id FROM public.loyalty_ledger WHERE source_type='pago' AND source_id=7009").length === 0,
+  'Null-tenant payment must create zero ledger rows');
+console.log('  ✓ NULL payment tenant rejected: invalid_payment_tenant, zero ledger rows');
+
+// 5.5 A payment linked to an appointment in another tenant is rejected without writes
+const accTenantMismatch = runAsRpc(12, 'public.ba_loyalty_acumular_pago(7008)');
+assert(accTenantMismatch.success === false && accTenantMismatch.status === 'tenant_mismatch');
+assert(queryJson("SELECT id FROM public.loyalty_ledger WHERE source_type='pago' AND source_id=7008").length === 0,
+  'Mismatched payment/appointment tenant must create zero ledger rows');
+console.log('  ✓ Payment/appointment tenant mismatch rejected: zero ledger rows');
+
+// 5.6 Payment created before accrual_start_at (pago 7005 created 2 hours ago, start was 1 hour ago)
 const accPreStart = runAsRpc(12, 'public.ba_loyalty_acumular_pago(7005)');
 assert(accPreStart.success === false && accPreStart.status === 'created_before_program_start');
 console.log('  ✓ Payment before program start: created_before_program_start (prevents retroactive crediting)');
 
-// 5.5 Program disabled check
+// 5.7 Program disabled check
 query("UPDATE public.barberia_loyalty_config SET activo = false WHERE barberia_id = 1;");
 const accDisabled = runAsRpc(12, 'public.ba_loyalty_acumular_pago(7002)');
 assert(accDisabled.success === false && accDisabled.status === 'program_disabled');
@@ -703,7 +719,14 @@ function continueTests() {
   const rec1 = runAsRpc(11, 'public.ba_loyalty_reconciliar_pagos(1, 50)');
   assert(rec1.success === true && rec1.status === 'reconciliation_completed');
   assert(rec1.credited >= 2, `Expected at least 2 payments credited, got ${rec1.credited}`);
+  const excludedPaymentRows = queryJson(`
+    SELECT id FROM public.loyalty_ledger
+    WHERE source_type='pago' AND source_id IN (7005, 7008, 7009)
+  `);
+  assert(excludedPaymentRows.length === 0,
+    'Reconciliation must exclude pre-start, cross-tenant, and NULL-tenant payments');
   console.log(`  ✓ Reconciliation executed: credited=${rec1.credited}, already_credited=${rec1.already_credited}, skipped=${rec1.skipped}`);
+  console.log('  ✓ Reconciliation excludes pre-start, mismatched-tenant, and NULL-tenant payments');
 
   // Re-run reconciler (Idempotency test): exactly 0 new credits
   const rec2 = runAsRpc(11, 'public.ba_loyalty_reconciliar_pagos(1, 50)');

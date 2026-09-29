@@ -85,6 +85,15 @@ BEGIN
   END IF;
 
   -- 2. Autorización por tenant (evitar ataque cross-tenant)
+  IF v_pago.barberia_id IS NULL THEN
+    RETURN jsonb_build_object(
+      'success', false,
+      'status', 'invalid_payment_tenant',
+      'pago_id', p_pago_id,
+      'message', 'Pago sin barberia canonica'
+    );
+  END IF;
+
   IF v_caller_uid IS NOT NULL THEN
     SELECT EXISTS (
       SELECT 1 FROM public.barberias b
@@ -134,7 +143,7 @@ BEGIN
   END IF;
 
   -- 4. Validar consistencia de tenant pago vs cita
-  IF v_cita.barberia_id <> v_pago.barberia_id THEN
+  IF v_cita.barberia_id IS DISTINCT FROM v_pago.barberia_id THEN
     RETURN jsonb_build_object(
       'success', false,
       'status', 'tenant_mismatch',
