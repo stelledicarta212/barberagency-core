@@ -72,9 +72,7 @@
     const DEFAULT_CANONICAL_SYNC_RPC = "ba_sync_publicacion_collections";
     const DEFAULT_CANONICAL_HOURS_SYNC_RPC = "ba_sync_registro_horarios";
     const DEFAULT_DASHBOARD_ACCESS_SYNC_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/dashboard/access-sync";
-    const DEFAULT_UPLOAD_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-live";
-    const DEFAULT_UPLOAD_ENDPOINT_V2 = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-v2";
-    const DEFAULT_UPLOAD_ENDPOINT_LEGACY = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload";
+    const DEFAULT_UPLOAD_ENDPOINT = "/api/editor/upload";
     const API_URL =
       (window.BA_ONBOARDING_ENDPOINT && String(window.BA_ONBOARDING_ENDPOINT).trim()) ||
       DEFAULT_ONBOARDING_ENDPOINT;
@@ -407,9 +405,7 @@
     function getUploadEndpointCandidates() {
       const candidateList = [
         clean(window.BA_UPLOAD_ENDPOINT),
-        DEFAULT_UPLOAD_ENDPOINT,
-        DEFAULT_UPLOAD_ENDPOINT_V2,
-        DEFAULT_UPLOAD_ENDPOINT_LEGACY
+        DEFAULT_UPLOAD_ENDPOINT
       ].filter(Boolean);
       return Array.from(new Set(candidateList));
     }
@@ -446,32 +442,58 @@
       return clean(response.filename || response.file_name);
     }
 
-    async function uploadImageToStorage(file) {
-      if (!file) throw new Error("No se selecciono una imagen.");
-      if (!/^image\//i.test(file.type || "")) throw new Error("El archivo debe ser una imagen.");
+    async function uploadImageToStorage(file, slot = "service") {
+      if (!file) throw new Error("No se seleccionó una imagen.");
+      if (!/^image\//i.test(file.type || "")) throw new Error("El archivo debe ser una imagen válida.");
+
+      const identity = getEditIdentity();
+      const barberiaId = Number(identity.barberia_id) || Number(draft?.barberia?.id || 0) || 0;
+      const slug = clean(identity.slug) || clean(draft?.barberia?.slug) || slugify(draft?.barberia?.nombre || "barberia") || "barberia";
 
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("biz_slug", slugify(draft?.barberia?.slug || draft?.barberia?.nombre || "barberia") || "barberia");
+      if (barberiaId > 0) {
+        formData.append("barberia_id", String(barberiaId));
+      }
+      formData.append("slug", slug);
+      formData.append("biz_slug", slug);
+      formData.append("slot", slot);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
 
       let lastError = null;
       for (const endpoint of getUploadEndpointCandidates()) {
         try {
-          const response = await fetch(endpoint, { method: "POST", body: formData });
+          const response = await fetch(endpoint, {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
           if (!response.ok) {
             const errorBody = await response.text().catch(() => "");
-            lastError = new Error(errorBody || `HTTP ${response.status}`);
+            let errMessage = `HTTP ${response.status}`;
+            try {
+              const errJson = JSON.parse(errorBody);
+              if (errJson && errJson.message) errMessage = errJson.message;
+            } catch (_) {
+              if (errorBody) errMessage = errorBody;
+            }
+            lastError = new Error(errMessage);
             continue;
           }
 
           const json = await response.json().catch(() => ({}));
           const publicUrl = buildUploadPublicUrl(json, file);
-          if (!publicUrl || /^blob:/i.test(publicUrl)) {
-            lastError = new Error("El upload no devolvio una URL publica.");
+          if (!publicUrl || /^blob:/i.test(publicUrl) || /^data:/i.test(publicUrl)) {
+            lastError = new Error("El upload no devolvió una URL pública válida.");
             continue;
           }
           return publicUrl;
         } catch (error) {
+          clearTimeout(timeoutId);
           lastError = error;
         }
       }
@@ -757,19 +779,9 @@
 
     // SECCION: Tema visual sincronizado con WordPress.
     function detectGlobalTheme() {
-      const body = document.body;
-      const html = document.documentElement;
-
-      if (body && body.classList.contains("light-mode")) return "light";
-      if (html && html.classList.contains("light-mode")) return "light";
-      if (body && body.classList.contains("dark-mode")) return "dark";
-      if (html && html.classList.contains("dark-mode")) return "dark";
-      if (body && body.dataset && body.dataset.theme === "light") return "light";
-      if (html && html.dataset && html.dataset.theme === "light") return "light";
-      if (body && body.dataset && body.dataset.theme === "dark") return "dark";
-      if (html && html.dataset && html.dataset.theme === "dark") return "dark";
-
-      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      return document.body && document.body.classList.contains("light-mode")
+        ? "light"
+        : "dark";
     }
 
     function syncThemeFromGlobal() {
@@ -1520,7 +1532,7 @@
           try {
             input.disabled = true;
             if (status) status.textContent = "Subiendo imagen a storage...";
-            const publicUrl = await uploadImageToStorage(file);
+            const publicUrl = await uploadImageToStorage(file, "service");
             hidden.value = publicUrl;
             syncServicesFromDom();
             saveDraft();
@@ -1817,7 +1829,7 @@
           try {
             input.disabled = true;
             if (status) status.textContent = "Subiendo foto a storage...";
-            const publicUrl = await uploadImageToStorage(file);
+            const publicUrl = await uploadImageToStorage(file, "barber");
             hidden.value = publicUrl;
             syncBarbersFromDom();
             saveDraft();
@@ -3381,14 +3393,11 @@
     if (document.body) {
       themeObserver.observe(document.body, {
         attributes: true,
-        attributeFilter: ["class", "data-theme"]
+        attributeFilter: ["class"]
       });
     }
 
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "data-theme"]
-    });
+    syncThemeFromGlobal();
 
     backBtn.addEventListener("click", prevStep);
     resetBtn.addEventListener("click", resetDraft);
