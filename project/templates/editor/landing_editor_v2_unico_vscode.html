@@ -675,9 +675,7 @@
   const STORAGE_PUBLISH_WELCOME_SEEN = 'ba_publish_welcome_seen';
   const DEFAULT_SELECTOR_URL = '/landing_plantilla/';
   const DEFAULT_REGISTRO_URL = '/registro-barberias/';
-  const DEFAULT_UPLOAD_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-live';
-  const DEFAULT_UPLOAD_ENDPOINT_V2 = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload-v2';
-  const DEFAULT_UPLOAD_ENDPOINT_LEGACY = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/upload';
+  const DEFAULT_UPLOAD_ENDPOINT = '/api/editor/upload';
   const DEFAULT_SAVE_ENDPOINT = '/api/editor/publish';
   const DEFAULT_PUBLIC_LANDING_RPC_ENDPOINT = 'https://api.agencia2c.cloud/rpc/ba_get_landing_publica';
   const DEFAULT_DRAFT_SAVE_ENDPOINT = 'https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/landing/draft/save';
@@ -704,13 +702,7 @@
 
   function getUploadEndpointCandidates() {
     const primary = safeText(CONFIG.uploadEndpoint) || DEFAULT_UPLOAD_ENDPOINT;
-    const defaults = [DEFAULT_UPLOAD_ENDPOINT, DEFAULT_UPLOAD_ENDPOINT_V2, DEFAULT_UPLOAD_ENDPOINT_LEGACY];
-    const candidates = [primary];
-    defaults.forEach((endpoint) => {
-      const clean = safeText(endpoint);
-      if (clean && !candidates.includes(clean)) candidates.push(clean);
-    });
-    return candidates;
+    return [primary];
   }
 
   function buildUploadPublicUrl(uploadResponse, file) {
@@ -1090,7 +1082,9 @@
   function normalizeImageUrl(value) {
     const raw = safeText(value);
     if (!raw) return '';
-    if (/^(https?:\/\/|data:image\/)/i.test(raw)) return raw;
+    if (/^(blob:|data:|file:)/i.test(raw)) return '';
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/i.test(raw)) return '';
+    if (/^https?:\/\//i.test(raw)) return raw;
     if (raw.startsWith('/wp-content/')) return `${window.location.origin}${raw}`;
     if (raw.startsWith('wp-content/')) return `${window.location.origin}/${raw}`;
     return raw;
@@ -3401,6 +3395,16 @@ function persistRegistroSeedContext() {
     }
   }
 
+  function getSafeEditorTargetOrigin(frameEl) {
+    try {
+      if (frameEl && frameEl.src) {
+        const u = new URL(frameEl.src, window.location.href);
+        if (u.origin && u.origin !== 'null') return u.origin;
+      }
+    } catch (_) {}
+    return (window.location.origin && window.location.origin !== 'null') ? window.location.origin : '*';
+  }
+
   function renderFinalPreviewFromTemplate() {
     if (!finalPreviewWrap || !finalPreviewFrame) return false;
     const data = getFormData();
@@ -3419,15 +3423,16 @@ function persistRegistroSeedContext() {
         setTimeout(() => syncV1ContrastFixes(finalPreviewFrame.contentDocument), 400);
       } catch (_) {}
       try {
+        const targetOrigin = getSafeEditorTargetOrigin(finalPreviewFrame);
         finalPreviewFrame.contentWindow.postMessage(buildEditorMessagePayload(data, {
           isPreview: true,
           logo: el.logoUrl.value,
           cover: el.coverUrl.value
-        }), '*');
+        }), targetOrigin);
         finalPreviewFrame.contentWindow.postMessage({
           type: 'BA_BRANDING_UPDATE',
           payload: buildBrandingUpdatePayload(data, { isPreview: true })
-        }, '*');
+        }, targetOrigin);
       } catch (_) {}
     };
     return true;
@@ -3838,11 +3843,12 @@ function persistRegistroSeedContext() {
     } catch (_) {}
 
     if (el.frame.contentWindow) {
-      el.frame.contentWindow.postMessage(buildEditorMessagePayload(data), '*');
+      const targetOrigin = getSafeEditorTargetOrigin(el.frame);
+      el.frame.contentWindow.postMessage(buildEditorMessagePayload(data), targetOrigin);
       el.frame.contentWindow.postMessage({
         type: 'BA_BRANDING_UPDATE',
         payload: buildBrandingUpdatePayload(data)
-      }, '*');
+      }, targetOrigin);
     }
   }
 
@@ -5001,9 +5007,17 @@ function persistRegistroSeedContext() {
     img.src = blobUrl;
     wrap.classList.add('has-image');
 
+    const seedIdentity = getSeedIdentity();
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('biz_slug', toSlug(el.bizName.value || 'barberia'));
+    if (seedIdentity.barberia_id) {
+      formData.append('barberia_id', String(seedIdentity.barberia_id));
+    }
+    if (seedIdentity.slug) {
+      formData.append('slug', seedIdentity.slug);
+    }
+    formData.append('biz_slug', seedIdentity.slug || toSlug(el.bizName.value || 'barberia'));
+    formData.append('slot', target);
 
     try {
       const uploadEndpoints = getUploadEndpointCandidates();
@@ -5011,23 +5025,23 @@ function persistRegistroSeedContext() {
 
       for (const endpoint of uploadEndpoints) {
         try {
-          const res = await fetch(endpoint, { method: 'POST', body: formData });
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+          });
           if (!res.ok) {
             const errorBody = await res.text().catch(() => '');
-            const isNotRegistered =
-              res.status === 404 &&
-              /not registered/i.test(errorBody || '');
-            if (isNotRegistered) {
-              lastError = new Error(`Webhook no registrado en ${endpoint}`);
-              continue;
-            }
-            throw new Error(`HTTP error ${res.status}`);
+            let errorJson = null;
+            try { errorJson = JSON.parse(errorBody); } catch (_) {}
+            const errorMsg = errorJson?.message || `HTTP error ${res.status}`;
+            throw new Error(errorMsg);
           }
           const json = await res.json().catch(() => ({}));
           const publicUrl = buildUploadPublicUrl(json, file);
-          if (!publicUrl) throw new Error('No URL in response');
+          if (!publicUrl) throw new Error('No se recibio una URL valida del servidor');
           urlInput.value = publicUrl;
-          runtimePreview[target] = blobUrl;
+          runtimePreview[target] = publicUrl;
           lastError = null;
           break;
         } catch (err) {
@@ -5039,7 +5053,8 @@ function persistRegistroSeedContext() {
     } catch(e) {
       console.error('Upload failed:', e);
       urlInput.value = '';
-      runtimePreview[target] = blobUrl; // fallback to blob
+      runtimePreview[target] = '';
+      alert(`No se pudo subir la imagen: ${e?.message || 'Error del servidor'}`);
     } finally {
       wrap.classList.remove('is-loading');
       updatePreview();
@@ -5055,7 +5070,9 @@ function persistRegistroSeedContext() {
       .map((item, index) => {
         const name = escapeHtml(item?.name || item?.nombre || `Barbero ${index + 1}`);
         const role = escapeHtml(item?.especialidad || item?.rol || 'Barbero profesional');
-        const photo = item?.foto_url || item?.foto || item?.photo || item?.picture_url || item?.avatar_url || item?.imagen_url || DEFAULT_BARBER_PHOTOS[index % DEFAULT_BARBER_PHOTOS.length];
+        const fallback = DEFAULT_BARBER_PHOTOS[index % DEFAULT_BARBER_PHOTOS.length];
+        const rawPhoto = item?.foto_url || item?.foto || item?.photo || item?.picture_url || item?.avatar_url || item?.imagen_url;
+        const photo = (rawPhoto ? normalizeImageUrl(rawPhoto) : '') || fallback;
 
         return `
           <div class="ba-barber-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 8px; background: rgba(26, 39, 64, 0.5); border: 1px solid #273348; border-radius: 12px; width: 100%;">
@@ -5066,7 +5083,7 @@ function persistRegistroSeedContext() {
                 <div style="font-size: 11px; color: #8e9fb8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${role}</div>
               </div>
             </div>
-            <button type="button" class="ba-barber-photo-btn" data-id="${item.id || ''}" data-index="${index}" style="margin-left: 12px; padding: 6px 12px; font-size: 11px; font-weight: 600; color: #e8edf7; border-radius: 6px; border: 1px solid #3a4f72; background: linear-gradient(180deg, #1a2740, #101723); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 28px; white-space: nowrap;">
+            <button type="button" class="ba-barber-photo-btn" data-id="${escapeHtml(item.id || '')}" data-index="${index}" style="margin-left: 12px; padding: 6px 12px; font-size: 11px; font-weight: 600; color: #e8edf7; border-radius: 6px; border: 1px solid #3a4f72; background: linear-gradient(180deg, #1a2740, #101723); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; height: 28px; white-space: nowrap;">
               Cambiar foto
             </button>
           </div>
@@ -5139,9 +5156,19 @@ function persistRegistroSeedContext() {
     btn.disabled = true;
     btn.textContent = 'Subiendo...';
 
+    const seedIdentity = getSeedIdentity();
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('biz_slug', toSlug(el.bizName.value || 'barberia'));
+    if (seedIdentity.barberia_id) {
+      formData.append('barberia_id', String(seedIdentity.barberia_id));
+    }
+    if (seedIdentity.slug) {
+      formData.append('slug', seedIdentity.slug);
+    }
+    formData.append('biz_slug', seedIdentity.slug || toSlug(el.bizName.value || 'barberia'));
+    if (barberId) {
+      formData.append('barber_id', String(barberId));
+    }
 
     try {
       const uploadEndpoints = getUploadEndpointCandidates();
@@ -5150,21 +5177,21 @@ function persistRegistroSeedContext() {
 
       for (const endpoint of uploadEndpoints) {
         try {
-          const res = await fetch(endpoint, { method: 'POST', body: formData });
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+          });
           if (!res.ok) {
             const errorBody = await res.text().catch(() => '');
-            const isNotRegistered =
-              res.status === 404 &&
-              /not registered/i.test(errorBody || '');
-            if (isNotRegistered) {
-              lastError = new Error(`Webhook no registrado en ${endpoint}`);
-              continue;
-            }
-            throw new Error(`HTTP error ${res.status}`);
+            let errorJson = null;
+            try { errorJson = JSON.parse(errorBody); } catch (_) {}
+            const errorMsg = errorJson?.message || `HTTP error ${res.status}`;
+            throw new Error(errorMsg);
           }
           const json = await res.json().catch(() => ({}));
           publicUrl = buildUploadPublicUrl(json, file);
-          if (!publicUrl) throw new Error('No URL in response');
+          if (!publicUrl) throw new Error('No se recibio una URL valida del servidor');
 
           if (!publicUrl.startsWith('https://')) {
             throw new Error('La URL devuelta por el servidor no es segura (https).');
