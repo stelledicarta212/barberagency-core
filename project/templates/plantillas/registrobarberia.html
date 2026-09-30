@@ -460,7 +460,7 @@
       formData.append("slot", slot);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
 
       let lastError = null;
       for (const endpoint of getUploadEndpointCandidates()) {
@@ -1527,24 +1527,39 @@
           const file = input.files && input.files[0];
           const status = list.querySelector('[data-service-upload-status="' + index + '"]');
           const hidden = list.querySelector('[data-field="imagen_url"][data-index="' + index + '"]');
-          if (!file || !hidden) return;
+          if (!file) return;
 
+          hideMessage();
+
+          let publicUrl = null;
           try {
             input.disabled = true;
             if (status) status.textContent = "Subiendo imagen a storage...";
-            const publicUrl = await uploadImageToStorage(file, "service");
-            hidden.value = publicUrl;
+            publicUrl = await uploadImageToStorage(file, "service");
+          } catch (error) {
+            console.error("Service image upload failed:", error);
+            if (status) status.textContent = "No se pudo subir la imagen.";
+            showMessage("error", (error && error.message) || "No se pudo subir la imagen del servicio. Intenta de nuevo.");
+            return;
+          } finally {
+            input.disabled = false;
+            input.value = "";
+          }
+
+          try {
+            hideMessage();
+            if (hidden) hidden.value = publicUrl;
+            if (!Array.isArray(draft.servicios)) draft.servicios = [];
+            if (!draft.servicios[index]) {
+              draft.servicios[index] = { nombre: "", duracion_min: 30, precio: 0, imagen_url: "" };
+            }
+            draft.servicios[index].imagen_url = publicUrl;
             syncServicesFromDom();
             saveDraft();
             if (status) status.textContent = "Imagen lista en storage.";
             render();
-          } catch (error) {
-            console.error("Service image upload failed:", error);
-            if (status) status.textContent = "No se pudo subir la imagen.";
-            showMessage("error", "No se pudo subir la imagen del servicio. Intenta de nuevo.");
-          } finally {
-            input.disabled = false;
-            input.value = "";
+          } catch (domErr) {
+            console.warn("Post-upload state sync warning:", domErr);
           }
         });
       });
@@ -1824,24 +1839,40 @@
           const file = input.files && input.files[0];
           const status = list.querySelector('[data-barber-upload-status="' + index + '"]');
           const hidden = list.querySelector('[data-barber-field="foto_url"][data-barber-index="' + index + '"]');
-          if (!file || !hidden) return;
+          if (!file) return;
 
+          hideMessage();
+
+          let publicUrl = null;
           try {
             input.disabled = true;
             if (status) status.textContent = "Subiendo foto a storage...";
-            const publicUrl = await uploadImageToStorage(file, "barber");
-            hidden.value = publicUrl;
+            publicUrl = await uploadImageToStorage(file, "barber");
+          } catch (error) {
+            console.error("Barber photo upload failed:", error);
+            if (status) status.textContent = "No se pudo subir la foto.";
+            showMessage("error", (error && error.message) || "No se pudo subir la foto del barbero. Intenta de nuevo.");
+            return;
+          } finally {
+            input.disabled = false;
+            input.value = "";
+          }
+
+          try {
+            hideMessage();
+            if (hidden) hidden.value = publicUrl;
+            if (!Array.isArray(draft.barberos)) draft.barberos = [];
+            if (!draft.barberos[index]) {
+              draft.barberos[index] = { nombre: "", foto: "", foto_url: "" };
+            }
+            draft.barberos[index].foto = publicUrl;
+            draft.barberos[index].foto_url = publicUrl;
             syncBarbersFromDom();
             saveDraft();
             if (status) status.textContent = "Foto lista en storage.";
             render();
-          } catch (error) {
-            console.error("Barber photo upload failed:", error);
-            if (status) status.textContent = "No se pudo subir la foto.";
-            showMessage("error", "No se pudo subir la foto del barbero. Intenta de nuevo.");
-          } finally {
-            input.disabled = false;
-            input.value = "";
+          } catch (domErr) {
+            console.warn("Post-upload state sync warning:", domErr);
           }
         });
       });
