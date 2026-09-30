@@ -5002,10 +5002,14 @@ function persistRegistroSeedContext() {
     const urlInput = target === 'logo' ? el.logoUrl : el.coverUrl;
     const img = target === 'logo' ? el.logoImg : el.coverImg;
 
-    wrap.classList.add('is-loading');
+    const previousPreview = runtimePreview[target] || '';
+    const previousImgSrc = img ? img.src : '';
+    const previousHasImage = wrap ? wrap.classList.contains('has-image') : false;
+
+    if (wrap) wrap.classList.add('is-loading');
     const blobUrl = URL.createObjectURL(file);
-    img.src = blobUrl;
-    wrap.classList.add('has-image');
+    if (img) img.src = blobUrl;
+    if (wrap) wrap.classList.add('has-image');
 
     const seedIdentity = getSeedIdentity();
     const formData = new FormData();
@@ -5024,12 +5028,16 @@ function persistRegistroSeedContext() {
       let lastError = null;
 
       for (const endpoint of uploadEndpoints) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
         try {
           const res = await fetch(endpoint, {
             method: 'POST',
             credentials: 'include',
-            body: formData
+            body: formData,
+            signal: controller.signal
           });
+          clearTimeout(timeoutId);
           if (!res.ok) {
             const errorBody = await res.text().catch(() => '');
             let errorJson = null;
@@ -5045,7 +5053,12 @@ function persistRegistroSeedContext() {
           lastError = null;
           break;
         } catch (err) {
-          lastError = err;
+          clearTimeout(timeoutId);
+          if (err && err.name === 'AbortError') {
+            lastError = new Error('Tiempo de espera agotado al conectar con el servidor de subida.');
+          } else {
+            lastError = err;
+          }
         }
       }
 
@@ -5053,10 +5066,14 @@ function persistRegistroSeedContext() {
     } catch(e) {
       console.error('Upload failed:', e);
       urlInput.value = '';
-      runtimePreview[target] = '';
+      runtimePreview[target] = previousPreview;
+      if (img) img.src = previousImgSrc;
+      if (wrap && !previousHasImage) {
+        wrap.classList.remove('has-image');
+      }
       alert(`No se pudo subir la imagen: ${e?.message || 'Error del servidor'}`);
     } finally {
-      wrap.classList.remove('is-loading');
+      if (wrap) wrap.classList.remove('is-loading');
       updatePreview();
     }
   }
