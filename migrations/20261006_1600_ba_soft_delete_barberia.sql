@@ -387,7 +387,7 @@ BEGIN
     UPDATE public.qr_links
     SET active = true
     WHERE barberia_id = p_barberia_id
-      AND id IN (SELECT jsonb_array_elements_text(v_target_qr_ids)::integer);
+      AND id::text IN (SELECT jsonb_array_elements_text(v_target_qr_ids));
   ELSE
     -- If no specific QR id recorded but barberia was published, restore all QR links
     IF v_target_publicada THEN
