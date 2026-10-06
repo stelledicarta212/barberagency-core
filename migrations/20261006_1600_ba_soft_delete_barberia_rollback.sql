@@ -5,7 +5,9 @@
 
 BEGIN;
 
+DROP FUNCTION IF EXISTS public.ba_restore_soft_deleted_barberia(integer, integer);
 DROP FUNCTION IF EXISTS public.ba_soft_delete_barberia(integer, integer);
+DROP TABLE IF EXISTS public.barberia_soft_delete_audit;
 
 NOTIFY pgrst, 'reload schema';
 
