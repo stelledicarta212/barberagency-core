@@ -1,769 +1,8 @@
-en css avanzanzado de elementor esta el css 
-
-#baWizardApp {
-  --foreground: #e8edf7;
-  --surface: #101723;
-  --surface-muted: #0c131f;
-  --line: #273348;
-  --accent: #f59e0b;
-  --accent-strong: #d97706;
-  --success: #22c55e;
-  --danger: #ef4444;
-  --bg-spot-1: #1a2740;
-  --bg-spot-2: #2b1f0e;
-  --bg-grad-start: #070b12;
-  --bg-grad-mid: #0b1320;
-  --bg-grad-end: #070b12;
-  --question-start: #f8fafc;
-  --question-mid: #9bb9f6;
-  --question-end: #f59e0b;
-  --font-main: "Sora", "Manrope", "Segoe UI", sans-serif;
-  color: var(--foreground);
-  font-family: var(--font-main);
-}
-
-#baWizardApp[data-theme="light"] {
-  --foreground: #0f172a;
-  --surface: #ffffff;
-  --surface-muted: #eef3f9;
-  --line: #c1d0e2;
-  --accent: #ca8a04;
-  --accent-strong: #a16207;
-  --success: #15803d;
-  --danger: #dc2626;
-  --bg-spot-1: #cfe0ff;
-  --bg-spot-2: #f7e2be;
-  --bg-grad-start: #f2f6fb;
-  --bg-grad-mid: #eef4fb;
-  --bg-grad-end: #f8fbff;
-  --question-start: #0f172a;
-  --question-mid: #1d4ed8;
-  --question-end: #a16207;
-}
-
-#baWizardApp .ba-shell {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at 12% 18%, var(--bg-spot-1) 0%, transparent 32%),
-    radial-gradient(circle at 90% 2%, var(--bg-spot-2) 0%, transparent 28%),
-    linear-gradient(180deg, var(--bg-grad-start) 0%, var(--bg-grad-mid) 45%, var(--bg-grad-end) 100%);
-  box-shadow:
-    0 1px 2px color-mix(in srgb, #000 42%, transparent),
-    0 14px 34px color-mix(in srgb, #000 30%, transparent);
-}
-
-#baWizardApp[data-theme="light"] .ba-shell {
-  box-shadow:
-    0 1px 2px color-mix(in srgb, #cbd5e1 70%, transparent),
-    0 12px 26px color-mix(in srgb, #cbd5e1 55%, transparent);
-}
-
-#baWizardApp .ba-topbar {
-  display: grid;
-  grid-template-columns: 48px 1fr auto;
-  gap: 18px;
-  align-items: center;
-  padding: 18px 22px;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
-}
-
-#baWizardApp .ba-topbar-actions {
-  display: flex;
-  gap: 10px;
-}
-
-#baWizardApp .ba-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--surface-muted) 94%, transparent);
-  color: var(--foreground);
-  cursor: pointer;
-  transition: .18s ease;
-}
-
-#baWizardApp .ba-icon-btn:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent) 70%, var(--line));
-  background: color-mix(in srgb, var(--surface) 95%, var(--accent) 6%);
-}
-
-#baWizardApp .ba-icon-btn:disabled {
-  opacity: .45;
-  cursor: not-allowed;
-  transform: none;
-}
-
-#baWizardApp .ba-icon-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-#baWizardApp .ba-progress-track {
-  position: relative;
-  height: 8px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface-muted) 88%, transparent);
-  overflow: hidden;
-}
-
-#baWizardApp .ba-progress-fill {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 0%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
-  transition: width .25s ease;
-}
-
-#baWizardApp .ba-body {
-  display: grid;
-  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
-  min-height: 760px;
-}
-
-#baWizardApp .ba-sidebar {
-  padding: 36px 28px;
-  border-right: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
-  background: color-mix(in srgb, var(--surface-muted) 60%, transparent);
-}
-
-#baWizardApp .ba-kicker,
-#baWizardApp .ba-step-label {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .28em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--accent) 86%, var(--foreground));
-}
-
-#baWizardApp .ba-sidebar-title {
-  margin: 14px 0 10px;
-  font-size: clamp(28px, 4vw, 42px);
-  line-height: .96;
-  letter-spacing: -.04em;
-  color: var(--foreground);
-}
-
-#baWizardApp .ba-sidebar-copy,
-#baWizardApp .ba-helper {
-  margin: 0;
-  font-size: 15px;
-  line-height: 1.65;
-  color: color-mix(in srgb, var(--foreground) 72%, transparent);
-}
-
-#baWizardApp .ba-maps-cta {
-  color: #d4af37;
-  font-weight: 700;
-}
-
-#baWizardApp .ba-maps-cta:hover,
-#baWizardApp .ba-maps-cta:focus-visible {
-  color: #2563eb;
-}
-
-#baWizardApp .ba-live-summary {
-  display: grid;
-  gap: 12px;
-  margin-top: 28px;
-}
-
-#baWizardApp .ba-summary-item {
-  padding: 14px 16px;
-  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-}
-
-#baWizardApp .ba-summary-item small {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 11px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--foreground) 56%, transparent);
-}
-
-#baWizardApp .ba-summary-item strong {
-  display: block;
-  font-size: 15px;
-  line-height: 1.45;
-  color: var(--foreground);
-}
-
-#baWizardApp .ba-stage {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 26px;
-  padding: 42px 38px 34px;
-}
-
-#baWizardApp .ba-question-wrap {
-  max-width: 920px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-#baWizardApp .ba-question {
-  margin: 16px 0 10px;
-  font-size: clamp(34px, 5vw, 58px);
-  line-height: 1.05;
-  letter-spacing: -.05em;
-  background-image: linear-gradient(
-    120deg,
-    var(--question-start) 0%,
-    var(--question-mid) 52%,
-    var(--question-end) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-#baWizardApp .ba-response-area {
-  width: 100%;
-  max-width: 1040px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-#baWizardApp .ba-composer {
-  display: grid;
-  gap: 16px;
-  width: min(920px, 100%);
-  margin: 0 auto;
-}
-
-#baWizardApp .ba-location-preview {
-  display: grid;
-  gap: 12px;
-  padding: 14px;
-  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-  border-radius: 22px;
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-}
-
-#baWizardApp .ba-location-preview[hidden] {
-  display: none;
-}
-
-#baWizardApp .ba-location-preview-copy {
-  display: grid;
-  gap: 4px;
-  color: var(--foreground);
-}
-
-#baWizardApp .ba-location-preview-copy strong {
-  font-size: 15px;
-}
-
-#baWizardApp .ba-location-preview-copy span {
-  color: color-mix(in srgb, var(--foreground) 70%, transparent);
-  font-size: 14px;
-}
-
-#baWizardApp .ba-location-preview iframe {
-  width: 100%;
-  min-height: 280px;
-  border: 0;
-  border-radius: 18px;
-  background: color-mix(in srgb, var(--surface-muted) 92%, transparent);
-}
-
-#baWizardApp .ba-input-shell {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto;
-  gap: 14px;
-  align-items: center;
-  padding: 18px;
-  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-  border-radius: 28px;
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-}
-
-#baWizardApp .ba-plus {
-  width: 42px;
-  height: 42px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  color: var(--accent);
-  font-size: 26px;
-  line-height: 1;
-}
-
-#baWizardApp .ba-input,
-#baWizardApp .ba-textarea,
-#baWizardApp .ba-select,
-#baWizardApp .ba-time,
-#baWizardApp .ba-number {
-  width: 100%;
-  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-  outline: none;
-  background: color-mix(in srgb, var(--surface-muted) 88%, transparent);
-  color: var(--foreground);
-  font: inherit;
-  border-radius: 18px;
-  padding: 14px 16px;
-  box-sizing: border-box;
-}
-
-#baWizardApp .ba-input:disabled {
-  opacity: 1;
-  cursor: not-allowed;
-  background: color-mix(in srgb, var(--surface-muted) 96%, transparent);
-}
-
-#baWizardApp .ba-input,
-#baWizardApp .ba-number,
-#baWizardApp .ba-select,
-#baWizardApp .ba-time {
-  min-height: 54px;
-  font-size: 16px;
-}
-
-#baWizardApp .ba-textarea {
-  min-height: 120px;
-  resize: vertical;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-#baWizardApp .ba-input::placeholder,
-#baWizardApp .ba-textarea::placeholder {
-  color: color-mix(in srgb, var(--foreground) 34%, transparent);
-}
-
-#baWizardApp .ba-input:focus,
-#baWizardApp .ba-textarea:focus,
-#baWizardApp .ba-select:focus,
-#baWizardApp .ba-time:focus,
-#baWizardApp .ba-number:focus {
-  border-color: color-mix(in srgb, var(--accent) 72%, var(--line));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
-}
-
-/* BOTONES PRINCIPALES: aqui ajustas alto con padding o min-height */
-#baWizardApp .ba-action,
-#baWizardApp .ba-action-secondary,
-#baWizardApp .ba-action-danger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 52px;
-  padding: 0 18px;
-  border-radius: 18px;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: .18s ease;
-  box-sizing: border-box;
-}
-
-#baWizardApp .ba-action {
-  border: 0;
-  color: #fff;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-}
-
-#baWizardApp .ba-action:hover {
-  filter: brightness(1.03);
-  transform: translateY(-1px);
-}
-
-#baWizardApp .ba-action-secondary {
-  border: 1px solid color-mix(in srgb, var(--accent) 72%, var(--line));
-  color: var(--foreground);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-}
-
-#baWizardApp .ba-action-secondary:hover {
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
-  transform: translateY(-1px);
-}
-
-#baWizardApp .ba-action-danger {
-  border: 1px solid color-mix(in srgb, var(--danger) 32%, var(--line));
-  color: #ffd4d4;
-  background: color-mix(in srgb, var(--danger) 10%, transparent);
-}
-
-#baWizardApp .ba-options,
-#baWizardApp .ba-inline {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  justify-content: center;
-}
-
-/* SEPARACION ENTRE BOTONES DEL MISMO BLOQUE */
-#baWizardApp .ba-actions-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  justify-content: center;
-}
-
-#baWizardApp .ba-option {
-  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  color: var(--foreground);
-  padding: 14px 18px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: .18s ease;
-}
-
-#baWizardApp .ba-option:hover,
-#baWizardApp .ba-option.is-active {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--accent) 72%, var(--line));
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-}
-
-#baWizardApp .ba-grid {
-  display: grid;
-  gap: 18px;
-}
-
-#baWizardApp .ba-grid-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-#baWizardApp .ba-card {
-  padding: 18px;
-  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-  border-radius: 24px;
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-}
-
-#baWizardApp .ba-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-#baWizardApp .ba-card-title {
-  margin: 0;
-  font-size: 15px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--foreground) 72%, transparent);
-}
-
-#baWizardApp .ba-label {
-  display: grid;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  color: color-mix(in srgb, var(--foreground) 84%, transparent);
-}
-
-#baWizardApp .ba-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--foreground);
-}
-
-#baWizardApp .ba-list,
-#baWizardApp .ba-review {
-  display: grid;
-  gap: 14px;
-}
-
-#baWizardApp .ba-password-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 10px;
-}
-
-#baWizardApp .ba-note {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 14px 16px;
-  border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line));
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  color: var(--foreground);
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-#baWizardApp .ba-note strong {
-  color: var(--accent-strong);
-}
-
-#baWizardApp .ba-review-card {
-  padding: 18px 20px;
-  border-radius: 22px;
-  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
-  background: color-mix(in srgb, var(--surface) 94%, transparent);
-}
-
-#baWizardApp .ba-review-card small {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .18em;
-  color: color-mix(in srgb, var(--foreground) 56%, transparent);
-}
-
-#baWizardApp .ba-review-card strong,
-#baWizardApp .ba-review-card span {
-  display: block;
-  font-size: 16px;
-  line-height: 1.55;
-  color: var(--foreground);
-}
-
-#baWizardApp .ba-message {
-  max-width: 1040px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 14px 16px;
-  border-radius: 18px;
-  border: 1px solid transparent;
-  font-size: 14px;
-  font-weight: 700;
-  box-sizing: border-box;
-}
-
-#baWizardApp .ba-message.is-error {
-  border-color: color-mix(in srgb, var(--danger) 28%, transparent);
-  background: color-mix(in srgb, var(--danger) 12%, transparent);
-  color: var(--danger);
-}
-
-#baWizardApp .ba-message.is-success {
-  border-color: color-mix(in srgb, var(--success) 28%, transparent);
-  background: color-mix(in srgb, var(--success) 12%, transparent);
-  color: var(--success);
-}
-
-/* contraste extra tema claro */
-#baWizardApp[data-theme="light"] .ba-sidebar {
-  background: rgba(255, 255, 255, 0.58);
-}
-
-#baWizardApp[data-theme="light"] .ba-kicker,
-#baWizardApp[data-theme="light"] .ba-step-label,
-#baWizardApp[data-theme="light"] .ba-card-title,
-#baWizardApp[data-theme="light"] .ba-summary-item small,
-#baWizardApp[data-theme="light"] .ba-review-card small {
-  color: #8a6508;
-}
-
-#baWizardApp[data-theme="light"] .ba-sidebar-title,
-#baWizardApp[data-theme="light"] .ba-sidebar-copy,
-#baWizardApp[data-theme="light"] .ba-helper,
-#baWizardApp[data-theme="light"] .ba-summary-item strong,
-#baWizardApp[data-theme="light"] .ba-label,
-#baWizardApp[data-theme="light"] .ba-switch,
-#baWizardApp[data-theme="light"] .ba-note,
-#baWizardApp[data-theme="light"] .ba-review-card strong,
-#baWizardApp[data-theme="light"] .ba-review-card span,
-#baWizardApp[data-theme="light"] .ba-option,
-#baWizardApp[data-theme="light"] .ba-action-secondary,
-#baWizardApp[data-theme="light"] .ba-icon-btn {
-  color: #0f172a;
-}
-
-#baWizardApp[data-theme="light"] .ba-question {
-  background-image: linear-gradient(
-    120deg,
-    #0f172a 0%,
-    #1d4ed8 58%,
-    #a16207 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-#baWizardApp[data-theme="light"] .ba-summary-item,
-#baWizardApp[data-theme="light"] .ba-card,
-#baWizardApp[data-theme="light"] .ba-review-card,
-#baWizardApp[data-theme="light"] .ba-input-shell {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: #c8d6e6;
-}
-
-#baWizardApp[data-theme="light"] .ba-input,
-#baWizardApp[data-theme="light"] .ba-textarea,
-#baWizardApp[data-theme="light"] .ba-select,
-#baWizardApp[data-theme="light"] .ba-time,
-#baWizardApp[data-theme="light"] .ba-number {
-  color: #0f172a;
-  background: #ffffff;
-  border-color: #bfd0e4;
-}
-
-#baWizardApp[data-theme="light"] .ba-input:disabled {
-  color: #0f172a;
-  background: #f8fafc;
-  border-color: #cbd5e1;
-}
-
-#baWizardApp[data-theme="light"] .ba-input::placeholder,
-#baWizardApp[data-theme="light"] .ba-textarea::placeholder {
-  color: #64748b;
-}
-
-#baWizardApp[data-theme="light"] .ba-note {
-  background: #fff7e6;
-  border-color: #ebc977;
-  color: #0f172a;
-}
-
-#baWizardApp[data-theme="light"] .ba-option {
-  background: #ffffff;
-  border-color: #c8d6e6;
-}
-
-#baWizardApp[data-theme="light"] .ba-option.is-active,
-#baWizardApp[data-theme="light"] .ba-option:hover {
-  background: #fef3c7;
-  border-color: #d4a017;
-  color: #0f172a;
-}
-
-#baWizardApp[data-theme="light"] .ba-action-secondary {
-  background: #fff7e6;
-  border-color: #d6b04b;
-  color: #0f172a;
-}
-
-#baWizardApp[data-theme="light"] .ba-action-danger {
-  background: #fff1f2;
-  border-color: #f1b3bb;
-  color: #991b1b;
-}
-
-#baWizardApp[data-theme="light"] .ba-icon-btn {
-  background: #ffffff;
-  border-color: #c8d6e6;
-}
-
-#baWizardApp[data-theme="light"] .ba-message.is-success {
-  background: #ecfdf3;
-  border-color: #86efac;
-  color: #166534;
-}
-
-#baWizardApp[data-theme="light"] .ba-message.is-error {
-  background: #fef2f2;
-  border-color: #fca5a5;
-  color: #991b1b;
-}
-
-@media (max-width: 1024px) {
-  #baWizardApp .ba-body {
-    grid-template-columns: 1fr;
-  }
-
-  #baWizardApp .ba-sidebar {
-    border-right: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
-  }
-
-  #baWizardApp .ba-grid-2 {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  #baWizardApp .ba-stage,
-  #baWizardApp .ba-sidebar {
-    padding: 28px 18px 22px;
-  }
-
-  #baWizardApp .ba-question {
-    font-size: 36px;
-  }
-
-  #baWizardApp .ba-input-shell {
-    grid-template-columns: 1fr;
-  }
-
-  #baWizardApp .ba-plus {
-    display: none;
-  }
-
-  #baWizardApp .ba-action,
-  #baWizardApp .ba-action-secondary,
-  #baWizardApp .ba-action-danger {
-    width: 100%;
-  }
-
-  /* BOTONES EN MOVIL: separacion entre Ver mapa y Confirmar ubicacion */
-  #baWizardApp .ba-actions-row {
-    display: grid;
-    gap: 20px;
-  }
-
-  #baWizardApp .ba-actions-row .ba-action + .ba-action,
-  #baWizardApp .ba-actions-row .ba-action + .ba-action-secondary,
-  #baWizardApp .ba-actions-row .ba-action-secondary + .ba-action,
-  #baWizardApp .ba-actions-row .ba-action-secondary + .ba-action-secondary {
-    margin-top: 0;
-  }
-
-  #baWizardApp .ba-password-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-#baWizardApp .ba-success-actions {
-  justify-content: center;
-  gap: 14px;
-  margin-top: 8px;
-}
-
-#baWizardApp .ba-success-actions .ba-action,
-#baWizardApp .ba-success-actions .ba-action-secondary {
-  min-width: 260px;
-}
-
-@media (max-width: 768px) {
-  #baWizardApp .ba-success-actions {
-    width: 100%;
-  }
-
-  #baWizardApp .ba-success-actions .ba-action,
-  #baWizardApp .ba-success-actions .ba-action-secondary {
-    min-width: 100%;
-  }
-}
-
-
-y este s el html y js 
-
 <section class="ba-wizard" id="baWizardApp" data-theme="dark">
   <div class="ba-shell">
+
+
+    <!-- SECCION: Navegacion superior y progreso -->
     <header class="ba-topbar">
       <button class="ba-icon-btn" type="button" id="baBackBtn" aria-label="Volver">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -786,15 +25,17 @@ y este s el html y js
     </header>
 
     <div class="ba-body">
+      <!-- SECCION: Resumen lateral del registro -->
       <aside class="ba-sidebar">
         <p class="ba-kicker">Onboarding guiado</p>
-        <h2 class="ba-sidebar-title">Crea tu barberia paso a paso</h2>
+        <h2 class="ba-sidebar-title">Crea tu barbería paso a paso</h2>
         <p class="ba-sidebar-copy">
-          Este wizard arma el payload exacto del onboarding y crea el admin con el correo que escribas aqui.
+          Este wizard arma el payload exacto del onboarding y crea el admin con el correo que escribas Aquí.
         </p>
         <div class="ba-live-summary" id="baLiveSummary"></div>
       </aside>
 
+      <!-- SECCION: Contenido dinamico de cada paso -->
       <main class="ba-stage">
         <div class="ba-question-wrap">
           <p class="ba-step-label" id="baStepLabel">Paso 1</p>
@@ -818,11 +59,53 @@ y este s el html y js
 
     window.__BA_WP_ONBOARDING_READY__ = true;
 
-    const API_URL = "https://barberagency-app.gymh5g.easypanel.host/api/onboarding/complete";
+    // SECCION: Configuracion de endpoints y llaves de storage.
+    window.BA_PANEL_API_BASE_URL =
+      (window.BA_PANEL_API_BASE_URL && String(window.BA_PANEL_API_BASE_URL).trim()) ||
+      "";
+
+    const DEFAULT_ONBOARDING_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/registro-barberia";
+    const DEFAULT_ONBOARDING_ENDPOINT_ALT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/onboarding/complete";
+    const DEFAULT_ONBOARDING_ENDPOINT_LEGACY = window.BA_PANEL_API_BASE_URL + "/api/onboarding/complete";
+    const DEFAULT_CONFIG_UPDATE_ENDPOINT = window.BA_PANEL_API_BASE_URL + "/api/configuracion/update";
+    const DEFAULT_POSTGREST_BASE = "https://api.agencia2c.cloud";
+    const DEFAULT_CANONICAL_SYNC_RPC = "ba_sync_publicacion_collections";
+    const DEFAULT_CANONICAL_HOURS_SYNC_RPC = "ba_sync_registro_horarios";
+    const DEFAULT_DASHBOARD_ACCESS_SYNC_ENDPOINT = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/dashboard/access-sync";
+    const DEFAULT_UPLOAD_ENDPOINT = "/api/editor/upload";
+    const API_URL =
+      (window.BA_ONBOARDING_ENDPOINT && String(window.BA_ONBOARDING_ENDPOINT).trim()) ||
+      DEFAULT_ONBOARDING_ENDPOINT;
+    let CONFIG_UPDATE_ENDPOINT =
+      (window.BA_CONFIG_UPDATE_ENDPOINT && String(window.BA_CONFIG_UPDATE_ENDPOINT).trim()) ||
+      DEFAULT_CONFIG_UPDATE_ENDPOINT;
+
+    if (CONFIG_UPDATE_ENDPOINT.startsWith("/api/")) {
+      CONFIG_UPDATE_ENDPOINT = window.BA_PANEL_API_BASE_URL + CONFIG_UPDATE_ENDPOINT;
+    }
+    const POSTGREST_BASE =
+      (window.BA_POSTGREST_URL && String(window.BA_POSTGREST_URL).trim()) ||
+      DEFAULT_POSTGREST_BASE;
+    const ALLOW_LOCAL_SEED_FALLBACK =
+      String(window.BA_ALLOW_LOCAL_SEED_FALLBACK || "").trim() === "1";
+    const CANONICAL_SYNC_RPC =
+      (window.BA_CANONICAL_SYNC_RPC && String(window.BA_CANONICAL_SYNC_RPC).trim()) ||
+      DEFAULT_CANONICAL_SYNC_RPC;
+    const CANONICAL_HOURS_SYNC_RPC =
+      (window.BA_CANONICAL_HOURS_SYNC_RPC && String(window.BA_CANONICAL_HOURS_SYNC_RPC).trim()) ||
+      DEFAULT_CANONICAL_HOURS_SYNC_RPC;
+    const DASHBOARD_ACCESS_SYNC_ENDPOINT =
+      (window.BA_DASHBOARD_ACCESS_SYNC_ENDPOINT && String(window.BA_DASHBOARD_ACCESS_SYNC_ENDPOINT).trim()) ||
+      DEFAULT_DASHBOARD_ACCESS_SYNC_ENDPOINT;
+    const UPLOAD_PUBLIC_BASE =
+      (window.BA_UPLOAD_PUBLIC_BASE && String(window.BA_UPLOAD_PUBLIC_BASE).trim()) ||
+      (window.BA_R2_PUBLIC_BASE && String(window.BA_R2_PUBLIC_BASE).trim()) ||
+      "";
     const LANDING_BUILDER_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/landing_plantilla/";
     const STORAGE_KEY = "ba_wp_onboarding_v9";
     const LANDING_SEED_KEY = "ba_landing_seed";
 
+    // SECCION: Catalogos base usados por los pasos.
     const DAYS = [
       { value: "lunes", label: "Lunes" },
       { value: "martes", label: "Martes" },
@@ -833,15 +116,16 @@ y este s el html y js
       { value: "domingo", label: "Domingo" }
     ];
 
+    // SECCION: Definicion del flujo del formulario.
     const STEPS = [
       {
         key: "barberia.nombre",
         label: "Paso 1",
-        prompt: "Como se llama tu barberia?",
+        prompt: "Como se llama tu barbería?",
         helper: "Este nombre se usara como base del negocio y del slug.",
         type: "text",
         required: true,
-        placeholder: "Ej: Barberia Central"
+        placeholder: "Ej: Barbería Central"
       },
       {
         key: "barberia.ciudad",
@@ -850,7 +134,7 @@ y este s el html y js
         helper: "Usa el nombre tal como lo quieres mostrar al cliente.",
         type: "text",
         required: true,
-        placeholder: "Ej: Bogota, D.C."
+        placeholder: "Ej: Bogotá, D.C."
       },
       {
         key: "barberia.direccion",
@@ -864,8 +148,8 @@ y este s el html y js
       {
         key: "barberia.telefono",
         label: "Paso 4",
-        prompt: "Cual es el telefono principal?",
-        helper: "Lo usaremos como telefono del negocio.",
+        prompt: "Cual es el Teléfono principal?",
+        helper: "Lo usaremos como Teléfono del negocio.",
         type: "tel",
         required: true,
         placeholder: "Ej: 3001234567"
@@ -889,7 +173,7 @@ y este s el html y js
         key: "accesos.admin.nombre",
         label: "Paso 6",
         prompt: "Como se llama el administrador principal?",
-        helper: "Este usuario principal se creara con los datos que pongas aqui.",
+        helper: "Este usuario principal se creará con los datos que pongas Aquí.",
         type: "text",
         required: true,
         placeholder: "Ej: Carlos Alvis"
@@ -898,7 +182,7 @@ y este s el html y js
         key: "accesos.admin.email",
         label: "Paso 7",
         prompt: "Cual sera el email del administrador principal?",
-        helper: "Este correo se creara como acceso principal del negocio.",
+        helper: "Este correo se creará como acceso principal del negocio.",
         type: "email",
         required: true,
         placeholder: "Ej: admin@correo.com"
@@ -907,7 +191,7 @@ y este s el html y js
         key: "accesos.admin.password",
         label: "Paso 8",
         prompt: "Define la password del administrador.",
-        helper: "Minimo 6 caracteres.",
+        helper: "mínimo 6 caracteres.",
         type: "password",
         required: true,
         placeholder: "Escribe la password"
@@ -923,7 +207,7 @@ y este s el html y js
       {
         key: "horarios",
         label: "Paso 10",
-        prompt: "Define los horarios de atencion.",
+        prompt: "Define los horarios de atención.",
         helper: "Debe quedar al menos un dia activo.",
         type: "hours",
         required: true
@@ -939,13 +223,20 @@ y este s el html y js
       {
         key: "review",
         label: "Paso final",
-        prompt: "Revisa el resumen y crea la barberia.",
+        prompt: "Revisa el resumen y crea la barbería.",
         helper: "Se enviara el draft exacto que tu endpoint espera.",
         type: "review",
         required: true
       }
     ];
+    const BARBER_PHOTO_OPTIONS = [
+      "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero1.1.png",
+      "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero2.1.png",
+      "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero3.1.png",
+      "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/04/barbero4.1.png"
+    ];
 
+    // SECCION: Referencias al DOM y estado principal del wizard.
     const progressFill = document.getElementById("baProgressFill");
     const stepLabel = document.getElementById("baStepLabel");
     const question = document.getElementById("baQuestion");
@@ -957,12 +248,26 @@ y este s el html y js
     const resetBtn = document.getElementById("baResetBtn");
 
     let currentStepIndex = 0;
-    let draft = normalizeDraft(loadDraft());
+    let draft = normalizeDraft(loadInitialDraft());
     let onboardingCompleted = false;
     let onboardingResult = null;
+    const deepLinkTarget = getDeepLinkTarget();
+    currentStepIndex = deepLinkTarget.stepIndex;
+    let lastPayload = null;
+    let editHydrationState = {
+      required: isEditIntent(),
+      complete: !isEditIntent(),
+      failed: false,
+      message: "",
+      owner: null
+    };
+    let truthLoaded = !isEditIntent();
+    let identityValidated = !isEditIntent();
+    let initialTruthState = null;
 
     syncThemeFromGlobal();
 
+    // SECCION: Utilidades generales y validaciones.
     function clean(value) {
       return (value || "").toString().trim();
     }
@@ -990,6 +295,77 @@ y este s el html y js
       return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean(value));
     }
 
+    function firstCleanValue(...values) {
+      for (const value of values) {
+        const cleaned = clean(value);
+        if (cleaned) return cleaned;
+      }
+      return "";
+    }
+
+    function resolveOwnerFromDashboardState(data) {
+      const source = data && typeof data === "object" ? data : {};
+      const barberia = source.barberia && typeof source.barberia === "object" ? source.barberia : {};
+      const owner = source.owner && typeof source.owner === "object" ? source.owner : {};
+      const currentUser = source.current_user && typeof source.current_user === "object" ? source.current_user : {};
+      const user = source.user && typeof source.user === "object" ? source.user : {};
+      const session = source.session && typeof source.session === "object" ? source.session : {};
+
+      const ownerId = Number(
+        owner.id ||
+        owner.user_id ||
+        barberia.owner_id ||
+        source.owner_id ||
+        currentUser.id ||
+        user.id ||
+        0
+      ) || null;
+
+      const nombre = firstCleanValue(
+        owner.nombre,
+        owner.name,
+        owner.full_name,
+        source.owner_nombre,
+        source.owner_name,
+        barberia.owner_nombre,
+        barberia.owner_name,
+        currentUser.nombre,
+        currentUser.name,
+        user.nombre,
+        user.name,
+        session.nombre,
+        session.name
+      );
+
+      const email = firstCleanValue(
+        owner.email,
+        source.owner_email,
+        barberia.owner_email,
+        currentUser.email,
+        user.email,
+        session.email
+      ).toLowerCase();
+
+      return { id: ownerId, nombre, email };
+    }
+
+    function requireEditHydrationReady() {
+      if (!isEditIntent()) return true;
+      if (!truthLoaded) {
+        showMessage("error", "La configuración de la barbería no se ha cargado.");
+        return false;
+      }
+      if (!identityValidated) {
+        showMessage("error", "La identidad de la barbería no pudo ser validada. Guardado bloqueado.");
+        return false;
+      }
+      if (editHydrationState.failed) {
+        showMessage("error", editHydrationState.message || "La hidratación falló. No se permite guardar.");
+        return false;
+      }
+      return true;
+    }
+
     function isLikelyGoogleMapsUrl(value) {
       const url = clean(value);
       if (!url) return true;
@@ -1010,9 +386,122 @@ y este s el html y js
     function buildGoogleMapsEmbedUrl(addressOrUrl) {
       const value = clean(addressOrUrl);
       if (!value) return "https://www.google.com/maps?q=Google%20Maps&output=embed";
+      if (isLikelyGoogleMapsUrl(value) && /^https?:\/\//i.test(value)) {
+        return `https://www.google.com/maps?q=${encodeURIComponent(value)}&output=embed`;
+      }
       return `https://www.google.com/maps?q=${encodeURIComponent(value)}&output=embed`;
     }
 
+    function normalizeBarberPhoto(value) {
+      const url = clean(value);
+      return url || BARBER_PHOTO_OPTIONS[0];
+    }
+
+    function normalizeBarberAvatar(value) {
+      const url = clean(value);
+      return BARBER_PHOTO_OPTIONS.includes(url) ? url : BARBER_PHOTO_OPTIONS[0];
+    }
+
+    function getUploadEndpointCandidates() {
+      const candidateList = [
+        clean(window.BA_UPLOAD_ENDPOINT),
+        DEFAULT_UPLOAD_ENDPOINT
+      ].filter(Boolean);
+      return Array.from(new Set(candidateList));
+    }
+
+    function buildUploadPublicUrl(uploadResponse, file) {
+      const response = uploadResponse && typeof uploadResponse === "object" ? uploadResponse : {};
+      const base = clean(
+        response.public_base_url ||
+        response.publicBaseUrl ||
+        response.base_url ||
+        response.baseUrl ||
+        response.upload_base_url ||
+        response.uploadBaseUrl ||
+        UPLOAD_PUBLIC_BASE
+      ).replace(/\/+$/, "");
+      const key = clean(response.key || response.object_key || response.objectKey || response.path || response.file_path);
+      const sourceUrl = clean(
+        response.url ||
+        response.source_url ||
+        response.sourceUrl ||
+        response.location ||
+        response.public_url ||
+        response.publicUrl ||
+        response.file_url ||
+        response.fileUrl
+      );
+
+      if (sourceUrl) return sourceUrl;
+      if (base && key) return `${base}/${key.replace(/^\/+/, "")}`;
+      if (base) {
+        const fileName = clean(file && file.name);
+        return fileName ? `${base}/${fileName.replace(/^\/+/, "")}` : base;
+      }
+      return clean(response.filename || response.file_name);
+    }
+
+    async function uploadImageToStorage(file, slot = "service") {
+      if (!file) throw new Error("No se seleccionó una imagen.");
+      if (!/^image\//i.test(file.type || "")) throw new Error("El archivo debe ser una imagen válida.");
+
+      const identity = getEditIdentity();
+      const barberiaId = Number(identity.barberia_id) || Number(draft?.barberia?.id || 0) || 0;
+      const slug = clean(identity.slug) || clean(draft?.barberia?.slug) || slugify(draft?.barberia?.nombre || "barberia") || "barberia";
+
+      const formData = new FormData();
+      formData.append("file", file);
+      if (barberiaId > 0) {
+        formData.append("barberia_id", String(barberiaId));
+      }
+      formData.append("slug", slug);
+      formData.append("biz_slug", slug);
+      formData.append("slot", slot);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+      let lastError = null;
+      for (const endpoint of getUploadEndpointCandidates()) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            body: formData,
+            credentials: "include",
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+          if (!response.ok) {
+            const errorBody = await response.text().catch(() => "");
+            let errMessage = `HTTP ${response.status}`;
+            try {
+              const errJson = JSON.parse(errorBody);
+              if (errJson && errJson.message) errMessage = errJson.message;
+            } catch (_) {
+              if (errorBody) errMessage = errorBody;
+            }
+            lastError = new Error(errMessage);
+            continue;
+          }
+
+          const json = await response.json().catch(() => ({}));
+          const publicUrl = buildUploadPublicUrl(json, file);
+          if (!publicUrl || /^blob:/i.test(publicUrl) || /^data:/i.test(publicUrl)) {
+            lastError = new Error("El upload no devolvió una URL pública válida.");
+            continue;
+          }
+          return publicUrl;
+        } catch (error) {
+          clearTimeout(timeoutId);
+          lastError = error;
+        }
+      }
+
+      throw lastError || new Error("No se pudo subir la imagen.");
+    }
+
+    // SECCION: Draft, carga local y seed recibido desde otros flujos.
     function getDefaultDraft() {
       return {
         barberia: {
@@ -1022,11 +511,11 @@ y este s el html y js
           direccion: "",
           maps_url: "",
           ciudad: "",
-          timezone: "America/Bogota",
+          timezone: "America/Bogotá",
           slot_min: 15
         },
         servicios: [
-          { nombre: "", duracion_min: 30, precio: 0 }
+          { nombre: "", duracion_min: 30, precio: 0, imagen_url: "" }
         ],
         horarios: DAYS.map((day, index) => ({
           dia: day.value,
@@ -1055,26 +544,251 @@ y este s el html y js
       }
     }
 
+    function loadLandingSeed() {
+      const parseRaw = (raw) => {
+        if (!raw) return null;
+        try {
+          return JSON.parse(raw);
+        } catch (_) {
+          return null;
+        }
+      };
+
+      try {
+        return (
+          parseRaw(sessionStorage.getItem(LANDING_SEED_KEY)) ||
+          parseRaw(localStorage.getItem(LANDING_SEED_KEY)) ||
+          null
+        );
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function isEditIntent() {
+      try {
+        const params = new URLSearchParams(window.location.search || "");
+        return (
+          params.get("edit") === "1" ||
+          clean(params.get("mode")) === "edit" ||
+          clean(params.get("modo")) === "editar" ||
+          params.get("is_edit") === "1" ||
+          params.get("editing") === "1" ||
+          Number(params.get("barberia_id")) > 0 ||
+          Number(params.get("id_barberia")) > 0 ||
+          Number(params.get("id")) > 0 ||
+          !!clean(params.get("slug")) ||
+          !!clean(params.get("barberia_slug"))
+        );
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function getEditIdentity() {
+      let barberiaId = 0;
+      let slug = "";
+      try {
+        const params = new URLSearchParams(window.location.search || "");
+        barberiaId =
+          Number(params.get("barberia_id")) ||
+          Number(params.get("id_barberia")) ||
+          Number(params.get("id")) ||
+          Number(params.get("barberia")) ||
+          Number(params.get("barberiaId")) ||
+          Number(params.get("business_id")) ||
+          0;
+        slug =
+          clean(params.get("slug")) ||
+          clean(params.get("barberia_slug")) ||
+          clean(params.get("business_slug"));
+      } catch (_) {}
+
+      const seed = loadLandingSeed() || {};
+      const seedBarberia = seed.barberia && typeof seed.barberia === "object" ? seed.barberia : {};
+      const fallbackId =
+        Number(seed.barberia_id) ||
+        Number(seed.id_barberia) ||
+        Number(seed.id) ||
+        Number(seedBarberia.id) ||
+        0;
+      const fallbackSlug =
+        clean(seed.slug) ||
+        clean(seedBarberia.slug);
+
+      return {
+        barberia_id: barberiaId > 0 ? barberiaId : fallbackId,
+        slug: slug || fallbackSlug
+      };
+    }
+
+    function draftFromLandingSeed(seed) {
+      if (!seed || typeof seed !== "object") return null;
+
+      const barberiaSeed = seed.barberia && typeof seed.barberia === "object" ? seed.barberia : {};
+      const serviciosSeed = Array.isArray(seed.servicios) ? seed.servicios : [];
+      const horariosSeed = Array.isArray(seed.horarios) ? seed.horarios : [];
+      const barberosSeed = Array.isArray(seed.barberos) ? seed.barberos : [];
+      const accesosSeed = seed.accesos && typeof seed.accesos === "object" ? seed.accesos : {};
+      const adminSeed = accesosSeed.admin && typeof accesosSeed.admin === "object" ? accesosSeed.admin : {};
+      const accesosBarberosSeed = Array.isArray(accesosSeed.barberos) ? accesosSeed.barberos : [];
+
+      return {
+        barberia: {
+          nombre: clean(seed.nombre || barberiaSeed.nombre),
+          slug: clean(seed.slug || barberiaSeed.slug),
+          telefono: clean(seed.telefono || barberiaSeed.telefono),
+          direccion: clean(seed.direccion || barberiaSeed.direccion),
+          maps_url: clean(seed.maps_url || seed.map_url || seed.location_map_url || barberiaSeed.maps_url || barberiaSeed.map_url || barberiaSeed.location_map_url),
+          ciudad: clean(seed.ciudad || barberiaSeed.ciudad),
+          timezone: clean(seed.timezone || barberiaSeed.timezone || "America/Bogotá"),
+          slot_min: Number(seed.slot_min || barberiaSeed.slot_min || 15)
+        },
+        servicios: serviciosSeed.map((item) => {
+          const imgVal = clean(item && (item.imagen_url || item.image_url || item.foto_url || item.foto || ''));
+          const sId = Number(item && (item.id || item.id_servicio)) || undefined;
+          return {
+            id: sId,
+            id_servicio: sId,
+            nombre: clean(item && (item.nombre || item.name)),
+            duracion_min: Number(item && (item.duracion_min || item.duration_min || 30)),
+            precio: Math.max(0, Number(item && (item.precio || item.price || 0))),
+            imagen_url: imgVal,
+            image_url: imgVal,
+            foto_url: imgVal
+          };
+        }),
+        horarios: horariosSeed.map((item) => ({
+          dia: clean(item && item.dia).toLowerCase(),
+          activo: Boolean(item && item.activo),
+          hora_abre: clean(item && item.hora_abre),
+          hora_cierra: clean(item && item.hora_cierra)
+        })),
+        barberos: barberosSeed.map((item) => {
+          const fotoVal = clean(item && (item.foto_url || item.foto || item.photo || item.imagen_url || item.avatar_url || ''));
+          const bId = Number(item && (item.id || item.id_barbero)) || undefined;
+          return {
+            id: bId,
+            id_barbero: bId,
+            usuario_id: Number(item && (item.usuario_id || item.user_id)) || undefined,
+            nombre: clean(item && (item.nombre || item.name)),
+            activo: item && item.activo !== undefined ? Boolean(item.activo) : true,
+            foto: fotoVal,
+            foto_url: fotoVal,
+            imagen_url: fotoVal,
+            especialidad: clean(item && (item.especialidad || item.rol || item.role)) || 'Barbero profesional'
+          };
+        }),
+        accesos: {
+          admin: {
+            nombre: clean(adminSeed.nombre || adminSeed.name),
+            email: clean(adminSeed.email).toLowerCase(),
+            password: clean(adminSeed.password)
+          },
+          barberos: barberosSeed.map((item, index) => {
+            const access = accesosBarberosSeed[index] && typeof accesosBarberosSeed[index] === "object"
+              ? accesosBarberosSeed[index]
+              : {};
+            return {
+              nombre: clean(access.nombre || access.name || item?.nombre || item?.name),
+              email: clean(access.email || item?.email || item?.barbero_email).toLowerCase(),
+              password: clean(access.password || item?.password),
+              foto: normalizeBarberPhoto(access.foto_url || access.foto || item?.foto_url || item?.foto || item?.photo || item?.avatar_url),
+              foto_url: normalizeBarberPhoto(access.foto_url || access.foto || item?.foto_url || item?.foto || item?.photo || item?.avatar_url)
+            };
+          })
+        }
+      };
+    }
+
+    function loadInitialDraft() {
+      const editIntent = isEditIntent();
+      if (!editIntent) {
+        // Si no estamos editando una barberia existente, iniciar limpio.
+        // Evita que aparezcan datos de una barberia anterior guardados en seed/draft.
+        try {
+          sessionStorage.removeItem(LANDING_SEED_KEY);
+        } catch (_) {}
+        try {
+          localStorage.removeItem(LANDING_SEED_KEY);
+        } catch (_) {}
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (_) {}
+        return null;
+      }
+
+      const saved = loadDraft();
+      if (saved && editIntent) {
+        const identity = getEditIdentity();
+        const savedId = Number(saved.barberia_id || saved.barberia?.id || saved.barberia?.barberia_id || 0);
+        if (savedId !== identity.barberia_id) {
+          try {
+            localStorage.removeItem(STORAGE_KEY);
+          } catch (_) {}
+          return null;
+        }
+      }
+      const seed = loadLandingSeed();
+      const fromSeed = draftFromLandingSeed(seed);
+
+      if (!saved && fromSeed) {
+        return fromSeed;
+      }
+
+      if (saved && fromSeed && editIntent) {
+        const savedAdmin = (saved.accesos && saved.accesos.admin) ? saved.accesos.admin : {};
+        const seedAdmin = (fromSeed.accesos && fromSeed.accesos.admin) ? fromSeed.accesos.admin : {};
+        const pickAdminValue = (seedValue, savedValue) => clean(seedValue) ? seedValue : (savedValue || "");
+        const seedAccessBarbers = (fromSeed.accesos && Array.isArray(fromSeed.accesos.barberos))
+          ? fromSeed.accesos.barberos
+          : [];
+        const hasMeaningfulSeedBarberAccess = seedAccessBarbers.some((item) =>
+          clean(item && item.nombre) || clean(item && item.email) || clean(item && item.password)
+        );
+
+        // En modo edición:
+        // 1) usar semilla como base de identidad
+        // 2) pero conservar cambios recientes del draft local (ej: direccion editada)
+        return {
+          ...saved,
+          barberia: {
+            ...(fromSeed.barberia || {}),
+            ...(saved.barberia || {})
+          },
+          servicios: (fromSeed.servicios && fromSeed.servicios.length) ? fromSeed.servicios : (saved.servicios || []),
+          horarios: (fromSeed.horarios && fromSeed.horarios.length) ? fromSeed.horarios : (saved.horarios || []),
+          barberos: (fromSeed.barberos && fromSeed.barberos.length) ? fromSeed.barberos : (saved.barberos || []),
+          accesos: {
+            admin: {
+              ...savedAdmin,
+              ...seedAdmin,
+              nombre: pickAdminValue(seedAdmin.nombre, savedAdmin.nombre),
+              email: pickAdminValue(seedAdmin.email, savedAdmin.email),
+              password: pickAdminValue(seedAdmin.password, savedAdmin.password)
+            },
+            barberos: hasMeaningfulSeedBarberAccess
+              ? seedAccessBarbers
+              : ((saved.accesos && Array.isArray(saved.accesos.barberos)) ? saved.accesos.barberos : [])
+          }
+        };
+      }
+
+      return saved || fromSeed || null;
+    }
+
+    // SECCION: Tema visual sincronizado con WordPress.
     function detectGlobalTheme() {
-      const body = document.body;
-      const html = document.documentElement;
-
-      if (body && body.classList.contains("light-mode")) return "light";
-      if (html && html.classList.contains("light-mode")) return "light";
-      if (body && body.classList.contains("dark-mode")) return "dark";
-      if (html && html.classList.contains("dark-mode")) return "dark";
-      if (body && body.dataset && body.dataset.theme === "light") return "light";
-      if (html && html.dataset && html.dataset.theme === "light") return "light";
-      if (body && body.dataset && body.dataset.theme === "dark") return "dark";
-      if (html && html.dataset && html.dataset.theme === "dark") return "dark";
-
-      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      return document.body && document.body.classList.contains("light-mode")
+        ? "light"
+        : "dark";
     }
 
     function syncThemeFromGlobal() {
       app.setAttribute("data-theme", detectGlobalTheme());
     }
 
+    // SECCION: Lectura, escritura y persistencia del draft.
     function normalizeDraft(raw) {
       const base = getDefaultDraft();
       const source = raw && typeof raw === "object" ? raw : {};
@@ -1094,9 +808,11 @@ y este s el html y js
         barberia: Object.assign({}, base.barberia, source.barberia || {}),
         servicios: Array.isArray(source.servicios) && source.servicios.length
           ? source.servicios.map((item) => ({
+              id: item.id || undefined,
               nombre: clean(item.nombre),
               duracion_min: Number(item.duracion_min || 30),
-              precio: Number(item.precio || 0)
+              precio: Number(item.precio || 0),
+              imagen_url: clean(item.imagen_url || item.image_url || item.foto_url || item.foto)
             }))
           : base.servicios,
         horarios,
@@ -1138,9 +854,68 @@ y este s el html y js
       if (path === "barberia.nombre") {
         draft.barberia.slug = slugify(value);
       }
+      if (path === "barberia.direccion") {
+        persistSeedAddress(value);
+      }
+      if (path === "barberia.maps_url") {
+        persistSeedMapsUrl(value);
+      }
       saveDraft();
     }
 
+    // SECCION: Seed para entregar direccion/mapa al editor de plantillas.
+    function persistSeedAddress(value) {
+      const nextAddress = clean(value);
+      if (!nextAddress) return;
+      try {
+        const seed = loadLandingSeed() || {};
+        const seedBarberia = seed.barberia && typeof seed.barberia === "object" ? seed.barberia : {};
+        const nextSeed = {
+          ...seed,
+          direccion: nextAddress,
+          barberia: {
+            ...seedBarberia,
+            direccion: nextAddress
+          }
+        };
+        const raw = JSON.stringify(nextSeed);
+        try {
+          sessionStorage.setItem(LANDING_SEED_KEY, raw);
+        } catch (_) {}
+        try {
+          localStorage.setItem(LANDING_SEED_KEY, raw);
+        } catch (_) {}
+      } catch (_) {}
+    }
+
+    function persistSeedMapsUrl(value) {
+      const nextMapsUrl = clean(value);
+      try {
+        const seed = loadLandingSeed() || {};
+        const seedBarberia = seed.barberia && typeof seed.barberia === "object" ? seed.barberia : {};
+        const nextSeed = {
+          ...seed,
+          maps_url: nextMapsUrl,
+          map_url: nextMapsUrl,
+          location_map_url: nextMapsUrl,
+          barberia: {
+            ...seedBarberia,
+            maps_url: nextMapsUrl,
+            map_url: nextMapsUrl,
+            location_map_url: nextMapsUrl
+          }
+        };
+        const raw = JSON.stringify(nextSeed);
+        try {
+          sessionStorage.setItem(LANDING_SEED_KEY, raw);
+        } catch (_) {}
+        try {
+          localStorage.setItem(LANDING_SEED_KEY, raw);
+        } catch (_) {}
+      } catch (_) {}
+    }
+
+    // SECCION: Mensajes, navegacion y validaciones de filas.
     function hideMessage() {
       messageBox.hidden = true;
       messageBox.className = "ba-message";
@@ -1163,6 +938,104 @@ y este s el html y js
         localStorage.removeItem(STORAGE_KEY);
       } catch (_) {}
       render();
+    }
+
+    function normalizeDeepLinkToken(value) {
+      return clean(value)
+        .toLowerCase()
+        .replace(/^#/, "")
+        .replace(/_/g, "-")
+        .replace(/\./g, "-")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function getDeepLinkTarget() {
+      const params = new URLSearchParams(window.location.search || "");
+      const hash = normalizeDeepLinkToken(window.location.hash || "");
+      const rawStep =
+        params.get("step") ||
+        params.get("paso") ||
+        params.get("section") ||
+        params.get("seccion") ||
+        params.get("field") ||
+        params.get("campo") ||
+        hash ||
+        "";
+      const token = normalizeDeepLinkToken(rawStep);
+      const aliases = {
+        nombre: "barberia.nombre",
+        "barberia-nombre": "barberia.nombre",
+        ciudad: "barberia.ciudad",
+        "barberia-ciudad": "barberia.ciudad",
+        direccion: "barberia.direccion",
+        ubicacion: "barberia.direccion",
+        mapa: "barberia.direccion",
+        maps: "barberia.direccion",
+        telefono: "barberia.telefono",
+        "barberia-telefono": "barberia.telefono",
+        agenda: "barberia.slot_min",
+        slot: "barberia.slot_min",
+        "slot-min": "barberia.slot_min",
+        admin: "accesos.admin.nombre",
+        administrador: "accesos.admin.nombre",
+        email: "accesos.admin.email",
+        password: "accesos.admin.password",
+        servicios: "servicios",
+        servicio: "servicios",
+        hours: "horarios",
+        horarios: "horarios",
+        horario: "horarios",
+        barberos: "barberos",
+        barbero: "barberos",
+        review: "review",
+        resumen: "review"
+      };
+      const targetKey = aliases[token] || clean(rawStep);
+      const stepIndex = Math.max(0, STEPS.findIndex((step) => step.key === targetKey));
+      const itemType =
+        normalizeDeepLinkToken(params.get("item_type") || params.get("tipo") || "") ||
+        (targetKey === "servicios" ? "servicio" : targetKey === "barberos" ? "barbero" : "");
+      const itemIndex = Math.max(
+        0,
+        Number(params.get("item") || params.get("index") || params.get("row") || params.get("fila") || 1) - 1
+      );
+
+      return {
+        stepIndex: stepIndex >= 0 ? stepIndex : 0,
+        targetKey,
+        itemType,
+        itemIndex,
+        enabled: Boolean(token || clean(rawStep))
+      };
+    }
+
+    function applyDeepLinkFocus() {
+      if (!deepLinkTarget.enabled) return;
+
+      const step = STEPS[currentStepIndex];
+      let target = null;
+
+      if (step.key === "servicios") {
+        target = document.querySelector('[data-ba-item="servicio"][data-ba-index="' + deepLinkTarget.itemIndex + '"]');
+      } else if (step.key === "barberos") {
+        target = document.querySelector('[data-ba-item="barbero"][data-ba-index="' + deepLinkTarget.itemIndex + '"]');
+      } else if (step.key === "barberia.direccion") {
+        target = document.getElementById("baLocationCard") || document.getElementById("baAddressInput");
+      } else {
+        target = responseArea.querySelector("input, select, textarea, button");
+      }
+
+      if (!target) return;
+
+      target.classList.add("ba-deep-link-target");
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      const focusable = target.matches("input, select, textarea, button")
+        ? target
+        : target.querySelector("input, select, textarea, button");
+      if (focusable && typeof focusable.focus === "function") {
+        setTimeout(() => focusable.focus(), 120);
+      }
     }
 
     function progressPercent() {
@@ -1196,10 +1069,15 @@ y este s el html y js
         const barber = draft.barberos[i] || {};
         const access = draft.accesos.barberos[i] || {};
         rows.push({
+          id: Number(barber.id || access.id || 0) || undefined,
+          usuario_id: Number(barber.usuario_id || access.usuario_id || 0) || undefined,
           nombre: clean(barber.nombre) || clean(access.nombre),
-          email: clean(access.email),
+          email: clean(access.email || barber.email || barber.barbero_email),
           password: access.password || "",
-          activo: barber.activo !== undefined ? Boolean(barber.activo) : Boolean(access.activo)
+          has_password: Boolean(access.has_password || barber.has_password),
+          activo: barber.activo !== undefined ? Boolean(barber.activo) : Boolean(access.activo),
+          foto: normalizeBarberPhoto(barber.foto_url || barber.foto || access.foto_url || access.foto),
+          foto_url: normalizeBarberPhoto(barber.foto_url || barber.foto || access.foto_url || access.foto)
         });
       }
 
@@ -1208,27 +1086,45 @@ y este s el html y js
 
     function setBarberRows(rows) {
       draft.barberos = rows.map((row) => ({
+        id: Number(row.id || 0) || undefined,
+        usuario_id: Number(row.usuario_id || 0) || undefined,
         nombre: clean(row.nombre),
-        activo: Boolean(row.activo)
+        email: clean(row.email).toLowerCase(),
+        has_password: Boolean(row.has_password),
+        activo: Boolean(row.activo),
+        foto: normalizeBarberPhoto(row.foto_url || row.foto),
+        foto_url: normalizeBarberPhoto(row.foto_url || row.foto)
       }));
 
       draft.accesos.barberos = rows.map((row) => ({
+        id: Number(row.id || 0) || undefined,
+        usuario_id: Number(row.usuario_id || 0) || undefined,
         nombre: clean(row.nombre),
         email: clean(row.email).toLowerCase(),
         password: clean(row.password),
-        activo: Boolean(row.activo)
+        has_password: Boolean(row.has_password),
+        activo: Boolean(row.activo),
+        foto: normalizeBarberPhoto(row.foto_url || row.foto),
+        foto_url: normalizeBarberPhoto(row.foto_url || row.foto)
       }));
 
       saveDraft();
     }
 
     function validateBarberRows(rows) {
+      const isEdit = isEditIntent();
+      const adminEmail = clean(draft.accesos && draft.accesos.admin && draft.accesos.admin.email).toLowerCase();
       const normalized = rows.map((row, index) => ({
         _index: index + 1,
+        id: Number(row.id || 0) || 0,
+        usuario_id: Number(row.usuario_id || 0) || 0,
         nombre: clean(row.nombre),
         email: clean(row.email).toLowerCase(),
         password: clean(row.password),
-        activo: Boolean(row.activo)
+        has_password: Boolean(row.has_password),
+        activo: Boolean(row.activo),
+        foto: normalizeBarberPhoto(row.foto_url || row.foto),
+        foto_url: normalizeBarberPhoto(row.foto_url || row.foto)
       }));
 
       const filled = normalized.filter((row) => row.nombre || row.email || row.password);
@@ -1237,54 +1133,149 @@ y este s el html y js
         const row = filled[i];
 
         if (!row.nombre) return { ok: false, message: "Barbero " + row._index + ": falta el nombre." };
+        if (isEdit && row.id) {
+          if (row.email && !isValidEmail(row.email)) return { ok: false, message: "Barbero " + row._index + ": el email no es valido." };
+          continue;
+        }
         if (!row.email) return { ok: false, message: "Barbero " + row._index + ": falta el email." };
-        if (!isValidEmail(row.email)) return { ok: false, message: "Barbero " + row._index + ": el email no es valido." };
+        if (!isValidEmail(row.email)) return { ok: false, message: "Barbero " + row._index + ": el email no es válido." };
         if (!row.password) return { ok: false, message: "Barbero " + row._index + ": falta la password." };
-        if (row.password.length < 6) return { ok: false, message: "Barbero " + row._index + ": la password debe tener minimo 6 caracteres." };
+        if (row.password.length < 6) return { ok: false, message: "Barbero " + row._index + ": la password debe tener mínimo 6 caracteres." };
+      }
+
+      const seenEmails = new Map();
+      for (const row of filled) {
+        if (isEdit && row.id) continue;
+        if (isEdit && !row.email && !row.password) continue;
+        const previousIndex = seenEmails.get(row.email);
+        if (previousIndex) {
+          return {
+            ok: false,
+            message: "Cada barbero debe tener un correo diferente para poder ingresar a su panel. Revisa los barberos " + previousIndex + " y " + row._index + "."
+          };
+        }
+        seenEmails.set(row.email, row._index);
       }
 
       return {
         ok: true,
+        adminAlsoBarber: Boolean(adminEmail && filled.some((row) => row.email === adminEmail)),
         rows: filled.map((row) => ({
+          id: row.id || undefined,
+          usuario_id: row.usuario_id || undefined,
           nombre: row.nombre,
           email: row.email,
           password: row.password,
-          activo: row.activo
+          has_password: row.has_password,
+          activo: row.activo,
+          foto: row.foto_url || row.foto,
+          foto_url: row.foto_url || row.foto
         }))
       };
     }
 
+    // SECCION: Render del resumen lateral.
+    function getSummaryIcon(key) {
+      const keyLower = String(key).toLowerCase();
+      if (keyLower.includes("barber")) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`;
+      }
+      if (keyLower.includes("ciudad") || keyLower.includes("dirección")) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+      }
+      if (keyLower.includes("teléfono") || keyLower.includes("contacto")) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+      }
+      if (keyLower.includes("slug") || keyLower.includes("enlace")) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
+      }
+      if (keyLower.includes("admin")) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+      }
+      if (keyLower.includes("servicio")) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`;
+      }
+      if (keyLower.includes("día") || keyLower.includes("activo") || keyLower.includes("horario")) {
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+      }
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+    }
+
+    // SECCION: Render del resumen lateral.
     function renderLiveSummary() {
       const activeDays = (draft.horarios || []).filter((item) => item.activo).length;
 
       const entries = [
-        ["Barberia", draft.barberia.nombre],
+        ["Barbería", draft.barberia.nombre],
         ["Ciudad", draft.barberia.ciudad],
-        ["Telefono", draft.barberia.telefono],
+        ["Teléfono", draft.barberia.telefono],
         ["Slug", draft.barberia.slug],
         ["Admin", draft.accesos.admin.email],
         ["Servicios", String((draft.servicios || []).filter((item) => clean(item.nombre)).length)],
-        ["Dias activos", String(activeDays)]
+        ["días activos", String(activeDays)]
       ].filter((entry) => clean(entry[1]));
 
       liveSummary.innerHTML = entries.length
         ? entries.map((entry) => `
             <article class="ba-summary-item">
-              <small>${escapeHtml(entry[0])}</small>
-              <strong>${escapeHtml(entry[1])}</strong>
+              <div class="ba-summary-item-icon">
+                ${getSummaryIcon(entry[0])}
+              </div>
+              <div class="ba-summary-item-content">
+                <small>${escapeHtml(entry[0])}</small>
+                <strong>${escapeHtml(entry[1])}</strong>
+              </div>
             </article>
           `).join("")
         : `
-            <article class="ba-summary-item">
-              <small>Resumen</small>
-              <strong>Tu progreso aparecera aqui mientras completas el wizard.</strong>
+            <article class="ba-summary-item is-placeholder">
+              <div class="ba-summary-item-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </div>
+              <div class="ba-summary-item-content">
+                <small>Resumen</small>
+                <strong>Tu progreso aparecerá aquí.</strong>
+              </div>
             </article>
           `;
     }
 
+    // SECCION: Render de pasos simples.
     function renderTextStep(step) {
       const value = getByPath(draft, step.key) || "";
       const isPassword = step.type === "password";
+
+      if (isEditIntent() && step.key.indexOf("accesos.admin.") === 0) {
+        const owner = editHydrationState.owner || {};
+        const ownerName = firstCleanValue(owner.nombre, draft.accesos.admin.nombre, "Administrador");
+        const ownerEmail = firstCleanValue(owner.email, draft.accesos.admin.email);
+        const valueText = step.key === "accesos.admin.password"
+          ? "Se mantiene la password actual"
+          : (step.key === "accesos.admin.email" ? ownerEmail : ownerName);
+
+        responseArea.innerHTML = `
+          <div class="ba-composer">
+            <article class="ba-summary-item">
+              <small>Administrador actual</small>
+              <strong>${escapeHtml(valueText || "No disponible")}</strong>
+            </article>
+            <p class="ba-helper">En modo edicion el administrador no se modifica desde este formulario.</p>
+            <div class="ba-inline">
+              <button class="ba-action" type="button" id="baNextBtn">Continuar</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("baNextBtn").addEventListener("click", () => {
+          if (!requireEditHydrationReady()) return;
+          if ((step.key === "accesos.admin.email" || step.key === "accesos.admin.nombre") && !valueText) {
+            showMessage("error", "No se cargo el administrador real desde el backend.");
+            return;
+          }
+          nextStep();
+        });
+        return;
+      }
 
       responseArea.innerHTML = `
         <div class="ba-composer">
@@ -1294,6 +1285,7 @@ y este s el html y js
             ${isPassword ? '<button class="ba-action-secondary" type="button" id="baTogglePasswordBtn">Mostrar</button>' : (step.required ? '<span></span>' : '<button class="ba-action-secondary" type="button" id="baSkipBtn">Omitir</button>')}
             <button class="ba-action" type="button" id="baNextBtn">Continuar</button>
           </div>
+          ${step.key === "barberia.maps_url" ? '<p class="ba-helper"><a href="https://maps.google.com" target="_blank" rel="noopener">Abrir Google Maps</a></p>' : ""}
         </div>
       `;
 
@@ -1311,12 +1303,17 @@ y este s el html y js
         }
 
         if (step.type === "email" && answer && !isValidEmail(answer)) {
-          showMessage("error", "Escribe un email valido.");
+          showMessage("error", "Escribe un email válido.");
           return;
         }
 
         if (step.type === "password" && answer && answer.length < 6) {
-          showMessage("error", "La password debe tener minimo 6 caracteres.");
+          showMessage("error", "La password debe tener mínimo 6 caracteres.");
+          return;
+        }
+
+        if (step.key === "barberia.maps_url" && answer && !isLikelyGoogleMapsUrl(answer)) {
+          showMessage("error", "Pega una URL valida de Google Maps o deja el campo vacio.");
           return;
         }
 
@@ -1349,6 +1346,7 @@ y este s el html y js
       setTimeout(() => input.focus(), 60);
     }
 
+    // SECCION: Paso de ubicacion con mapa y confirmacion.
     function renderLocationStep(step) {
       const address = getByPath(draft, "barberia.direccion") || "";
       const mapsUrl = getByPath(draft, "barberia.maps_url") || "";
@@ -1356,13 +1354,6 @@ y este s el html y js
 
       responseArea.innerHTML = `
         <div class="ba-composer">
-          <div class="ba-grid">
-            <label class="ba-label">
-              Direccion
-              <input class="ba-input" id="baAddressInput" type="text" value="${escapeHtml(address)}" placeholder="${escapeHtml(step.placeholder || "")}" />
-            </label>
-          </div>
-
           <p class="ba-helper">
             <a class="ba-maps-cta" href="https://maps.google.com" target="_blank" rel="noopener">Haz clic aquí para abrir Google Maps</a>
             Si no ves el punto correcto, abre el mapa, busca el local y pega aquí la ubicación exacta.
@@ -1376,7 +1367,9 @@ y este s el html y js
             <iframe id="baLocationMap" src="${escapeHtml(initialPreview)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Vista previa de Google Maps"></iframe>
           </div>
 
-          <div class="ba-actions-row">
+          <div class="ba-input-shell">
+            <button class="ba-plus" type="button" disabled>+</button>
+            <input class="ba-input" id="baAddressInput" type="text" value="${escapeHtml(address)}" placeholder="${escapeHtml(step.placeholder || "")}" />
             <button class="ba-action-secondary" type="button" id="baPreviewLocationBtn">Ver mapa</button>
             <button class="ba-action" type="button" id="baLocationNextBtn">Confirmar ubicación</button>
           </div>
@@ -1430,17 +1423,21 @@ y este s el html y js
       setTimeout(() => addressInput.focus(), 60);
     }
 
+    // SECCION: Render de pasos compuestos.
     function renderChoiceStep(step) {
       const selected = String(getByPath(draft, step.key));
 
       responseArea.innerHTML = `
         <div class="ba-composer">
-          <div class="ba-options">
-            ${step.options.map((option) => `
-              <button type="button" class="ba-option ${selected === String(option.value) ? "is-active" : ""}" data-value="${escapeHtml(String(option.value))}">
-                ${escapeHtml(option.label)}
-              </button>
-            `).join("")}
+          <div class="ba-input-shell">
+            <button class="ba-plus" type="button" disabled>+</button>
+            <div class="ba-options">
+              ${step.options.map((option) => `
+                <button type="button" class="ba-option ${selected === String(option.value) ? "is-active" : ""}" data-value="${escapeHtml(String(option.value))}">
+                  ${escapeHtml(option.label)}
+                </button>
+              `).join("")}
+            </div>
           </div>
         </div>
       `;
@@ -1456,13 +1453,13 @@ y este s el html y js
     function renderServicesStep() {
       const services = Array.isArray(draft.servicios) && draft.servicios.length
         ? draft.servicios
-        : [{ nombre: "", duracion_min: 30, precio: 0 }];
+        : [{ nombre: "", duracion_min: 30, precio: 0, imagen_url: "" }];
 
       responseArea.innerHTML = `
         <div class="ba-composer">
           <div class="ba-list" id="baServicesList">
             ${services.map((service, index) => `
-              <article class="ba-card">
+              <article class="ba-card" id="ba-service-${index + 1}" data-ba-item="servicio" data-ba-index="${index}">
                 <div class="ba-card-head">
                   <h3 class="ba-card-title">Servicio ${index + 1}</h3>
                   <button class="ba-action-danger" type="button" data-remove="${index}">Eliminar</button>
@@ -1471,7 +1468,7 @@ y este s el html y js
                 <div class="ba-grid ba-grid-2">
                   <label class="ba-label">
                     Nombre
-                    <input class="ba-input" type="text" data-field="nombre" data-index="${index}" value="${escapeHtml(service.nombre || "")}" placeholder="Ej: Corte clasico" />
+                    <input class="ba-input" type="text" data-field="nombre" data-index="${index}" value="${escapeHtml(service.nombre || "")}" placeholder="Ej: Corte clásico" />
                   </label>
 
                   <label class="ba-label">
@@ -1486,6 +1483,24 @@ y este s el html y js
                   <label class="ba-label">
                     Precio
                     <input class="ba-number" type="number" min="0" step="1000" data-field="precio" data-index="${index}" value="${Number(service.precio || 0)}" />
+                  </label>
+
+                  <label class="ba-label">
+                    Imagen del servicio (opcional)
+                    <input type="hidden" data-field="imagen_url" data-index="${index}" value="${escapeHtml(service.imagen_url || service.image_url || "")}" />
+                    <input class="ba-input" type="file" accept="image/*" data-service-upload="${index}" />
+                    <span class="ba-helper" data-service-upload-status="${index}">
+                      ${clean(service.imagen_url || service.image_url) ? "Imagen lista en storage." : "Si subes una imagen, se guardara en storage."}
+                    </span>
+                    ${clean(service.imagen_url || service.image_url) ? `
+                      <img
+                        src="${escapeHtml(service.imagen_url || service.image_url)}"
+                        alt="Imagen del servicio ${index + 1}"
+                        loading="lazy"
+                        decoding="async"
+                        style="width:100%;max-height:180px;object-fit:cover;border-radius:16px;border:1px solid rgba(148,163,184,0.35);"
+                      />
+                    ` : ""}
                   </label>
                 </div>
               </article>
@@ -1506,11 +1521,54 @@ y este s el html y js
         input.addEventListener("change", syncServicesFromDom);
       });
 
+      Array.from(list.querySelectorAll("[data-service-upload]")).forEach((input) => {
+        input.addEventListener("change", async () => {
+          const index = Number(input.dataset.serviceUpload);
+          const file = input.files && input.files[0];
+          const status = list.querySelector('[data-service-upload-status="' + index + '"]');
+          const hidden = list.querySelector('[data-field="imagen_url"][data-index="' + index + '"]');
+          if (!file) return;
+
+          hideMessage();
+
+          let publicUrl = null;
+          try {
+            input.disabled = true;
+            if (status) status.textContent = "Subiendo imagen a storage...";
+            publicUrl = await uploadImageToStorage(file, "service");
+          } catch (error) {
+            console.error("Service image upload failed:", error);
+            if (status) status.textContent = "No se pudo subir la imagen.";
+            showMessage("error", (error && error.message) || "No se pudo subir la imagen del servicio. Intenta de nuevo.");
+            return;
+          } finally {
+            input.disabled = false;
+            input.value = "";
+          }
+
+          try {
+            hideMessage();
+            if (hidden) hidden.value = publicUrl;
+            if (!Array.isArray(draft.servicios)) draft.servicios = [];
+            if (!draft.servicios[index]) {
+              draft.servicios[index] = { nombre: "", duracion_min: 30, precio: 0, imagen_url: "" };
+            }
+            draft.servicios[index].imagen_url = publicUrl;
+            syncServicesFromDom();
+            saveDraft();
+            if (status) status.textContent = "Imagen lista en storage.";
+            render();
+          } catch (domErr) {
+            console.warn("Post-upload state sync warning:", domErr);
+          }
+        });
+      });
+
       Array.from(list.querySelectorAll("[data-remove]")).forEach((button) => {
         button.addEventListener("click", () => {
           const next = getServicesFromDom();
           next.splice(Number(button.dataset.remove), 1);
-          draft.servicios = next.length ? next : [{ nombre: "", duracion_min: 30, precio: 0 }];
+          draft.servicios = next.length ? next : [{ nombre: "", duracion_min: 30, precio: 0, imagen_url: "" }];
           saveDraft();
           render();
         });
@@ -1518,7 +1576,7 @@ y este s el html y js
 
       document.getElementById("baAddServiceBtn").addEventListener("click", () => {
         const next = getServicesFromDom();
-        next.push({ nombre: "", duracion_min: 30, precio: 0 });
+        next.push({ nombre: "", duracion_min: 30, precio: 0, imagen_url: "" });
         draft.servicios = next;
         saveDraft();
         render();
@@ -1529,7 +1587,8 @@ y este s el html y js
           .map((item) => ({
             nombre: clean(item.nombre),
             duracion_min: Number(item.duracion_min || 0),
-            precio: Math.max(0, Number(item.precio || 0))
+            precio: Math.max(0, Number(item.precio || 0)),
+            imagen_url: clean(item.imagen_url)
           }))
           .filter((item) => clean(item.nombre));
 
@@ -1557,10 +1616,14 @@ y este s el html y js
         return Array.from(document.querySelectorAll("#baServicesList [data-index]"))
           .reduce((acc, node) => {
             const index = Number(node.dataset.index);
-            if (!acc[index]) acc[index] = { nombre: "", duracion_min: 30, precio: 0 };
+            if (!acc[index]) {
+              const existingId = draft.servicios && draft.servicios[index] ? draft.servicios[index].id : undefined;
+              acc[index] = { id: existingId, nombre: "", duracion_min: 30, precio: 0, imagen_url: "" };
+            }
             if (node.dataset.field === "nombre") acc[index].nombre = node.value;
             if (node.dataset.field === "duracion_min") acc[index].duracion_min = Number(node.value || 0);
             if (node.dataset.field === "precio") acc[index].precio = Math.max(0, Number(node.value || 0));
+            if (node.dataset.field === "imagen_url") acc[index].imagen_url = clean(node.value);
             return acc;
           }, [])
           .filter(Boolean);
@@ -1658,7 +1721,7 @@ y este s el html y js
         <div class="ba-composer">
           <div class="ba-list" id="baBarbersList">
             ${rows.map((row, index) => `
-              <article class="ba-card">
+              <article class="ba-card" id="ba-barber-${index + 1}" data-ba-item="barbero" data-ba-index="${index}">
                 <div class="ba-card-head">
                   <h3 class="ba-card-title">Barbero ${index + 1}</h3>
                   <div class="ba-inline">
@@ -1678,15 +1741,67 @@ y este s el html y js
 
                   <label class="ba-label">
                     Email
-                    <input class="ba-input" type="email" data-barber-field="email" data-barber-index="${index}" value="${escapeHtml(row.email || "")}" placeholder="Ej: york@correo.com" />
+                    <input
+                      class="ba-input"
+                      type="${(isEditIntent() && row.id && !row.email) ? "text" : "email"}"
+                      data-barber-field="email"
+                      data-barber-index="${index}"
+                      value="${(isEditIntent() && row.id && !row.email) ? "Sin email configurado" : escapeHtml(row.email || "")}"
+                      placeholder="Ej: york@correo.com"
+                      ${isEditIntent() && row.id ? "disabled" : ""}
+                    />
+                    ${isEditIntent() && row.id ? `<span class="ba-helper">El email de acceso se cambia desde un flujo separado.</span>` : ""}
                   </label>
 
                   <label class="ba-label">
                     Password
-                    <div class="ba-password-row">
-                      <input class="ba-input" type="password" data-barber-field="password" data-barber-index="${index}" value="${escapeHtml(row.password || "")}" placeholder="Minimo 6 caracteres" />
-                      <button class="ba-action-secondary" type="button" data-toggle-pass="${index}">Mostrar</button>
+                    ${isEditIntent() && row.id ? `
+                      <input class="ba-input" type="text" value="${row.has_password ? "Password configurada" : "Sin password configurada"}" disabled />
+                      <span class="ba-helper">La password no se muestra ni se modifica desde Configuracion.</span>
+                    ` : `
+                      <div class="ba-password-row">
+                        <input class="ba-input" type="password" data-barber-field="password" data-barber-index="${index}" value="${escapeHtml(row.password || "")}" placeholder="minimo 6 caracteres" />
+                        <button class="ba-action-secondary" type="button" data-toggle-pass="${index}">Mostrar</button>
+                      </div>
+                    `}
+                  </label>
+
+                  <label class="ba-label">
+                    Elije tu avatar para tu barbero
+                    <input type="hidden" data-barber-field="foto_url" data-barber-index="${index}" value="${escapeHtml(row.foto_url || row.foto || BARBER_PHOTO_OPTIONS[0])}" />
+                    <div class="ba-photo-picker">
+                      ${BARBER_PHOTO_OPTIONS.map((photo, photoIndex) => `
+                        <label class="ba-photo-option" style="display:inline-flex;cursor:pointer;margin:0 8px 8px 0;">
+                          <input
+                            type="radio"
+                            name="barber-foto-${index}"
+                            data-barber-field="foto"
+                            data-barber-index="${index}"
+                            value="${escapeHtml(photo)}"
+                            ${normalizeBarberAvatar(row.foto) === photo ? "checked" : ""}
+                            style="display:block;margin:0 auto 6px auto;"
+                          />
+                          <img
+                            src="${escapeHtml(photo)}"
+                            alt="Foto ${photoIndex + 1} del barbero"
+                            loading="lazy"
+                            decoding="async"
+                            style="width:64px;height:64px;object-fit:cover;border-radius:999px;border:2px solid rgba(148,163,184,0.45);"
+                          />
+                        </label>
+                      `).join("")}
                     </div>
+                    <input class="ba-input" type="file" accept="image/*" data-barber-upload="${index}" />
+                    <span class="ba-helper" data-barber-upload-status="${index}">
+                      ${clean(row.foto_url || row.foto) && !BARBER_PHOTO_OPTIONS.includes(clean(row.foto_url || row.foto)) ? "Foto lista en storage." : "Puedes usar un avatar o subir una foto real."}
+                    </span>
+                    <img
+                      src="${escapeHtml(row.foto_url || row.foto || BARBER_PHOTO_OPTIONS[0])}"
+                      alt="Foto actual del barbero ${index + 1}"
+                      loading="lazy"
+                      decoding="async"
+                      style="width:96px;height:96px;object-fit:cover;border-radius:999px;border:2px solid rgba(148,163,184,0.45);"
+                    />
                   </label>
                 </div>
               </article>
@@ -1706,6 +1821,60 @@ y este s el html y js
       Array.from(list.querySelectorAll("[data-barber-field]")).forEach((input) => {
         input.addEventListener("input", syncBarbersFromDom);
         input.addEventListener("change", syncBarbersFromDom);
+      });
+
+      Array.from(list.querySelectorAll('[data-barber-field="foto"]')).forEach((input) => {
+        input.addEventListener("change", () => {
+          const index = input.dataset.barberIndex;
+          const hidden = list.querySelector('[data-barber-field="foto_url"][data-barber-index="' + index + '"]');
+          if (hidden) hidden.value = input.value;
+          syncBarbersFromDom();
+          render();
+        });
+      });
+
+      Array.from(list.querySelectorAll("[data-barber-upload]")).forEach((input) => {
+        input.addEventListener("change", async () => {
+          const index = Number(input.dataset.barberUpload);
+          const file = input.files && input.files[0];
+          const status = list.querySelector('[data-barber-upload-status="' + index + '"]');
+          const hidden = list.querySelector('[data-barber-field="foto_url"][data-barber-index="' + index + '"]');
+          if (!file) return;
+
+          hideMessage();
+
+          let publicUrl = null;
+          try {
+            input.disabled = true;
+            if (status) status.textContent = "Subiendo foto a storage...";
+            publicUrl = await uploadImageToStorage(file, "barber");
+          } catch (error) {
+            console.error("Barber photo upload failed:", error);
+            if (status) status.textContent = "No se pudo subir la foto.";
+            showMessage("error", (error && error.message) || "No se pudo subir la foto del barbero. Intenta de nuevo.");
+            return;
+          } finally {
+            input.disabled = false;
+            input.value = "";
+          }
+
+          try {
+            hideMessage();
+            if (hidden) hidden.value = publicUrl;
+            if (!Array.isArray(draft.barberos)) draft.barberos = [];
+            if (!draft.barberos[index]) {
+              draft.barberos[index] = { nombre: "", foto: "", foto_url: "" };
+            }
+            draft.barberos[index].foto = publicUrl;
+            draft.barberos[index].foto_url = publicUrl;
+            syncBarbersFromDom();
+            saveDraft();
+            if (status) status.textContent = "Foto lista en storage.";
+            render();
+          } catch (domErr) {
+            console.warn("Post-upload state sync warning:", domErr);
+          }
+        });
       });
 
       Array.from(list.querySelectorAll("[data-barber-remove]")).forEach((button) => {
@@ -1730,7 +1899,7 @@ y este s el html y js
 
       document.getElementById("baAddBarberBtn").addEventListener("click", () => {
         const next = getBarbersFromDom();
-        next.push({ nombre: "", email: "", password: "", activo: true });
+        next.push({ nombre: "", email: "", password: "", activo: true, foto: BARBER_PHOTO_OPTIONS[0], foto_url: BARBER_PHOTO_OPTIONS[0] });
         setBarberRows(next);
         render();
       });
@@ -1761,16 +1930,32 @@ y este s el html y js
         const cards = document.querySelectorAll("#baBarbersList .ba-card");
 
         cards.forEach((card) => {
+          const index = Number(card.dataset.baIndex || 0);
+          const currentBarber = draft.barberos[index] || {};
+          const currentAccess = (draft.accesos && draft.accesos.barberos && draft.accesos.barberos[index]) || {};
           const nameInput = card.querySelector('[data-barber-field="nombre"]');
           const emailInput = card.querySelector('[data-barber-field="email"]');
           const passInput = card.querySelector('[data-barber-field="password"]');
           const activeInput = card.querySelector('[data-barber-field="activo"]');
+          const photoInput = card.querySelector('[data-barber-field="foto"]:checked') || card.querySelector('[data-barber-field="foto"]');
+          const photoUrlInput = card.querySelector('[data-barber-field="foto_url"]');
+          const photoUrl = clean(photoUrlInput && photoUrlInput.value) || clean(photoInput && photoInput.value);
+
+          let emailVal = clean(emailInput && emailInput.value);
+          if (emailVal.toLowerCase() === "sin email configurado") {
+            emailVal = "";
+          }
 
           rowsFromDom.push({
+            id: Number(currentBarber.id || currentAccess.id || 0) || undefined,
+            usuario_id: Number(currentBarber.usuario_id || currentAccess.usuario_id || 0) || undefined,
             nombre: clean(nameInput && nameInput.value),
-            email: clean(emailInput && emailInput.value),
+            email: emailVal,
             password: clean(passInput && passInput.value),
-            activo: Boolean(activeInput && activeInput.checked)
+            has_password: Boolean(currentBarber.has_password || currentAccess.has_password),
+            activo: Boolean(activeInput && activeInput.checked),
+            foto: normalizeBarberPhoto(photoUrl),
+            foto_url: normalizeBarberPhoto(photoUrl)
           });
         });
 
@@ -1778,52 +1963,163 @@ y este s el html y js
       }
     }
 
+    // SECCION: Resumen final y acciones posteriores a crear la barberia.
     function buildReviewCards() {
+      const normalizedAdminEmail = clean(draft.accesos.admin.email).toLowerCase();
+      const adminAlsoBarber = Boolean(normalizedAdminEmail && getBarberRows().some((row) => clean(row.email).toLowerCase() === normalizedAdminEmail));
       const activeDays = (draft.horarios || [])
         .filter((item) => item.activo)
-        .map((item) => item.dia + " " + item.hora_abre + "-" + item.hora_cierra);
+        .map((item) => {
+          const diaLabel = DAYS.find(d => d.value === item.dia.toLowerCase())?.label || item.dia;
+          return { dia: diaLabel, horas: item.hora_abre + " - " + item.hora_cierra };
+        });
 
       const services = (draft.servicios || [])
         .filter((item) => clean(item.nombre))
-        .map((item) => item.nombre + " | " + item.duracion_min + " min | $" + Number(item.precio || 0).toLocaleString("es-CO"));
+        .map((item) => ({
+          nombre: item.nombre,
+          duracion: item.duracion_min + " min",
+          precio: "$" + Number(item.precio || 0).toLocaleString("es-CO"),
+          imagen: item.imagen_url || item.image_url
+        }));
 
       const barbers = getBarberRows()
         .filter((item) => clean(item.nombre))
-        .map((item) => item.nombre + " | " + item.email);
+        .map((item) => ({
+          nombre: item.nombre,
+          email: clean(item.email) ? item.email : "Sin email configurado",
+          foto: item.foto_url || item.foto
+        }));
 
       return `
-        <div class="ba-review">
-          <article class="ba-review-card">
-            <small>Barberia</small>
-            <strong>${escapeHtml(draft.barberia.nombre)}</strong>
-            <span>${escapeHtml(draft.barberia.ciudad)} | ${escapeHtml(draft.barberia.direccion)}</span>
-            <span>Google Maps: ${draft.barberia.maps_url ? `<a href="${escapeHtml(draft.barberia.maps_url)}" target="_blank" rel="noopener">Abrir ubicacion</a>` : "No agregada"}</span>
-            <span>Telefono: ${escapeHtml(draft.barberia.telefono)}</span>
-            <span>Slug: ${escapeHtml(draft.barberia.slug)}</span>
-            <span>Timezone: ${escapeHtml(draft.barberia.timezone)}</span>
-            <span>Slot: ${escapeHtml(String(draft.barberia.slot_min))} min</span>
-          </article>
+        <div class="ba-review-wrapper">
+          <div class="ba-review-header">
+            <div class="ba-review-header-badge">IA Onboarding</div>
+            <h2 class="ba-review-header-title">Resumen antes de publicar</h2>
+            <p class="ba-review-header-subtitle">Verifica toda la información recopilada para tu nueva sucursal SaaS</p>
+          </div>
 
-          <article class="ba-review-card">
-            <small>Administrador</small>
-            <strong>${escapeHtml(draft.accesos.admin.nombre)}</strong>
-            <span>${escapeHtml(draft.accesos.admin.email)}</span>
-          </article>
+          <div class="ba-review-grid">
+            <!-- CARD 1: BARBERIA -->
+            <article class="ba-review-card ba-review-card-large">
+              <div class="ba-review-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              </div>
+              <div class="ba-review-card-content">
+                <small class="ba-review-card-kicker">Establecimiento</small>
+                <h3 class="ba-review-card-title">${escapeHtml(draft.barberia.nombre)}</h3>
 
-          <article class="ba-review-card">
-            <small>Servicios</small>
-            <span>${services.length ? services.map(escapeHtml).join("<br>") : "Sin servicios"}</span>
-          </article>
+                <div class="ba-review-detail-list">
+                  <div class="ba-review-detail-item">
+                    <span class="ba-detail-label">Ciudad</span>
+                    <span class="ba-detail-val">${escapeHtml(draft.barberia.ciudad)}</span>
+                  </div>
+                  <div class="ba-review-detail-item">
+                    <span class="ba-detail-label">Dirección</span>
+                    <span class="ba-detail-val">${escapeHtml(draft.barberia.direccion)}</span>
+                  </div>
+                  <div class="ba-review-detail-item">
+                    <span class="ba-detail-label">Teléfono</span>
+                    <span class="ba-detail-val">${escapeHtml(draft.barberia.telefono)}</span>
+                  </div>
+                  <div class="ba-review-detail-item">
+                    <span class="ba-detail-label">Slug de Reserva</span>
+                    <span class="ba-detail-badge">${escapeHtml(draft.barberia.slug)}</span>
+                  </div>
+                  <div class="ba-review-detail-item">
+                    <span class="ba-detail-label">Intervalo</span>
+                    <span class="ba-detail-val">${escapeHtml(String(draft.barberia.slot_min))} min</span>
+                  </div>
+                  ${draft.barberia.maps_url ? `
+                    <div class="ba-review-detail-item">
+                      <span class="ba-detail-label">Mapa</span>
+                      <a href="${escapeHtml(draft.barberia.maps_url)}" target="_blank" rel="noopener" class="ba-detail-link">
+                        Ver ubicación
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                      </a>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            </article>
 
-          <article class="ba-review-card">
-            <small>Horarios activos</small>
-            <span>${activeDays.length ? activeDays.map(escapeHtml).join("<br>") : "Sin horarios"}</span>
-          </article>
+            <!-- CARD 2: ADMINISTRADOR -->
+            <article class="ba-review-card">
+              <div class="ba-review-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              </div>
+              <div class="ba-review-card-content">
+                <small class="ba-review-card-kicker">Administrador Principal</small>
+                <h3 class="ba-review-card-title">${escapeHtml(draft.accesos.admin.nombre || 'Sin nombre')}</h3>
+                <div class="ba-review-detail-item" style="margin-top: 12px;">
+                  <span class="ba-detail-label">Email de acceso</span>
+                  <span class="ba-detail-val" style="word-break: break-all;">${escapeHtml(draft.accesos.admin.email || 'Sin email')}</span>
+                </div>
+                ${adminAlsoBarber ? '<p class="ba-helper">El administrador también trabaja como barbero. Se reutilizará el mismo usuario y se conservará el acceso administrativo.</p>' : ''}
+              </div>
+            </article>
 
-          <article class="ba-review-card">
-            <small>Barberos</small>
-            <span>${barbers.length ? barbers.map(escapeHtml).join("<br>") : "No se crearan barberos en este envio"}</span>
-          </article>
+            <!-- CARD 3: SERVICIOS -->
+            <article class="ba-review-card">
+              <div class="ba-review-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              </div>
+              <div class="ba-review-card-content">
+                <small class="ba-review-card-kicker">Servicios iniciales</small>
+                <div class="ba-review-services-list">
+                  ${services.length ? services.map(s => `
+                    <div class="ba-review-service-item">
+                      ${s.imagen ? `<img src="${escapeHtml(s.imagen)}" class="ba-review-service-img" />` : ''}
+                      <div class="ba-review-service-info">
+                        <strong>${escapeHtml(s.nombre)}</strong>
+                        <span>${escapeHtml(s.duracion)}</span>
+                      </div>
+                      <span class="ba-review-service-price">${escapeHtml(s.precio)}</span>
+                    </div>
+                  `).join('') : '<p class="ba-empty-text">Sin servicios creados</p>'}
+                </div>
+              </div>
+            </article>
+
+            <!-- CARD 4: HORARIOS -->
+            <article class="ba-review-card">
+              <div class="ba-review-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="ba-review-card-content">
+                <small class="ba-review-card-kicker">Horarios de atención</small>
+                <div class="ba-review-hours-list">
+                  ${activeDays.length ? activeDays.map(h => `
+                    <div class="ba-review-hours-item">
+                      <span class="ba-hours-day">${escapeHtml(h.dia)}</span>
+                      <span class="ba-hours-time">${escapeHtml(h.horas)}</span>
+                    </div>
+                  `).join('') : '<p class="ba-empty-text">Sin días activos configurados</p>'}
+                </div>
+              </div>
+            </article>
+
+            <!-- CARD 5: BARBEROS -->
+            <article class="ba-review-card">
+              <div class="ba-review-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+              <div class="ba-review-card-content">
+                <small class="ba-review-card-kicker">Barberos vinculados</small>
+                <div class="ba-review-barbers-list">
+                  ${barbers.length ? barbers.map(b => `
+                    <div class="ba-review-barber-item">
+                      <img src="${escapeHtml(b.foto)}" class="ba-review-barber-img" />
+                      <div class="ba-review-barber-info">
+                        <strong>${escapeHtml(b.nombre)}</strong>
+                        <span>${escapeHtml(b.email)}</span>
+                      </div>
+                    </div>
+                  `).join('') : '<p class="ba-empty-text">No se crearán barberos en este paso (opcional)</p>'}
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
       `;
     }
@@ -1862,10 +2158,39 @@ y este s el html y js
             try {
               localStorage.removeItem(STORAGE_KEY);
             } catch (_) {}
-            window.location.href = LANDING_BUILDER_URL;
+            window.location.href = buildLandingBuilderUrl(lastPayload, onboardingResult);
           });
         }
 
+        return;
+      }
+
+      if (isEditIntent()) {
+        responseArea.innerHTML = `
+          <div class="ba-composer">
+            ${buildReviewCards()}
+
+            <div class="ba-inline">
+              <button class="ba-action-secondary" type="button" id="baEditBtn">Volver a editar</button>
+              <button class="ba-action" type="button" id="baContinueTemplateBtn">Seguir a la plantilla</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("baEditBtn").addEventListener("click", () => {
+          currentStepIndex = 0;
+          render();
+        });
+
+        const continueBtn = document.getElementById("baContinueTemplateBtn");
+        if (continueBtn) {
+          if (!truthLoaded || !identityValidated || editHydrationState.failed) {
+            continueBtn.disabled = true;
+          }
+          continueBtn.addEventListener("click", () => {
+            submitDraftAndContinue();
+          });
+        }
         return;
       }
 
@@ -1875,7 +2200,7 @@ y este s el html y js
 
           <div class="ba-inline">
             <button class="ba-action-secondary" type="button" id="baEditBtn">Volver a editar</button>
-            <button class="ba-action" type="button" id="baSubmitBtn">Crear barberia</button>
+            <button class="ba-action" type="button" id="baSubmitBtn">Crear barbería</button>
           </div>
         </div>
       `;
@@ -1888,24 +2213,173 @@ y este s el html y js
       document.getElementById("baSubmitBtn").addEventListener("click", submitDraft);
     }
 
+    // SECCION: Seed y URL para abrir el editor de plantillas.
     function persistLandingSeed(payload, data) {
+      if (!data || typeof data !== "object") {
+        data = {};
+      }
+
+      const sourceDraft =
+        (payload && payload.draft && typeof payload.draft === "object" ? payload.draft : null) ||
+        (typeof draft !== "undefined" && draft && typeof draft === "object" ? draft : null) ||
+        {};
+
+      if (!data.barberia) {
+        data.barberia = {
+          id: Number(payload?.barberia_id || data?.barberia_id || 0),
+          slug: clean(payload?.slug || data?.slug || ""),
+          nombre: clean(sourceDraft?.barberia?.nombre || ""),
+          ciudad: clean(sourceDraft?.barberia?.ciudad || ""),
+          direccion: clean(sourceDraft?.barberia?.direccion || ""),
+          maps_url: clean(sourceDraft?.barberia?.maps_url || ""),
+          telefono: clean(sourceDraft?.barberia?.telefono || "")
+        };
+      }
+
+      const firstArray = (...candidates) => {
+        let firstEmpty = null;
+        for (const candidate of candidates) {
+          if (!Array.isArray(candidate)) continue;
+          if (candidate.length > 0) return candidate;
+          if (firstEmpty === null) firstEmpty = candidate;
+        }
+        return firstEmpty || [];
+      };
+
+      const normalizeSeedService = (item, index) => {
+        const nombre = clean(item?.nombre || item?.name);
+        const imgVal = clean(item?.imagen_url || item?.image_url || item?.foto_url || item?.image || item?.foto || '');
+        const sId = Number(item?.id || item?.id_servicio || 0) || undefined;
+        return {
+          ...item,
+          id_servicio: sId,
+          id: sId,
+          nombre,
+          name: nombre,
+          duracion_min: Number(item?.duracion_min || item?.duration_min || 30),
+          precio: Math.max(0, Number(item?.precio || item?.price || 0)),
+          icono: clean(item?.icono || item?.icon || 'bi-scissors'),
+          imagen_url: imgVal,
+          image_url: imgVal,
+          foto_url: imgVal
+        };
+      };
+
+      const finalServices = firstArray(
+        data?.servicios,
+        data?.services,
+        sourceDraft?.servicios,
+        sourceDraft?.services,
+        sourceDraft?.serviceProfiles,
+        payload?.collections?.servicios,
+        payload?.collections?.servicios?.upsert,
+        payload?.collections_patch?.servicios?.upsert
+      ).map(normalizeSeedService).filter((item) => clean(item.nombre));
+
+      const finalHours = firstArray(
+        data?.horarios,
+        data?.hours,
+        data?.schedule,
+        sourceDraft?.horarios,
+        sourceDraft?.hours,
+        sourceDraft?.schedule,
+        payload?.collections?.horarios,
+        payload?.collections?.horarios?.upsert,
+        payload?.collections_patch?.horarios?.upsert
+      );
+
+      const finalBarberSource = firstArray(
+        data?.barberos,
+        data?.barberProfiles,
+        sourceDraft?.barberos,
+        sourceDraft?.barberProfiles,
+        sourceDraft?.staff,
+        sourceDraft?.team,
+        payload?.collections?.barberos,
+        payload?.collections?.barberos?.upsert,
+        payload?.collections_patch?.barberos?.upsert
+      );
+
+      if (!Array.isArray(data.barberos)) {
+        data.barberos = [];
+      }
+
+      const adminAccess = sourceDraft.accesos && sourceDraft.accesos.admin
+        ? sourceDraft.accesos.admin
+        : {};
+      const barberAccesses = sourceDraft.accesos && Array.isArray(sourceDraft.accesos.barberos)
+        ? sourceDraft.accesos.barberos
+        : [];
+      const patchBarbers = Array.isArray(payload?.collections_patch?.barberos?.upsert)
+        ? payload.collections_patch.barberos.upsert
+        : [];
+      const hasPublicBarbers = (items) =>
+        Array.isArray(items) && items.some((item) => clean(item?.nombre || item?.name));
+      const normalizeSeedBarber = (item, index) => {
+        const nombre = clean(item?.nombre || item?.name);
+        const foto = normalizeBarberPhoto(item?.foto_url || item?.foto || item?.photo || item?.picture_url || item?.avatar_url || item?.image_url || item?.image);
+        const bId = Number(item?.id || item?.id_barbero || 0) || undefined;
+        return {
+          ...item,
+          id_barbero: bId,
+          id: bId,
+          nombre,
+          name: nombre,
+          activo: item?.activo !== undefined ? Boolean(item.activo) : true,
+          foto,
+          foto_url: foto,
+          photo: foto,
+          picture_url: foto,
+          especialidad: clean(item?.especialidad || item?.rol || item?.role) || 'Barbero profesional',
+          rol: clean(item?.rol || item?.role || item?.especialidad) || 'Barbero profesional'
+        };
+      };
+      const finalBarbers = (Array.isArray(finalBarberSource) ? finalBarberSource : [])
+        .map(normalizeSeedBarber)
+        .filter((item) => clean(item.nombre));
+      data.servicios = finalServices;
+      data.horarios = finalHours;
+      data.barberos = finalBarbers;
+      const inheritedPhotos = finalBarbers
+        .map((item) => normalizeBarberPhoto(item && (item.foto_url || item.foto || item.photo)))
+        .filter(Boolean);
+
       const landingSeed = {
-        source: "onboarding_complete",
-        created_at: new Date().toISOString(),
+        source: clean(data?.source) || (payload?.mode === "edit" ? "registro_edit_seed" : "onboarding_complete"),
+        created_at: clean(data?.created_at) || new Date().toISOString(),
+        barberia_id: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
+        id_barberia: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
+        id: data && data.barberia ? Number(data.barberia.id || 0) : (Number(data && data.barberia_id) || 0),
+        slug: (data && data.barberia ? clean(data.barberia.slug) : "") || clean(data && data.slug) || clean(sourceDraft?.barberia?.slug),
+        nombre: clean(data?.barberia?.nombre || sourceDraft?.barberia?.nombre),
+        ciudad: clean(data?.barberia?.ciudad || sourceDraft?.barberia?.ciudad),
+        direccion: clean(data?.barberia?.direccion || sourceDraft?.barberia?.direccion),
+        maps_url: clean(data?.barberia?.maps_url || sourceDraft?.barberia?.maps_url),
+        telefono: clean(data?.barberia?.telefono || sourceDraft?.barberia?.telefono),
+        slot_min: Number(data?.barberia?.slot_min || sourceDraft?.barberia?.slot_min || 15),
         barberia: {
           id: data && data.barberia ? data.barberia.id : null,
-            slug: data && data.barberia ? data.barberia.slug : (payload.draft.barberia.slug || ""),
-          nombre: payload.draft.barberia.nombre || "",
-          ciudad: payload.draft.barberia.ciudad || "",
-          direccion: payload.draft.barberia.direccion || "",
-          maps_url: payload.draft.barberia.maps_url || "",
-          telefono: payload.draft.barberia.telefono || "",
-          timezone: payload.draft.barberia.timezone || "America/Bogota",
-          slot_min: payload.draft.barberia.slot_min || 15
+          slug: data && data.barberia ? data.barberia.slug : (sourceDraft?.barberia?.slug || ""),
+          nombre: data && data.barberia ? data.barberia.nombre : (sourceDraft?.barberia?.nombre || ""),
+          ciudad: data && data.barberia ? data.barberia.ciudad : (sourceDraft?.barberia?.ciudad || ""),
+          direccion: data && data.barberia ? data.barberia.direccion : (sourceDraft?.barberia?.direccion || ""),
+          maps_url: data && data.barberia ? data.barberia.maps_url : (sourceDraft?.barberia?.maps_url || ""),
+          telefono: data && data.barberia ? data.barberia.telefono : (sourceDraft?.barberia?.telefono || ""),
+          timezone: data && data.barberia ? data.barberia.timezone : (sourceDraft?.barberia?.timezone || "America/Bogotá"),
+          slot_min: data && data.barberia ? data.barberia.slot_min : (sourceDraft?.barberia?.slot_min || 15)
         },
-        servicios: payload.draft.servicios || [],
-        horarios: payload.draft.horarios || [],
-        barberos: payload.draft.accesos && payload.draft.accesos.barberos ? payload.draft.accesos.barberos : [],
+        servicios: finalServices,
+        horarios: finalHours,
+        barberos: finalBarbers,
+        barber_photos: inheritedPhotos.length ? inheritedPhotos : BARBER_PHOTO_OPTIONS.slice(),
+        accesos: {
+          admin: {
+            nombre: clean(adminAccess.nombre),
+            email: clean(adminAccess.email).toLowerCase(),
+            password: clean(adminAccess.password)
+          },
+          barberos: barberAccesses
+        },
         onboarding_result: data || {}
       };
 
@@ -1918,8 +2392,824 @@ y este s el html y js
       }
     }
 
+    function buildLandingBuilderUrl(payload, data) {
+      try {
+        const url = new URL(LANDING_BUILDER_URL);
+        const barberiaId =
+          Number(data && data.barberia ? data.barberia.id : 0) ||
+          Number(data && data.barberia_id ? data.barberia_id : 0) ||
+          0;
+        const slug =
+          clean(data && data.barberia ? data.barberia.slug : "") ||
+          clean(data && data.slug ? data.slug : "") ||
+          clean(payload && payload.draft && payload.draft.barberia ? payload.draft.barberia.slug : "");
+
+        if (barberiaId > 0) {
+          url.searchParams.set("barberia_id", String(barberiaId));
+        }
+        if (slug) {
+          url.searchParams.set("slug", slug);
+        }
+        url.searchParams.set("edit", "1");
+        url.searchParams.set("modo", "editar");
+        url.searchParams.set("mode", "edit");
+        url.searchParams.set("is_edit", "1");
+        url.searchParams.set("editing", "1");
+        url.searchParams.set("source", "registro");
+
+        return url.toString();
+      } catch (_) {
+        return LANDING_BUILDER_URL;
+      }
+    }
+
+    // SECCION: Construccion de payloads para backend y RPC canonicas.
+    function buildDraftPayload() {
+      const identity = getEditIdentity();
+      const isEdit = isEditIntent();
+      const owner = editHydrationState.owner || {};
+      const adminPayload = {
+        nombre: isEdit
+          ? firstCleanValue(owner.nombre, draft.accesos.admin.nombre)
+          : clean(draft.accesos.admin.nombre),
+        email: (isEdit
+          ? firstCleanValue(owner.email, draft.accesos.admin.email)
+          : clean(draft.accesos.admin.email)
+        ).toLowerCase()
+      };
+      const adminPassword = clean(draft.accesos.admin.password);
+      if (!isEdit || adminPassword) {
+        adminPayload.password = adminPassword;
+      }
+      const accessBarbers = (draft.accesos.barberos || [])
+        .filter((item) => {
+          if (!isEdit) return clean(item.nombre);
+          if (Number(item.id || 0) > 0) return false;
+          return clean(item.email) || clean(item.password);
+        })
+        .map((item) => ({
+          nombre: clean(item.nombre),
+          email: clean(item.email).toLowerCase(),
+          password: clean(item.password),
+          activo: Boolean(item.activo),
+          foto: normalizeBarberPhoto(item.foto_url || item.foto),
+          foto_url: normalizeBarberPhoto(item.foto_url || item.foto)
+        }));
+
+      return {
+        barberia_id: Number(identity.barberia_id) || undefined,
+        slug: clean(identity.slug) || undefined,
+        mode: isEdit ? "edit" : "create",
+        draft: {
+          barberia: {
+            id: Number(identity.barberia_id) || undefined,
+            barberia_id: Number(identity.barberia_id) || undefined,
+            id_barberia: Number(identity.barberia_id) || undefined,
+            nombre: clean(draft.barberia.nombre),
+            slug: clean(identity.slug) || clean(draft.barberia.slug) || slugify(draft.barberia.nombre),
+            telefono: clean(draft.barberia.telefono),
+            direccion: clean(draft.barberia.direccion),
+            maps_url: clean(draft.barberia.maps_url),
+            ciudad: clean(draft.barberia.ciudad),
+            timezone: clean(draft.barberia.timezone) || "America/Bogotá",
+            slot_min: Number(draft.barberia.slot_min || 15)
+          },
+          servicios: (draft.servicios || [])
+            .filter((item) => clean(item.nombre))
+            .map((item) => ({
+              nombre: clean(item.nombre),
+              duracion_min: Number(item.duracion_min || 0),
+              precio: Math.max(0, Number(item.precio || 0)),
+              imagen_url: clean(item.imagen_url || item.image_url)
+            })),
+          horarios: (draft.horarios || []).map((item) => {
+            const dayToIndex = {
+              domingo: 0,
+              lunes: 1,
+              martes: 2,
+              miercoles: 3,
+              jueves: 4,
+              viernes: 5,
+              sabado: 6
+            };
+            const diaClean = clean(item.dia).toLowerCase();
+            return {
+              dia: clean(item.dia),
+              dia_semana: dayToIndex[diaClean] !== undefined ? dayToIndex[diaClean] : -1,
+              activo: Boolean(item.activo),
+              hora_abre: clean(item.hora_abre),
+              hora_cierra: clean(item.hora_cierra)
+            };
+          }),
+          barberos: (draft.barberos || [])
+            .filter((item) => clean(item.nombre))
+            .map((item) => ({
+              id: Number(item.id || 0) || undefined,
+              usuario_id: Number(item.usuario_id || 0) || undefined,
+              nombre: clean(item.nombre),
+              activo: Boolean(item.activo),
+              foto: normalizeBarberPhoto(item.foto_url || item.foto),
+              foto_url: normalizeBarberPhoto(item.foto_url || item.foto)
+            })),
+          accesos: {
+            admin: adminPayload,
+            barberos: accessBarbers
+          }
+        }
+      };
+    }
+
+    function buildPatchPayload() {
+      const identity = getEditIdentity();
+      const patch = {};
+      const allowedPatchFields = [
+        "nombre",
+        "telefono",
+        "whatsapp",
+        "email_contacto",
+        "direccion",
+        "ciudad",
+        "instagram",
+        "tiktok",
+        "politicas",
+        "logo_url",
+        "cover_url",
+        "moneda",
+        "acepta_efectivo",
+        "acepta_digital",
+        "timezone",
+        "slot_min"
+      ];
+      
+      for (const field of allowedPatchFields) {
+        const currentVal = draft.barberia[field];
+        const initialVal = initialTruthState && initialTruthState.barberia ? initialTruthState.barberia[field] : undefined;
+
+        const cleanCurrent = (currentVal === undefined || currentVal === null) ? "" : clean(currentVal);
+        const cleanInitial = (initialVal === undefined || initialVal === null) ? "" : clean(initialVal);
+
+        if (field === "slot_min") {
+          const numCurrent = Number(currentVal || 15);
+          const numInitial = Number(initialVal || 15);
+          if (numCurrent !== numInitial) {
+            patch[field] = numCurrent;
+          }
+        } else if (field === "acepta_efectivo" || field === "acepta_digital") {
+          const boolCurrent = Boolean(currentVal);
+          const boolInitial = Boolean(initialVal);
+          if (boolCurrent !== boolInitial) {
+            patch[field] = boolCurrent;
+          }
+        } else {
+          if (cleanCurrent !== cleanInitial) {
+            patch[field] = cleanCurrent;
+          }
+        }
+      }
+
+      const serviciosUpsert = [];
+      const serviciosDeactivate = [];
+      const currentServices = (draft.servicios || []).filter((item) => clean(item.nombre));
+      const initialServices = (initialTruthState && initialTruthState.servicios) || [];
+      
+      for (const currentS of currentServices) {
+        if (currentS.id !== undefined && currentS.id !== null) {
+          const initialS = initialServices.find(item => item.id === currentS.id);
+          if (initialS) {
+            const hasChanged = 
+              clean(currentS.nombre) !== clean(initialS.nombre) ||
+              Number(currentS.duracion_min || 30) !== Number(initialS.duracion_min || 30) ||
+              Number(currentS.precio || 0) !== Number(initialS.precio || 0) ||
+              clean(currentS.imagen_url) !== clean(initialS.imagen_url);
+            
+            if (hasChanged) {
+              serviciosUpsert.push({
+                id: currentS.id,
+                nombre: clean(currentS.nombre),
+                duracion_min: Number(currentS.duracion_min || 30),
+                precio: Number(currentS.precio || 0),
+                imagen_url: clean(currentS.imagen_url)
+              });
+            }
+          } else {
+            serviciosUpsert.push({
+              id: currentS.id,
+              nombre: clean(currentS.nombre),
+              duracion_min: Number(currentS.duracion_min || 30),
+              precio: Number(currentS.precio || 0),
+              imagen_url: clean(currentS.imagen_url)
+            });
+          }
+        } else {
+          serviciosUpsert.push({
+            nombre: clean(currentS.nombre),
+            duracion_min: Number(currentS.duracion_min || 30),
+            precio: Number(currentS.precio || 0),
+            imagen_url: clean(currentS.imagen_url)
+          });
+        }
+      }
+      
+      for (const initialS of initialServices) {
+        if (initialS.id !== undefined && initialS.id !== null) {
+          const stillExists = currentServices.some(item => item.id === initialS.id);
+          if (!stillExists) {
+            serviciosDeactivate.push(initialS.id);
+          }
+        }
+      }
+
+      const barberosUpsert = [];
+      const barberosDeactivate = [];
+      const currentBarbers = (draft.barberos || []).filter((item) => clean(item.nombre));
+      const initialBarbers = (initialTruthState && initialTruthState.barberos) || [];
+      
+      for (const currentB of currentBarbers) {
+        if (currentB.id !== undefined && currentB.id !== null) {
+          const initialB = initialBarbers.find(item => item.id === currentB.id);
+          if (initialB) {
+            const hasChanged = 
+              clean(currentB.nombre) !== clean(initialB.nombre) ||
+              Boolean(currentB.activo) !== Boolean(initialB.activo) ||
+              clean(currentB.foto_url || currentB.foto) !== clean(initialB.foto_url || initialB.foto);
+            
+            if (hasChanged) {
+              barberosUpsert.push({
+                id: currentB.id,
+                nombre: clean(currentB.nombre),
+                activo: Boolean(currentB.activo),
+                foto_url: normalizeBarberPhoto(currentB.foto_url || currentB.foto)
+              });
+            }
+          } else {
+            barberosUpsert.push({
+              id: currentB.id,
+              nombre: clean(currentB.nombre),
+              activo: Boolean(currentB.activo),
+              foto_url: normalizeBarberPhoto(currentB.foto_url || currentB.foto)
+            });
+          }
+        } else {
+          barberosUpsert.push({
+            nombre: clean(currentB.nombre),
+            activo: Boolean(currentB.activo),
+            foto_url: normalizeBarberPhoto(currentB.foto_url || currentB.foto)
+          });
+        }
+      }
+      
+      for (const initialB of initialBarbers) {
+        if (initialB.id !== undefined && initialB.id !== null) {
+          const stillExists = currentBarbers.some(item => item.id === initialB.id);
+          if (!stillExists) {
+            barberosDeactivate.push(initialB.id);
+          }
+        }
+      }
+
+      const horariosUpsert = [];
+      const currentHours = draft.horarios || [];
+      const initialHours = (initialTruthState && initialTruthState.horarios) || [];
+      const dayToIndex = {
+        domingo: 0,
+        lunes: 1,
+        martes: 2,
+        miercoles: 3,
+        jueves: 4,
+        viernes: 5,
+        sabado: 6
+      };
+      
+      for (const currentH of currentHours) {
+        const diaClean = clean(currentH.dia).toLowerCase();
+        const diaSemana = dayToIndex[diaClean] !== undefined ? dayToIndex[diaClean] : -1;
+        
+        if (diaSemana !== -1) {
+          const initialH = initialHours.find(item => clean(item.dia).toLowerCase() === diaClean);
+          const hasChanged = !initialH ||
+            Boolean(currentH.activo) !== Boolean(initialH.activo) ||
+            clean(currentH.hora_abre).slice(0, 5) !== clean(initialH.hora_abre).slice(0, 5) ||
+            clean(currentH.hora_cierra).slice(0, 5) !== clean(initialH.hora_cierra).slice(0, 5);
+          
+          if (hasChanged) {
+            horariosUpsert.push({
+              dia: clean(currentH.dia),
+              dia_semana: diaSemana,
+              activo: Boolean(currentH.activo),
+              hora_abre: clean(currentH.hora_abre),
+              hora_cierra: clean(currentH.hora_cierra)
+            });
+          }
+        }
+      }
+
+      return {
+        mode: "edit",
+        barberia_id: Number(identity.barberia_id) || undefined,
+        slug: clean(identity.slug) || undefined,
+        patch: patch,
+        collections_patch: {
+          servicios: {
+            upsert: serviciosUpsert,
+            deactivate: serviciosDeactivate
+          },
+          barberos: {
+            upsert: barberosUpsert,
+            deactivate: barberosDeactivate
+          },
+          horarios: {
+            upsert: horariosUpsert
+          }
+        }
+      };
+    }
+
+    function patchPayloadHasChanges(payload) {
+      const patch = (payload && payload.patch && typeof payload.patch === "object") ? payload.patch : {};
+      const collections = (payload && payload.collections_patch && typeof payload.collections_patch === "object")
+        ? payload.collections_patch
+        : {};
+      const servicios = collections.servicios || {};
+      const barberos = collections.barberos || {};
+      const horarios = collections.horarios || {};
+
+      return (
+        Object.keys(patch).length > 0 ||
+        (Array.isArray(servicios.upsert) && servicios.upsert.length > 0) ||
+        (Array.isArray(servicios.deactivate) && servicios.deactivate.length > 0) ||
+        (Array.isArray(barberos.upsert) && barberos.upsert.length > 0) ||
+        (Array.isArray(barberos.deactivate) && barberos.deactivate.length > 0) ||
+        (Array.isArray(horarios.upsert) && horarios.upsert.length > 0)
+      );
+    }
+
+    function buildEditNavigationData() {
+      const identity = getEditIdentity();
+      const barberiaId = Number(identity.barberia_id) || Number(draft?.barberia?.id || 0) || 0;
+      const slug = clean(identity.slug) || clean(draft?.barberia?.slug);
+
+      return {
+        barberia_id: barberiaId,
+        slug,
+        barberia: {
+          id: barberiaId,
+          slug,
+          nombre: clean(draft?.barberia?.nombre),
+          telefono: clean(draft?.barberia?.telefono),
+          direccion: clean(draft?.barberia?.direccion)
+        },
+        message: "Continuando sin cambios pendientes."
+      };
+    }
+
+    function buildRegistroEditSeedData(payload) {
+      const data = buildEditNavigationData();
+      return {
+        ...data,
+        source: "registro_edit_seed",
+        created_at: new Date().toISOString(),
+        barberia: {
+          ...(data && data.barberia ? data.barberia : {}),
+          id: Number(payload?.barberia_id || data?.barberia_id || 0),
+          slug: clean(payload?.slug || data?.slug || "")
+        },
+        servicios: Array.isArray(draft?.servicios) ? draft.servicios : [],
+        barberos: Array.isArray(draft?.barberos) ? draft.barberos : [],
+        horarios: Array.isArray(draft?.horarios) ? draft.horarios : []
+      };
+    }
+
+    function buildOnboardingRequestPayload(payload) {
+      const draftPayload = payload && payload.draft ? payload.draft : {};
+      const barberia = draftPayload.barberia || {};
+      const servicios = Array.isArray(draftPayload.servicios) ? draftPayload.servicios : [];
+      const horarios = Array.isArray(draftPayload.horarios) ? draftPayload.horarios : [];
+      const barberos = Array.isArray(draftPayload.barberos) ? draftPayload.barberos : [];
+      const accesos = draftPayload.accesos || {};
+      const admin = accesos.admin || {};
+      const barberosAcceso = Array.isArray(accesos.barberos) ? accesos.barberos : [];
+
+      // Compatibilidad: enviamos estructura moderna (draft) y espejo plano.
+      // Algunos workflows legacy de n8n leen campos en raiz.
+      return {
+        ...payload,
+        barberia: {
+          ...barberia,
+          nombre: clean(barberia.nombre),
+          slug: clean(barberia.slug),
+          telefono: clean(barberia.telefono),
+          direccion: clean(barberia.direccion),
+          maps_url: clean(barberia.maps_url),
+          ciudad: clean(barberia.ciudad),
+          timezone: clean(barberia.timezone) || "America/Bogota",
+          slot_min: Number(barberia.slot_min || 15)
+        },
+        nombre: clean(barberia.nombre),
+        slug: clean(barberia.slug),
+        telefono: clean(barberia.telefono),
+        direccion: clean(barberia.direccion),
+        maps_url: clean(barberia.maps_url),
+        ciudad: clean(barberia.ciudad),
+        timezone: clean(barberia.timezone) || "America/Bogota",
+        slot_min: Number(barberia.slot_min || 15),
+        servicios,
+        horarios,
+        barberos,
+        admin,
+        accesos: {
+          ...accesos,
+          admin,
+          barberos: barberosAcceso
+        }
+      };
+    }
+
+    // SECCION: Helpers de comunicacion con PostgREST.
+    function getOnboardingEndpointCandidates() {
+      return ["/api/onboarding/complete"];
+    }
+
+    function toPositiveInt(value) {
+      const num = Number(value);
+      return Number.isFinite(num) && num > 0 ? Math.trunc(num) : 0;
+    }
+
+    function getCreatedBarberiaId(data) {
+      const candidates = [
+        data?.barberia?.id,
+        data?.barberia_id,
+        data?.id_barberia,
+        data?.barberia?.barberia_id,
+        data?.result?.barberia_id,
+        data?.result?.barberia?.id,
+        data?.payload?.barberia_id,
+        data?.seed?.barberia_id,
+        data?.seed?.barberia?.id,
+        data?.id
+      ]
+        .map((value) => toPositiveInt(value))
+        .filter(Boolean);
+      return candidates[0] || 0;
+    }
+
+    function normalizeServiceDraftRows(rows) {
+      const list = Array.isArray(rows) ? rows : [];
+      return list
+        .map((item) => ({
+          nombre: clean(item?.nombre || item?.name),
+          duracion_min: Number(item?.duracion_min || item?.duration_min || 30),
+          precio: Math.max(0, Number(item?.precio || item?.price || 0)),
+          imagen_url: clean(item?.imagen_url || item?.image_url || item?.foto_url || item?.foto),
+          activo: true
+        }))
+        .filter((item) => item.nombre)
+        .map((item) => ({
+          ...item,
+          duracion_min: Number.isFinite(item.duracion_min) && item.duracion_min > 0 ? item.duracion_min : 30
+        }));
+    }
+
+    function normalizeBarberDraftRows(rows) {
+      const list = Array.isArray(rows) ? rows : [];
+      return list
+        .map((item) => ({
+          nombre: clean(item?.nombre || item?.name),
+          foto_url: normalizeBarberPhoto(item?.foto_url || item?.foto || item?.avatar_url || item?.image_url),
+          activo: true
+        }))
+        .filter((item) => item.nombre);
+    }
+
+    function normalizeHoursDraftRows(rows) {
+      const list = Array.isArray(rows) ? rows : [];
+      const dayToIndex = {
+        domingo: 0,
+        lunes: 1,
+        martes: 2,
+        miercoles: 3,
+        jueves: 4,
+        viernes: 5,
+        sabado: 6
+      };
+
+      return list
+        .map((item) => {
+          const dia = clean(item?.dia || "").toLowerCase();
+          return {
+            dia_semana: dayToIndex[dia],
+            activo: Boolean(item?.activo),
+            hora_abre: clean(item?.hora_abre),
+            hora_cierra: clean(item?.hora_cierra)
+          };
+        })
+        .filter((item) => Number.isInteger(item.dia_semana))
+        .map((item) => ({
+          ...item,
+          hora_abre: item.hora_abre || "09:00",
+          hora_cierra: item.hora_cierra || "18:00"
+        }));
+    }
+
+    async function postgrestFetch(path, options = {}) {
+      const base = clean(POSTGREST_BASE).replace(/\/+$/, "");
+      if (!base) throw new Error("No hay POSTGREST base configurado.");
+      const url = `${base}${path.startsWith("/") ? path : `/${path}`}`;
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        const body = await response.text().catch(() => "");
+        throw new Error(body || `HTTP ${response.status} en ${url}`);
+      }
+      return response;
+    }
+
+    async function postConfiguracionUpdate(payload) {
+      const endpoint = clean(CONFIG_UPDATE_ENDPOINT);
+      if (!endpoint) {
+        throw new Error("No hay endpoint configurado para guardar edicion.");
+      }
+
+      const requestPayload = (payload && payload.patch) ? payload : buildOnboardingRequestPayload({
+        ...payload,
+        mode: "edit"
+      });
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "text/plain;charset=UTF-8"
+        },
+        body: JSON.stringify(requestPayload)
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data.ok === false) {
+        const code = clean(data?.code || data?.error);
+        const message = clean(data?.message) || (code ? `No se pudo guardar configuracion: ${code}` : `HTTP ${response.status} en ${endpoint}`);
+        const error = new Error(message);
+        error.code = code || "configuracion_update_error";
+        throw error;
+      }
+
+      if (data.ok !== true || clean(data.code) !== "configuracion_actualizada") {
+        throw new Error("Respuesta invalida del endpoint de configuracion.");
+      }
+
+      if (data.data && data.data.barberia && !data.barberia) {
+        data.barberia = data.data.barberia;
+        data.barberia_id = Number(data.data.barberia.id || payload?.barberia_id || 0);
+        data.slug = clean(data.data.barberia.slug || payload?.slug);
+      }
+
+      return { response, data, endpoint };
+    }
+
+    // SECCION: Sincronizacion de servicios, barberos y horarios en fuente de verdad.
+    async function syncCanonicalCatalogs(data, payload) {
+      const barberiaId = getCreatedBarberiaId(data);
+      if (!(barberiaId > 0)) {
+        throw new Error("No se obtuvo barberia_id real para sincronizar servicios/barberos.");
+      }
+      const servicios = normalizeServiceDraftRows(payload?.draft?.servicios).map((item) => ({
+        nombre: item.nombre,
+        duracion_min: Number(item.duracion_min || 30),
+        precio: Math.max(0, Number(item.precio || 0)),
+        imagen_url: clean(item.imagen_url)
+      }));
+      const accessBarbers = Array.isArray(payload?.draft?.accesos?.barberos)
+        ? payload.draft.accesos.barberos
+        : [];
+      const barberos = normalizeBarberDraftRows(payload?.draft?.barberos).map((item, index) => ({
+        nombre: item.nombre,
+        foto_url: clean(item.foto_url),
+        email: clean(accessBarbers[index]?.email).toLowerCase(),
+        password: clean(accessBarbers[index]?.password)
+      }));
+      const horarios = normalizeHoursDraftRows(payload?.draft?.horarios);
+
+      const rpcName = clean(CANONICAL_SYNC_RPC);
+      if (!rpcName) {
+        throw new Error("No hay RPC configurada para sincronizar servicios y barberos.");
+      }
+
+      const response = await postgrestFetch(`/rpc/${rpcName}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          p_barberia_id: barberiaId,
+          p_servicios: servicios,
+          p_barberos: barberos
+        })
+      });
+      const rpcData = await response.json().catch(() => ({}));
+      if (rpcData && typeof rpcData === "object" && rpcData.ok === false) {
+        if (clean(rpcData.error) === "barberia_no_encontrada") {
+          throw new Error("No se pudieron guardar servicios y barberos: barberia_no_encontrada.");
+        }
+        throw new Error(
+          clean(rpcData.error || rpcData.message) ||
+          "No se pudieron guardar servicios y barberos en la base de datos. Revisa permisos o RPC."
+        );
+      }
+
+      // Compatibilidad: si la RPC retorna objeto con ok=true lo validamos;
+      // si retorna vacío/null (funciones SQL void), tomamos HTTP 2xx como éxito.
+      if (rpcData && typeof rpcData === "object" && Object.prototype.hasOwnProperty.call(rpcData, "ok") && rpcData.ok !== true) {
+        throw new Error("No se pudieron guardar servicios y barberos en la base de datos. Revisa permisos o RPC.");
+      }
+
+      await assertCanonicalPersistence(barberiaId, servicios, barberos);
+      await syncCanonicalHours(barberiaId, horarios);
+      await syncDashboardAccess(barberiaId, data, payload, barberos);
+    }
+
+    async function syncDashboardAccess(barberiaId, data, payload, barberos) {
+      const endpoint = clean(DASHBOARD_ACCESS_SYNC_ENDPOINT);
+      const admin = payload?.draft?.accesos?.admin || {};
+      if (!endpoint || !clean(admin.email) || !clean(admin.password)) return;
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          barberia_id: barberiaId,
+          slug: clean(data?.slug || data?.barberia?.slug),
+          admin: {
+            nombre: clean(admin.nombre),
+            email: clean(admin.email).toLowerCase(),
+            password: clean(admin.password)
+          },
+          barberos: (barberos || [])
+            .filter((item) => clean(item.email) && clean(item.password))
+            .map((item) => ({
+              nombre: clean(item.nombre),
+              email: clean(item.email).toLowerCase(),
+              password: clean(item.password)
+            }))
+        })
+      });
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => "");
+        throw new Error(body || "No se pudieron sincronizar accesos del dashboard.");
+      }
+
+      const json = await response.json().catch(() => ({}));
+      if (json && json.ok === false) {
+        throw new Error(clean(json.message) || "No se pudieron sincronizar accesos del dashboard.");
+      }
+    }
+
+    async function syncCanonicalHours(barberiaId, horarios) {
+      const hoursPayload = Array.isArray(horarios) ? horarios : [];
+      if (!hoursPayload.length) return;
+
+      const rpcName = clean(CANONICAL_HOURS_SYNC_RPC);
+      if (!rpcName) {
+        throw new Error("No hay RPC configurada para sincronizar horarios.");
+      }
+
+      const response = await postgrestFetch(`/rpc/${rpcName}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          p_barberia_id: barberiaId,
+          p_horarios: hoursPayload
+        })
+      });
+
+      const rpcData = await response.json().catch(() => ({}));
+      if (rpcData && typeof rpcData === "object" && rpcData.ok === false) {
+        throw new Error(
+          clean(rpcData.error || rpcData.message) ||
+          "No se pudieron guardar horarios en la base de datos."
+        );
+      }
+    }
+
+    async function fetchActiveCount(table, barberiaId) {
+      const encodedId = encodeURIComponent(`eq.${barberiaId}`);
+      const response = await postgrestFetch(`/${table}?barberia_id=${encodedId}&activo=eq.true&select=id`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json"
+        }
+      });
+      const rows = await response.json().catch(() => []);
+      return Array.isArray(rows) ? rows.length : 0;
+    }
+
+    async function assertCanonicalPersistence(barberiaId, servicios, barberos) {
+      const expectedServices = Array.isArray(servicios) ? servicios.length : 0;
+      const expectedBarbers = Array.isArray(barberos) ? barberos.length : 0;
+
+      const serviceCount = await fetchActiveCount("servicios", barberiaId);
+      if (expectedServices > 0 && serviceCount <= 0) {
+        throw new Error(
+          `Persistencia incompleta: servicios activos en BD = 0 para barberia_id=${barberiaId}.`
+        );
+      }
+
+      if (expectedBarbers > 0) {
+        const barberCount = await fetchActiveCount("barberos", barberiaId);
+        if (barberCount <= 0) {
+          throw new Error(
+            `Persistencia incompleta: barberos activos en BD = 0 para barberia_id=${barberiaId}.`
+          );
+        }
+      }
+    }
+
+    // SECCION: Envio principal del onboarding.
+    function isPostgrestPermissionError(error) {
+      const message = clean(error?.message).toLowerCase();
+      return (
+        /permission denied/.test(message) ||
+        /"code"\s*:\s*"42501"/.test(message) ||
+        /\b42501\b/.test(message)
+      );
+    }
+
+
+  async function postOnboardingPayload(payload) {
+    if (isEditIntent() || clean(payload?.mode) === "edit") {
+      if (!patchPayloadHasChanges(payload)) {
+        return {
+          response: null,
+          data: buildEditNavigationData(),
+          endpoint: "local-empty-patch"
+        };
+      }
+
+      return postConfiguracionUpdate(payload);
+    }
+
+    const endpoints = getOnboardingEndpointCandidates();
+    let lastError = null;
+    const requestPayload = buildOnboardingRequestPayload(payload);
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(requestPayload)
+          });
+
+          const data = await response.json().catch(() => ({}));
+          const backendMessage = clean(data?.message || data?.error || "");
+          const webhookNotRegistered = /not registered/i.test(backendMessage);
+
+          if (!response.ok || data.ok === false) {
+            const shouldTryNextEndpoint =
+              response.status >= 500 ||
+              response.status === 404 ||
+              webhookNotRegistered;
+
+            lastError = new Error(backendMessage || `HTTP ${response.status} en ${endpoint}`);
+            if (shouldTryNextEndpoint) {
+              continue;
+            }
+            throw lastError;
+          }
+
+          return { response, data, endpoint };
+        } catch (error) {
+          const isNetworkFetchError =
+            error instanceof TypeError ||
+            /failed to fetch|networkerror|load failed/i.test(clean(error?.message));
+
+          if (isNetworkFetchError) {
+            const origin = clean(window.location.origin) || "origen-desconocido";
+            const endpointList = endpoints.join(" | ");
+            lastError = new Error(
+              `No se pudo conectar al webhook desde ${origin}. ` +
+              `Posible CORS/dominio o bloqueo de red. Endpoints probados: ${endpointList}`
+            );
+          } else {
+            lastError = error;
+          }
+        }
+      }
+
+      throw (lastError || new Error("No se pudo conectar con ningun endpoint de onboarding."));
+    }
+
     async function submitDraft() {
       hideMessage();
+
+      if (!requireEditHydrationReady()) {
+        return;
+      }
 
       const barberValidation = validateBarberRows(getBarberRows());
       if (!barberValidation.ok) {
@@ -1929,76 +3219,35 @@ y este s el html y js
 
       setBarberRows(barberValidation.rows);
 
-      const payload = {
-        draft: {
-          barberia: {
-            nombre: clean(draft.barberia.nombre),
-            slug: clean(draft.barberia.slug) || slugify(draft.barberia.nombre),
-            telefono: clean(draft.barberia.telefono),
-            direccion: clean(draft.barberia.direccion),
-            maps_url: clean(draft.barberia.maps_url),
-            ciudad: clean(draft.barberia.ciudad),
-            timezone: clean(draft.barberia.timezone) || "America/Bogota",
-            slot_min: Number(draft.barberia.slot_min || 15)
-          },
-          servicios: (draft.servicios || [])
-            .filter((item) => clean(item.nombre))
-            .map((item) => ({
-              nombre: clean(item.nombre),
-              duracion_min: Number(item.duracion_min || 0),
-              precio: Math.max(0, Number(item.precio || 0))
-            })),
-          horarios: (draft.horarios || []).map((item) => ({
-            dia: clean(item.dia),
-            activo: Boolean(item.activo),
-            hora_abre: clean(item.hora_abre),
-            hora_cierra: clean(item.hora_cierra)
-          })),
-          barberos: (draft.barberos || [])
-            .filter((item) => clean(item.nombre))
-            .map((item) => ({
-              nombre: clean(item.nombre),
-              activo: Boolean(item.activo)
-            })),
-          accesos: {
-            admin: {
-              nombre: clean(draft.accesos.admin.nombre),
-              email: clean(draft.accesos.admin.email).toLowerCase(),
-              password: clean(draft.accesos.admin.password)
-            },
-            barberos: (draft.accesos.barberos || [])
-              .filter((item) => clean(item.nombre))
-              .map((item) => ({
-                nombre: clean(item.nombre),
-                email: clean(item.email).toLowerCase(),
-                password: clean(item.password),
-                activo: Boolean(item.activo)
-              }))
-          }
+      const isEdit = isEditIntent();
+      const payload = isEdit ? buildPatchPayload() : buildDraftPayload();
+      lastPayload = payload;
+
+      if (!draft.barberia.nombre) {
+        showMessage("error", "Falta el nombre de la barbería.");
+        return;
+      }
+
+      if (!isEdit) {
+        const adminEmail = draft.accesos.admin.email;
+        if (!isValidEmail(adminEmail)) {
+          showMessage("error", "El email del administrador no es válido.");
+          return;
         }
-      };
 
-      if (!payload.draft.barberia.nombre) {
-        showMessage("error", "Falta el nombre de la barberia.");
-        return;
+        const adminPassword = draft.accesos.admin.password;
+        if ((adminPassword || "").length < 6) {
+          showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
+          return;
+        }
       }
 
-      if (!isValidEmail(payload.draft.accesos.admin.email)) {
-        showMessage("error", "El email del administrador no es valido.");
-        return;
-      }
-
-      if ((payload.draft.accesos.admin.password || "").length < 6) {
-        showMessage("error", "La password del administrador debe tener minimo 6 caracteres.");
-        return;
-      }
-
-      if (!payload.draft.servicios.length) {
+      if (!draft.servicios.length) {
         showMessage("error", "Debes crear al menos un servicio.");
         return;
       }
 
-      if (!payload.draft.horarios.some((item) => item.activo)) {
+      if (!draft.horarios.some((item) => item.activo)) {
         showMessage("error", "Debes dejar al menos un horario activo.");
         return;
       }
@@ -2010,40 +3259,133 @@ y este s el html y js
       }
 
       try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
+     if (isEdit) {
+  const data = buildRegistroEditSeedData(payload);
+  persistLandingSeed(payload, data);
+  window.location.href = buildLandingBuilderUrl(payload, data);
+  return;
+}
 
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok || data.ok === false) {
-          throw new Error(data.message || "No se pudo crear la barberia.");
-        }
+        const { data } = await postOnboardingPayload(payload);
 
         persistLandingSeed(payload, data);
         onboardingCompleted = true;
         onboardingResult = data;
-        showMessage("success", data.message || "Barberia creada correctamente.");
+        showMessage("success", data.message || "Barbería creada correctamente.");
         render();
       } catch (error) {
         showMessage(
           "error",
           error && error.message
             ? error.message
-            : "Fallo el envio. Si WordPress y la API viven en dominios diferentes, revisa CORS o usa n8n como puente."
+            : "No se pudieron guardar servicios y barberos en la base de datos. Revisa permisos o RPC."
         );
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = "Crear barberia";
+          submitBtn.textContent = "Crear barbería";
         }
       }
     }
 
+    async function submitDraftAndContinue() {
+      hideMessage();
+
+      if (!requireEditHydrationReady()) {
+        return;
+      }
+
+      const barberValidation = validateBarberRows(getBarberRows());
+      if (!barberValidation.ok) {
+        showMessage("error", barberValidation.message);
+        return;
+      }
+
+      setBarberRows(barberValidation.rows);
+
+      const isEdit = isEditIntent();
+      const payload = isEdit ? buildPatchPayload() : buildDraftPayload();
+      lastPayload = payload;
+       if (isEdit) {
+  const seedData = buildRegistroEditSeedData(payload);
+
+  persistLandingSeed(payload, seedData);
+  window.location.href = buildLandingBuilderUrl(payload, seedData);
+  return;
+}
+
+      if (!draft.barberia.nombre) {
+        showMessage("error", "Falta el nombre de la barbería.");
+        return;
+      }
+
+      if (!isEdit) {
+        const adminEmail = draft.accesos.admin.email;
+        if (!isValidEmail(adminEmail)) {
+          showMessage("error", "El email del administrador no es válido.");
+          return;
+        }
+
+        const adminPassword = draft.accesos.admin.password;
+        if ((adminPassword || "").length < 6) {
+          showMessage("error", "La password del administrador debe tener mínimo 6 caracteres.");
+          return;
+        }
+      }
+
+      if (!draft.servicios.length) {
+        showMessage("error", "Debes crear al menos un servicio.");
+        return;
+      }
+
+      if (!draft.horarios.some((item) => item.activo)) {
+        showMessage("error", "Debes dejar al menos un horario activo.");
+        return;
+      }
+
+      const continueBtn = document.getElementById("baContinueTemplateBtn");
+      if (continueBtn) {
+        continueBtn.disabled = true;
+        continueBtn.textContent = "Guardando...";
+      }
+
+      try {
+        const { data } = await postOnboardingPayload(payload);
+
+        persistLandingSeed(payload, data);
+        window.location.href = buildLandingBuilderUrl(payload, data);
+      } catch (error) {
+        // Fallback visual SOLO temporal y bajo flag explicito.
+        if (ALLOW_LOCAL_SEED_FALLBACK && isEditIntent() && isPostgrestPermissionError(error)) {
+          const identity = getEditIdentity();
+          const fallbackData = {
+            barberia_id: Number(identity.barberia_id) || 0,
+            slug: clean(identity.slug) || clean(payload?.draft?.barberia?.slug),
+            barberia: {
+              id: Number(identity.barberia_id) || 0,
+              slug: clean(identity.slug) || clean(payload?.draft?.barberia?.slug)
+            },
+            message: "Continuando en modo edición con semilla local."
+          };
+          persistLandingSeed(payload, fallbackData);
+          window.location.href = buildLandingBuilderUrl(payload, fallbackData);
+          return;
+        }
+        showMessage(
+          "error",
+          error && error.message
+            ? error.message
+            : "No se pudieron guardar servicios y barberos en la base de datos. Revisa permisos o RPC."
+        );
+      } finally {
+        if (continueBtn) {
+          continueBtn.disabled = false;
+          continueBtn.textContent = "Seguir a la plantilla";
+        }
+      }
+    }
+
+    // SECCION: Router de render del paso actual.
     function render() {
       syncThemeFromGlobal();
 
@@ -2053,7 +3395,7 @@ y este s el html y js
       question.textContent = step.prompt;
       helper.textContent = step.helper || "";
 
-      if (step.type === "text" || step.type === "email" || step.type === "tel" || step.type === "password") {
+      if (step.type === "text" || step.type === "email" || step.type === "tel" || step.type === "url" || step.type === "password") {
         renderTextStep(step);
       } else if (step.type === "location") {
         renderLocationStep(step);
@@ -2071,8 +3413,10 @@ y este s el html y js
 
       backBtn.disabled = currentStepIndex === 0;
       renderLiveSummary();
+      setTimeout(applyDeepLinkFocus, 80);
     }
 
+    // SECCION: Observadores y eventos globales.
     const themeObserver = new MutationObserver(() => {
       syncThemeFromGlobal();
     });
@@ -2080,19 +3424,175 @@ y este s el html y js
     if (document.body) {
       themeObserver.observe(document.body, {
         attributes: true,
-        attributeFilter: ["class", "data-theme"]
+        attributeFilter: ["class"]
       });
     }
 
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class", "data-theme"]
-    });
+    syncThemeFromGlobal();
 
     backBtn.addEventListener("click", prevStep);
     resetBtn.addEventListener("click", resetDraft);
 
-    render();
+    const editIntent = isEditIntent();
+    if (editIntent) {
+      editHydrationState = {
+        required: true,
+        complete: false,
+        failed: false,
+        message: "Cargando configuracion real de la barberia.",
+        owner: null
+      };
+      // Show loading and fetch
+      const questionEl = document.getElementById("baQuestion");
+      if (questionEl) questionEl.textContent = "Cargando configuración de la barbería...";
+      const responseAreaEl = document.getElementById("baResponseArea");
+      if (responseAreaEl) responseAreaEl.innerHTML = '<div style="text-align:center; padding: 40px;"><span style="font-size: 1.2rem; color: var(--accent);">Por favor espera...</span></div>';
+      
+      (async () => {
+        try {
+          const identity = getEditIdentity();
+          if (!identity.barberia_id || !identity.slug) {
+            throw new Error("Falta identidad de barbería (barberia_id o slug) en la URL.");
+          }
+          
+          const PANEL_API_BASE = (window.BA_PANEL_API_BASE_URL || "").replace(/\/+$/, "");
+          const stateUrl = `${PANEL_API_BASE}/api/dashboard/state?barberia_id=${encodeURIComponent(identity.barberia_id)}&slug=${encodeURIComponent(identity.slug)}`;
+          const res = await fetch(stateUrl, { credentials: "include" });
+          if (!res.ok) {
+            throw new Error(`HTTP ${res.status} al obtener configuración.`);
+          }
+          const data = await res.json();
+          if (!data.ok) {
+            throw new Error(data.message || "No se pudieron obtener los datos de la barbería.");
+          }
+          const b = data.barberia || {};
+          const responseIdentity = data.identity || {};
+          const responseId = Number(responseIdentity.barberia_id || b.id || 0);
+          const responseSlug = clean(responseIdentity.slug || b.slug);
+          if (responseId !== Number(identity.barberia_id)) {
+            throw new Error("La identidad devuelta por el backend no coincide con barberia_id.");
+          }
+          if (clean(identity.slug) && responseSlug && responseSlug !== clean(identity.slug)) {
+            throw new Error("La identidad devuelta por el backend no coincide con slug.");
+          }
+
+          const owner = resolveOwnerFromDashboardState(data);
+          if (!owner.email || !isValidEmail(owner.email)) {
+            throw new Error("No se cargo el administrador real desde el backend. Guardado bloqueado para evitar sobrescribir owner/admin.");
+          }
+
+          const servicesList = Array.isArray(data.servicios) ? data.servicios : [];
+          const barbersList = Array.isArray(data.barberos) ? data.barberos : [];
+          const hoursList = Array.isArray(data.seed?.hours ?? data.merged?.hours) ? (data.seed?.hours ?? data.merged?.hours) : [];
+          
+          const dayNames = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+          
+          draft = normalizeDraft({
+            barberia: {
+              ...b,
+              nombre: clean(b.nombre),
+              slug: clean(b.slug || identity.slug),
+              telefono: clean(b.telefono),
+              direccion: clean(b.direccion),
+              maps_url: clean(b.maps_url),
+              ciudad: clean(b.ciudad),
+              timezone: clean(b.timezone) || "America/Bogotá",
+              slot_min: Number(b.slot_min || 15)
+            },
+            servicios: servicesList.map(s => {
+              const imgVal = clean(s.imagen_url || s.image_url || s.foto_url || '');
+              const sId = Number(s.id || s.id_servicio || 0) || undefined;
+              return {
+                id: sId,
+                id_servicio: sId,
+                nombre: clean(s.nombre),
+                duracion_min: Number(s.duracion_min || 30),
+                precio: Number(s.precio || 0),
+                imagen_url: imgVal,
+                image_url: imgVal,
+                foto_url: imgVal
+              };
+            }),
+            horarios: hoursList.map(h => ({
+              dia: dayNames[h.dia_semana] || "lunes",
+              activo: Boolean(h.activo),
+              hora_abre: clean(h.hora_abre).slice(0, 5),
+              hora_cierra: clean(h.hora_cierra).slice(0, 5)
+            })),
+            barberos: barbersList.map(ba => {
+              const fotoVal = clean(ba.foto_url || ba.foto || ba.imagen_url || ba.avatar_url || '');
+              const bId = Number(ba.id || ba.id_barbero || 0) || undefined;
+              return {
+                id: bId,
+                id_barbero: bId,
+                usuario_id: Number(ba.usuario_id || 0) || undefined,
+                nombre: clean(ba.nombre),
+                email: clean(ba.email || ba.barbero_email).toLowerCase(),
+                has_password: Boolean(ba.has_password),
+                activo: Boolean(ba.activo),
+                foto: fotoVal,
+                foto_url: fotoVal,
+                imagen_url: fotoVal,
+                especialidad: clean(ba.especialidad || ba.rol || ba.role || 'Barbero profesional'),
+                rol: clean(ba.rol || ba.role || ba.especialidad || 'Barbero profesional')
+              };
+            }),
+            accesos: {
+              admin: {
+                nombre: owner.nombre || "Administrador",
+                email: owner.email,
+                password: "" // Blank password means keeping existing password
+              },
+              barberos: barbersList.map(ba => ({
+                id: Number(ba.id || 0) || undefined,
+                usuario_id: Number(ba.usuario_id || 0) || undefined,
+                nombre: clean(ba.nombre),
+                email: clean(ba.email || ba.barbero_email).toLowerCase(),
+                password: "",
+                has_password: Boolean(ba.has_password),
+                foto: clean(ba.foto_url),
+                foto_url: clean(ba.foto_url)
+              }))
+            }
+          });
+          editHydrationState = {
+            required: true,
+            complete: true,
+            failed: false,
+            message: "",
+            owner
+          };
+          
+          initialTruthState = JSON.parse(JSON.stringify(draft));
+          truthLoaded = true;
+          identityValidated = true;
+
+          saveDraft();
+          render();
+        } catch (err) {
+          console.error(err);
+          editHydrationState = {
+            required: true,
+            complete: false,
+            failed: true,
+            message: err && err.message ? err.message : "No se pudo cargar la configuracion real de la barberia.",
+            owner: null
+          };
+          if (questionEl) questionEl.textContent = "Acceso restringido o error";
+          if (responseAreaEl) {
+            responseAreaEl.innerHTML = `
+              <div style="padding: 20px; color: #ef4444; border: 1px solid #ef4444; border-radius: 6px; background: rgba(239, 68, 68, 0.1); text-align: center;">
+                <p><strong>No se pudo cargar la configuración de la barbería:</strong></p>
+                <p>${err.message}</p>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: #94a3b8;">Por favor, asegúrate de haber iniciado sesión y de tener permisos de acceso.</p>
+              </div>
+            `;
+          }
+        }
+      })();
+    } else {
+      render();
+    }
   };
 
   if (document.readyState === "loading") {
@@ -2102,6 +3602,4 @@ y este s el html y js
   }
 })();
 </script>
-
-
 
