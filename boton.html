@@ -577,7 +577,7 @@ body.light-mode #baHeaderMenuRoot .ba5-user-logout {
   const BA_DASHBOARD_URL = "/barberia";
   const BA_SESSION_ME_URL = "/api/session/me";
   const BA_SESSION_LOGOUT_URL = "/api/session/logout";
-  const BA_DELETE_ENDPOINT_BASE = "https://barberagency-app.gymh5g.easypanel.host/api/barberias";
+  const BA_DELETE_ENDPOINT_BASE = "/api/barberias";
 
   /* =========================================================
      LOCAL CACHE KEYS
@@ -1196,7 +1196,19 @@ body.light-mode #baHeaderMenuRoot .ba5-user-logout {
         } else {
           confirmBtn.disabled = false;
           confirmBtn.querySelector("span").textContent = "Eliminar barbería";
-          errorP.textContent = data.message || "Error al eliminar la barbería.";
+
+          const isSessionExpired =
+            res.status === 401 ||
+            data.error === "not_authenticated" ||
+            data.code === "session_expired" ||
+            data.code === "sesion_expirada" ||
+            (typeof data.message === "string" && data.message.toLowerCase().includes("sesi"));
+
+          if (isSessionExpired) {
+            errorP.textContent = "Tu sesión expiró. Inicia sesión nuevamente para continuar.";
+          } else {
+            errorP.textContent = data.message || "Error al eliminar la barbería.";
+          }
           errorP.style.display = "block";
         }
       } catch (err) {

@@ -20,6 +20,20 @@ function isExactNameConfirmation(typed, target) {
   return clean(typed) === clean(target) && clean(typed).length > 0;
 }
 
+function formatDeleteErrorMessage(resStatus, data) {
+  const isSessionExpired =
+    resStatus === 401 ||
+    data?.error === "not_authenticated" ||
+    data?.code === "session_expired" ||
+    data?.code === "sesion_expirada" ||
+    data?.message === "Sesión requerida.";
+
+  if (isSessionExpired) {
+    return "Tu sesión expiró. Inicia sesión nuevamente para continuar.";
+  }
+  return data?.message || "Error al eliminar la barbería.";
+}
+
 console.log('--- RUNNING HEADER USER MENU DELETE LOGIC TESTS ---');
 
 // Gate 1: Eligibility check
@@ -40,4 +54,20 @@ assert.strictEqual(isExactNameConfirmation("barberia prueba 5", "Barberia prueba
 assert.strictEqual(isExactNameConfirmation("Barberia prueba", "Barberia prueba 5"), false, "Prefix rejected");
 assert.strictEqual(isExactNameConfirmation("", "Barberia prueba 5"), false, "Empty rejected");
 
-console.log('Gate 1 & Gate 2 PASS: Logic rules verified.');
+// Gate 3: Controlled session expiration message
+assert.strictEqual(
+  formatDeleteErrorMessage(401, { error: "not_authenticated", message: "Sesión requerida." }),
+  "Tu sesión expiró. Inicia sesión nuevamente para continuar."
+);
+assert.strictEqual(
+  formatDeleteErrorMessage(200, { error: "active_license", message: "No puedes eliminar..." }),
+  "No puedes eliminar..."
+);
+
+// Gate 4: Default modal markup verification from boton.html
+const botonHtml = fs.readFileSync('boton.html', 'utf8');
+assert.ok(!botonHtml.includes('Sesión requerida'), 'boton.html must never hardcode "Sesión requerida"');
+assert.ok(botonHtml.includes('Tu sesión expiró. Inicia sesión nuevamente para continuar.'), 'boton.html must include controlled session expired message');
+assert.ok(botonHtml.includes('const BA_DELETE_ENDPOINT_BASE = "/api/barberias";'), 'boton.html must use relative endpoint /api/barberias');
+
+console.log('ALL GATES PASS: Logic rules & session error handling verified.');

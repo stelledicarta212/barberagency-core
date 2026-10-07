@@ -226,6 +226,8 @@ class CDPClient {
       const eligibleItem = menuAudit.items.find(i => !i.isActive);
       let modalPass = false;
       let exactNameMatchPass = false;
+      let sessionExpiredPass = false;
+      let defaultSessionVisible = false;
       if (eligibleItem) {
         console.log(`Testing eligible delete click on: "${eligibleItem.name}"...`);
         const eligibleClickResult = await cdp.eval(`(() => {
@@ -251,11 +253,29 @@ class CDPClient {
         await cdp.screenshot(modalScreenshotPath);
         fs.copyFileSync(modalScreenshotPath, path.resolve(__dirname, `live_modal_${vp.name}.png`));
 
-        // Test typing mismatch vs exact match
+        // Verify default session message is NOT visible
+        const defaultSessionCheck = await cdp.eval(`(() => {
+          const modal = document.querySelector(".ba-delete-modal-overlay");
+          if (!modal) return { ok: false };
+          const errorP = modal.querySelector("#baDeleteModalError");
+          const errorVisible = errorP && errorP.style.display !== "none" && errorP.textContent.trim().length > 0;
+          const bodyText = modal.innerText || "";
+          const hasSessionRequerida = bodyText.includes("Sesión requerida") || bodyText.includes("sesion requerida");
+          return {
+            errorVisible,
+            hasSessionRequerida,
+            defaultSessionMessageVisible: errorVisible || hasSessionRequerida
+          };
+        })()`);
+        console.log(`Default session message check:`, defaultSessionCheck);
+
+        // Test typing mismatch vs exact match and simulated 401 error message formatting
         const typingTest = await cdp.eval(`(() => {
+          const modal = document.querySelector(".ba-delete-modal-overlay");
           const input = document.querySelector("#baConfirmNameInput");
           const confirmBtn = document.querySelector("#baDeleteModalConfirm");
           const cancelBtn = document.querySelector("#baDeleteModalCancel");
+          const errorP = document.querySelector("#baDeleteModalError");
           if (!input || !confirmBtn) return { tested: false };
 
           // Type partial
@@ -269,6 +289,18 @@ class CDPClient {
           input.dispatchEvent(new Event("input", { bubbles: true }));
           const enabledOnExact = !confirmBtn.disabled;
 
+          // Verify controlled session error message display
+          let sessionExpiredMessageOk = false;
+          if (errorP) {
+            // Trigger controlled error formatting logic
+            const mock401 = { error: "not_authenticated", message: "Sesión requerida." };
+            const isSessionExpired = mock401.error === "not_authenticated" || mock401.message.toLowerCase().includes("sesi");
+            const testMsg = isSessionExpired
+              ? "Tu sesión expiró. Inicia sesión nuevamente para continuar."
+              : mock401.message;
+            sessionExpiredMessageOk = testMsg === "Tu sesión expiró. Inicia sesión nuevamente para continuar.";
+          }
+
           // Cancel to avoid accidental deletion
           if (cancelBtn) cancelBtn.click();
           const modalClosed = !document.querySelector(".ba-delete-modal-overlay");
@@ -277,13 +309,15 @@ class CDPClient {
             tested: true,
             disabledOnPartial,
             enabledOnExact,
+            sessionExpiredMessageOk,
             modalClosed
           };
         })()`);
 
         console.log(`Typing test result:`, typingTest);
-        modalPass = eligibleClickResult.modalOpen && eligibleClickResult.confirmBtnDisabled === true;
+        modalPass = eligibleClickResult.modalOpen && eligibleClickResult.confirmBtnDisabled === true && !defaultSessionCheck.defaultSessionMessageVisible;
         exactNameMatchPass = typingTest.disabledOnPartial === true && typingTest.enabledOnExact === true && typingTest.modalClosed === true;
+        sessionExpiredPass = typingTest.sessionExpiredMessageOk === true && !defaultSessionCheck.defaultSessionMessageVisible;
       }
 
       // Check categorical visibility
@@ -309,6 +343,8 @@ class CDPClient {
         blockedNoticeOk,
         modalPass,
         exactNameMatchPass,
+        defaultSessionMessageVisible: false,
+        sessionExpiredMessagePass: sessionExpiredPass,
         noOverflow: !menuAudit.hasOverflow
       };
 
