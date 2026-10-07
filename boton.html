@@ -1,20 +1,587 @@
+<style>
+/* =========================================================
+   BARBERAGENCY — HEADER USER MENU & ACCOUNT ACTIONS
+   VERSION: V14 (Safe Barberia Soft-Delete Enabled)
+   ========================================================= */
+
+#baHeaderMenuRoot {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.ba5-user-menu {
+  position: relative;
+  display: inline-block;
+}
+
+.ba5-user-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(182, 140, 42, 0.55);
+  background: linear-gradient(90deg, #b68c2a, #d4af37);
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: filter .2s ease, transform .15s ease;
+}
+
+.ba5-user-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.ba5-user-btn-menu::after {
+  content: "▾";
+  margin-left: 8px;
+  font-size: 12px;
+}
+
+.ba5-user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 320px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(182, 140, 42, 0.35);
+  background: #0f1622;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+  display: none;
+  z-index: 99999;
+}
+
+.ba5-user-menu.is-open .ba5-user-dropdown {
+  display: block;
+}
+
+.ba5-user-head {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 8px;
+}
+
+.ba5-user-name {
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.ba5-user-email {
+  color: #bfc9d8;
+  font-size: 12px;
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+.ba5-plan-box {
+  margin: 6px 0 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(212, 175, 55, 0.12);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+.ba5-plan-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.ba5-plan-label {
+  color: #d8c27a;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.ba5-plan-pill {
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 3px 8px;
+  border: 1px solid transparent;
+}
+
+.ba5-plan-pill.is-active {
+  color: #b7ffd1;
+  background: rgba(24, 143, 72, 0.25);
+  border-color: rgba(113, 255, 173, 0.4);
+}
+
+.ba5-plan-pill.is-pending {
+  color: #ffe0a6;
+  background: rgba(173, 114, 13, 0.25);
+  border-color: rgba(255, 209, 126, 0.4);
+}
+
+.ba5-plan-pill.is-expired {
+  color: #d67f7f;
+  background: rgba(180, 70, 70, 0.06);
+  border-color: rgba(210, 90, 90, 0.16);
+}
+
+.ba5-plan-name {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.ba5-plan-renewal {
+  color: #cfd7e4;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.ba-plan-validity {
+  margin-top: 7px;
+  font-size: 11px;
+  line-height: 1.4;
+  opacity: .66;
+}
+
+.ba-current-product {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.ba-current-product-label {
+  opacity: .64;
+}
+
+.ba-current-product-value {
+  font-weight: 800;
+}
+
+.ba5-barberias-list {
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ba5-barberias-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.ba5-barberias-list::-webkit-scrollbar-thumb {
+  background: rgba(212, 175, 55, 0.45);
+  border-radius: 999px;
+}
+
+/* Barberia Item Container & Rows */
+#baHeaderMenuRoot .ba5-barberia-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  border-radius: 8px;
+  padding: 4px 6px;
+  transition: background .15s ease;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+#baHeaderMenuRoot .ba5-barberia-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+#baHeaderMenuRoot .ba5-barberia-card.is-current {
+  background: rgba(212, 175, 55, 0.14);
+}
+
+#baHeaderMenuRoot .ba5-barberia-link {
+  flex: 1;
+  min-width: 0;
+  text-decoration: none !important;
+  color: inherit !important;
+  display: block;
+}
+
+#baHeaderMenuRoot .ba-barberia-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+}
+
+#baHeaderMenuRoot .ba-barberia-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+}
+
+#baHeaderMenuRoot .ba-barberia-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+#baHeaderMenuRoot .ba-barberia-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+#baHeaderMenuRoot .ba-barberia-status.is-active {
+  color: #78e6a3;
+  background: rgba(68, 196, 116, .10);
+  border-color: rgba(68, 196, 116, .25);
+}
+
+#baHeaderMenuRoot .ba-barberia-status.is-trial {
+  color: #f3cd65;
+  background: rgba(215, 167, 45, .10);
+  border-color: rgba(243, 205, 101, .25);
+}
+
+#baHeaderMenuRoot .ba-barberia-status.is-warning {
+  color: #f5b43c;
+  background: rgba(245, 180, 60, .10);
+  border-color: rgba(245, 180, 60, .30);
+}
+
+#baHeaderMenuRoot .ba-barberia-status.is-expired {
+  color: #d67f7f;
+  background: rgba(180, 70, 70, .06);
+  border-color: rgba(210, 90, 90, .16);
+}
+
+#baHeaderMenuRoot .ba-barberia-status.is-pending {
+  color: rgba(255, 255, 255, .66);
+  background: rgba(255, 255, 255, .06);
+  border-color: rgba(255, 255, 255, .12);
+}
+
+#baHeaderMenuRoot .ba-barberia-detail {
+  font-size: 10px;
+  line-height: 1.35;
+  opacity: .62;
+  color: #bfc9d8;
+}
+
+/* Delete button in Barberia card */
+#baHeaderMenuRoot .ba-barberia-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 7px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: none;
+  text-decoration: none;
+  background: transparent;
+  line-height: 1;
+}
+
+#baHeaderMenuRoot .ba-barberia-delete-btn.is-eligible {
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+#baHeaderMenuRoot .ba-barberia-delete-btn.is-eligible:hover {
+  border-color: rgba(239, 68, 68, 0.7);
+  background: rgba(239, 68, 68, 0.22);
+  color: #ffffff;
+}
+
+#baHeaderMenuRoot .ba-barberia-delete-btn.is-active-blocked {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+}
+
+#baHeaderMenuRoot .ba-barberia-delete-btn.is-active-blocked:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Blocked banner notice */
+.ba-blocked-notice-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.38);
+  color: #fbbf24;
+  font-size: 11px;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.ba-blocked-notice-banner button {
+  background: transparent;
+  border: none;
+  color: #fbbf24;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0;
+  margin-left: auto;
+  line-height: 1;
+}
+
+/* User items & actions */
+.ba5-user-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #fff !important;
+  text-decoration: none !important;
+  padding: 9px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.ba5-user-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ba5-user-logout {
+  color: #ffd9d9 !important;
+}
+
+/* Confirmation Modal Dialog */
+.ba-delete-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  animation: baFadeIn .18s ease-out;
+}
+
+.ba-delete-modal-dialog {
+  max-width: 440px;
+  width: 100%;
+  background: #141820;
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.65);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: #ffffff;
+}
+
+.ba-delete-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ba-delete-modal-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f87171;
+  flex-shrink: 0;
+}
+
+.ba-delete-modal-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.ba-delete-modal-body {
+  font-size: 12px;
+  color: #a1a1aa;
+  line-height: 1.45;
+}
+
+.ba-delete-modal-body p {
+  margin: 0 0 6px 0;
+}
+
+.ba-delete-modal-body p:last-child {
+  margin-bottom: 0;
+}
+
+.ba-delete-modal-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #e4e4e7;
+  margin-bottom: 5px;
+}
+
+.ba-delete-modal-label strong {
+  color: #d4af37;
+}
+
+.ba-delete-modal-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #09090b;
+  color: #ffffff;
+  font-size: 13px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.ba-delete-modal-input:focus {
+  border-color: #d4af37;
+}
+
+.ba-delete-modal-error {
+  margin: 0;
+  font-size: 12px;
+  color: #f87171;
+}
+
+.ba-delete-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.ba-delete-modal-cancel {
+  padding: 7px 13px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: transparent;
+  color: #e4e4e7;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ba-delete-modal-confirm {
+  padding: 7px 15px;
+  border-radius: 8px;
+  border: none;
+  background: #ef4444;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity .15s ease;
+}
+
+.ba-delete-modal-confirm:disabled {
+  background: rgba(239, 68, 68, 0.4);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@keyframes baFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Light mode support */
+body.light-mode #baHeaderMenuRoot .ba5-user-dropdown {
+  background: #0f1622 !important;
+  border: 1px solid rgba(182, 140, 42, 0.35) !important;
+}
+
+body.light-mode #baHeaderMenuRoot .ba5-user-name,
+body.light-mode #baHeaderMenuRoot .ba5-user-item,
+body.light-mode #baHeaderMenuRoot .ba-barberia-name {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+body.light-mode #baHeaderMenuRoot .ba5-user-email,
+body.light-mode #baHeaderMenuRoot .ba-barberia-detail {
+  color: #bfc9d8 !important;
+  -webkit-text-fill-color: #bfc9d8 !important;
+}
+
+body.light-mode #baHeaderMenuRoot .ba5-plan-label {
+  color: #d8c27a !important;
+  -webkit-text-fill-color: #d8c27a !important;
+}
+
+body.light-mode #baHeaderMenuRoot .ba5-user-logout {
+  color: #ffd9d9 !important;
+  -webkit-text-fill-color: #ffd9d9 !important;
+}
+</style>
+
 <div id="baHeaderMenuRoot"></div>
 
 <script>
 (function () {
-  if (window.__BA_HEADER_MENU_V10__) return;
-  window.__BA_HEADER_MENU_V10__ = true;
+  if (window.__BA_HEADER_MENU_V14__) return;
+  window.__BA_HEADER_MENU_V14__ = true;
 
+  /* =========================================================
+     URLS
+     ========================================================= */
   const BA_HOME_URL = "/";
   const BA_REGISTER_URL = "/registro/";
   const BA_CREATE_BARBERIA_URL = "/registro-barberias/";
   const BA_PROFILE_URL = "/perfil/";
   const BA_PLANS_URL = "/planes/";
-  const BA_DASHBOARD_URL = "https://barberagency-app.gymh5g.easypanel.host/barberia";
+  const BA_DASHBOARD_URL = "/barberia";
+  const BA_SESSION_ME_URL = "/api/session/me";
+  const BA_SESSION_LOGOUT_URL = "/api/session/logout";
+  const BA_DELETE_ENDPOINT_BASE = "https://barberagency-app.gymh5g.easypanel.host/api/barberias";
 
-  const BA_SESSION_ME_URL = "https://barberagency-app.gymh5g.easypanel.host/api/session/me";
-  const BA_SESSION_LOGOUT_URL = "https://barberagency-n8n.gymh5g.easypanel.host/webhook/barberagency/session/logout";
-
+  /* =========================================================
+     LOCAL CACHE KEYS
+     ========================================================= */
   const SESSION_KEYS = [
     "ba_google_token",
     "ba_user_id",
@@ -24,16 +591,27 @@
     "ba_user_nombre_manual",
     "ba_user_apellido_manual",
     "ba_puede_crear_barberia",
+    "ba_barberia_state",
+    "ba_subscription_state",
+    "ba_days_remaining",
+    "ba_billing_term",
+    "ba_plan_code",
     "ba_plan_name",
-    "ba_plan_status",
-    "ba_plan_renovacion",
+    "ba_period_start",
+    "ba_period_end",
     "ba_barberias",
     "ba_barberias_count",
     "ba_current_barberia"
   ];
 
+  let stateBlockedNotice = null;
+  let activeDeleteModal = null;
+
+  /* =========================================================
+     HELPERS
+     ========================================================= */
   function clean(v) {
-    return (v || "").toString().trim();
+    return (v ?? "").toString().trim();
   }
 
   function esc(v) {
@@ -71,16 +649,48 @@
     return !!clean(localStorage.getItem("ba_user_id")) && !!clean(localStorage.getItem("ba_user_email"));
   }
 
+  function setOrRemove(key, value) {
+    if (value === null || value === undefined || value === "") {
+      localStorage.removeItem(key);
+      return;
+    }
+    localStorage.setItem(key, String(value));
+  }
+
+  function isBarberiaActivePlan(b) {
+    const sub = clean(b?.subscription_state).toUpperCase();
+    return ["PAID_ACTIVE", "TRIAL_ACTIVE", "TRIAL_EXPIRING", "ACTIVATION_PENDING"].includes(sub);
+  }
+
+  function isBarberiaOwner(b) {
+    const r = clean(b?.role).toLowerCase();
+    return !r || r === "owner";
+  }
+
+  /* =========================================================
+     PRODUCT STATE
+     ========================================================= */
+  function getCanonicalState(data) {
+    const ps = data && typeof data.product_state === "object" ? data.product_state : {};
+    return {
+      barberiaState: clean(data?.barberia_state) || clean(ps?.barberia_state),
+      subscriptionState: clean(data?.subscription_state) || clean(ps?.subscription_state),
+      daysRemaining: data?.days_remaining ?? ps?.days_remaining ?? null,
+      billingTerm: clean(data?.billing_term) || clean(ps?.billing_term),
+      planCode: clean(data?.plan_code) || clean(ps?.plan_code),
+      planName: clean(data?.plan_name) || clean(ps?.plan_name),
+      periodStart: clean(data?.period_start) || clean(ps?.period_start),
+      periodEnd: clean(data?.period_end) || clean(ps?.period_end)
+    };
+  }
+
   function setLocalFromSession(data) {
     const manualNombre = prettify(localStorage.getItem("ba_user_nombre_manual"));
     const manualApellido = prettify(localStorage.getItem("ba_user_apellido_manual"));
-
     const savedNombre = prettify(localStorage.getItem("ba_user_nombre"));
     const savedApellido = prettify(localStorage.getItem("ba_user_apellido"));
-
     const backendNombre = prettify(data.nombre);
     const backendApellido = prettify(data.apellido);
-
     const email = clean(data.email) || clean(localStorage.getItem("ba_user_email"));
 
     let nombre = manualNombre || savedNombre;
@@ -92,7 +702,6 @@
     if ((!apellido || isHandleLike(apellido)) && backendApellido && !isHandleLike(backendApellido)) {
       apellido = backendApellido;
     }
-
     if (!nombre || isHandleLike(nombre)) {
       nombre = emailToName(email);
     }
@@ -106,13 +715,21 @@
     if (manualNombre) localStorage.setItem("ba_user_nombre_manual", manualNombre);
     if (manualApellido) localStorage.setItem("ba_user_apellido_manual", manualApellido);
 
-    const planName = data.plan_id ? "Plan activo" : "Sin plan";
-    const planStatus = data.plan_id ? "Activo" : "Pendiente";
-    localStorage.setItem("ba_plan_name", planName);
-    localStorage.setItem("ba_plan_status", planStatus);
+    const state = getCanonicalState(data);
+    setOrRemove("ba_barberia_state", state.barberiaState);
+    setOrRemove("ba_subscription_state", state.subscriptionState);
+    setOrRemove("ba_days_remaining", state.daysRemaining);
+    setOrRemove("ba_billing_term", state.billingTerm);
+    setOrRemove("ba_plan_code", state.planCode);
+    setOrRemove("ba_plan_name", state.planName);
+    setOrRemove("ba_period_start", state.periodStart);
+    setOrRemove("ba_period_end", state.periodEnd);
 
-    localStorage.setItem("ba_barberias_count", String(Number(data.barberias_count || 0)));
-    localStorage.setItem("ba_barberias", JSON.stringify(Array.isArray(data.barberias) ? data.barberias : []));
+    const barberias = Array.isArray(data.barberias) ? data.barberias : [];
+    const count = Number(data.barberias_count ?? barberias.length ?? 0);
+
+    localStorage.setItem("ba_barberias_count", String(count));
+    localStorage.setItem("ba_barberias", JSON.stringify(barberias));
 
     if (data.current_barberia) {
       localStorage.setItem("ba_current_barberia", JSON.stringify(data.current_barberia));
@@ -133,9 +750,9 @@
       const r = await fetch(BA_SESSION_ME_URL, {
         method: "GET",
         credentials: "include",
-        cache: "no-store"
+        cache: "no-store",
+        headers: { Accept: "application/json" }
       });
-
       const raw = await r.text();
       let data = {};
       try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
@@ -144,12 +761,10 @@
         setLocalFromSession(data);
         return true;
       }
-
       if (r.status === 401) {
         clearSession();
         return false;
       }
-
       return isLoggedInLocal();
     } catch (_) {
       return isLoggedInLocal();
@@ -159,7 +774,6 @@
   function getUser() {
     const manualNombre = prettify(localStorage.getItem("ba_user_nombre_manual"));
     const manualApellido = prettify(localStorage.getItem("ba_user_apellido_manual"));
-
     let nombre = manualNombre || prettify(localStorage.getItem("ba_user_nombre"));
     let apellido = manualApellido || prettify(localStorage.getItem("ba_user_apellido"));
     const email = clean(localStorage.getItem("ba_user_email"));
@@ -167,19 +781,164 @@
     if (!nombre || isHandleLike(nombre)) {
       nombre = emailToName(email);
     }
-
     const full = [nombre, apellido].filter(Boolean).join(" ").trim();
     const first = full ? full.split(/\s+/)[0] : "Usuario";
 
     return { first, full: full || "Usuario", email };
   }
 
-  function getPlan() {
-    const name = clean(localStorage.getItem("ba_plan_name")) || "Sin plan";
-    const status = clean(localStorage.getItem("ba_plan_status")) || "Pendiente";
-    const renewal = clean(localStorage.getItem("ba_plan_renovacion"));
-    const cls = /activo|active/i.test(status) ? "is-active" : "is-pending";
-    return { name, status, renewal, cls };
+  function getBarberiasState() {
+    let barberias = [];
+    let current = null;
+    try { barberias = JSON.parse(localStorage.getItem("ba_barberias") || "[]"); } catch (_) {}
+    try { current = JSON.parse(localStorage.getItem("ba_current_barberia") || "null"); } catch (_) {}
+
+    const count = Number(localStorage.getItem("ba_barberias_count") || barberias.length || 0);
+    const barberiaState = clean(localStorage.getItem("ba_barberia_state")) || (count <= 0 ? "none" : count === 1 ? "single" : "multiple");
+
+    return {
+      count,
+      barberiaState,
+      barberias: Array.isArray(barberias) ? barberias : [],
+      current
+    };
+  }
+
+  function translateTerm(term) {
+    const map = {
+      monthly: "Mensual",
+      quarterly: "Trimestral",
+      semiannual: "Semestral",
+      annual: "Anual"
+    };
+    return map[clean(term)] || "";
+  }
+
+  function formatDate(value) {
+    if (!value) return "";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  function getBarberiaPresentation(barberia) {
+    const state = clean(barberia?.subscription_state);
+    const term = translateTerm(barberia?.billing_term);
+    const rawDays = barberia?.days_remaining;
+    const hasDays = rawDays !== null && rawDays !== undefined && rawDays !== "" && Number.isFinite(Number(rawDays));
+    const days = hasDays ? Math.max(0, Number(rawDays)) : null;
+    const end = formatDate(barberia?.period_end);
+
+    if (state === "PAID_ACTIVE") {
+      if (days !== null && days > 0 && days <= 5) {
+        return {
+          label: days === 1 ? "Vence mañana" : `Vence en ${days} días`,
+          cls: "is-warning",
+          detail: [term || "Plan activo", end ? `válido hasta ${end}` : ""].filter(Boolean).join(" · ")
+        };
+      }
+      return {
+        label: term ? `${term} · Activo` : "Plan activo",
+        cls: "is-active",
+        detail: end ? `Válido hasta ${end}` : "Plan activo"
+      };
+    }
+
+    if (state === "TRIAL_ACTIVE") {
+      return {
+        label: days !== null ? (days === 1 ? "Prueba · 1 día" : `Prueba · ${days} días`) : "Prueba activa",
+        cls: "is-trial",
+        detail: end ? `Prueba válida hasta ${end}` : "Prueba gratis activa"
+      };
+    }
+
+    if (state === "TRIAL_EXPIRING") {
+      return {
+        label: days === 1 ? "Vence mañana" : (days !== null ? `Vence en ${days} días` : "Prueba por vencer"),
+        cls: "is-warning",
+        detail: end ? `Prueba válida hasta ${end}` : "Tu prueba está por vencer"
+      };
+    }
+
+    if (state === "TRIAL_EXPIRED") {
+      return {
+        label: "Cancelada",
+        cls: "is-expired",
+        detail: "Prueba gratis finalizada"
+      };
+    }
+
+    if (state === "ACTIVATION_PENDING") {
+      return {
+        label: "Activando...",
+        cls: "is-warning",
+        detail: "Estamos activando tu plan"
+      };
+    }
+
+    return {
+      label: "Pendiente",
+      cls: "is-pending",
+      detail: "Estado no disponible"
+    };
+  }
+
+  function getProductPresentation() {
+    const state = getBarberiasState();
+
+    if (state.barberiaState === "multiple" || state.count > 1) {
+      const current = state.current;
+      const currentFromList = current ? state.barberias.find((b) => Number(b.id) === Number(current.id)) : null;
+      const enriched = currentFromList || current;
+      const product = enriched ? getBarberiaPresentation(enriched) : null;
+
+      return {
+        mode: "multiple",
+        label: "Barbería actual",
+        status: `${state.count} en tu cuenta`,
+        name: enriched ? (enriched.nombre || enriched.name || enriched.slug || "Barbería seleccionada") : "Selecciona una barbería",
+        substatus: product ? product.label : "",
+        substatusClass: product ? product.cls : "is-pending",
+        detail: product ? product.detail : "",
+        cls: "is-active"
+      };
+    }
+
+    if (state.barberiaState === "none" || state.count <= 0) {
+      return {
+        mode: "zero",
+        label: "Comienza gratis",
+        status: "7 días",
+        name: "Crea tu barbería",
+        substatus: "",
+        detail: "Configura tu barbería y activa tu prueba gratis.",
+        cls: "is-pending"
+      };
+    }
+
+    const single = state.barberias[0] || state.current;
+    if (single) {
+      const product = getBarberiaPresentation(single);
+      return {
+        mode: "single",
+        label: "Plan actual",
+        status: product.label,
+        name: single.nombre || single.name || single.slug || "Mi barbería",
+        substatus: "",
+        detail: product.detail,
+        cls: product.cls
+      };
+    }
+
+    return {
+      mode: "unknown",
+      label: "Tu barbería",
+      status: "Disponible",
+      name: "Ir a mi panel",
+      substatus: "",
+      detail: "",
+      cls: "is-active"
+    };
   }
 
   function dashboardUrl(barberia) {
@@ -191,31 +950,36 @@
     return url.toString();
   }
 
-  function getBarberiasState() {
-    let barberias = [];
-    let current = null;
+  function renderProductBlock() {
+    const p = getProductPresentation();
 
-    try { barberias = JSON.parse(localStorage.getItem("ba_barberias") || "[]"); } catch (_) {}
-    try { current = JSON.parse(localStorage.getItem("ba_current_barberia") || "null"); } catch (_) {}
-
-    const count = Number(localStorage.getItem("ba_barberias_count") || barberias.length || 0);
-
-    return {
-      count,
-      barberias: Array.isArray(barberias) ? barberias : [],
-      current
-    };
+    return `
+      <div class="ba5-plan-box">
+        <div class="ba5-plan-top">
+          <span class="ba5-plan-label">${esc(p.label)}</span>
+          <span class="ba5-plan-pill ${p.cls}">${esc(p.status)}</span>
+        </div>
+        <div class="ba5-plan-name">${esc(p.name)}</div>
+        ${p.mode === "multiple" && p.substatus ? `
+          <div class="ba-current-product">
+            <span class="ba-current-product-label">Estado</span>
+            <span class="ba-barberia-status ${esc(p.substatusClass)}">${esc(p.substatus)}</span>
+          </div>
+        ` : ""}
+        ${p.detail ? `<div class="ba-plan-validity">${esc(p.detail)}</div>` : ""}
+      </div>
+    `;
   }
 
   function renderBarberiasBlock() {
     const state = getBarberiasState();
 
     if (state.count <= 0) {
-      return `<a class="ba5-user-item" href="${BA_CREATE_BARBERIA_URL}">Crear barbería</a>`;
+      return `<a class="ba5-user-item" href="${BA_CREATE_BARBERIA_URL}">Crear mi barbería</a>`;
     }
 
-    if (state.count === 1 && state.current) {
-      return `<a class="ba5-user-item is-current" href="${dashboardUrl(state.current)}">Ir a mi barbería</a>`;
+    if (state.count === 1) {
+      return "";
     }
 
     const currentId = Number(state.current && state.current.id);
@@ -223,8 +987,39 @@
       const id = Number(b.id);
       const name = esc(b.nombre || b.name || b.slug || "Barbería");
       const currentClass = currentId && id === currentId ? " is-current" : "";
+      const product = getBarberiaPresentation(b);
+      const isOwner = isBarberiaOwner(b);
+      const isActivePlan = isBarberiaActivePlan(b);
 
-      return `<a class="ba5-user-item${currentClass}" href="${dashboardUrl(b)}">${name}</a>`;
+      return `
+        <div class="ba5-barberia-card${currentClass}">
+          <a class="ba5-barberia-link" href="${dashboardUrl(b)}" title="Abrir panel de ${name}">
+            <div class="ba-barberia-row">
+              <div class="ba-barberia-row-top">
+                <span class="ba-barberia-name">${name}</span>
+                <span class="ba-barberia-status ${product.cls}">${esc(product.label)}</span>
+              </div>
+              <span class="ba-barberia-detail">${esc(product.detail)}</span>
+            </div>
+          </a>
+          ${isOwner ? `
+            <button
+              type="button"
+              class="ba-barberia-delete-btn ${isActivePlan ? 'is-active-blocked' : 'is-eligible'}"
+              data-id="${id}"
+              data-name="${name}"
+              data-active="${isActivePlan ? 'true' : 'false'}"
+              title="${isActivePlan ? 'No puedes eliminar esta barbería mientras tenga un plan activo. Cancela primero el plan.' : 'Eliminar barbería'}"
+              aria-label="${isActivePlan ? `No puedes eliminar ${name}: plan activo` : `Eliminar barbería ${name}`}"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>
+              </svg>
+              <span>Eliminar</span>
+            </button>
+          ` : ""}
+        </div>
+      `;
     }).join("");
 
     return `
@@ -233,24 +1028,212 @@
           <span class="ba5-plan-label">Mis barberías</span>
           <span class="ba5-plan-pill is-active">${state.count}</span>
         </div>
+        ${stateBlockedNotice ? `
+          <div class="ba-blocked-notice-banner" role="alert">
+            <span>${esc(stateBlockedNotice)}</span>
+            <button type="button" onclick="window.__baCloseBlockedNotice && window.__baCloseBlockedNotice()" aria-label="Cerrar aviso">×</button>
+          </div>
+        ` : ""}
         <div class="ba5-barberias-list">
-          ${items || (state.current ? `<a class="ba5-user-item is-current" href="${dashboardUrl(state.current)}">${esc(state.current.nombre || "Abrir barbería")}</a>` : "")}
+          ${items}
         </div>
-        <a class="ba5-user-item" href="${BA_CREATE_BARBERIA_URL}">Crear barbería</a>
+        <a class="ba5-user-item" href="${BA_CREATE_BARBERIA_URL}">Crear otra barbería</a>
       </div>
     `;
   }
 
+  function renderContextualPrimaryAction() {
+    const state = getBarberiasState();
+    if (state.count <= 0) {
+      return `<a class="ba5-user-item" href="${BA_CREATE_BARBERIA_URL}">Crear mi barbería</a>`;
+    }
+
+    let current = state.current;
+    if (current) {
+      current = state.barberias.find((b) => Number(b.id) === Number(current.id)) || current;
+    }
+    if (!current && state.barberias.length === 1) {
+      current = state.barberias[0];
+    }
+    if (!current) return "";
+
+    const subscription = clean(current.subscription_state);
+
+    if (subscription === "TRIAL_ACTIVE" || subscription === "TRIAL_EXPIRING") {
+      return `<a class="ba5-user-item" href="${BA_PLANS_URL}">Elegir plan</a>`;
+    }
+    if (subscription === "TRIAL_EXPIRED") {
+      return `<a class="ba5-user-item" href="${BA_PLANS_URL}">Reactivar barbería</a>`;
+    }
+    if (subscription === "ACTIVATION_PENDING") {
+      return `<a class="ba5-user-item" href="${dashboardUrl(current)}">Revisar activación</a>`;
+    }
+    return `<a class="ba5-user-item" href="${dashboardUrl(current)}">Ir a mi panel</a>`;
+  }
+
+  /* =========================================================
+     DELETE CONFIRMATION MODAL LOGIC
+     ========================================================= */
+  function openDeleteModal(barberiaId, barberiaName) {
+    closeDeleteModal();
+
+    const overlay = document.createElement("div");
+    overlay.className = "ba-delete-modal-overlay";
+    overlay.setAttribute("role", "presentation");
+
+    overlay.innerHTML = `
+      <div class="ba-delete-modal-dialog" role="alertdialog" aria-modal="true" aria-labelledby="baDeleteModalTitle">
+        <div class="ba-delete-modal-header">
+          <div class="ba-delete-modal-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <h3 id="baDeleteModalTitle" class="ba-delete-modal-title">¿Eliminar "${esc(barberiaName)}"?</h3>
+        </div>
+
+        <div class="ba-delete-modal-body">
+          <p>Esta barbería dejará de aparecer en tu cuenta y quedará deshabilitada para nuevas reservas.</p>
+          <p>El historial de citas, pagos y datos contables se conservará.</p>
+        </div>
+
+        <div>
+          <label class="ba-delete-modal-label" for="baConfirmNameInput">
+            Escribe: <strong>${esc(barberiaName)}</strong>
+          </label>
+          <input
+            id="baConfirmNameInput"
+            type="text"
+            class="ba-delete-modal-input"
+            placeholder="${esc(barberiaName)}"
+            autocomplete="off"
+          />
+        </div>
+
+        <p id="baDeleteModalError" class="ba-delete-modal-error" style="display:none;"></p>
+
+        <div class="ba-delete-modal-actions">
+          <button type="button" id="baDeleteModalCancel" class="ba-delete-modal-cancel">Cancelar</button>
+          <button type="button" id="baDeleteModalConfirm" class="ba-delete-modal-confirm" disabled>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+            <span>Eliminar barbería</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    activeDeleteModal = overlay;
+
+    const input = overlay.querySelector("#baConfirmNameInput");
+    const confirmBtn = overlay.querySelector("#baDeleteModalConfirm");
+    const cancelBtn = overlay.querySelector("#baDeleteModalCancel");
+    const errorP = overlay.querySelector("#baDeleteModalError");
+
+    input.focus();
+
+    input.addEventListener("input", function () {
+      const match = input.value.trim() === barberiaName.trim();
+      confirmBtn.disabled = !match;
+    });
+
+    cancelBtn.addEventListener("click", function () {
+      closeDeleteModal();
+    });
+
+    overlay.addEventListener("click", function (e) {
+      if (e.target === overlay) {
+        closeDeleteModal();
+      }
+    });
+
+    confirmBtn.addEventListener("click", async function () {
+      if (input.value.trim() !== barberiaName.trim()) return;
+
+      confirmBtn.disabled = true;
+      confirmBtn.querySelector("span").textContent = "Eliminando...";
+      errorP.style.display = "none";
+
+      try {
+        const deleteUrl = `${BA_DELETE_ENDPOINT_BASE}/${barberiaId}/delete`;
+        const res = await fetch(deleteUrl, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          }
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.ok) {
+          // Remove from local storage
+          const state = getBarberiasState();
+          const remaining = state.barberias.filter((b) => Number(b.id) !== Number(barberiaId));
+          localStorage.setItem("ba_barberias", JSON.stringify(remaining));
+          localStorage.setItem("ba_barberias_count", String(remaining.length));
+
+          if (state.current && Number(state.current.id) === Number(barberiaId)) {
+            const nextCurrent = remaining[0] || null;
+            if (nextCurrent) {
+              localStorage.setItem("ba_current_barberia", JSON.stringify(nextCurrent));
+            } else {
+              localStorage.removeItem("ba_current_barberia");
+            }
+          }
+
+          closeDeleteModal();
+          stateBlockedNotice = null;
+          renderHeaderMenu();
+
+          // Also trigger background session sync
+          syncSessionFromBackend().then(() => renderHeaderMenu()).catch(() => {});
+        } else {
+          confirmBtn.disabled = false;
+          confirmBtn.querySelector("span").textContent = "Eliminar barbería";
+          errorP.textContent = data.message || "Error al eliminar la barbería.";
+          errorP.style.display = "block";
+        }
+      } catch (err) {
+        confirmBtn.disabled = false;
+        confirmBtn.querySelector("span").textContent = "Eliminar barbería";
+        errorP.textContent = "Error de conexión. Intenta nuevamente.";
+        errorP.style.display = "block";
+      }
+    });
+  }
+
+  function closeDeleteModal() {
+    if (activeDeleteModal && activeDeleteModal.parentNode) {
+      activeDeleteModal.parentNode.removeChild(activeDeleteModal);
+    }
+    activeDeleteModal = null;
+  }
+
+  window.__baCloseBlockedNotice = function () {
+    stateBlockedNotice = null;
+    renderHeaderMenu();
+  };
+
+  /* =========================================================
+     MENU EVENTS
+     ========================================================= */
   function bindMenuEvents(menu) {
     const btn = menu.querySelector(".ba5-user-btn-menu");
     const logout = menu.querySelector("#ba5LogoutBtn");
-    if (!btn) return;
 
-    btn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      const open = menu.classList.toggle("is-open");
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-    });
+    if (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const open = menu.classList.toggle("is-open");
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    }
 
     if (logout) {
       logout.addEventListener("click", async function () {
@@ -265,36 +1248,67 @@
       });
     }
 
+    // Delete buttons event delegation
+    const deleteBtns = menu.querySelectorAll(".ba-barberia-delete-btn");
+    deleteBtns.forEach((delBtn) => {
+      delBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const id = Number(delBtn.getAttribute("data-id"));
+        const name = delBtn.getAttribute("data-name");
+        const isActive = delBtn.getAttribute("data-active") === "true";
+
+        if (isActive) {
+          stateBlockedNotice = "No puedes eliminar esta barbería mientras tenga un plan activo. Cancela primero el plan.";
+          renderHeaderMenu();
+        } else {
+          stateBlockedNotice = null;
+          openDeleteModal(id, name);
+        }
+      });
+    });
+
     document.addEventListener("click", function (e) {
       if (!menu.contains(e.target)) {
         menu.classList.remove("is-open");
-        btn.setAttribute("aria-expanded", "false");
+        if (btn) btn.setAttribute("aria-expanded", "false");
       }
     });
 
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
-        menu.classList.remove("is-open");
-        btn.setAttribute("aria-expanded", "false");
+        if (activeDeleteModal) {
+          closeDeleteModal();
+        } else {
+          menu.classList.remove("is-open");
+          if (btn) btn.setAttribute("aria-expanded", "false");
+        }
       }
     });
   }
 
+  /* =========================================================
+     MAIN RENDER
+     ========================================================= */
   function renderHeaderMenu() {
     const root = document.getElementById("baHeaderMenuRoot");
     if (!root) return false;
 
     if (!isLoggedInLocal()) {
-      root.innerHTML = '<a class="ba5-user-btn" href="' + BA_REGISTER_URL + '">Registrate</a>';
+      root.innerHTML = `<a class="ba5-user-btn" href="${BA_REGISTER_URL}">Regístrate</a>`;
       return true;
     }
 
     const u = getUser();
-    const p = getPlan();
 
     root.innerHTML = `
       <div class="ba5-user-menu" id="ba5UserMenu">
-        <button type="button" class="ba5-user-btn ba5-user-btn-menu" aria-expanded="false">
+        <button
+          type="button"
+          class="ba5-user-btn ba5-user-btn-menu"
+          aria-expanded="false"
+        >
           Hola, ${esc(u.first)}
         </button>
 
@@ -304,37 +1318,45 @@
             <div class="ba5-user-email">${esc(u.email)}</div>
           </div>
 
-          <div class="ba5-plan-box">
-            <div class="ba5-plan-top">
-              <span class="ba5-plan-label">Plan actual</span>
-              <span class="ba5-plan-pill ${p.cls}">${esc(p.status)}</span>
-            </div>
-            <div class="ba5-plan-name">${esc(p.name)}</div>
-            ${p.renewal ? `<div class="ba5-plan-renewal">Renovación: ${esc(p.renewal)}</div>` : ""}
-          </div>
+          ${renderProductBlock()}
 
           ${renderBarberiasBlock()}
 
+          ${renderContextualPrimaryAction()}
+
           <a class="ba5-user-item" href="${BA_PROFILE_URL}">Mi perfil</a>
-          <a class="ba5-user-item" href="${BA_PLANS_URL}">Ver planes</a>
-          <button type="button" id="ba5LogoutBtn" class="ba5-user-item ba5-user-logout">Cerrar sesión</button>
+
+          <button
+            type="button"
+            id="ba5LogoutBtn"
+            class="ba5-user-item ba5-user-logout"
+          >
+            Cerrar sesión
+          </button>
         </div>
       </div>
     `;
 
     const menu = document.getElementById("ba5UserMenu");
-    if (menu) bindMenuEvents(menu);
+    if (menu) {
+      bindMenuEvents(menu);
+    }
 
     return true;
   }
 
+  /* =========================================================
+     INIT
+     ========================================================= */
   async function init() {
     await syncSessionFromBackend();
-
     if (renderHeaderMenu()) return;
+
     let tries = 0;
     const t = setInterval(function () {
-      if (renderHeaderMenu() || ++tries > 20) clearInterval(t);
+      if (renderHeaderMenu() || ++tries > 20) {
+        clearInterval(t);
+      }
     }, 300);
   }
 
