@@ -1217,7 +1217,7 @@ body.light-mode #baHeaderMenuRoot .ba5-user-logout {
 
   window.__baCloseBlockedNotice = function () {
     stateBlockedNotice = null;
-    renderHeaderMenu();
+    renderHeaderMenu(true);
   };
 
   /* =========================================================
@@ -1261,7 +1261,7 @@ body.light-mode #baHeaderMenuRoot .ba5-user-logout {
 
         if (isActive) {
           stateBlockedNotice = "No puedes eliminar esta barbería mientras tenga un plan activo. Cancela primero el plan.";
-          renderHeaderMenu();
+          renderHeaderMenu(true);
         } else {
           stateBlockedNotice = null;
           openDeleteModal(id, name);
@@ -1291,7 +1291,7 @@ body.light-mode #baHeaderMenuRoot .ba5-user-logout {
   /* =========================================================
      MAIN RENDER
      ========================================================= */
-  function renderHeaderMenu() {
+  function renderHeaderMenu(preserveOpen) {
     const root = document.getElementById("baHeaderMenuRoot");
     if (!root) return false;
 
@@ -1300,14 +1300,15 @@ body.light-mode #baHeaderMenuRoot .ba5-user-logout {
       return true;
     }
 
+    const wasOpen = preserveOpen !== undefined ? Boolean(preserveOpen) : Boolean(document.querySelector("#ba5UserMenu.is-open"));
     const u = getUser();
 
     root.innerHTML = `
-      <div class="ba5-user-menu" id="ba5UserMenu">
+      <div class="ba5-user-menu ${wasOpen ? "is-open" : ""}" id="ba5UserMenu">
         <button
           type="button"
           class="ba5-user-btn ba5-user-btn-menu"
-          aria-expanded="false"
+          aria-expanded="${wasOpen ? "true" : "false"}"
         >
           Hola, ${esc(u.first)}
         </button>
