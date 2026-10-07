@@ -48,7 +48,144 @@
       </main>
     </div>
   </div>
+  <div class="ba-global-loader" id="baGlobalLoader" role="status" aria-live="polite" aria-hidden="true">
+    <div class="ba-loader-card">
+      <div class="ba-loader-logo-wrap" aria-hidden="true">
+        <img class="ba-loader-logo" id="baGlobalLoaderLogo" src="https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/02/4934139540562185050-e1776351048892.jpg" alt="" loading="eager" decoding="async" />
+      </div>
+      <p class="ba-loader-brand">BarberAgency</p>
+      <p class="ba-loader-message" id="baGlobalLoaderMessage">Preparando tu configuraciÃ³n...</p>
+    </div>
+  </div>
 </section>
+<style>
+#baWizardApp .ba-global-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, #05070b 78%, transparent);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  color: #f8fafc;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .18s ease, visibility .18s ease;
+}
+
+#baWizardApp[data-theme="light"] .ba-global-loader {
+  background: color-mix(in srgb, #f8fafc 78%, transparent);
+  color: #111827;
+}
+
+#baWizardApp .ba-global-loader.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+#baWizardApp .ba-loader-card {
+  width: min(88vw, 320px);
+  min-height: 230px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 12px;
+  padding: 32px 26px;
+  border: 1px solid color-mix(in srgb, #f59e0b 34%, rgba(255,255,255,.16));
+  border-radius: 28px;
+  background: color-mix(in srgb, #0b0f17 82%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #ffffff 8%, transparent),
+    0 24px 90px color-mix(in srgb, #000000 62%, transparent),
+    0 0 54px color-mix(in srgb, #f59e0b 28%, transparent);
+  text-align: center;
+}
+
+#baWizardApp[data-theme="light"] .ba-loader-card {
+  border-color: color-mix(in srgb, #b7791f 42%, rgba(15,23,42,.14));
+  background: color-mix(in srgb, #ffffff 86%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #111827 8%, transparent),
+    0 24px 74px color-mix(in srgb, #94a3b8 42%, transparent),
+    0 0 42px color-mix(in srgb, #b7791f 24%, transparent);
+}
+
+#baWizardApp .ba-loader-logo-wrap {
+  width: clamp(82px, 24vw, 112px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, color-mix(in srgb, #f59e0b 32%, transparent) 0%, transparent 64%),
+    color-mix(in srgb, #ffffff 10%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #f59e0b 48%, transparent),
+    0 0 32px color-mix(in srgb, #f59e0b 38%, transparent);
+  animation: baLoaderPulse 1.45s ease-in-out infinite;
+}
+
+#baWizardApp .ba-loader-logo {
+  width: 72%;
+  height: 72%;
+  object-fit: cover;
+  border-radius: 999px;
+  box-shadow: 0 10px 28px color-mix(in srgb, #000000 34%, transparent);
+}
+
+#baWizardApp .ba-loader-brand,
+#baWizardApp .ba-loader-message {
+  margin: 0;
+  max-width: 100%;
+}
+
+#baWizardApp .ba-loader-brand {
+  color: color-mix(in srgb, #f59e0b 86%, #ffffff);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+
+#baWizardApp[data-theme="light"] .ba-loader-brand {
+  color: #92400e;
+}
+
+#baWizardApp .ba-loader-message {
+  color: currentColor;
+  font-size: clamp(15px, 4vw, 17px);
+  line-height: 1.45;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+@keyframes baLoaderPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #f59e0b 48%, transparent),
+      0 0 28px color-mix(in srgb, #f59e0b 30%, transparent);
+  }
+  50% {
+    transform: scale(1.035);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, #f59e0b 62%, transparent),
+      0 0 46px color-mix(in srgb, #f59e0b 48%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #baWizardApp .ba-global-loader,
+  #baWizardApp .ba-loader-logo-wrap {
+    animation: none;
+    transition: none;
+  }
+}
+</style>
 <script>
 (() => {
   const boot = () => {
@@ -101,6 +238,7 @@
       (window.BA_UPLOAD_PUBLIC_BASE && String(window.BA_UPLOAD_PUBLIC_BASE).trim()) ||
       (window.BA_R2_PUBLIC_BASE && String(window.BA_R2_PUBLIC_BASE).trim()) ||
       "";
+    const LOADER_LOGO_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/wp-content/uploads/2026/02/4934139540562185050-e1776351048892.jpg";
     const LANDING_BUILDER_URL = "https://barberagency-barberagency.gymh5g.easypanel.host/landing_plantilla/";
     const STORAGE_KEY = "ba_wp_onboarding_v9";
     const LANDING_SEED_KEY = "ba_landing_seed";
@@ -246,6 +384,9 @@
     const messageBox = document.getElementById("baMessage");
     const backBtn = document.getElementById("baBackBtn");
     const resetBtn = document.getElementById("baResetBtn");
+    const globalLoader = document.getElementById("baGlobalLoader");
+    const globalLoaderMessage = document.getElementById("baGlobalLoaderMessage");
+    const globalLoaderLogo = document.getElementById("baGlobalLoaderLogo");
 
     let currentStepIndex = 0;
     let draft = normalizeDraft(loadInitialDraft());
@@ -264,6 +405,7 @@
     let truthLoaded = !isEditIntent();
     let identityValidated = !isEditIntent();
     let initialTruthState = null;
+    let globalLoaderDepth = 0;
 
     syncThemeFromGlobal();
 
@@ -301,6 +443,29 @@
         if (cleaned) return cleaned;
       }
       return "";
+    }
+
+    function showBarberAgencyLoader(message) {
+      if (!globalLoader) return;
+      globalLoaderDepth += 1;
+      if (globalLoaderLogo && globalLoaderLogo.getAttribute("src") !== LOADER_LOGO_URL) {
+        globalLoaderLogo.setAttribute("src", LOADER_LOGO_URL);
+      }
+      if (globalLoaderMessage) {
+        globalLoaderMessage.textContent = clean(message) || "Preparando tu configuraciÃ³n...";
+      }
+      app.setAttribute("aria-busy", "true");
+      globalLoader.classList.add("is-active");
+      globalLoader.setAttribute("aria-hidden", "false");
+    }
+
+    function hideBarberAgencyLoader() {
+      if (!globalLoader) return;
+      globalLoaderDepth = Math.max(0, globalLoaderDepth - 1);
+      if (globalLoaderDepth > 0) return;
+      globalLoader.classList.remove("is-active");
+      globalLoader.setAttribute("aria-hidden", "true");
+      app.removeAttribute("aria-busy");
     }
 
     function resolveOwnerFromDashboardState(data) {
@@ -463,6 +628,8 @@
       const timeoutId = setTimeout(() => controller.abort(), 60000);
 
       let lastError = null;
+      showBarberAgencyLoader("Subiendo imagen...");
+      try {
       for (const endpoint of getUploadEndpointCandidates()) {
         try {
           const response = await fetch(endpoint, {
@@ -499,6 +666,10 @@
       }
 
       throw lastError || new Error("No se pudo subir la imagen.");
+      } finally {
+        clearTimeout(timeoutId);
+        hideBarberAgencyLoader();
+      }
     }
 
     // SECCION: Draft, carga local y seed recibido desde otros flujos.
@@ -3266,6 +3437,7 @@
   return;
 }
 
+        showBarberAgencyLoader("Creando tu barberÃ­a...");
         const { data } = await postOnboardingPayload(payload);
 
         persistLandingSeed(payload, data);
@@ -3285,6 +3457,7 @@
           submitBtn.disabled = false;
           submitBtn.textContent = "Crear barbería";
         }
+        hideBarberAgencyLoader();
       }
     }
 
@@ -3350,6 +3523,7 @@
       }
 
       try {
+        showBarberAgencyLoader("Guardando tu configuraciÃ³n...");
         const { data } = await postOnboardingPayload(payload);
 
         persistLandingSeed(payload, data);
@@ -3382,6 +3556,7 @@
           continueBtn.disabled = false;
           continueBtn.textContent = "Seguir a la plantilla";
         }
+        hideBarberAgencyLoader();
       }
     }
 
